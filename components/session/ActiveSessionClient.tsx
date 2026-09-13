@@ -1,6 +1,7 @@
 'use client'
 
 import { useState, useTransition } from 'react'
+import { useRouter } from 'next/navigation'
 import { Timer } from '@/components/session/Timer'
 import {
   completeSet,
@@ -19,11 +20,26 @@ type Props = {
   plan: SessionPlan
 }
 
+const SAVE_ERROR_MESSAGE = 'Could not save — check your connection and try again'
+
 export function ActiveSessionClient({ sessionId, plan }: Props) {
+  const router = useRouter()
   const [state, setState] = useState<SessionState>(() => initSession(plan))
   const [weight, setWeight] = useState('')
   const [reps, setReps] = useState('')
+  const [error, setError] = useState<string | null>(null)
   const [isPending, startTransition] = useTransition()
+
+  function handleEndWorkout() {
+    startTransition(async () => {
+      try {
+        await endSession(sessionId)
+        router.push('/')
+      } catch {
+        setError(SAVE_ERROR_MESSAGE)
+      }
+    })
+  }
 
   if (state.phase === 'session_complete') {
     return (
@@ -31,11 +47,21 @@ export function ActiveSessionClient({ sessionId, plan }: Props) {
         <p className="text-xl font-semibold">Workout complete</p>
         <button
           className="rounded bg-black px-4 py-2 text-white"
-          onClick={() => startTransition(() => endSession(sessionId))}
+          onClick={() =>
+            startTransition(async () => {
+              try {
+                await endSession(sessionId)
+                setError(null)
+              } catch {
+                setError(SAVE_ERROR_MESSAGE)
+              }
+            })
+          }
           disabled={isPending}
         >
           Finish
         </button>
+        {error && <p className="text-sm text-red-600">{error}</p>}
       </div>
     )
   }
@@ -48,6 +74,10 @@ export function ActiveSessionClient({ sessionId, plan }: Props) {
         <button className="rounded border px-4 py-2" onClick={() => setState(skipRest(state))}>
           Skip rest
         </button>
+        <button className="block w-full text-sm text-gray-500 underline" onClick={handleEndWorkout} disabled={isPending}>
+          End workout
+        </button>
+        {error && <p className="text-sm text-red-600">{error}</p>}
       </div>
     )
   }
@@ -93,22 +123,31 @@ export function ActiveSessionClient({ sessionId, plan }: Props) {
             const actualReps = reps === '' ? null : Number(reps)
             const currentState = state
             startTransition(async () => {
-              await logSet({
-                sessionId,
-                programExerciseId: exercise.id,
-                setNumber: currentState.setNumber,
-                actualWeight,
-                actualReps,
-              })
-              setWeight('')
-              setReps('')
-              setState(completeSet(plan, currentState))
+              try {
+                await logSet({
+                  sessionId,
+                  programExerciseId: exercise.id,
+                  setNumber: currentState.setNumber,
+                  actualWeight,
+                  actualReps,
+                })
+                setWeight('')
+                setReps('')
+                setError(null)
+                setState(completeSet(plan, currentState))
+              } catch {
+                setError(SAVE_ERROR_MESSAGE)
+              }
             })
           }}
         >
           Log set
         </button>
       </div>
+      {error && <p className="text-sm text-red-600">{error}</p>}
+      <button className="block w-full text-sm text-gray-500 underline" onClick={handleEndWorkout} disabled={isPending}>
+        End workout
+      </button>
     </div>
   )
 }
