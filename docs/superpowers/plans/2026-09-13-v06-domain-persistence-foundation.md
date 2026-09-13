@@ -1989,6 +1989,10 @@ git commit -m "feat: add export/import JSON backup round-trip"
 
 ---
 
+## Known architecture limitation for the next plan to address
+
+Task 6's `sessionService.ts` ties events to a well-defined order using a synthesized-timestamp nudge (`nextTimestamp`), because `sessionRepository.getEventsForSession` (Task 5) sorts by the `timestamp` string and same-millisecond writes otherwise tie-break unpredictably by primary key. This works correctly for sequentially-awaited callers (everything in this plan), but does not fully close a race for two *concurrent* calls against the same session — exactly the "double tap" scenario `CLAUDE.md` calls out, which only becomes physically possible once a real UI exists. Before the Workout Player (or anything else that calls `recordEvent`/`startSession` from user-triggered UI events) ships, replace the timestamp-ordering tiebreaker with a real monotonic sequence — a Dexie auto-increment key or an explicit incrementing `sequence` field on `SessionEvent`, used as the sort key instead of (or alongside) `timestamp` — so ordering is atomic at the single write, not reconstructed by reading-then-deciding beforehand.
+
 ## Post-plan (explicitly out of scope, follow-up plan required)
 
 Reconciliation steps 9-14 from `SOURCE_OF_TRUTH_V06.md` §15 — Today/check-in/preview flow, the durable Workout Player/rest/pause/adjust/complete UI, Library/Progress/Settings screens, the shared semantic theme engine (Pixel Bloom/Savage Core), and offline/cache/export-import/accessibility hardening — are a separate plan. They need real content (REQ-20260913-001), real adaptation rules (REQ-20260913-002), and real theme tokens (REQ-20260913-003) to be more than placeholder scaffolding; write that plan once those land, or explicitly re-scope it to build against the placeholder fixtures if the human owner decides to proceed UI-first.
