@@ -1,6 +1,3 @@
 node_modules
-.next
+dist
 .env.local
-.env.test
-supabase/.branches
-supabase/.temp

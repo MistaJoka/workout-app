@@ -1,31 +1,30 @@
 {
   "name": "workout-app",
-  "version": "0.1.0",
+  "version": "0.6.0",
   "private": true,
+  "type": "module",
   "scripts": {
-    "dev": "next dev",
-    "build": "next build",
-    "start": "next start",
-    "lint": "next lint",
+    "dev": "vite",
+    "build": "tsc -b && vite build",
+    "preview": "vite preview",
     "test": "vitest run"
   },
   "dependencies": {
-    "next": "15.1.0",
     "react": "19.0.0",
     "react-dom": "19.0.0",
-    "@supabase/supabase-js": "2.47.10"
+    "dexie": "4.0.10",
+    "zod": "3.24.1"
   },
   "devDependencies": {
-    "typescript": "5.7.2",
-    "@types/node": "22.10.2",
     "@types/react": "19.0.2",
     "@types/react-dom": "19.0.2",
+    "@vitejs/plugin-react": "4.3.4",
+    "typescript": "5.7.2",
+    "vite": "6.0.7",
+    "vitest": "2.1.8",
+    "fake-indexeddb": "6.0.0",
     "tailwindcss": "3.4.17",
     "postcss": "8.4.49",
-    "autoprefixer": "10.4.20",
-    "eslint": "9.17.0",
-    "eslint-config-next": "15.1.0",
-    "vitest": "2.1.8",
-    "dotenv": "16.4.7"
+    "autoprefixer": "10.4.20"
   }
 }
