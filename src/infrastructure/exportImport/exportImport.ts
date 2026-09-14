@@ -28,6 +28,27 @@ export async function exportAll(): Promise<ExportBundle> {
   }
 }
 
+const EXPORT_BUNDLE_ARRAY_FIELDS = [
+  'settings',
+  'checkIns',
+  'sessionPlans',
+  'sessionEvents',
+  'sessionResults',
+  'familiarity',
+  'progression',
+] as const
+
+export function isValidExportBundle(value: unknown): value is ExportBundle {
+  if (typeof value !== 'object' || value === null) {
+    return false
+  }
+  const candidate = value as Record<string, unknown>
+  if (typeof candidate.version !== 'number' || typeof candidate.exportedAt !== 'string') {
+    return false
+  }
+  return EXPORT_BUNDLE_ARRAY_FIELDS.every((field) => Array.isArray(candidate[field]))
+}
+
 export async function importAll(bundle: ExportBundle): Promise<void> {
   if (bundle.version !== 1) {
     throw new Error(`Unsupported export bundle version: ${bundle.version}`)

@@ -54,4 +54,14 @@ describe('exportAll / importAll', () => {
     const bundle = await exportAll()
     await expect(importAll({ ...bundle, version: 999 })).rejects.toThrow('999')
   })
+
+  it('isValidExportBundle rejects structurally malformed input without throwing', async () => {
+    const { isValidExportBundle } = await import('./exportImport')
+    expect(isValidExportBundle(null)).toBe(false)
+    expect(isValidExportBundle('not an object')).toBe(false)
+    expect(isValidExportBundle({})).toBe(false)
+    expect(isValidExportBundle({ version: 1 })).toBe(false)
+    const validShape = await exportAll()
+    expect(isValidExportBundle(validShape)).toBe(true)
+  })
 })
