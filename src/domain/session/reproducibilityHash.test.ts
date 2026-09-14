@@ -46,7 +46,22 @@ describe('computeReproducibilityHash', () => {
   })
 
   it('is not affected by object key order', () => {
-    const reordered = { ...basePlan, createdAt: basePlan.createdAt, id: basePlan.id }
+    // basePlan's own insertion order is: id, templateId, templateVersion, packId,
+    // ruleVersion, createdAt, exercises, adaptations. Build a fresh object literal
+    // with a genuinely different insertion order (reversed) so this test actually
+    // exercises stableStringify's key-sorting rather than passing trivially because
+    // both objects already enumerate keys identically.
+    const reordered: Omit<SessionPlan, 'reproducibilityHash'> = {
+      adaptations: basePlan.adaptations,
+      exercises: basePlan.exercises,
+      createdAt: basePlan.createdAt,
+      ruleVersion: basePlan.ruleVersion,
+      packId: basePlan.packId,
+      templateVersion: basePlan.templateVersion,
+      templateId: basePlan.templateId,
+      id: basePlan.id,
+    }
+    expect(Object.keys(reordered)).not.toEqual(Object.keys(basePlan))
     expect(computeReproducibilityHash(reordered)).toBe(computeReproducibilityHash(basePlan))
   })
 })

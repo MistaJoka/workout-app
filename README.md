@@ -1,32 +1,35 @@
 # Bespoke Fitness PWA
 
-Private, single-user, offline-first fitness PWA for a curated exercise program and durable guided workout experience.
+A private, single-user, offline-first fitness PWA foundation for a curated exercise program and durable guided workout experience.
 
 ## Current state
 
-This repository contains a legacy working prototype plus a **v0.6 reconciliation contract** that now governs continued development.
+This repository holds the v0.6 foundation: domain types, IndexedDB persistence, and an event-sourced session engine. There are no UI screens yet — that is a follow-up plan built on top of this foundation.
 
-The original prototype is preserved on branch `legacy-mvp-2026-09-13`.
-
-Start here:
+Governing docs (read before changing application code):
 
 1. `CLAUDE.md`
 2. `docs/SOURCE_OF_TRUTH_V06.md`
 3. `docs/AI_COLLABORATION_PROTOCOL.md`
 4. `support/CLAUDE_REQUESTS.md`
 
-## Product direction
+## Tech stack
 
-- iPhone portrait-first PWA
-- offline-first / local-first
-- no backend in V1
-- no runtime AI
-- IndexedDB/Dexie local persistence
-- deterministic adaptation/progression
-- curated/versioned exercises and content packs
-- reviewed static exercise media
-- Pixel Bloom + Savage Core themes
-- Today / Library / Progress / Settings
+- Vite
+- React
+- TypeScript
+- Dexie (IndexedDB wrapper)
+- Zod
+- Vitest
+
+## Setup
+
+```bash
+npm install
+npm run dev     # start the dev server
+npm run build   # type-check and build for production
+npm test        # run the test suite
+```
 
 ## Development model
 

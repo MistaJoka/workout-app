@@ -1,8 +1,8 @@
 import { beforeEach, describe, expect, it } from 'vitest'
-import { db } from '../../infrastructure/db/schema'
-import * as sessionRepo from '../../infrastructure/db/repositories/sessionRepository'
+import { db } from '../infrastructure/db/schema'
+import * as sessionRepo from '../infrastructure/db/repositories/sessionRepository'
 import { getCurrentState, recordEvent, startSession } from './sessionService'
-import type { SessionPlan } from './types'
+import type { SessionPlan } from '../domain/session/types'
 
 const plan: SessionPlan = {
   id: 'session-1',
@@ -71,5 +71,50 @@ describe('recordEvent', () => {
     await recordEvent(plan.id, 'SET_COMPLETED', 'evt-set-1')
     const secondResult = await sessionRepo.getResult(plan.id)
     expect(secondResult).toEqual(firstResult)
+  })
+
+  it('completes a realistic multi-exercise, multi-set session through actual persistence, guarding the nextTimestamp ordering fix', async () => {
+    const multiExercisePlan: SessionPlan = {
+      id: 'session-multi',
+      templateId: 'placeholder.test-template',
+      templateVersion: 1,
+      packId: 'placeholder-pack',
+      ruleVersion: 'v0',
+      createdAt: '2026-09-13T00:00:00.000Z',
+      exercises: [
+        { exerciseId: 'ex1', exerciseVersion: 1, sets: 3, reps: 10, restSeconds: 60, order: 0 },
+        { exerciseId: 'ex2', exerciseVersion: 1, sets: 3, reps: 8, restSeconds: 45, order: 1 },
+      ],
+      adaptations: [],
+      reproducibilityHash: 'test-hash-multi',
+    }
+    const totalSets = multiExercisePlan.exercises.reduce((sum, e) => sum + e.sets, 0)
+
+    await startSession(multiExercisePlan)
+
+    let state = await getCurrentState(multiExercisePlan.id)
+    for (let i = 0; i < totalSets; i++) {
+      state = await recordEvent(multiExercisePlan.id, 'SET_COMPLETED', `set-completed-${i}`)
+      // Every set except the very last one transitions to RESTING; end the rest
+      // before recording the next set so back-to-back writes exercise the
+      // same-millisecond ordering guard in `nextTimestamp`.
+      if (i < totalSets - 1) {
+        expect(state.status).toBe('RESTING')
+        state = await recordEvent(multiExercisePlan.id, 'REST_ENDED', `rest-ended-${i}`)
+      }
+    }
+
+    expect(state.status).toBe('COMPLETED')
+
+    const replayed = await getCurrentState(multiExercisePlan.id)
+    expect(replayed).toEqual(state)
+
+    const result = await sessionRepo.getResult(multiExercisePlan.id)
+    expect(result).toMatchObject({
+      sessionId: multiExercisePlan.id,
+      status: 'COMPLETED',
+      totalSetsCompleted: totalSets,
+      totalSetsPlanned: totalSets,
+    })
   })
 })

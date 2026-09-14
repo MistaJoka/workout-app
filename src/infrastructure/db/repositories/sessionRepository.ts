@@ -2,6 +2,12 @@ import { db } from '../schema'
 import type { SessionEvent, SessionPlan, SessionResult } from '../../../domain/session/types'
 
 export async function savePlan(plan: SessionPlan): Promise<void> {
+  const existing = await db.sessionPlans.get(plan.id)
+  if (existing) {
+    throw new Error(
+      `Session plan ${plan.id} already exists — SessionPlans are immutable snapshots and cannot be overwritten`
+    )
+  }
   await db.sessionPlans.put(plan)
 }
 

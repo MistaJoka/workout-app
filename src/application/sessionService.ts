@@ -1,6 +1,6 @@
-import { replayEvents } from './sessionMachine'
-import type { SessionEvent, SessionEventType, SessionPlan, SessionResult, SessionState } from './types'
-import * as sessionRepo from '../../infrastructure/db/repositories/sessionRepository'
+import { replayEvents } from '../domain/session/sessionMachine'
+import type { SessionEvent, SessionEventType, SessionPlan, SessionResult, SessionState } from '../domain/session/types'
+import * as sessionRepo from '../infrastructure/db/repositories/sessionRepository'
 
 export async function startSession(plan: SessionPlan): Promise<SessionState> {
   await sessionRepo.savePlan(plan)

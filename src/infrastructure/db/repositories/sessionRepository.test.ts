@@ -34,6 +34,11 @@ describe('sessionRepository', () => {
     expect(loaded).toBeUndefined()
   })
 
+  it('throws if a plan with the same id is saved twice, since SessionPlans are immutable snapshots', async () => {
+    await sessionRepo.savePlan(plan)
+    await expect(sessionRepo.savePlan(plan)).rejects.toThrow(plan.id)
+  })
+
   it('appends events and retrieves them in timestamp order for a session', async () => {
     const events: SessionEvent[] = [
       { eventId: 'e2', sessionId: plan.id, type: 'SET_COMPLETED', timestamp: '2026-09-13T00:01:00.000Z', payload: {} },
