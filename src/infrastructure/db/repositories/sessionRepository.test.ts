@@ -67,6 +67,19 @@ describe('sessionRepository', () => {
     expect(loaded).toHaveLength(1)
   })
 
+  it('appendEvent is race-free: two concurrent calls with the same eventId produce exactly one row', async () => {
+    const event: SessionEvent = {
+      eventId: 'concurrent-1',
+      sessionId: plan.id,
+      type: 'SESSION_STARTED',
+      timestamp: '2026-09-13T00:00:00.000Z',
+      payload: {},
+    }
+    await Promise.all([sessionRepo.appendEvent(event), sessionRepo.appendEvent(event)])
+    const loaded = await sessionRepo.getEventsForSession(plan.id)
+    expect(loaded.filter((e) => e.eventId === 'concurrent-1')).toHaveLength(1)
+  })
+
   it('saves and retrieves a session result', async () => {
     const result: SessionResult = {
       sessionId: plan.id,

@@ -20,7 +20,14 @@ export async function appendEvent(event: SessionEvent): Promise<void> {
   if (existing) {
     return
   }
-  await db.sessionEvents.add(event)
+  try {
+    await db.sessionEvents.add(event)
+  } catch (error) {
+    if (error instanceof Error && error.name === 'ConstraintError') {
+      return // Another concurrent call already inserted this eventId — fine, idempotent.
+    }
+    throw error
+  }
 }
 
 export async function getEventsForSession(sessionId: string): Promise<SessionEvent[]> {

@@ -16,7 +16,7 @@ export class WorkoutDb extends Dexie {
   settings!: EntityTable<SettingsRecord, 'key'>
   checkIns!: EntityTable<CheckInRecord, 'id'>
   sessionPlans!: EntityTable<SessionPlan, 'id'>
-  sessionEvents!: EntityTable<SessionEvent, 'eventId'>
+  sessionEvents!: EntityTable<SessionEvent, 'seq'>
   sessionResults!: EntityTable<SessionResult, 'sessionId'>
   familiarity!: EntityTable<FamiliarityRecord, 'exerciseId'>
   progression!: EntityTable<ProgressionRecord, 'exerciseId'>
@@ -27,7 +27,7 @@ export class WorkoutDb extends Dexie {
       settings: 'key',
       checkIns: 'id, createdAt',
       sessionPlans: 'id, templateId, createdAt',
-      sessionEvents: '++seq, eventId, sessionId, timestamp',
+      sessionEvents: '++seq, &eventId, sessionId, timestamp',
       sessionResults: 'sessionId, planId, endedAt',
       familiarity: 'exerciseId',
       progression: 'exerciseId',
