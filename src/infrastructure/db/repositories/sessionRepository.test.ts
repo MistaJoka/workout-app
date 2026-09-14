@@ -39,7 +39,7 @@ describe('sessionRepository', () => {
     await expect(sessionRepo.savePlan(plan)).rejects.toThrow(plan.id)
   })
 
-  it('appends events and retrieves them in timestamp order for a session', async () => {
+  it('appends events and retrieves them in insertion order for a session, even when timestamps are out of order or identical', async () => {
     const events: SessionEvent[] = [
       { eventId: 'e2', sessionId: plan.id, type: 'SET_COMPLETED', timestamp: '2026-09-13T00:01:00.000Z', payload: {} },
       { eventId: 'e1', sessionId: plan.id, type: 'SESSION_STARTED', timestamp: '2026-09-13T00:00:00.000Z', payload: {} },
@@ -48,7 +48,9 @@ describe('sessionRepository', () => {
       await sessionRepo.appendEvent(event)
     }
     const loaded = await sessionRepo.getEventsForSession(plan.id)
-    expect(loaded.map((e) => e.eventId)).toEqual(['e1', 'e2'])
+    // e2 was inserted first even though its label timestamp is later — insertion
+    // order (the Dexie auto-increment `seq`) governs, not the timestamp string.
+    expect(loaded.map((e) => e.eventId)).toEqual(['e2', 'e1'])
   })
 
   it('appending an event with a duplicate eventId does not create a second row', async () => {
@@ -78,5 +80,51 @@ describe('sessionRepository', () => {
     await sessionRepo.saveResult(result)
     const loaded = await sessionRepo.getResult(plan.id)
     expect(loaded).toEqual(result)
+  })
+
+  it('saveResult succeeds for a session with no existing result', async () => {
+    const result: SessionResult = {
+      sessionId: plan.id,
+      planId: plan.id,
+      status: 'COMPLETED',
+      startedAt: '2026-09-13T00:00:00.000Z',
+      endedAt: '2026-09-13T00:10:00.000Z',
+      totalSetsCompleted: 1,
+      totalSetsPlanned: 1,
+    }
+    await sessionRepo.saveResult(result)
+    const loaded = await sessionRepo.getResult(plan.id)
+    expect(loaded).toEqual(result)
+  })
+
+  it('saveResult throws when a result already exists for the session', async () => {
+    const result: SessionResult = {
+      sessionId: plan.id,
+      planId: plan.id,
+      status: 'COMPLETED',
+      startedAt: '2026-09-13T00:00:00.000Z',
+      endedAt: '2026-09-13T00:10:00.000Z',
+      totalSetsCompleted: 1,
+      totalSetsPlanned: 1,
+    }
+    await sessionRepo.saveResult(result)
+    await expect(sessionRepo.saveResult(result)).rejects.toThrow(plan.id)
+  })
+
+  it('getInProgressSessions returns plans with no persisted result, and excludes plans that have one', async () => {
+    const otherPlan: SessionPlan = { ...plan, id: 'session-2' }
+    await sessionRepo.savePlan(plan)
+    await sessionRepo.savePlan(otherPlan)
+    await sessionRepo.saveResult({
+      sessionId: otherPlan.id,
+      planId: otherPlan.id,
+      status: 'COMPLETED',
+      startedAt: '2026-09-13T00:00:00.000Z',
+      endedAt: '2026-09-13T00:10:00.000Z',
+      totalSetsCompleted: 1,
+      totalSetsPlanned: 1,
+    })
+    const inProgress = await sessionRepo.getInProgressSessions()
+    expect(inProgress.map((p) => p.id)).toEqual([plan.id])
   })
 })

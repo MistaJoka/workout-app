@@ -27,7 +27,7 @@ export class WorkoutDb extends Dexie {
       settings: 'key',
       checkIns: 'id, createdAt',
       sessionPlans: 'id, templateId, createdAt',
-      sessionEvents: 'eventId, sessionId, timestamp',
+      sessionEvents: '++seq, eventId, sessionId, timestamp',
       sessionResults: 'sessionId, planId, endedAt',
       familiarity: 'exerciseId',
       progression: 'exerciseId',

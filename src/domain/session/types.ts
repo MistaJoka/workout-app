@@ -46,6 +46,12 @@ export type SessionEventType =
   | 'SESSION_COMPLETED_SHORTENED'
 
 export type SessionEvent = {
+  // Dexie-assigned auto-increment primary key (src/infrastructure/db/schema.ts).
+  // Optional because pure domain code (the reducer, tests) constructs events
+  // without one; the persistence layer assigns it on insert and it becomes
+  // the true insertion-order tiebreaker for replay, since two events can
+  // share the same millisecond `timestamp`.
+  seq?: number
   eventId: string
   sessionId: string
   type: SessionEventType

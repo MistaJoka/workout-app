@@ -16,21 +16,33 @@ export async function getPlan(id: string): Promise<SessionPlan | undefined> {
 }
 
 export async function appendEvent(event: SessionEvent): Promise<void> {
-  const existing = await db.sessionEvents.get(event.eventId)
+  const existing = await db.sessionEvents.where('eventId').equals(event.eventId).first()
   if (existing) {
     return
   }
-  await db.sessionEvents.put(event)
+  await db.sessionEvents.add(event)
 }
 
 export async function getEventsForSession(sessionId: string): Promise<SessionEvent[]> {
-  return db.sessionEvents.where('sessionId').equals(sessionId).sortBy('timestamp')
+  return db.sessionEvents.where('sessionId').equals(sessionId).sortBy('seq')
 }
 
 export async function saveResult(result: SessionResult): Promise<void> {
+  const existing = await db.sessionResults.get(result.sessionId)
+  if (existing) {
+    throw new Error(
+      `Session result for ${result.sessionId} already exists — SessionResults are immutable once recorded`
+    )
+  }
   await db.sessionResults.put(result)
 }
 
 export async function getResult(sessionId: string): Promise<SessionResult | undefined> {
   return db.sessionResults.get(sessionId)
+}
+
+export async function getInProgressSessions(): Promise<SessionPlan[]> {
+  const [plans, results] = await Promise.all([db.sessionPlans.toArray(), db.sessionResults.toArray()])
+  const completedIds = new Set(results.map((r) => r.sessionId))
+  return plans.filter((p) => !completedIds.has(p.id))
 }

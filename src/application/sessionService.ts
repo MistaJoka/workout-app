@@ -8,10 +8,14 @@ export async function startSession(plan: SessionPlan): Promise<SessionState> {
     eventId: `${plan.id}:start`,
     sessionId: plan.id,
     type: 'SESSION_STARTED',
-    timestamp: await nextTimestamp(plan.id),
+    timestamp: new Date().toISOString(),
     payload: {},
   })
   return getCurrentState(plan.id)
+}
+
+export async function getPlan(sessionId: string): Promise<SessionPlan | undefined> {
+  return sessionRepo.getPlan(sessionId)
 }
 
 export async function getCurrentState(sessionId: string): Promise<SessionState> {
@@ -33,7 +37,7 @@ export async function recordEvent(
     eventId,
     sessionId,
     type,
-    timestamp: await nextTimestamp(sessionId),
+    timestamp: new Date().toISOString(),
     payload,
   }
   await sessionRepo.appendEvent(event)
@@ -66,29 +70,12 @@ async function persistResultIfMissing(sessionId: string, state: SessionState): P
     totalSetsCompleted: completedCount,
     totalSetsPlanned,
   }
-  await sessionRepo.saveResult(result)
-}
-
-/**
- * Returns an ISO timestamp guaranteed to sort strictly after every event already
- * persisted for this session. Session actions can be recorded back-to-back within
- * the same millisecond (e.g. a session-start followed immediately by the first set
- * completion), and `Date.toISOString()` only has millisecond resolution. Because
- * `sessionRepository.getEventsForSession` orders events by their timestamp string,
- * a tie there falls back to primary-key (eventId) order, which can silently put a
- * later event before an earlier one and corrupt replay. Nudging forward by 1ms
- * whenever the clock hasn't advanced keeps event order well-defined without
- * touching the repository or state machine.
- */
-async function nextTimestamp(sessionId: string): Promise<string> {
-  const events = await sessionRepo.getEventsForSession(sessionId)
-  const now = new Date()
-  const last = events[events.length - 1]
-  if (last) {
-    const lastTime = new Date(last.timestamp).getTime()
-    if (now.getTime() <= lastTime) {
-      return new Date(lastTime + 1).toISOString()
-    }
+  try {
+    await sessionRepo.saveResult(result)
+  } catch {
+    // Another call already persisted the result between our getResult
+    // check and this write (e.g. a retried/duplicate recordEvent call
+    // racing itself). saveResult's own guard rejected the second write —
+    // that's fine, the result is already correctly persisted once.
   }
-  return now.toISOString()
 }
