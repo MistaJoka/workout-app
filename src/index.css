@@ -1,3 +1,37 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+:root {
+  --color-background: #fdf2f8;
+  --color-surface: #ffffff;
+  --color-primary: #ec4899;
+  --color-accent: #8b5cf6;
+  --color-text: #3f2a44;
+  --color-text-muted: #8b7a92;
+  --color-border: #f3d9ea;
+  --radius-panel: 16px;
+}
+
+body {
+  background-color: var(--color-background);
+  color: var(--color-text);
+}
+
+/* Explicit reduced/off always wins. */
+[data-motion='reduced'] *,
+[data-motion='off'] * {
+  animation-duration: 0.01ms !important;
+  animation-iteration-count: 1 !important;
+  transition-duration: 0.01ms !important;
+}
+
+/* 'full' means "no explicit app-level override" — still respect the OS
+   accessibility setting as the fallback SOURCE_OF_TRUTH_V06.md §11 requires. */
+@media (prefers-reduced-motion: reduce) {
+  [data-motion='full'] * {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+}
