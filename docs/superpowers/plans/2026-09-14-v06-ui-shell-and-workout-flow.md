@@ -1405,10 +1405,10 @@ export function SessionCompleteScreen() {
 }
 ```
 
-- [ ] **Step 2: Verify the full build now succeeds** — this is the first point in this plan where every file `App.tsx` (Task 3) imports actually exists
+- [ ] **Step 2: Verify this file type-checks** — CORRECTION: `App.tsx` (Task 3) imports 8 screens; after this task only 5 exist (Today, CheckIn, Preview, Player, Complete) — Library/Progress/Settings (Tasks 8-10) are still missing, so `npm run build` is NOT expected to succeed yet. The actual first point the full build passes is after Task 10 (Settings, the last missing screen). Run the same file-scoped check Task 4 used instead:
 
-Run: `npm run build`
-Expected: succeeds with no errors.
+Run: `npx tsc --noEmit -p tsconfig.json 2>&1 | grep SessionCompleteScreen || echo "no SessionCompleteScreen-specific errors"`
+Expected: no errors specific to `SessionCompleteScreen.tsx` (errors about the other still-missing screens are expected and fine).
 
 - [ ] **Step 3: Run the full test suite**
 
@@ -1455,10 +1455,10 @@ export function LibraryScreen() {
 }
 ```
 
-- [ ] **Step 2: Verify the build**
+- [ ] **Step 2: Verify this file type-checks** — CORRECTION (same as Task 7): the full build still won't succeed after this task — Progress and Settings (Tasks 9-10) are still missing. Use the file-scoped check instead:
 
-Run: `npm run build`
-Expected: succeeds.
+Run: `npx tsc --noEmit -p tsconfig.json 2>&1 | grep LibraryScreen || echo "no LibraryScreen-specific errors"`
+Expected: no errors specific to `LibraryScreen.tsx`.
 
 - [ ] **Step 3: Commit**
 
@@ -1512,10 +1512,10 @@ export function ProgressScreen() {
 }
 ```
 
-- [ ] **Step 2: Verify the build**
+- [ ] **Step 2: Verify this file type-checks** — CORRECTION (same as Tasks 7-8): the full build still won't succeed after this task — Settings (Task 10) is still missing. Use the file-scoped check instead:
 
-Run: `npm run build`
-Expected: succeeds.
+Run: `npx tsc --noEmit -p tsconfig.json 2>&1 | grep ProgressScreen || echo "no ProgressScreen-specific errors"`
+Expected: no errors specific to `ProgressScreen.tsx`.
 
 - [ ] **Step 3: Commit**
 
