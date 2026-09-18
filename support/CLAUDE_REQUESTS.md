@@ -15,14 +15,36 @@ Use this mailbox when implementation reaches a product/data/spec/asset/test gap 
 
 ## REQ-20260913-002 — Deterministic adaptation rule bundle + progression/substitution graph
 
-**Status:** OPEN
-**Blocking:** no (the adaptation engine's pure decision-making shape/reason-code enum can be scaffolded now; it cannot make real decisions without this)
+**Status:** PARTIALLY RESOLVED — Promotion 001 progression-candidate slice delivered
+**Blocking:** no
 **Implementation context:** reconciliation step 5 (pure domain engines), §7-8 of SOURCE_OF_TRUTH_V06.md
-**Need:** concrete rule values — the actual bounds for adjusting authored set/rep/rest within a session, which substitutions/regressions are approved-equivalent to which exercises, and the specific conditions that make a progression candidate eligible for "Try Next Level?"
-**Why it matters:** §7-8 describe the *categories* of allowed decisions (retain/remove-optional/adjust-within-bounds/regression-or-substitution/mark-progression-candidate/compress) but give no actual thresholds or graph edges. Guessing bounds or equivalence pairs would be inventing progression/substitution relationships, which CLAUDE.md explicitly forbids.
-**Requested output:** data (rule bundle) + schema
-**Constraints already known:** every material decision must carry a machine-readable reason code; the engine must never invent a movement or fake equivalence; familiarity and progression are separate systems; progression requires explicit user confirmation.
-**Proposed fallback if unresolved:** implement the engine's function signatures, reason-code enum, and control flow against a stub rule table with 1-2 obviously-placeholder rules, so the pure-domain-engine architecture (step 5) isn't blocked, while flagging that no session will actually adapt correctly until real rule data lands.
+
+**Delivered for the first progression slice:**
+
+- `docs/rnd/foss-fitness/PROMOTION_001_PROGRESSION_CANDIDATE.md`
+- `support/schemas/progression_edge.schema.json`
+- `support/fixtures/progression_candidate_cases.json`
+- pinned/verified FitnessTrack reference in `docs/rnd/foss-fitness/sources/fitnesstrack.md`
+
+**Resolved behavior:** a clean completion at an authored upper repetition bound may emit `PROGRESSION_CANDIDATE` only when an explicit approved harder-variant edge exists. The candidate never mutates the current immutable SessionPlan and never advances difficulty without explicit user confirmation.
+
+**Important compatibility decision:** FitnessTrack's weighted double-progression behavior remains R&D only. The current product defines progression as an authored harder-variant choice and the current SessionPlan model has no first-class load prescription, so weight bumps/deloads must not be transplanted into the live domain by inference.
+
+**Still open / must not be guessed:**
+
+- actual production progression edges using reviewed canonical exercise IDs/versions;
+- approved regression/substitution graph edges;
+- concrete in-session authored set/rep/rest adjustment bounds beyond Promotion 001;
+- session-compression priority/coverage rules;
+- any future repeated-failure rule values not explicitly authored.
+
+**Why it matters:** the engine may now implement and verify the deterministic candidate mechanism against fake support fixtures, but production difficulty changes still require real reviewed content relationships. Guessing those relationships would violate `CLAUDE.md`.
+
+**Requested remaining output:** production data (progression/regression/substitution graph + authored adjustment bounds), then additional focused promotion specs as needed.
+
+**Constraints already known:** every material decision carries a machine-readable reason code; the engine never invents a movement or fake equivalence; familiarity and progression remain separate; progression requires explicit user confirmation; production edges must be authored and approved.
+
+**Safe implementation path now:** Claude may implement Promotion 001 as pure domain logic and tests using the support fixture corpus. With zero approved production edges loaded, production behavior must safely produce no progression candidate rather than infer one.
 
 ## REQ-20260913-003 — Pixel Bloom / Savage Core design tokens
 
