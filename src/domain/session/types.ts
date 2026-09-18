@@ -16,6 +16,11 @@ export type AdaptationDecision = {
 export type SessionPlanExercise = {
   exerciseId: string
   exerciseVersion: number
+  // Captured at plan-creation time from the Exercise record, not looked up
+  // live — the started session must never be reconstructed from mutable
+  // canonical content (CLAUDE.md), so the display name is part of the
+  // immutable snapshot like everything else here.
+  name: string
   sets: number
   reps?: number
   timeSeconds?: number

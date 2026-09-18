@@ -1,7 +1,7 @@
 import { describe, expect, it } from 'vitest'
 import { createSessionPlanFromTemplate } from './createSessionPlan'
 import { computeReproducibilityHash } from './reproducibilityHash'
-import type { WorkoutTemplate } from '../content/types'
+import type { Exercise, WorkoutTemplate } from '../content/types'
 
 const template: WorkoutTemplate = {
   id: 'placeholder.test-template',
@@ -14,6 +14,25 @@ const template: WorkoutTemplate = {
   ],
 }
 
+function stubExercise(id: string, name: string): Exercise {
+  return {
+    id,
+    version: 1,
+    name,
+    aliases: [],
+    taxonomy: { category: 'test', equipment: [] },
+    setup: '',
+    executionPhases: [],
+    cues: [],
+    commonErrors: [],
+    prescriptionCapabilities: { reps: true, time: false, hold: false },
+    mediaManifest: {},
+    provenance: { author: 'test', reviewedAt: null, status: 'draft' },
+  }
+}
+
+const exercises: Exercise[] = [stubExercise('ex1', 'Exercise One'), stubExercise('ex2', 'Exercise Two')]
+
 const checkIn = { energy: 3, comfort: 3, availableMinutes: 30 }
 
 describe('createSessionPlanFromTemplate', () => {
@@ -22,6 +41,7 @@ describe('createSessionPlanFromTemplate', () => {
       id: 'session-1',
       createdAt: '2026-09-14T00:00:00.000Z',
       template,
+      exercises,
       checkIn,
       ruleVersion: 'placeholder-v0',
     })
@@ -33,6 +53,7 @@ describe('createSessionPlanFromTemplate', () => {
     expect(plan.exercises[0]).toEqual({
       exerciseId: 'ex1',
       exerciseVersion: 1,
+      name: 'Exercise One',
       sets: 3,
       reps: 10,
       timeSeconds: undefined,
@@ -41,11 +62,36 @@ describe('createSessionPlanFromTemplate', () => {
     })
   })
 
+  it('captures the exercise name into the immutable plan snapshot, not just its ID', () => {
+    const plan = createSessionPlanFromTemplate({
+      id: 'session-6',
+      createdAt: '2026-09-14T00:00:00.000Z',
+      template,
+      exercises,
+      checkIn,
+      ruleVersion: 'placeholder-v0',
+    })
+    expect(plan.exercises.map((e) => e.name)).toEqual(['Exercise One', 'Exercise Two'])
+  })
+
+  it('falls back to the exercise ID as the name when no matching exercise record is supplied', () => {
+    const plan = createSessionPlanFromTemplate({
+      id: 'session-7',
+      createdAt: '2026-09-14T00:00:00.000Z',
+      template,
+      exercises: [],
+      checkIn,
+      ruleVersion: 'placeholder-v0',
+    })
+    expect(plan.exercises.map((e) => e.name)).toEqual(['ex1', 'ex2'])
+  })
+
   it('includes one adaptation decision per exercise, from the default placeholder rules', () => {
     const plan = createSessionPlanFromTemplate({
       id: 'session-2',
       createdAt: '2026-09-14T00:00:00.000Z',
       template,
+      exercises,
       checkIn,
       ruleVersion: 'placeholder-v0',
     })
@@ -58,6 +104,7 @@ describe('createSessionPlanFromTemplate', () => {
       id: 'session-3',
       createdAt: '2026-09-14T00:00:00.000Z',
       template,
+      exercises,
       checkIn,
       ruleVersion: 'placeholder-v0',
     })
@@ -79,6 +126,7 @@ describe('createSessionPlanFromTemplate', () => {
       id: 'session-4',
       createdAt: '2026-09-14T00:00:00.000Z',
       template,
+      exercises,
       checkIn,
       ruleVersion: 'placeholder-v0',
     }
@@ -97,6 +145,7 @@ describe('createSessionPlanFromTemplate', () => {
       id: 'session-5',
       createdAt: '2026-09-14T00:00:00.000Z',
       template,
+      exercises,
       checkIn,
       ruleVersion: 'placeholder-v0',
       rules: customRules,

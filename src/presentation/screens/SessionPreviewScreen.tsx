@@ -42,7 +42,7 @@ export function SessionPreviewScreen() {
           const adaptation = plan.adaptations.find((a) => a.exerciseId === exercise.exerciseId)
           return (
             <li key={exercise.exerciseId} className="rounded-panel border border-edge bg-surface p-3">
-              <p className="font-semibold">{exercise.exerciseId}</p>
+              <p className="font-semibold">{exercise.name}</p>
               <p className="text-sm text-ink-muted">
                 {exercise.sets} sets × {exercise.reps ? `${exercise.reps} reps` : `${exercise.timeSeconds}s`} — rest{' '}
                 {exercise.restSeconds}s

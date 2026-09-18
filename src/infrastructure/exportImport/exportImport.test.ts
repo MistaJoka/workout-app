@@ -10,7 +10,7 @@ const plan: SessionPlan = {
   packId: 'placeholder-pack',
   ruleVersion: 'v0',
   createdAt: '2026-09-13T00:00:00.000Z',
-  exercises: [{ exerciseId: 'ex1', exerciseVersion: 1, sets: 1, reps: 10, restSeconds: 60, order: 0 }],
+  exercises: [{ exerciseId: 'ex1', exerciseVersion: 1, name: 'Exercise One', sets: 1, reps: 10, restSeconds: 60, order: 0 }],
   adaptations: [],
   reproducibilityHash: 'test-hash',
 }

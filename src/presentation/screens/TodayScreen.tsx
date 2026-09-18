@@ -1,6 +1,9 @@
 import { useEffect, useState } from 'react'
 import { Link } from 'react-router-dom'
-import { placeholderPack, placeholderTemplate } from '../../domain/content/fixtures/placeholderPack'
+import {
+  foundationStrengthStarterPack,
+  foundationStrengthStarterTemplate,
+} from '../../domain/content/fixtures/foundationStrengthStarter'
 import { getInProgressSessions } from '../../infrastructure/db/repositories/sessionRepository'
 import type { SessionPlan } from '../../domain/session/types'
 
@@ -25,11 +28,14 @@ export function TodayScreen() {
       )}
 
       <div className="rounded-panel border border-edge bg-surface p-4 space-y-2">
-        <p className="font-semibold">{placeholderTemplate.name}</p>
+        <p className="font-semibold">{foundationStrengthStarterTemplate.name}</p>
         <p className="text-sm text-ink-muted">
-          {placeholderPack.name} — {placeholderTemplate.exercises.length} exercises
+          {foundationStrengthStarterPack.name} — {foundationStrengthStarterTemplate.exercises.length} exercises
         </p>
-        <Link to={`/checkin/${placeholderTemplate.id}`} className="inline-block rounded-panel bg-primary px-4 py-2 text-white">
+        <Link
+          to={`/checkin/${foundationStrengthStarterTemplate.id}`}
+          className="inline-block rounded-panel bg-primary px-4 py-2 text-white"
+        >
           Start check-in
         </Link>
       </div>

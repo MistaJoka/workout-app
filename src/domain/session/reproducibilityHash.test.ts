@@ -13,6 +13,7 @@ const basePlan: Omit<SessionPlan, 'reproducibilityHash'> = {
     {
       exerciseId: 'placeholder.test-exercise',
       exerciseVersion: 1,
+      name: 'Test Exercise',
       sets: 3,
       reps: 10,
       restSeconds: 60,

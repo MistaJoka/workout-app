@@ -98,7 +98,7 @@ export function WorkoutPlayerScreen() {
       <p className="text-sm text-ink-muted">
         Exercise {state.currentExerciseIndex + 1} of {plan.exercises.length}
       </p>
-      <h2 className="text-2xl font-bold">{exercise.exerciseId}</h2>
+      <h2 className="text-2xl font-bold">{exercise.name}</h2>
       <p>
         Set {state.currentSetNumber} of {exercise.sets}
         {exercise.reps ? ` — ${exercise.reps} reps` : exercise.timeSeconds ? ` — ${exercise.timeSeconds}s` : ''}

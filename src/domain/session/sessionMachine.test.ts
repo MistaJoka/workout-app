@@ -10,8 +10,8 @@ const plan: SessionPlan = {
   ruleVersion: 'v0',
   createdAt: '2026-09-13T00:00:00.000Z',
   exercises: [
-    { exerciseId: 'ex1', exerciseVersion: 1, sets: 2, reps: 8, restSeconds: 90, order: 0 },
-    { exerciseId: 'ex2', exerciseVersion: 1, sets: 1, reps: 10, restSeconds: 60, order: 1 },
+    { exerciseId: 'ex1', exerciseVersion: 1, name: 'Exercise One', sets: 2, reps: 8, restSeconds: 90, order: 0 },
+    { exerciseId: 'ex2', exerciseVersion: 1, name: 'Exercise Two', sets: 1, reps: 10, restSeconds: 60, order: 1 },
   ],
   adaptations: [],
   reproducibilityHash: 'test-hash',

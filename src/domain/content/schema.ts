@@ -31,6 +31,10 @@ const exerciseSchema = z.object({
     author: z.string(),
     reviewedAt: z.string().nullable(),
     status: z.enum(['draft', 'reviewed', 'approved']),
+    sourceRepo: z.string().optional(),
+    sourceRevision: z.string().optional(),
+    sourceRecordId: z.string().optional(),
+    sourceLicense: z.string().optional(),
   }),
 })
 

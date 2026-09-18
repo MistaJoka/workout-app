@@ -49,6 +49,24 @@ describe('validateContentPack', () => {
     expect(result.errors).toEqual([])
   })
 
+  it('accepts an exercise carrying optional source provenance for imported content', () => {
+    const importedExercise: Exercise = {
+      ...exercise,
+      provenance: {
+        author: 'imported:free-exercise-db',
+        reviewedAt: null,
+        status: 'draft',
+        sourceRepo: 'yuhonas/free-exercise-db',
+        sourceRevision: 'a859101d633a01c4a1a920d6a8ce41dabba0705f',
+        sourceRecordId: 'Bodyweight_Squat',
+        sourceLicense: 'Unlicense',
+      },
+    }
+    const result = validateContentPack(pack, [importedExercise], [template])
+    expect(result.valid).toBe(true)
+    expect(result.errors).toEqual([])
+  })
+
   it('rejects a pack referencing a template ID that is not provided', () => {
     const brokenPack: ContentPack = { ...pack, templateIds: ['missing.template'] }
     const result = validateContentPack(brokenPack, [exercise], [template])

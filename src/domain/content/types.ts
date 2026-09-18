@@ -30,6 +30,12 @@ export type Exercise = {
     author: string
     reviewedAt: string | null
     status: 'draft' | 'reviewed' | 'approved'
+    // Optional external-source provenance for imported content, per
+    // docs/rnd/foss-fitness/LICENSE_REGISTER.md's "Provenance fields".
+    sourceRepo?: string
+    sourceRevision?: string
+    sourceRecordId?: string
+    sourceLicense?: string
   }
 }
 

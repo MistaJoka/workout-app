@@ -1,6 +1,9 @@
 import { useState } from 'react'
 import { useNavigate, useParams } from 'react-router-dom'
-import { placeholderTemplate } from '../../domain/content/fixtures/placeholderPack'
+import {
+  foundationStrengthStarterExercises,
+  foundationStrengthStarterTemplate,
+} from '../../domain/content/fixtures/foundationStrengthStarter'
 import { createSessionPlanFromTemplate } from '../../domain/session/createSessionPlan'
 
 export function CheckInScreen() {
@@ -11,15 +14,16 @@ export function CheckInScreen() {
   const [availableMinutes, setAvailableMinutes] = useState(30)
 
   function handleContinue() {
-    if (templateId !== placeholderTemplate.id) {
+    if (templateId !== foundationStrengthStarterTemplate.id) {
       return
     }
     const plan = createSessionPlanFromTemplate({
       id: crypto.randomUUID(),
       createdAt: new Date().toISOString(),
-      template: placeholderTemplate,
+      template: foundationStrengthStarterTemplate,
+      exercises: foundationStrengthStarterExercises,
       checkIn: { energy, comfort, availableMinutes },
-      ruleVersion: 'placeholder-v0',
+      ruleVersion: 'foundation-strength-starter-v1',
     })
     navigate('/preview', { state: { plan } })
   }
