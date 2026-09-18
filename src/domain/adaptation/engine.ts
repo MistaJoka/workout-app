@@ -14,7 +14,7 @@ export const PLACEHOLDER_RULES: AdaptationRule[] = [
     decide: (exerciseId) => ({
       exerciseId,
       reasonCode: 'RETAINED',
-      detail: 'Placeholder rule — no real adaptation logic yet (see REQ-20260913-002)',
+      detail: "Today's plan as written.",
     }),
   },
 ]

@@ -65,4 +65,12 @@ describe('adaptTemplate', () => {
     expect(PLACEHOLDER_RULES.length).toBeGreaterThan(0)
     expect(PLACEHOLDER_RULES[0].id).toContain('placeholder')
   })
+
+  it('never surfaces internal ticket references or dev jargon in user-facing decision text', () => {
+    const decisions = adaptTemplate(template, { energy: 3, comfort: 3, availableMinutes: 30 })
+    for (const decision of decisions) {
+      expect(decision.detail).not.toMatch(/REQ-\d/)
+      expect(decision.detail.toLowerCase()).not.toContain('placeholder')
+    }
+  })
 })
