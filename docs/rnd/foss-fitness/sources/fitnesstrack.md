@@ -3,15 +3,21 @@
 ## Source
 
 - Repository: `Gman0909/FitnessTrack`
-- Role: primary deterministic progression/adaptation reference
-- License lane: permissive / MIT; re-verify exact upstream license at promotion time
+- Role: deterministic progression/adaptation reference
+- Pinned revision: `f627429623756aebe93e15bada6f698e8385f6ed`
+- License: MIT at the pinned revision
 - Priority: **P0**
+- First local promotion: `docs/rnd/foss-fitness/PROMOTION_001_PROGRESSION_CANDIDATE.md`
 
 ## Why this source matters
 
-`workout-app` already has an injected deterministic adaptation seam and reason-coded decisions, but its current rule table is intentionally placeholder-only. FitnessTrack contains a real progression engine with a substantial test suite, making it a strong behavioral donor without requiring its server/database/UI architecture.
+`workout-app` already has an injected deterministic adaptation seam and reason-coded decisions, but its current default rule table is intentionally placeholder-only. FitnessTrack contains a real progression engine with a substantial test suite, making it a strong behavioral donor without requiring its backend/database/UI architecture.
+
+The source is a **reference**, not local product authority. `workout-app` defines progression differently: the live product treats progression as eligibility for an authored harder exercise variant that requires explicit user confirmation. FitnessTrack is more weight-centric. Promotion must therefore adapt only compatible behaviors.
 
 ## Verified high-value paths
+
+At the pinned revision:
 
 - `shared/algorithm.js`
 - `shared/algorithm.test.js`
@@ -21,243 +27,187 @@
 - `client/src/progressionHint.js`
 - `client/src/progressionHint.test.js`
 
-## Primary capability
+## Verified core algorithm behavior
 
-Dynamic double progression with explicit handling for:
+FitnessTrack's `shared/algorithm.js` implements dynamic double progression on a per-set basis.
 
-- rep progression inside a target range
-- weight progression at the top of the range
-- repeated underperformance
-- rep regression versus load regression
-- bodyweight exercises
-- lower/floor bounds
-- optional maximum load caps
-- adaptive percentage increments
-- per-set failure streak state
+### Weighted path
 
-## Observed input model
-
-The core algorithm accepts approximately:
+For each logged set:
 
 ```text
-weights[]
-repsPrescribed[]
-repsDone[]
-profile
+actual reps >= repMax
+  -> increase weight, reset reps to repMin
+
+actual reps in range and performance meets/beats target
+  -> keep weight, increase reps
+
+actual reps in range but performance is below target
+  -> keep actual weight and hold at logged reps
+
+actual reps < repMin first time
+  -> keep weight, reset/re-attempt at repMin
+
+actual reps < repMin second consecutive time
+  -> reduce weight, reps -> repMin
+
+skipped or not logged
+  -> carry target forward unchanged
 ```
 
-The profile contains policy parameters rather than hidden model behavior. Verified parameters include concepts equivalent to:
+The implementation also applies a descending-weight clamp so a later set is not prescribed heavier than the set before it.
 
-```text
-targetLow
-targetHigh
-startWeight
-repsStep
-minReps
-downConsecutive
-upMode = percent | fixed
-upPercent
-upFixed
-downPercent
-downFixed
-lowerBoundMode
-maxWeightCap
-adaptiveUpEnabled
-adaptiveFastSessions
-adaptiveSlowSessions
-adaptiveFastMultiplier
-adaptiveSlowMultiplier
-adaptiveMinPercent
-adaptiveMaxPercent
-```
+### Weight deviation handling
 
-## Observed decision behavior
+`WEIGHT_BAND = 0.15`.
 
-### Rep progression
+When actual load is within ±15% of target load, the comparison rep target is re-derived approximately to preserve target volume (`weight × reps`). Beyond that band, the source treats the target as non-comparable and progresses from actual performance rather than pretending the original target is equivalent.
 
-Progress prescribed repetitions only when all completed working sets meet the current prescription and there is no newly generated failure streak.
+### Increment behavior
 
-The next prescription is capped at the configured upper rep target.
+The source does **not** expose arbitrary percentage/fixed modes as previously summarized. At the pinned revision:
 
-### Load progression
+- an exercise has a default increment;
+- adaptive tempo scales that increment (`fast` 1.5×, `normal` 1×, `slow` 0.5×);
+- the effective increment is capped by `max(weight × 10%, 1.25)`;
+- resulting loads are rounded to the nearest 0.5;
+- an optional weight cap prevents progression beyond the authored ceiling.
 
-A load increase becomes eligible when all relevant completed sets meet the upper target.
+### Adaptive tempo
 
-After increasing weight, the rep prescription resets toward the low end of the target range.
+- `fast`: +2 reps on rep progression and larger scaled load changes;
+- `normal`: +1 rep and standard increment;
+- `slow`: +1 rep and smaller load change.
 
-The increment may be fixed or percentage-based. An optional adaptive mode changes the percentage based on how quickly the previous progression was achieved, while still applying configured minimum/maximum bounds.
+This tempo system is source-specific research. It is not promoted into `workout-app` by Promotion 001.
 
-### Regression
+### Bodyweight / reps-only path
 
-For each under-target set, a failure streak is advanced. Once the configured consecutive-failure threshold is reached, the policy can either:
+Bodyweight or explicitly weight-paused exercises use a reps-only axis:
 
-1. regress repetitions while retaining weight; or
-2. reduce weight by a fixed or percentage amount.
+- meeting target below ceiling advances reps;
+- ceiling holds at `repMax`;
+- short performance holds near actual performance within the configured range;
+- no automatic external-load bump is created by this path;
+- excess reps can overflow into the next set in the source implementation.
 
-A configured floor can prevent load from falling below the starting load.
+## Local compatibility finding
 
-### Bodyweight behavior
+The current `workout-app` product model is not a generic weight logger:
 
-A zero-load/bodyweight set can progress through repetition targets but should not be treated as if adding external weight is always possible. When a downward adjustment is needed, rep regression is the natural fallback.
+- `SessionPlanExercise` has no load prescription field;
+- the source of truth says progression means eligibility to try an authored harder variant;
+- explicit user confirmation is mandatory;
+- progression edges cannot be invented.
 
-## Local target
+Therefore FitnessTrack's weighted bump/deload rules must **not** be transplanted into the live domain until the product deliberately adds load as a first-class authored/persisted concept.
 
-Primary destination:
+## First promoted capability
 
-```text
-src/domain/adaptation/
-├── engine.ts
-├── types.ts
-└── engine.test.ts
-```
+Promotion 001 adopts only this compatible deterministic concept:
 
-Do **not** replace the existing engine interface.
+> clean authored upper-range completion -> `PROGRESSION_CANDIDATE`, but only when an explicit approved authored harder-variant edge exists.
 
-Translate FitnessTrack behavior into small local `AdaptationRule` units that emit existing `workout-app` reason codes:
+The candidate is informational/actionable metadata. It does not mutate the current SessionPlan and cannot advance difficulty without explicit user confirmation.
 
-```text
-RETAINED
-ADJUSTED_WITHIN_BOUNDS
-REGRESSED
-PROGRESSION_CANDIDATE
-```
+See:
 
-Potential later rule files, only when implementation begins:
+- `docs/rnd/foss-fitness/PROMOTION_001_PROGRESSION_CANDIDATE.md`
+- `support/schemas/progression_edge.schema.json`
+- `support/fixtures/progression_candidate_cases.json`
 
-```text
-src/domain/adaptation/rules/
-├── doubleProgression.ts
-├── repeatedFailureRegression.ts
-├── bodyweightProgression.ts
-└── loadBounds.ts
-```
+## State required locally for Promotion 001
 
-## State required locally
+Eligibility must be derivable from persisted truth sufficient to establish:
 
-The algorithm requires enough persisted history to distinguish:
+- exact source exercise ID/version;
+- planned target reps for every relevant set;
+- actual completed reps;
+- skipped/incomplete state;
+- unique session identity;
+- approved progression edge/revision;
+- prior qualifying clean completions when the authored edge requires more than one.
 
-- current prescription
-- actual completed repetitions
-- current/previous load
-- consecutive misses or equivalent failure state
-- number of sessions since prior load change if adaptive increments are enabled
-
-Do not smuggle this state into React component state. It must be derivable from persisted workout/session history or explicit progression state.
+Do not smuggle this state into React component state.
 
 ## Invariants to preserve
 
-1. Same history + same policy version => same recommendation.
-2. A progression decision must be explainable through a reason code/detail.
-3. Missing history must not fabricate progression.
-4. Bodyweight movements must not accidentally receive arbitrary external-load progression.
-5. Regression cannot violate configured lower bounds.
-6. Progression cannot exceed a configured load cap.
-7. A failed set cannot simultaneously be treated as clean completion for progression.
-8. Rule evaluation must remain independent of network access and runtime AI.
+1. Same history + same rule/edge revision => same recommendation.
+2. Missing history must not fabricate progression.
+3. Draft/unapproved edges do not create production candidates.
+4. A failed, skipped, or incomplete set cannot count as clean completion.
+5. Exercise/version mismatches cannot satisfy another edge.
+6. Duplicate event replay cannot inflate eligibility.
+7. Progression never invents the destination movement.
+8. Rule evaluation remains independent of network access and runtime AI.
+9. A progression candidate never silently mutates an immutable started SessionPlan.
+10. User confirmation is required before future difficulty changes.
 
-## Target-independent test vectors
+## Target-independent promotion tests
 
-These are behavioral specifications, not copied source tests.
+The canonical support corpus now lives at:
 
-### T1 — no progression before upper target
+`support/fixtures/progression_candidate_cases.json`
 
-```text
-range: 6-12
-prescribed: 8,8,8
-performed: 8,8,8
-expected: reps may progress within range; no load increase yet
-```
+It covers:
 
-### T2 — clean top-range completion
+- clean upper-range success;
+- missing edge;
+- draft edge;
+- target below ceiling;
+- incomplete set;
+- skipped set;
+- one set below ceiling;
+- required clean-completion count;
+- exercise version mismatch;
+- duplicate observation deduplication.
 
-```text
-range: 6-12
-prescribed: 12,12,12
-performed: 12,12,12
-load: 100
-expected: PROGRESSION_CANDIDATE for higher load; next-cycle reps reset toward range floor
-```
+## Deferred FitnessTrack capabilities
 
-### T3 — one miss below lower bound
+Keep as R&D until the local product model explicitly supports them:
 
-```text
-lower target: 6
-performed current set: 5
-prior failure streak: 0
-threshold: 2
-expected: retain or bounded adjustment; do not regress load yet
-```
+- weighted load progression;
+- weight caps;
+- repeated-failure load deloads;
+- ±15% weight deviation retargeting;
+- adaptive fast/normal/slow tempo;
+- descending-weight set-profile clamp;
+- bodyweight overflow/add-set behavior.
 
-### T4 — repeated miss reaches threshold
-
-```text
-lower target: 6
-performed current set: 5
-prior failure streak: 1
-threshold: 2
-expected: REGRESSED according to configured regression policy
-```
-
-### T5 — bodyweight success
-
-```text
-load: 0
-upper target achieved
-expected: rep progression/state progression; no automatic external-load increase
-```
-
-### T6 — floor protection
-
-```text
-current load near starting floor
-regression requested
-expected: resulting load >= configured floor
-```
-
-### T7 — maximum cap
-
-```text
-current load + calculated increment > maxWeightCap
-expected: resulting recommendation <= cap
-```
-
-### T8 — malformed/incomplete history
-
-```text
-missing actual reps for required working set
-expected: no confident progression recommendation
-```
+Repeated-failure **rep-target** regression may be considered next only if authored local bounds are made explicit.
 
 ## Implementation policy
 
 **ADAPT, do not transplant.**
 
-Use the upstream engine as a behavior/reference source and the upstream tests as an edge-case inventory. Implement against the local `AdaptationRule` interface, local persisted history, local reason codes, and local tests.
+Do not import FitnessTrack's:
 
-Do not import:
+- backend;
+- auth model;
+- database structure;
+- API layer;
+- page state;
+- UI components.
 
-- FitnessTrack's backend
-- auth model
-- database structure
-- page state
-- API layer
+Claude Code remains implementation owner. ChatGPT supplies source-backed rules, schemas, fixtures, acceptance criteria, and promotion packs.
 
-## Promotion gate
+## Promotion status
 
-Before replacing the placeholder adaptation rules:
+Completed support-side for Promotion 001:
 
-- [ ] define the local progression-state source
-- [ ] decide whether V0.6 needs rep progression only, rep + load progression, or full failure-state regression
-- [ ] encode policy constants/version explicitly
-- [ ] add deterministic unit tests
-- [ ] verify replay/reload produces the same recommendation
-- [ ] map every changed recommendation to an existing or intentionally added reason code
-- [ ] re-verify upstream license/revision
+- [x] upstream revision pinned
+- [x] MIT license verified at pinned revision
+- [x] local product-model mismatch documented
+- [x] first compatible progression behavior selected
+- [x] explicit edge schema supplied
+- [x] deterministic acceptance corpus supplied
+- [x] user-confirmation requirement preserved
 
-## Recommended first promotion
+Still required before production behavior exists:
 
-Implement the smallest useful rule first:
-
-> clean upper-range completion -> `PROGRESSION_CANDIDATE`
-
-Then add repeated-failure regression as a separate rule. This keeps successful progression and failure recovery independently testable.
+- [ ] Claude implements the pure-domain rule
+- [ ] production progression edges are authored/reviewed/approved
+- [ ] persisted performance/progression state is wired as the evidence source
+- [ ] `npm test` passes
+- [ ] `npm run build` passes
+- [ ] replay/reload determinism is verified
