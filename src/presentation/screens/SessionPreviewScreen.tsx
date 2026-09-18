@@ -38,23 +38,15 @@ export function SessionPreviewScreen() {
     <div className="p-4 space-y-4">
       <h1 className="text-xl font-bold">Session Preview</h1>
       <ul className="space-y-2">
-        {plan.exercises.map((exercise) => {
-          const adaptation = plan.adaptations.find((a) => a.exerciseId === exercise.exerciseId)
-          return (
-            <li key={exercise.exerciseId} className="rounded-panel border border-edge bg-surface p-3">
-              <p className="font-semibold">{exercise.name}</p>
-              <p className="text-sm text-ink-muted">
-                {exercise.sets} sets × {exercise.reps ? `${exercise.reps} reps` : `${exercise.timeSeconds}s`} — rest{' '}
-                {exercise.restSeconds}s
-              </p>
-              {adaptation && (
-                <p className="text-xs text-accent">
-                  {adaptation.reasonCode}: {adaptation.detail}
-                </p>
-              )}
-            </li>
-          )
-        })}
+        {plan.exercises.map((exercise) => (
+          <li key={exercise.exerciseId} className="rounded-panel border border-edge bg-surface p-3">
+            <p className="font-semibold">{exercise.name}</p>
+            <p className="text-sm text-ink-muted">
+              {exercise.sets} sets × {exercise.reps ? `${exercise.reps} reps` : `${exercise.timeSeconds}s`} — rest{' '}
+              {exercise.restSeconds}s
+            </p>
+          </li>
+        ))}
       </ul>
       {error && <p className="text-sm text-accent">{error}</p>}
       <button

@@ -3,6 +3,9 @@ import { useNavigate, useParams } from 'react-router-dom'
 import { getCurrentState, getPlan, recordEvent } from '../../application/sessionService'
 import type { SessionPlan, SessionState } from '../../domain/session/types'
 import { isRestComplete, remainingRestMs } from '../../domain/session/restTimer'
+import { foundationStrengthStarterExercises } from '../../domain/content/fixtures/foundationStrengthStarter'
+
+const exerciseById = new Map(foundationStrengthStarterExercises.map((e) => [e.id, e]))
 
 type ActionType = 'SET_COMPLETED' | 'REST_ENDED' | 'REST_SKIPPED' | 'PAUSED' | 'RESUMED'
 
@@ -105,16 +108,36 @@ export function WorkoutPlayerScreen() {
     return <div className="p-4">Loading…</div>
   }
 
+  const exerciseContent = exerciseById.get(exercise.exerciseId)
+
   return (
     <div className="p-6 space-y-4">
       <p className="text-sm text-ink-muted">
         Exercise {state.currentExerciseIndex + 1} of {plan.exercises.length}
       </p>
       <h2 className="text-2xl font-bold">{exercise.name}</h2>
-      <p>
+      <p className="text-lg font-semibold">
         Set {state.currentSetNumber} of {exercise.sets}
         {exercise.reps ? ` — ${exercise.reps} reps` : exercise.timeSeconds ? ` — ${exercise.timeSeconds}s` : ''}
       </p>
+
+      {exerciseContent && (exerciseContent.setup || exerciseContent.executionPhases.length > 0) && (
+        <ol className="space-y-1.5 text-sm leading-snug">
+          {exerciseContent.setup && (
+            <li className="flex gap-2">
+              <span className="font-semibold text-ink-muted">1.</span>
+              <span>{exerciseContent.setup}</span>
+            </li>
+          )}
+          {exerciseContent.executionPhases.map((phase, i) => (
+            <li key={i} className="flex gap-2">
+              <span className="font-semibold text-ink-muted">{exerciseContent.setup ? i + 2 : i + 1}.</span>
+              <span>{phase}</span>
+            </li>
+          ))}
+        </ol>
+      )}
+
       {error && <p className="text-sm text-accent">{error}</p>}
       {awaitingRepCheck ? (
         <div className="space-y-2">
