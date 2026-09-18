@@ -4,7 +4,8 @@ Use this mailbox when implementation reaches a product/data/spec/asset/test gap 
 
 ## REQ-20260913-001 — Foundation Strength content pack (schema + data)
 
-**Status:** OPEN
+**Status:** OPEN — importer pipeline built 2026-09-17
+**Progress:** `scripts/content/{upstreamTypes,importedExerciseCandidate,normalizeExercise,importFreeExerciseDb}.ts` (tested, `npm run import:free-exercise-db`) now ingest real, pinned, public-domain records from `yuhonas/free-exercise-db` (Unlicense) into `ImportedExerciseCandidate` staging records per `docs/rnd/foss-fitness/sources/free-exercise-db.md`. A 6-record fixture (`scripts/content/fixtures/freeExerciseDbSample.ts`, pinned at commit `a859101d633a01c4a1a920d6a8ce41dabba0705f`) has been run end-to-end and written to `content/staging/free-exercise-db-sample.json` — DRAFT, not production content; added to `support/REVIEW_QUEUE.md`. This still does not produce a curated "Foundation Strength" program (name/aliases/cues/commonErrors/prescriptionCapabilities/media still need human/ChatGPT enrichment per the importer's own "Missing local fields" list), and the importer has not been scaled to the full ~800-record upstream snapshot — that's a deliberate next step, not done here.
 **Blocking:** no (schema validation and pure domain types can proceed against a placeholder/empty fixture; Today/Library/Workout Player screens are blocked without real content)
 **Implementation context:** reconciliation steps 4 (content/schema validation), 9-11 (Today/check-in/preview, Workout Player, Library)
 **Need:** the actual `foundation-strength` content pack — exercise records (identity/taxonomy/mechanics/setup/execution phases/cues/equipment/prescriptions/media manifest/provenance), the WorkoutTemplate(s) that compose them, and the pack manifest — in a concrete, versioned schema (JSON or TS), not prose.
@@ -15,7 +16,8 @@ Use this mailbox when implementation reaches a product/data/spec/asset/test gap 
 
 ## REQ-20260913-002 — Deterministic adaptation rule bundle + progression/substitution graph
 
-**Status:** OPEN
+**Status:** OPEN — double-progression rule implemented and tested 2026-09-17, not yet wired live
+**Progress:** `src/domain/adaptation/rules/doubleProgression.ts` is a real, fully tested (8/8 target-independent test vectors from `docs/rnd/foss-fitness/sources/fitnesstrack.md`) deterministic double-progression function, behaviorally derived from `Gman0909/FitnessTrack` (MIT) — ADAPT, not transplanted. It is **not called from `adaptTemplate`/the live app yet**, because it needs per-exercise performance history the app does not currently capture: `SET_COMPLETED` events persist an empty `payload: {}` (no performed-reps recorded), `WorkoutTemplateExercise.prescription.reps` is a single number rather than a target range, and `ProgressionRecord` only tracks a coarse `level`, not a failure-streak/current-target state. Wiring this live requires those capture/schema changes plus a Workout Player UX decision (how a user logs reps actually performed per set) — that's real product-shape scope, not something to invent silently; still substitution/regression-equivalence graph data is untouched.
 **Blocking:** no (the adaptation engine's pure decision-making shape/reason-code enum can be scaffolded now; it cannot make real decisions without this)
 **Implementation context:** reconciliation step 5 (pure domain engines), §7-8 of SOURCE_OF_TRUTH_V06.md
 **Need:** concrete rule values — the actual bounds for adjusting authored set/rep/rest within a session, which substitutions/regressions are approved-equivalent to which exercises, and the specific conditions that make a progression candidate eligible for "Try Next Level?"
