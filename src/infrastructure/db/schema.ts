@@ -10,7 +10,19 @@ export type CheckInRecord = {
   availableMinutes: number
 }
 export type FamiliarityRecord = { exerciseId: string; exposureCount: number; lastSeenAt: string | null }
-export type ProgressionRecord = { exerciseId: string; level: number; lastAdvancedAt: string | null }
+export type ProgressionRecord = {
+  exerciseId: string
+  level: number
+  lastAdvancedAt: string | null
+  // Reps-based prescription override once progressed past the authored
+  // template default; null means "use the template's authored value".
+  currentPrescribedReps: number | null
+  consecutiveFailureStreak: number
+  // Set by applyProgressionOutcome when the deterministic engine proposes a
+  // PROGRESSION_CANDIDATE; cleared by advanceProgression (confirm) or
+  // dismissProgressionCandidate (not yet). Never applied automatically.
+  pendingCandidate: { candidatePrescribedReps: number; detail: string } | null
+}
 
 export class WorkoutDb extends Dexie {
   settings!: EntityTable<SettingsRecord, 'key'>

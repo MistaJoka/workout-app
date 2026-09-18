@@ -1,6 +1,7 @@
 import { beforeEach, describe, expect, it } from 'vitest'
 import { db } from '../infrastructure/db/schema'
 import * as sessionRepo from '../infrastructure/db/repositories/sessionRepository'
+import { getProgression } from '../infrastructure/db/repositories/familiarityProgressionRepository'
 import { getCurrentState, recordEvent, startSession } from './sessionService'
 import type { SessionPlan } from '../domain/session/types'
 
@@ -20,6 +21,7 @@ beforeEach(async () => {
   await db.sessionPlans.clear()
   await db.sessionEvents.clear()
   await db.sessionResults.clear()
+  await db.progression.clear()
 })
 
 describe('startSession', () => {
@@ -116,5 +118,32 @@ describe('recordEvent', () => {
       totalSetsCompleted: totalSets,
       totalSetsPlanned: totalSets,
     })
+  })
+
+  it('updates the progression record for a reps-based exercise once the session completes', async () => {
+    const repsPlan: SessionPlan = {
+      ...plan,
+      id: 'session-progression-1',
+      exercises: [{ exerciseId: 'ex1', exerciseVersion: 1, name: 'Exercise One', sets: 1, reps: 10, restSeconds: 60, order: 0 }],
+    }
+    await startSession(repsPlan)
+    await recordEvent(repsPlan.id, 'SET_COMPLETED', 'evt-set-1', { exerciseId: 'ex1', met: true })
+
+    const progression = await getProgression('ex1')
+    expect(progression.currentPrescribedReps).toBe(12) // ADJUSTED_WITHIN_BOUNDS: 10 + repsStep(2)
+  })
+
+  it('does not double-apply progression on an idempotent replay of the completing event', async () => {
+    const repsPlan: SessionPlan = {
+      ...plan,
+      id: 'session-progression-2',
+      exercises: [{ exerciseId: 'ex1', exerciseVersion: 1, name: 'Exercise One', sets: 1, reps: 10, restSeconds: 60, order: 0 }],
+    }
+    await startSession(repsPlan)
+    await recordEvent(repsPlan.id, 'SET_COMPLETED', 'evt-set-1', { exerciseId: 'ex1', met: true })
+    await recordEvent(repsPlan.id, 'SET_COMPLETED', 'evt-set-1', { exerciseId: 'ex1', met: true })
+
+    const progression = await getProgression('ex1')
+    expect(progression.currentPrescribedReps).toBe(12)
   })
 })

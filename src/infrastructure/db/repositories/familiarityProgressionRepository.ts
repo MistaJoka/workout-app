@@ -1,5 +1,6 @@
 import { db } from '../schema'
 import type { FamiliarityRecord, ProgressionRecord } from '../schema'
+import type { DoubleProgressionResult } from '../../../domain/adaptation/rules/doubleProgression'
 
 export async function getFamiliarity(exerciseId: string): Promise<FamiliarityRecord> {
   const existing = await db.familiarity.get(exerciseId)
@@ -18,20 +19,68 @@ export async function recordExposure(exerciseId: string, timestamp: string): Pro
 
 export async function getProgression(exerciseId: string): Promise<ProgressionRecord> {
   const existing = await db.progression.get(exerciseId)
-  return existing ?? { exerciseId, level: 0, lastAdvancedAt: null }
+  return (
+    existing ?? {
+      exerciseId,
+      level: 0,
+      lastAdvancedAt: null,
+      currentPrescribedReps: null,
+      consecutiveFailureStreak: 0,
+      pendingCandidate: null,
+    }
+  )
+}
+
+// Persists a deterministic adaptation outcome for one exercise, per
+// SOURCE_OF_TRUTH_V06.md §7-8: RETAINED/ADJUSTED_WITHIN_BOUNDS/REGRESSED are
+// engine-owned decisions and apply directly; PROGRESSION_CANDIDATE is staged
+// as pending and requires a separate explicit confirmation (advanceProgression)
+// before it takes effect.
+export async function applyProgressionOutcome(exerciseId: string, outcome: DoubleProgressionResult): Promise<void> {
+  const existing = await getProgression(exerciseId)
+
+  if (outcome.reasonCode === 'PROGRESSION_CANDIDATE') {
+    await db.progression.put({
+      ...existing,
+      consecutiveFailureStreak: outcome.nextFailureStreak,
+      pendingCandidate: {
+        candidatePrescribedReps: outcome.candidatePrescribedReps ?? outcome.nextPrescribedReps,
+        detail: outcome.detail,
+      },
+    })
+    return
+  }
+
+  await db.progression.put({
+    ...existing,
+    currentPrescribedReps: outcome.nextPrescribedReps,
+    consecutiveFailureStreak: outcome.nextFailureStreak,
+    pendingCandidate: null,
+  })
 }
 
 // Per SOURCE_OF_TRUTH_V06.md §8: progression requires explicit user
 // confirmation. This function performs the state change only — the UI
-// layer (a later phase) is responsible for gating the call behind an
-// explicit "Try Next Level?" confirmation, never calling it automatically
-// from exposure count alone.
+// layer is responsible for gating the call behind an explicit "Try Next
+// Level?" confirmation, never calling it automatically. A no-op if there is
+// no pending candidate to confirm.
 export async function advanceProgression(exerciseId: string, timestamp: string): Promise<void> {
-  const existing = await db.progression.get(exerciseId)
+  const existing = await getProgression(exerciseId)
+  if (!existing.pendingCandidate) {
+    return
+  }
   const next: ProgressionRecord = {
     exerciseId,
-    level: (existing?.level ?? 0) + 1,
+    level: existing.level + 1,
     lastAdvancedAt: timestamp,
+    currentPrescribedReps: existing.pendingCandidate.candidatePrescribedReps,
+    consecutiveFailureStreak: 0,
+    pendingCandidate: null,
   }
   await db.progression.put(next)
+}
+
+export async function dismissProgressionCandidate(exerciseId: string): Promise<void> {
+  const existing = await getProgression(exerciseId)
+  await db.progression.put({ ...existing, pendingCandidate: null })
 }

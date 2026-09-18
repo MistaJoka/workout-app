@@ -1,6 +1,8 @@
 import { replayEvents } from '../domain/session/sessionMachine'
 import type { SessionEvent, SessionEventType, SessionPlan, SessionResult, SessionState } from '../domain/session/types'
 import * as sessionRepo from '../infrastructure/db/repositories/sessionRepository'
+import * as progressionRepo from '../infrastructure/db/repositories/familiarityProgressionRepository'
+import { evaluateSessionProgression } from '../domain/adaptation/evaluateSessionProgression'
 
 export async function startSession(plan: SessionPlan): Promise<SessionState> {
   await sessionRepo.savePlan(plan)
@@ -43,15 +45,23 @@ export async function recordEvent(
   await sessionRepo.appendEvent(event)
   const state = await getCurrentState(sessionId)
   if (state.status === 'COMPLETED' || state.status === 'COMPLETED_SHORTENED') {
-    await persistResultIfMissing(sessionId, state)
+    const didPersist = await persistResultIfMissing(sessionId, state)
+    // Gated on didPersist, not just "session is complete": recordEvent can
+    // replay this branch on every idempotent/duplicate call once a session
+    // is done, and progression outcomes are not safe to apply more than
+    // once (see evaluateSessionProgression's use of already-persisted
+    // progression state as its input — a second pass would compound).
+    if (didPersist) {
+      await updateProgressionAfterSession(sessionId)
+    }
   }
   return state
 }
 
-async function persistResultIfMissing(sessionId: string, state: SessionState): Promise<void> {
+async function persistResultIfMissing(sessionId: string, state: SessionState): Promise<boolean> {
   const existing = await sessionRepo.getResult(sessionId)
   if (existing) {
-    return
+    return false
   }
   const plan = await sessionRepo.getPlan(sessionId)
   if (!plan) {
@@ -72,10 +82,32 @@ async function persistResultIfMissing(sessionId: string, state: SessionState): P
   }
   try {
     await sessionRepo.saveResult(result)
+    return true
   } catch {
     // Another call already persisted the result between our getResult
     // check and this write (e.g. a retried/duplicate recordEvent call
     // racing itself). saveResult's own guard rejected the second write —
-    // that's fine, the result is already correctly persisted once.
+    // that's fine, the result is already correctly persisted once, and we
+    // report "did not persist" so the caller doesn't double-apply progression.
+    return false
+  }
+}
+
+async function updateProgressionAfterSession(sessionId: string): Promise<void> {
+  const plan = await sessionRepo.getPlan(sessionId)
+  if (!plan) {
+    return
+  }
+  const events = await sessionRepo.getEventsForSession(sessionId)
+  const progressionRecords = await Promise.all(plan.exercises.map((e) => progressionRepo.getProgression(e.exerciseId)))
+  const progressionByExerciseId = new Map(
+    progressionRecords.map((r) => [
+      r.exerciseId,
+      { currentPrescribedReps: r.currentPrescribedReps, consecutiveFailureStreak: r.consecutiveFailureStreak },
+    ])
+  )
+  const outcomes = evaluateSessionProgression(plan, events, progressionByExerciseId)
+  for (const outcome of outcomes) {
+    await progressionRepo.applyProgressionOutcome(outcome.exerciseId, outcome)
   }
 }
