@@ -56,10 +56,28 @@ describe('createSessionPlanFromTemplate', () => {
       name: 'Exercise One',
       sets: 3,
       reps: 10,
+      authoredReps: 10,
       timeSeconds: undefined,
       restSeconds: 60,
       order: 0,
     })
+  })
+
+  it('applies a reps override for the effective prescription, while keeping authoredReps fixed at the template default', () => {
+    const plan = createSessionPlanFromTemplate({
+      id: 'session-8',
+      createdAt: '2026-09-14T00:00:00.000Z',
+      template,
+      exercises,
+      checkIn,
+      ruleVersion: 'placeholder-v0',
+      repsOverridesByExerciseId: new Map([['ex1', 14]]),
+    })
+    expect(plan.exercises[0].reps).toBe(14)
+    expect(plan.exercises[0].authoredReps).toBe(10)
+    // Unaffected exercise keeps its authored value for both fields.
+    expect(plan.exercises[1].reps).toBe(12)
+    expect(plan.exercises[1].authoredReps).toBe(12)
   })
 
   it('captures the exercise name into the immutable plan snapshot, not just its ID', () => {

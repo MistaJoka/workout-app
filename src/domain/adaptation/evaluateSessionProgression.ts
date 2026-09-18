@@ -45,11 +45,12 @@ export function evaluateSessionProgression(
         consecutiveFailureStreak: state.consecutiveFailureStreak,
         currentPrescribedReps,
         sets,
-        // Anchored to the template's authored reps, not the (possibly
-        // already-progressed) current value — the target range must stay
-        // fixed across the whole progression arc, or targetHigh would
-        // recede every session and PROGRESSION_CANDIDATE could never fire.
-        policy: defaultBodyweightRepsPolicy(exercise.reps),
+        // Anchored to authoredReps (the template's fixed default), never to
+        // exercise.reps — that field carries this session's *effective*
+        // prescription, which already has any confirmed override baked in.
+        // Anchoring to it would let the target range recede every time reps
+        // increase, and PROGRESSION_CANDIDATE could never fire.
+        policy: defaultBodyweightRepsPolicy(exercise.authoredReps ?? exercise.reps),
       })
     )
   }

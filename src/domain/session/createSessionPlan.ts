@@ -12,22 +12,42 @@ export type CreateSessionPlanParams = {
   checkIn: CheckInInput
   ruleVersion: string
   rules?: AdaptationRule[]
+  // Confirmed-progression overrides for the *effective* prescribed reps.
+  // The template itself is never mutated by this — authoredReps below
+  // always reflects the fixed template default, which the progression
+  // policy anchors to (see SessionPlanExercise.authoredReps).
+  repsOverridesByExerciseId?: Map<string, number>
 }
 
 export function createSessionPlanFromTemplate(params: CreateSessionPlanParams): SessionPlan {
-  const { id, createdAt, template, exercises: exerciseRecords, checkIn, ruleVersion, rules } = params
+  const {
+    id,
+    createdAt,
+    template,
+    exercises: exerciseRecords,
+    checkIn,
+    ruleVersion,
+    rules,
+    repsOverridesByExerciseId,
+  } = params
   const adaptations = adaptTemplate(template, checkIn, rules)
   const exerciseById = new Map(exerciseRecords.map((e) => [e.id, e]))
-  const exercises: SessionPlanExercise[] = template.exercises.map((templateExercise) => ({
-    exerciseId: templateExercise.exerciseId,
-    exerciseVersion: templateExercise.exerciseVersion,
-    name: exerciseById.get(templateExercise.exerciseId)?.name ?? templateExercise.exerciseId,
-    sets: templateExercise.prescription.sets,
-    reps: templateExercise.prescription.reps,
-    timeSeconds: templateExercise.prescription.timeSeconds,
-    restSeconds: templateExercise.prescription.restSeconds,
-    order: templateExercise.order,
-  }))
+  const exercises: SessionPlanExercise[] = template.exercises.map((templateExercise) => {
+    const authoredReps = templateExercise.prescription.reps
+    const override = repsOverridesByExerciseId?.get(templateExercise.exerciseId)
+    const reps = authoredReps != null && override != null ? override : authoredReps
+    return {
+      exerciseId: templateExercise.exerciseId,
+      exerciseVersion: templateExercise.exerciseVersion,
+      name: exerciseById.get(templateExercise.exerciseId)?.name ?? templateExercise.exerciseId,
+      sets: templateExercise.prescription.sets,
+      reps,
+      authoredReps,
+      timeSeconds: templateExercise.prescription.timeSeconds,
+      restSeconds: templateExercise.prescription.restSeconds,
+      order: templateExercise.order,
+    }
+  })
 
   const base = {
     id,

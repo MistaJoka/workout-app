@@ -95,17 +95,24 @@ export function evaluateDoubleProgression(input: DoubleProgressionInput): Double
 
     if (atUpperTarget) {
       const isBodyweight = currentLoad === 0
+      // Bodyweight has no load to add, but unlike the loaded case it also
+      // has no "harder variant" to fall back on in this app yet (exercise
+      // substitution is out of scope) — so its candidate is simply a step
+      // further into a higher rep bracket, not a no-op. Still gated behind
+      // confirmation (§8): stepping into a materially harder rep bracket is
+      // exactly the kind of thing a user should acknowledge, not have
+      // silently auto-applied like the below-ceiling ADJUSTED_WITHIN_BOUNDS case.
       return {
         exerciseId,
         reasonCode: 'PROGRESSION_CANDIDATE',
         detail: isBodyweight
-          ? 'Bodyweight exercise clean at the upper rep target — progression candidate is a harder variant, not added load.'
+          ? "Clean at the top of your rep range — ready to push into a higher rep bracket?"
           : 'Clean completion at the upper rep target — candidate for a load increase.',
         nextPrescribedReps: currentPrescribedReps,
         nextLoad: currentLoad,
         nextFailureStreak: 0,
         candidateLoad: isBodyweight ? currentLoad : computeUpLoad(currentLoad, policy),
-        candidatePrescribedReps: isBodyweight ? currentPrescribedReps : policy.targetLow,
+        candidatePrescribedReps: isBodyweight ? currentPrescribedReps + policy.repsStep : policy.targetLow,
       }
     }
 

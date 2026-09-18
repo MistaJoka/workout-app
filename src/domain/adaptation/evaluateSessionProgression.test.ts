@@ -83,4 +83,18 @@ describe('evaluateSessionProgression', () => {
     const results = evaluateSessionProgression(plan([squat]), events, progression)
     expect(results[0].reasonCode).toBe('REGRESSED')
   })
+
+  it('anchors the policy to authoredReps, not the plan\'s already-overridden effective reps', () => {
+    // Regression test for a real bug: when a confirmed override is baked
+    // into the plan's exercise.reps (14, from applying a prior progression
+    // override before the session started), using exercise.reps as the
+    // policy anchor made targetHigh recede to 14+4=18 — so 14 could never
+    // register as "at the upper target" and PROGRESSION_CANDIDATE could
+    // never fire, even though it's already at the true authored ceiling.
+    const overriddenSquat: SessionPlan['exercises'][number] = { ...squat, reps: 14, authoredReps: 10 }
+    const events = [setCompleted('fs.bodyweight-squat', true, 1), setCompleted('fs.bodyweight-squat', true, 2)]
+    const progression = new Map([['fs.bodyweight-squat', { currentPrescribedReps: 14, consecutiveFailureStreak: 0 }]])
+    const results = evaluateSessionProgression(plan([overriddenSquat]), events, progression)
+    expect(results[0].reasonCode).toBe('PROGRESSION_CANDIDATE')
+  })
 })

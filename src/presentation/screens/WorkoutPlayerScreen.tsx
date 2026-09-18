@@ -13,6 +13,7 @@ export function WorkoutPlayerScreen() {
   const [state, setState] = useState<SessionState | null>(null)
   const [error, setError] = useState<string | null>(null)
   const [busy, setBusy] = useState(false)
+  const [awaitingRepCheck, setAwaitingRepCheck] = useState(false)
 
   const refresh = useCallback(async () => {
     if (!sessionId) return
@@ -32,18 +33,29 @@ export function WorkoutPlayerScreen() {
     }
   }, [state, sessionId, navigate])
 
-  async function handleAction(type: ActionType) {
+  async function handleAction(type: ActionType, payload: Record<string, unknown> = {}) {
     if (!sessionId) return
     setBusy(true)
     setError(null)
     try {
-      const next = await recordEvent(sessionId, type, crypto.randomUUID())
+      const next = await recordEvent(sessionId, type, crypto.randomUUID(), payload)
       setState(next)
+      setAwaitingRepCheck(false)
     } catch {
       setError('Could not save — check your connection and try again.')
     } finally {
       setBusy(false)
     }
+  }
+
+  function handleCompleteSetClick(exerciseId: string, isRepsBased: boolean) {
+    if (!isRepsBased) {
+      // Hold/time-based exercises (e.g. Plank) aren't evaluated by the
+      // reps-only v1 progression policy, so there's no "met" to record.
+      void handleAction('SET_COMPLETED', { exerciseId })
+      return
+    }
+    setAwaitingRepCheck(true)
   }
 
   async function handleEndWorkout() {
@@ -104,14 +116,40 @@ export function WorkoutPlayerScreen() {
         {exercise.reps ? ` — ${exercise.reps} reps` : exercise.timeSeconds ? ` — ${exercise.timeSeconds}s` : ''}
       </p>
       {error && <p className="text-sm text-accent">{error}</p>}
-      <div className="flex gap-2">
-        <button className="rounded-panel border border-edge px-4 py-2" disabled={busy} onClick={() => handleAction('PAUSED')}>
-          Pause
-        </button>
-        <button className="rounded-panel bg-primary px-4 py-2 text-white" disabled={busy} onClick={() => handleAction('SET_COMPLETED')}>
-          Complete Set
-        </button>
-      </div>
+      {awaitingRepCheck ? (
+        <div className="space-y-2">
+          <p className="text-sm">Did you complete all {exercise.reps} reps?</p>
+          <div className="flex gap-2">
+            <button
+              className="rounded-panel bg-primary px-4 py-2 text-white"
+              disabled={busy}
+              onClick={() => handleAction('SET_COMPLETED', { exerciseId: exercise.exerciseId, met: true })}
+            >
+              Yes
+            </button>
+            <button
+              className="rounded-panel border border-edge px-4 py-2"
+              disabled={busy}
+              onClick={() => handleAction('SET_COMPLETED', { exerciseId: exercise.exerciseId, met: false })}
+            >
+              No, fell short
+            </button>
+          </div>
+        </div>
+      ) : (
+        <div className="flex gap-2">
+          <button className="rounded-panel border border-edge px-4 py-2" disabled={busy} onClick={() => handleAction('PAUSED')}>
+            Pause
+          </button>
+          <button
+            className="rounded-panel bg-primary px-4 py-2 text-white"
+            disabled={busy}
+            onClick={() => handleCompleteSetClick(exercise.exerciseId, exercise.reps != null)}
+          >
+            Complete Set
+          </button>
+        </div>
+      )}
       <button className="text-sm text-ink-muted underline" disabled={busy} onClick={handleEndWorkout}>
         End workout
       </button>

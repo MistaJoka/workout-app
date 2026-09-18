@@ -23,6 +23,13 @@ export type SessionPlanExercise = {
   name: string
   sets: number
   reps?: number
+  // The template's fixed, never-overridden reps default — the progression
+  // engine's policy anchor. `reps` above is the *effective* prescription for
+  // this session (an override applied on top), which floats over time as
+  // progression advances; the policy range must stay fixed against the
+  // original authored value or its ceiling would recede every time reps
+  // increase, and PROGRESSION_CANDIDATE could never fire.
+  authoredReps?: number
   timeSeconds?: number
   restSeconds: number
   order: number

@@ -103,7 +103,15 @@ describe('evaluateDoubleProgression', () => {
   })
 
   // T5 — bodyweight success
-  it('marks a bodyweight progression candidate without proposing a load increase', () => {
+  //
+  // Revised from the spec's literal "harder variant" framing: this app has
+  // no exercise-substitution feature (deliberately out of V1 scope), so a
+  // bodyweight candidate that just repeats the same currentPrescribedReps
+  // would make "Try Next Level?" a confirm button that does nothing —
+  // exactly the broken-feeling experience this whole feature exists to
+  // avoid. Instead, the bodyweight candidate is a real step further into a
+  // higher rep bracket, so confirming it visibly does something.
+  it('marks a bodyweight progression candidate that steps reps higher, without proposing a load increase', () => {
     const result = evaluateDoubleProgression({
       exerciseId: 'ex1',
       currentLoad: 0,
@@ -119,8 +127,9 @@ describe('evaluateDoubleProgression', () => {
 
     expect(result.reasonCode).toBe('PROGRESSION_CANDIDATE')
     expect(result.candidateLoad).toBe(0)
-    expect(result.candidatePrescribedReps).toBe(12)
-    expect(result.detail).toMatch(/bodyweight/i)
+    expect(result.candidatePrescribedReps).toBe(14) // 12 + policy.repsStep(2)
+    expect(result.nextPrescribedReps).toBe(12) // unconfirmed — current value untouched
+    expect(result.detail).toMatch(/rep bracket/i)
   })
 
   // T6 — floor protection

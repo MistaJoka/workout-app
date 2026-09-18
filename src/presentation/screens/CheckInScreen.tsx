@@ -5,6 +5,7 @@ import {
   foundationStrengthStarterTemplate,
 } from '../../domain/content/fixtures/foundationStrengthStarter'
 import { createSessionPlanFromTemplate } from '../../domain/session/createSessionPlan'
+import { getProgression } from '../../infrastructure/db/repositories/familiarityProgressionRepository'
 
 export function CheckInScreen() {
   const { templateId } = useParams()
@@ -13,10 +14,18 @@ export function CheckInScreen() {
   const [comfort, setComfort] = useState(3)
   const [availableMinutes, setAvailableMinutes] = useState(30)
 
-  function handleContinue() {
+  async function handleContinue() {
     if (templateId !== foundationStrengthStarterTemplate.id) {
       return
     }
+    const progressionRecords = await Promise.all(
+      foundationStrengthStarterExercises.map((e) => getProgression(e.id))
+    )
+    const repsOverridesByExerciseId = new Map(
+      progressionRecords
+        .filter((r) => r.currentPrescribedReps != null)
+        .map((r) => [r.exerciseId, r.currentPrescribedReps as number])
+    )
     const plan = createSessionPlanFromTemplate({
       id: crypto.randomUUID(),
       createdAt: new Date().toISOString(),
@@ -24,6 +33,7 @@ export function CheckInScreen() {
       exercises: foundationStrengthStarterExercises,
       checkIn: { energy, comfort, availableMinutes },
       ruleVersion: 'foundation-strength-starter-v1',
+      repsOverridesByExerciseId,
     })
     navigate('/preview', { state: { plan } })
   }
