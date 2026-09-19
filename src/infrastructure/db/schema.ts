@@ -1,6 +1,7 @@
 import Dexie, { type EntityTable } from 'dexie'
 import type { SessionEvent, SessionPlan, SessionResult } from '../../domain/session/types'
 import type { WorkoutTemplate } from '../../domain/content/types'
+import { activeDbName } from '../profiles'
 
 export type CustomTemplateRecord = WorkoutTemplate & { createdAt: string; updatedAt: string }
 // One entry per local calendar day (id = YYYY-MM-DD); kilograms internally.
@@ -43,8 +44,10 @@ export class WorkoutDb extends Dexie {
   customTemplates!: EntityTable<CustomTemplateRecord, 'id'>
   bodyWeight!: EntityTable<BodyWeightRecord, 'day'>
 
-  constructor() {
-    super('workout-app-v06')
+  // One database per profile (see src/infrastructure/profiles.ts); the
+  // name is resolved once, at module load, for the active profile.
+  constructor(name: string = activeDbName()) {
+    super(name)
     this.version(1).stores({
       settings: 'key',
       checkIns: 'id, createdAt',
