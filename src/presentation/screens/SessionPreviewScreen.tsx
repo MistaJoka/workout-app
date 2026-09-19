@@ -2,10 +2,13 @@ import { useState } from 'react'
 import { useLocation, useNavigate } from 'react-router-dom'
 import { startSession } from '../../application/sessionService'
 import type { SessionPlan } from '../../domain/session/types'
+import { formatWeight } from '../units'
+import { useWeightUnit } from '../components/useWeightUnit'
 
 export function SessionPreviewScreen() {
   const location = useLocation()
   const navigate = useNavigate()
+  const [unit] = useWeightUnit()
   const plan = (location.state as { plan?: SessionPlan } | null)?.plan
   const [starting, setStarting] = useState(false)
   const [error, setError] = useState<string | null>(null)
@@ -42,8 +45,8 @@ export function SessionPreviewScreen() {
           <li key={exercise.exerciseId} className="rounded-panel border border-edge bg-surface p-3">
             <p className="font-semibold">{exercise.name}</p>
             <p className="text-sm text-ink-muted">
-              {exercise.sets} sets × {exercise.reps ? `${exercise.reps} reps` : `${exercise.timeSeconds}s`} — rest{' '}
-              {exercise.restSeconds}s
+              {exercise.sets} sets × {exercise.reps ? `${exercise.reps} reps` : `${exercise.timeSeconds}s`}
+              {exercise.weightKg != null ? ` @ ${formatWeight(exercise.weightKg, unit)}` : ''} — rest {exercise.restSeconds}s
             </p>
           </li>
         ))}

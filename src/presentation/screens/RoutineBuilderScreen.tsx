@@ -9,12 +9,22 @@ import {
   saveCustomTemplate,
 } from '../../infrastructure/db/repositories/customTemplateRepository'
 import { Chip } from './LibraryScreen'
+import { kgToUnit, roundToStep, stepInUnit, unitToKg } from '../units'
+import { useWeightUnit } from '../components/useWeightUnit'
 
-type Row = { exercise: Exercise; sets: number; reps?: number; timeSeconds?: number; restSeconds: number }
+type Row = { exercise: Exercise; sets: number; reps?: number; timeSeconds?: number; restSeconds: number; weightKg?: number }
 
 function defaultRow(exercise: Exercise): Row {
   const timed = !exercise.prescriptionCapabilities.reps
-  return { exercise, sets: 3, reps: timed ? undefined : 10, timeSeconds: timed ? 30 : undefined, restSeconds: 60 }
+  const weighted = exercise.prescriptionCapabilities.weight === true
+  return {
+    exercise,
+    sets: 3,
+    reps: timed ? undefined : 10,
+    timeSeconds: timed ? 30 : undefined,
+    restSeconds: weighted ? 90 : 60,
+    ...(weighted ? { weightKg: 20 } : {}),
+  }
 }
 
 export function RoutineBuilderScreen() {
@@ -28,6 +38,7 @@ export function RoutineBuilderScreen() {
   const [loaded, setLoaded] = useState(!editingId && !params.get('add'))
   const [picking, setPicking] = useState(false)
   const [saving, setSaving] = useState(false)
+  const [unit] = useWeightUnit()
 
   useEffect(() => {
     let cancelled = false
@@ -91,6 +102,7 @@ export function RoutineBuilderScreen() {
           ...(row.reps != null ? { reps: row.reps } : {}),
           ...(row.timeSeconds != null ? { timeSeconds: row.timeSeconds } : {}),
           restSeconds: row.restSeconds,
+          ...(row.weightKg != null ? { weightKg: row.weightKg } : {}),
         },
         order,
         optional: false,
@@ -183,6 +195,16 @@ export function RoutineBuilderScreen() {
                 onChange={(v) => update(index, { restSeconds: v })}
               />
             </div>
+            {row.weightKg != null && (
+              <Stepper
+                label={`Weight (${unit})`}
+                value={roundToStep(kgToUnit(row.weightKg, unit), unit)}
+                min={0}
+                max={unit === 'kg' ? 300 : 660}
+                step={stepInUnit(unit)}
+                onChange={(v) => update(index, { weightKg: unitToKg(v, unit) })}
+              />
+            )}
           </li>
         ))}
       </ul>

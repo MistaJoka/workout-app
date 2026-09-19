@@ -17,6 +17,7 @@ export type CreateSessionPlanParams = {
   // always reflects the fixed template default, which the progression
   // policy anchors to (see SessionPlanExercise.authoredReps).
   repsOverridesByExerciseId?: Map<string, number>
+  weightOverridesByExerciseId?: Map<string, number>
 }
 
 export function createSessionPlanFromTemplate(params: CreateSessionPlanParams): SessionPlan {
@@ -29,6 +30,7 @@ export function createSessionPlanFromTemplate(params: CreateSessionPlanParams): 
     ruleVersion,
     rules,
     repsOverridesByExerciseId,
+    weightOverridesByExerciseId,
   } = params
   const adaptations = adaptTemplate(template, checkIn, rules)
   const exerciseById = new Map(exerciseRecords.map((e) => [e.id, e]))
@@ -36,6 +38,9 @@ export function createSessionPlanFromTemplate(params: CreateSessionPlanParams): 
     const authoredReps = templateExercise.prescription.reps
     const override = repsOverridesByExerciseId?.get(templateExercise.exerciseId)
     const reps = authoredReps != null && override != null ? override : authoredReps
+    const authoredWeightKg = templateExercise.prescription.weightKg
+    const weightOverride = weightOverridesByExerciseId?.get(templateExercise.exerciseId)
+    const weightKg = authoredWeightKg != null && weightOverride != null ? weightOverride : authoredWeightKg
     return {
       exerciseId: templateExercise.exerciseId,
       exerciseVersion: templateExercise.exerciseVersion,
@@ -45,6 +50,7 @@ export function createSessionPlanFromTemplate(params: CreateSessionPlanParams): 
       authoredReps,
       timeSeconds: templateExercise.prescription.timeSeconds,
       restSeconds: templateExercise.prescription.restSeconds,
+      ...(weightKg != null ? { weightKg, authoredWeightKg } : {}),
       order: templateExercise.order,
     }
   })

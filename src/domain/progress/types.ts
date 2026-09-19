@@ -10,6 +10,9 @@ export type SetRecord = {
   setNumber: number
   prescribedReps?: number
   prescribedSeconds?: number
+  // Reps actually logged, when the player captured a count (weighted sets).
+  performedReps?: number
+  // Kilograms, when the exercise was loaded.
   weight?: number
   met: boolean
 }
@@ -17,8 +20,10 @@ export type SetRecord = {
 export type PersonalRecord = {
   exerciseId: string
   exerciseName: string
-  unit: 'reps' | 'seconds'
+  // 'kg' records carry the reps done at that load; e1RM derives from both.
+  unit: 'reps' | 'seconds' | 'kg'
   value: number
+  reps?: number
   sessionId: string
   sessionEndedAt: string
 }
@@ -26,8 +31,10 @@ export type PersonalRecord = {
 export type ExerciseHistoryPoint = {
   sessionId: string
   sessionEndedAt: string
-  unit: 'reps' | 'seconds'
+  unit: 'reps' | 'seconds' | 'kg'
+  // For 'kg' this is the (last) load lifted that session; reps in `reps`.
   prescribed: number
+  reps?: number
   metSets: number
   totalSets: number
 }

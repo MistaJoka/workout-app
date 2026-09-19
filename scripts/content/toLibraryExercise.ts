@@ -15,10 +15,13 @@ export function libraryExerciseId(sourceRecordId: string): string {
 // Static holds (planks, wall sits) are time-based; cardio is time-based;
 // everything else is rep-counted. A structural inference from upstream
 // `force`/`category`, not per-exercise coaching judgment.
+const LOADABLE_EQUIPMENT = new Set(['barbell', 'dumbbell', 'kettlebells', 'cable', 'machine', 'e-z curl bar', 'medicine ball'])
+
 function capabilities(c: ImportedExerciseCandidate): Exercise['prescriptionCapabilities'] {
-  if (c.force === 'static') return { reps: false, time: true, hold: true }
+  const weight = LOADABLE_EQUIPMENT.has(c.equipment ?? '') && c.category !== 'cardio' && c.category !== 'stretching'
+  if (c.force === 'static') return { reps: false, time: true, hold: true, ...(weight ? { weight } : {}) }
   if (c.category === 'cardio') return { reps: false, time: true, hold: false }
-  return { reps: true, time: false, hold: false }
+  return { reps: true, time: false, hold: false, ...(weight ? { weight } : {}) }
 }
 
 export function toLibraryExercise(

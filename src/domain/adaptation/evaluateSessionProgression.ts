@@ -1,11 +1,15 @@
 import type { SessionEvent, SessionPlan } from '../session/types'
 import { evaluateDoubleProgression, type DoubleProgressionResult } from './rules/doubleProgression'
 import { defaultBodyweightRepsPolicy } from './rules/defaultBodyweightRepsPolicy'
+import { defaultWeightedPolicy } from './rules/defaultWeightedPolicy'
 
 export type ExerciseProgressionState = {
   currentPrescribedReps: number | null
+  currentWeightKg?: number | null
   consecutiveFailureStreak: number
 }
+
+export type SessionProgressionOutcome = DoubleProgressionResult & { weighted: boolean }
 
 // Pure by design (no DB access) — the caller (sessionService) fetches
 // per-exercise progression state and persists the results.
@@ -13,12 +17,12 @@ export function evaluateSessionProgression(
   plan: SessionPlan,
   events: SessionEvent[],
   progressionByExerciseId: Map<string, ExerciseProgressionState>
-): DoubleProgressionResult[] {
-  const results: DoubleProgressionResult[] = []
+): SessionProgressionOutcome[] {
+  const results: SessionProgressionOutcome[] = []
 
   for (const exercise of plan.exercises) {
-    // Hold/time-based exercises (e.g. Plank) aren't covered by this reps-only
-    // v1 policy — see defaultBodyweightRepsPolicy.
+    // Hold/time-based exercises (e.g. Plank) aren't covered by these
+    // reps-based policies.
     if (exercise.reps == null) continue
 
     const setEvents = events.filter(
@@ -28,20 +32,41 @@ export function evaluateSessionProgression(
 
     const state = progressionByExerciseId.get(exercise.exerciseId) ?? {
       currentPrescribedReps: null,
+      currentWeightKg: null,
       consecutiveFailureStreak: 0,
     }
     const currentPrescribedReps = state.currentPrescribedReps ?? exercise.reps
+    const weighted = exercise.weightKg != null
+
+    // For weighted work the load actually lifted this session wins over
+    // the prescription: the player lets the user adjust it per set, and the
+    // last logged value is what the next session should build on.
+    const loggedLoads = setEvents
+      .map((e) => e.payload.weightKg)
+      .filter((w): w is number => typeof w === 'number')
+    const currentLoad = weighted
+      ? loggedLoads.length > 0
+        ? loggedLoads[loggedLoads.length - 1]
+        : state.currentWeightKg ?? exercise.weightKg ?? 0
+      : 0
+    const startingLoad = weighted ? exercise.authoredWeightKg ?? exercise.weightKg ?? 0 : 0
 
     const sets = setEvents.map((e) => ({
       prescribedReps: currentPrescribedReps,
-      performedReps: e.payload.met ? currentPrescribedReps : Math.max(currentPrescribedReps - 1, 0),
+      performedReps:
+        typeof e.payload.reps === 'number'
+          ? e.payload.reps
+          : e.payload.met
+            ? currentPrescribedReps
+            : Math.max(currentPrescribedReps - 1, 0),
     }))
 
-    results.push(
-      evaluateDoubleProgression({
+    const authored = exercise.authoredReps ?? exercise.reps
+    results.push({
+      ...evaluateDoubleProgression({
         exerciseId: exercise.exerciseId,
-        currentLoad: 0,
-        startingLoad: 0,
+        currentLoad,
+        startingLoad,
         consecutiveFailureStreak: state.consecutiveFailureStreak,
         currentPrescribedReps,
         sets,
@@ -50,9 +75,10 @@ export function evaluateSessionProgression(
         // prescription, which already has any confirmed override baked in.
         // Anchoring to it would let the target range recede every time reps
         // increase, and PROGRESSION_CANDIDATE could never fire.
-        policy: defaultBodyweightRepsPolicy(exercise.authoredReps ?? exercise.reps),
-      })
-    )
+        policy: weighted ? defaultWeightedPolicy(authored) : defaultBodyweightRepsPolicy(authored),
+      }),
+      weighted,
+    })
   }
 
   return results

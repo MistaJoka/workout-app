@@ -2,13 +2,15 @@ import type { SessionEvent, SessionPlan, SessionResult } from './types'
 
 // One-line summary of the most recent completed session that actually
 // performed this exercise, e.g. "Last time: 10 · 10 ✓" (all sets met),
-// "Last time: 10 ✓ · 10 ✗" (mixed), or "Last time: 20s · 20s" (time-based).
+// "Last time: 10 ✓ · 10 ✗" (mixed), "Last time: 20s · 20s" (time-based), or
+// "Last time: 8 × 40 kg · 8 × 40 kg ✓" (weighted, via formatWeight).
 // Pure: the caller supplies plans/results/events.
 export function summarizeLastTime(
   plans: readonly SessionPlan[],
   results: readonly SessionResult[],
   events: readonly SessionEvent[],
-  exerciseId: string
+  exerciseId: string,
+  formatWeight: (kg: number) => string = (kg) => `${kg} kg`
 ): string | null {
   const planById = new Map(plans.map((p) => [p.id, p]))
   const ordered = [...results].sort((a, b) => b.endedAt.localeCompare(a.endedAt))
@@ -28,12 +30,17 @@ export function summarizeLastTime(
       return `Last time: ${sets.map(() => `${seconds}s`).join(' · ')}`
     }
 
+    const describe = (s: SessionEvent): string => {
+      const reps = typeof s.payload.reps === 'number' ? s.payload.reps : exercise.reps
+      const kg = typeof s.payload.weightKg === 'number' ? s.payload.weightKg : exercise.weightKg
+      return kg != null ? `${reps} × ${formatWeight(kg)}` : `${reps}`
+    }
     const marks = sets.map((s) => s.payload.met)
     const allMet = marks.every((m) => m === true)
     if (allMet) {
-      return `Last time: ${sets.map(() => `${exercise.reps}`).join(' · ')} ✓`
+      return `Last time: ${sets.map(describe).join(' · ')} ✓`
     }
-    return `Last time: ${marks.map((m) => `${exercise.reps}${m === true ? ' ✓' : m === false ? ' ✗' : ''}`).join(' · ')}`
+    return `Last time: ${sets.map((s, i) => `${describe(s)}${marks[i] === true ? ' ✓' : marks[i] === false ? ' ✗' : ''}`).join(' · ')}`
   }
 
   return null

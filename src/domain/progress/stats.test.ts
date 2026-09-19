@@ -32,11 +32,11 @@ describe('calculateVolume', () => {
       rec({ prescribedReps: 10, met: true, setNumber: 2 }),
       rec({ exerciseId: 'plank', prescribedReps: undefined, prescribedSeconds: 20, met: true }),
     ])
-    expect(volume).toEqual({ reps: 20, seconds: 20 })
+    expect(volume).toEqual({ reps: 20, seconds: 20, loadKg: 0 })
   })
 
   it('does not count missed sets', () => {
-    expect(calculateVolume([rec({ met: false })])).toEqual({ reps: 0, seconds: 0 })
+    expect(calculateVolume([rec({ met: false })])).toEqual({ reps: 0, seconds: 0, loadKg: 0 })
   })
 })
 

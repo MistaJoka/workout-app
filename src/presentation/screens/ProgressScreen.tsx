@@ -6,6 +6,8 @@ import { projectSetRecords } from '../../domain/progress/history'
 import { calculateStreak, detectPersonalRecords, weeklyTotals } from '../../domain/progress/stats'
 import type { PersonalRecord, WeekTotal } from '../../domain/progress/types'
 import type { SessionResult } from '../../domain/session/types'
+import { formatWeight } from '../units'
+import { useWeightUnit } from '../components/useWeightUnit'
 
 type HistoryRow = SessionResult & { workoutName: string }
 
@@ -18,6 +20,7 @@ type Snapshot = {
 
 export function ProgressScreen() {
   const [snapshot, setSnapshot] = useState<Snapshot | null>(null)
+  const [unit] = useWeightUnit()
 
   useEffect(() => {
     load().then(setSnapshot)
@@ -82,8 +85,10 @@ export function ProgressScreen() {
                     >
                       <span className="min-w-0 truncate font-semibold">{record.exerciseName}</span>
                       <span className="flex-none text-sm text-ink-muted">
-                        Best {record.value}
-                        {record.unit === 'seconds' ? 's' : ''}
+                        Best{' '}
+                        {record.unit === 'kg'
+                          ? `${record.reps ?? ''} × ${formatWeight(record.value, unit)}`
+                          : `${record.value}${record.unit === 'seconds' ? 's' : ''}`}
                       </span>
                     </Link>
                   </li>

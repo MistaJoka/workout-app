@@ -19,24 +19,31 @@ export async function recordExposure(exerciseId: string, timestamp: string): Pro
 
 export async function getProgression(exerciseId: string): Promise<ProgressionRecord> {
   const existing = await db.progression.get(exerciseId)
-  return (
-    existing ?? {
-      exerciseId,
-      level: 0,
-      lastAdvancedAt: null,
-      currentPrescribedReps: null,
-      consecutiveFailureStreak: 0,
-      pendingCandidate: null,
-    }
-  )
+  return {
+    exerciseId,
+    level: 0,
+    lastAdvancedAt: null,
+    currentPrescribedReps: null,
+    currentWeightKg: null,
+    consecutiveFailureStreak: 0,
+    pendingCandidate: null,
+    // Records written before currentWeightKg existed lack the field; the
+    // defaults above fill it in.
+    ...(existing ?? {}),
+  }
 }
 
 // Persists a deterministic adaptation outcome for one exercise, per
 // SOURCE_OF_TRUTH_V06.md §7-8: RETAINED/ADJUSTED_WITHIN_BOUNDS/REGRESSED are
 // engine-owned decisions and apply directly; PROGRESSION_CANDIDATE is staged
 // as pending and requires a separate explicit confirmation (advanceProgression)
-// before it takes effect.
-export async function applyProgressionOutcome(exerciseId: string, outcome: DoubleProgressionResult): Promise<void> {
+// before it takes effect. `weighted` says whether nextLoad/candidateLoad are
+// meaningful for this exercise (bodyweight exercises always evaluate at load 0).
+export async function applyProgressionOutcome(
+  exerciseId: string,
+  outcome: DoubleProgressionResult,
+  options: { weighted?: boolean } = {}
+): Promise<void> {
   const existing = await getProgression(exerciseId)
 
   if (outcome.reasonCode === 'PROGRESSION_CANDIDATE') {
@@ -45,6 +52,7 @@ export async function applyProgressionOutcome(exerciseId: string, outcome: Doubl
       consecutiveFailureStreak: outcome.nextFailureStreak,
       pendingCandidate: {
         candidatePrescribedReps: outcome.candidatePrescribedReps ?? outcome.nextPrescribedReps,
+        ...(options.weighted && outcome.candidateLoad != null ? { candidateWeightKg: outcome.candidateLoad } : {}),
         detail: outcome.detail,
       },
     })
@@ -54,6 +62,7 @@ export async function applyProgressionOutcome(exerciseId: string, outcome: Doubl
   await db.progression.put({
     ...existing,
     currentPrescribedReps: outcome.nextPrescribedReps,
+    ...(options.weighted ? { currentWeightKg: outcome.nextLoad } : {}),
     consecutiveFailureStreak: outcome.nextFailureStreak,
     pendingCandidate: null,
   })
@@ -74,6 +83,7 @@ export async function advanceProgression(exerciseId: string, timestamp: string):
     level: existing.level + 1,
     lastAdvancedAt: timestamp,
     currentPrescribedReps: existing.pendingCandidate.candidatePrescribedReps,
+    currentWeightKg: existing.pendingCandidate.candidateWeightKg ?? existing.currentWeightKg,
     consecutiveFailureStreak: 0,
     pendingCandidate: null,
   }

@@ -103,12 +103,16 @@ async function updateProgressionAfterSession(sessionId: string): Promise<void> {
   const progressionByExerciseId = new Map(
     progressionRecords.map((r) => [
       r.exerciseId,
-      { currentPrescribedReps: r.currentPrescribedReps, consecutiveFailureStreak: r.consecutiveFailureStreak },
+      {
+        currentPrescribedReps: r.currentPrescribedReps,
+        currentWeightKg: r.currentWeightKg,
+        consecutiveFailureStreak: r.consecutiveFailureStreak,
+      },
     ])
   )
   const outcomes = evaluateSessionProgression(plan, events, progressionByExerciseId)
   for (const outcome of outcomes) {
-    await progressionRepo.applyProgressionOutcome(outcome.exerciseId, outcome)
+    await progressionRepo.applyProgressionOutcome(outcome.exerciseId, outcome, { weighted: outcome.weighted })
   }
 
   // Familiarity (§8: how much guidance to show) is a separate system from

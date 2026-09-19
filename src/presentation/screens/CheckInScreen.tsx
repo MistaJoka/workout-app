@@ -41,6 +41,9 @@ export function CheckInScreen() {
         .filter((r) => r.currentPrescribedReps != null)
         .map((r) => [r.exerciseId, r.currentPrescribedReps as number])
     )
+    const weightOverridesByExerciseId = new Map(
+      progressionRecords.filter((r) => r.currentWeightKg != null).map((r) => [r.exerciseId, r.currentWeightKg as number])
+    )
     const plan = createSessionPlanFromTemplate({
       id: crypto.randomUUID(),
       createdAt: new Date().toISOString(),
@@ -49,6 +52,7 @@ export function CheckInScreen() {
       checkIn: { energy, comfort, availableMinutes },
       ruleVersion: 'foundation-strength-starter-v1',
       repsOverridesByExerciseId,
+      weightOverridesByExerciseId,
     })
     navigate('/preview', { state: { plan } })
   }

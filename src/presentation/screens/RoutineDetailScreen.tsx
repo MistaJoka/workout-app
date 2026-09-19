@@ -3,10 +3,13 @@ import { Link, useNavigate, useParams } from 'react-router-dom'
 import { getExercises, getTemplate } from '../../domain/content/catalog'
 import type { Exercise, WorkoutTemplate } from '../../domain/content/types'
 import { deleteCustomTemplate, isCustomTemplateId } from '../../infrastructure/db/repositories/customTemplateRepository'
+import { formatWeight } from '../units'
+import { useWeightUnit } from '../components/useWeightUnit'
 
 export function RoutineDetailScreen() {
   const { templateId } = useParams()
   const navigate = useNavigate()
+  const [unit] = useWeightUnit()
   const [template, setTemplate] = useState<WorkoutTemplate | null | undefined>(undefined)
   const [exercises, setExercises] = useState<Map<string, Exercise>>(new Map())
   const [confirmingDelete, setConfirmingDelete] = useState(false)
@@ -49,9 +52,11 @@ export function RoutineDetailScreen() {
       <ul className="space-y-2">
         {template.exercises.map((te) => {
           const exercise = exercises.get(te.exerciseId)
-          const dose = te.prescription.reps
-            ? `${te.prescription.sets} × ${te.prescription.reps}`
-            : `${te.prescription.sets} × ${te.prescription.timeSeconds}s`
+          const dose =
+            (te.prescription.reps
+              ? `${te.prescription.sets} × ${te.prescription.reps}`
+              : `${te.prescription.sets} × ${te.prescription.timeSeconds}s`) +
+            (te.prescription.weightKg != null ? ` @ ${formatWeight(te.prescription.weightKg, unit)}` : '')
           return (
             <li key={te.exerciseId}>
               <Link

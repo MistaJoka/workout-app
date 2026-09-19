@@ -20,11 +20,14 @@ export type ProgressionRecord = {
   // Reps-based prescription override once progressed past the authored
   // template default; null means "use the template's authored value".
   currentPrescribedReps: number | null
+  // Kilograms; null means "use the template's authored load". Only
+  // meaningful for weight-capable exercises.
+  currentWeightKg: number | null
   consecutiveFailureStreak: number
   // Set by applyProgressionOutcome when the deterministic engine proposes a
   // PROGRESSION_CANDIDATE; cleared by advanceProgression (confirm) or
   // dismissProgressionCandidate (not yet). Never applied automatically.
-  pendingCandidate: { candidatePrescribedReps: number; detail: string } | null
+  pendingCandidate: { candidatePrescribedReps: number; candidateWeightKg?: number; detail: string } | null
 }
 
 export class WorkoutDb extends Dexie {

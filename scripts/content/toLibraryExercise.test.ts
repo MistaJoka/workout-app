@@ -52,12 +52,21 @@ describe('toLibraryExercise', () => {
   })
 
   it('infers hold-based capability from a static force and time-based from cardio; reps otherwise', () => {
-    const hold = toLibraryExercise(normalizeExercise(record({ id: 'Plank', force: 'static' }), SOURCE))
+    const hold = toLibraryExercise(normalizeExercise(record({ id: 'Plank', force: 'static', equipment: 'body only' }), SOURCE))
     const cardio = toLibraryExercise(normalizeExercise(record({ id: 'Bike', force: null, category: 'cardio', equipment: 'other' }), SOURCE))
-    const reps = toLibraryExercise(normalizeExercise(record({}), SOURCE))
+    const reps = toLibraryExercise(normalizeExercise(record({ id: 'Push_Up', equipment: 'body only' }), SOURCE))
     expect(hold.prescriptionCapabilities).toEqual({ reps: false, time: true, hold: true })
     expect(cardio.prescriptionCapabilities).toEqual({ reps: false, time: true, hold: false })
     expect(reps.prescriptionCapabilities).toEqual({ reps: true, time: false, hold: false })
+  })
+
+  it('marks loadable-equipment strength exercises as weight-capable, and bodyweight/cardio ones not', () => {
+    const barbell = toLibraryExercise(normalizeExercise(record({}), SOURCE))
+    const bodyweight = toLibraryExercise(normalizeExercise(record({ id: 'Push_Up', equipment: 'body only' }), SOURCE))
+    const bike = toLibraryExercise(normalizeExercise(record({ id: 'Bike', force: null, category: 'cardio', equipment: 'machine' }), SOURCE))
+    expect(barbell.prescriptionCapabilities.weight).toBe(true)
+    expect(bodyweight.prescriptionCapabilities.weight).toBeUndefined()
+    expect(bike.prescriptionCapabilities.weight).toBeUndefined()
   })
 
   it('omits mechanic/force keys entirely when upstream has null, so the record stays schema-valid', () => {

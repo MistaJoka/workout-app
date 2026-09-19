@@ -32,6 +32,11 @@ export type SessionPlanExercise = {
   authoredReps?: number
   timeSeconds?: number
   restSeconds: number
+  // Kilograms. weightKg is this session's effective load (a confirmed
+  // progression override applied); authoredWeightKg is the template's fixed
+  // default and the regression floor.
+  weightKg?: number
+  authoredWeightKg?: number
   order: number
 }
 

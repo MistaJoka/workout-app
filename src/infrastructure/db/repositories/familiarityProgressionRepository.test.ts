@@ -51,18 +51,41 @@ describe('progression', () => {
       level: 0,
       lastAdvancedAt: null,
       currentPrescribedReps: null,
+      currentWeightKg: null,
       consecutiveFailureStreak: 0,
       pendingCandidate: null,
     })
+  })
+
+  it('fills in currentWeightKg for records persisted before the field existed', async () => {
+    await db.progression.put({
+      exerciseId: 'ex1',
+      level: 1,
+      lastAdvancedAt: null,
+      currentPrescribedReps: 12,
+      consecutiveFailureStreak: 0,
+      pendingCandidate: null,
+    } as never)
+    const progression = await getProgression('ex1')
+    expect(progression.currentWeightKg).toBeNull()
+    expect(progression.currentPrescribedReps).toBe(12)
   })
 
   it('auto-applies a RETAINED/ADJUSTED_WITHIN_BOUNDS/REGRESSED outcome directly, without confirmation', async () => {
     await applyProgressionOutcome('ex1', outcome({ reasonCode: 'ADJUSTED_WITHIN_BOUNDS', nextPrescribedReps: 12, nextFailureStreak: 0 }))
     const progression = await getProgression('ex1')
     expect(progression.currentPrescribedReps).toBe(12)
+    expect(progression.currentWeightKg).toBeNull()
     expect(progression.consecutiveFailureStreak).toBe(0)
     expect(progression.pendingCandidate).toBeNull()
     expect(progression.level).toBe(0)
+  })
+
+  it('persists the regressed load for a weighted exercise, and never touches load for a bodyweight one', async () => {
+    await applyProgressionOutcome('w', outcome({ exerciseId: 'w', reasonCode: 'REGRESSED', nextLoad: 37.5 }), { weighted: true })
+    await applyProgressionOutcome('b', outcome({ exerciseId: 'b', reasonCode: 'REGRESSED', nextLoad: 0 }))
+    expect((await getProgression('w')).currentWeightKg).toBe(37.5)
+    expect((await getProgression('b')).currentWeightKg).toBeNull()
   })
 
   it('stages a PROGRESSION_CANDIDATE outcome as pending, without changing the current prescription', async () => {
@@ -79,6 +102,20 @@ describe('progression', () => {
     expect(progression.currentPrescribedReps).toBeNull()
     expect(progression.pendingCandidate).toEqual({ candidatePrescribedReps: 6, detail: 'Ready to try more.' })
     expect(progression.level).toBe(0)
+  })
+
+  it('stages a weighted candidate with its proposed load, and confirming applies both reps and load', async () => {
+    await applyProgressionOutcome(
+      'w',
+      outcome({ exerciseId: 'w', reasonCode: 'PROGRESSION_CANDIDATE', nextLoad: 40, candidatePrescribedReps: 8, candidateLoad: 42.5, detail: 'Up.' }),
+      { weighted: true }
+    )
+    expect((await getProgression('w')).pendingCandidate).toEqual({ candidatePrescribedReps: 8, candidateWeightKg: 42.5, detail: 'Up.' })
+    await advanceProgression('w', '2026-09-19T00:00:00.000Z')
+    const progression = await getProgression('w')
+    expect(progression.currentWeightKg).toBe(42.5)
+    expect(progression.currentPrescribedReps).toBe(8)
+    expect(progression.level).toBe(1)
   })
 
   it('advancing progression requires an explicit prior confirmation call and applies the pending candidate', async () => {

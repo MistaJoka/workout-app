@@ -104,6 +104,39 @@ describe('createSessionPlanFromTemplate', () => {
     expect(plan.exercises.map((e) => e.name)).toEqual(['ex1', 'ex2'])
   })
 
+  it('carries a weighted prescription with effective and authored kg, applying a weight override', () => {
+    const weighted: WorkoutTemplate = {
+      ...template,
+      exercises: [
+        { exerciseId: 'ex1', exerciseVersion: 1, prescription: { sets: 3, reps: 8, restSeconds: 90, weightKg: 40 }, order: 0, optional: false },
+      ],
+    }
+    const plan = createSessionPlanFromTemplate({
+      id: 'session-9',
+      createdAt: '2026-09-14T00:00:00.000Z',
+      template: weighted,
+      exercises,
+      checkIn,
+      ruleVersion: 'v1',
+      weightOverridesByExerciseId: new Map([['ex1', 42.5]]),
+    })
+    expect(plan.exercises[0].weightKg).toBe(42.5)
+    expect(plan.exercises[0].authoredWeightKg).toBe(40)
+  })
+
+  it('leaves weight fields absent for bodyweight prescriptions even if an override is supplied', () => {
+    const plan = createSessionPlanFromTemplate({
+      id: 'session-10',
+      createdAt: '2026-09-14T00:00:00.000Z',
+      template,
+      exercises,
+      checkIn,
+      ruleVersion: 'v1',
+      weightOverridesByExerciseId: new Map([['ex1', 20]]),
+    })
+    expect('weightKg' in plan.exercises[0]).toBe(false)
+  })
+
   it('includes one adaptation decision per exercise, from the default placeholder rules', () => {
     const plan = createSessionPlanFromTemplate({
       id: 'session-2',

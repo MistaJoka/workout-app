@@ -3,10 +3,12 @@ import { useRef, useState } from 'react'
 import { useTheme } from '../theme/ThemeContext'
 import { exportAll, importAll, isValidExportBundle } from '../../infrastructure/exportImport/exportImport'
 import { useFeedbackSettings } from '../components/useFeedbackSettings'
+import { useWeightUnit } from '../components/useWeightUnit'
 
 export function SettingsScreen() {
   const { theme, setTheme, motion, setMotion } = useTheme()
   const [feedback, updateFeedback] = useFeedbackSettings()
+  const [unit, setUnit] = useWeightUnit()
   const fileInputRef = useRef<HTMLInputElement>(null)
   const [status, setStatus] = useState<string | null>(null)
 
@@ -55,6 +57,14 @@ export function SettingsScreen() {
           {(['full', 'reduced', 'off'] as const).map((option) => (
             <ThemeButton key={option} label={option} active={motion === option} onClick={() => setMotion(option)} capitalize />
           ))}
+        </div>
+      </section>
+
+      <section className="space-y-2">
+        <p className="font-semibold">Weight unit</p>
+        <div className="flex gap-2">
+          <ThemeButton label="lb" active={unit === 'lb'} onClick={() => setUnit('lb')} />
+          <ThemeButton label="kg" active={unit === 'kg'} onClick={() => setUnit('kg')} />
         </div>
       </section>
 

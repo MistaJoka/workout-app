@@ -26,6 +26,8 @@ export type Exercise = {
     reps: boolean
     time: boolean
     hold: boolean
+    // External load can be prescribed/logged (barbell, dumbbell, machine...).
+    weight?: boolean
   }
   mediaManifest: {
     hero?: string
@@ -56,6 +58,8 @@ export type WorkoutTemplateExercise = {
     reps?: number
     timeSeconds?: number
     restSeconds: number
+    // Always stored in kilograms; the UI converts for display.
+    weightKg?: number
   }
   order: number
   optional: boolean

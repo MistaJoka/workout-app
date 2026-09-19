@@ -9,6 +9,8 @@ import { MovementMedia } from '../components/MovementMedia'
 import { getLastTimeSummary } from '../../application/lastTime'
 import { primeAudio, restEndFeedback } from '../../application/restFeedback'
 import { useFeedbackSettings } from '../components/useFeedbackSettings'
+import { useWeightUnit } from '../components/useWeightUnit'
+import { formatWeight, kgToUnit, roundToStep, stepInUnit, unitToKg } from '../units'
 
 type ActionType = 'SET_COMPLETED' | 'REST_ENDED' | 'REST_SKIPPED' | 'PAUSED' | 'RESUMED'
 
@@ -28,6 +30,9 @@ export function WorkoutPlayerScreen() {
   // state machine (restEndsAt derives from SET_COMPLETED + restSeconds).
   const [restExtensionMs, setRestExtensionMs] = useState(0)
   const [feedback] = useFeedbackSettings()
+  const [unit] = useWeightUnit()
+  // Load actually used for the set being logged (kg); null = use the plan's.
+  const [loggedWeightKg, setLoggedWeightKg] = useState<number | null>(null)
 
   const refresh = useCallback(async () => {
     if (!sessionId) return
@@ -65,6 +70,12 @@ export function WorkoutPlayerScreen() {
   useEffect(() => {
     setRestExtensionMs(0)
   }, [state?.restEndsAt])
+
+  // A logged weight carries across the sets of one exercise (you rarely
+  // change plates mid-exercise) but never into the next exercise.
+  useEffect(() => {
+    setLoggedWeightKg(null)
+  }, [state?.currentExerciseIndex])
 
   async function handleAction(type: ActionType, payload: Record<string, unknown> = {}) {
     if (!sessionId) return
@@ -146,6 +157,8 @@ export function WorkoutPlayerScreen() {
   }
 
   const exerciseContent = exerciseById.get(exercise.exerciseId)
+  const weighted = exercise.weightKg != null
+  const setWeightKg = loggedWeightKg ?? exercise.weightKg ?? 0
 
   return (
     <div className="p-6 space-y-4">
@@ -156,6 +169,7 @@ export function WorkoutPlayerScreen() {
       <p className="text-lg font-semibold">
         Set {state.currentSetNumber} of {exercise.sets}
         {exercise.reps ? ` — ${exercise.reps} reps` : exercise.timeSeconds ? ` — ${exercise.timeSeconds}s hold` : ''}
+        {weighted ? ` @ ${formatWeight(setWeightKg, unit)}` : ''}
       </p>
       {lastTime && <p className="text-sm text-ink-muted">{lastTime}</p>}
 
@@ -186,20 +200,53 @@ export function WorkoutPlayerScreen() {
 
       {error && <p className="text-sm text-accent">{error}</p>}
       {awaitingRepCheck ? (
-        <div className="space-y-2">
+        <div className="space-y-3">
+          {weighted && (
+            <div className="flex items-center justify-between rounded-panel bg-bg p-2">
+              <button
+                type="button"
+                className="h-11 w-11 rounded-full border border-edge bg-surface text-xl"
+                aria-label="Less weight"
+                onClick={() => setLoggedWeightKg(Math.max(0, unitToKg(roundToStep(kgToUnit(setWeightKg, unit), unit) - stepInUnit(unit), unit)))}
+              >
+                −
+              </button>
+              <span className="font-semibold tabular-nums">{formatWeight(setWeightKg, unit)}</span>
+              <button
+                type="button"
+                className="h-11 w-11 rounded-full border border-edge bg-surface text-xl"
+                aria-label="More weight"
+                onClick={() => setLoggedWeightKg(unitToKg(roundToStep(kgToUnit(setWeightKg, unit), unit) + stepInUnit(unit), unit))}
+              >
+                +
+              </button>
+            </div>
+          )}
           <p className="text-sm">Did you complete all {exercise.reps} reps?</p>
           <div className="flex gap-2">
             <button
               className="rounded-panel bg-primary px-4 py-2 text-white"
               disabled={busy}
-              onClick={() => handleAction('SET_COMPLETED', { exerciseId: exercise.exerciseId, met: true })}
+              onClick={() =>
+                handleAction('SET_COMPLETED', {
+                  exerciseId: exercise.exerciseId,
+                  met: true,
+                  ...(weighted ? { weightKg: setWeightKg } : {}),
+                })
+              }
             >
               Yes
             </button>
             <button
               className="rounded-panel border border-edge px-4 py-2"
               disabled={busy}
-              onClick={() => handleAction('SET_COMPLETED', { exerciseId: exercise.exerciseId, met: false })}
+              onClick={() =>
+                handleAction('SET_COMPLETED', {
+                  exerciseId: exercise.exerciseId,
+                  met: false,
+                  ...(weighted ? { weightKg: setWeightKg } : {}),
+                })
+              }
             >
               No, fell short
             </button>

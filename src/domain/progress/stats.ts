@@ -4,29 +4,45 @@ import type { ExerciseHistoryPoint, PersonalRecord, SetRecord, WeekTotal } from 
 // Behaviorally adapted from ischys-app/Ischys (MIT) stats/records/streak
 // modules and open-workout/openworkout-mobile (MIT) streak/stats —
 // independent implementation against local SetRecord/SessionResult shapes.
-// No weight yet: volume is met reps / met seconds, and a "record" is the
-// best met prescription. When weight lands, Epley e1RM and weight×reps
-// volume slot in beside these without changing callers.
+// Bodyweight sets: volume is met reps / met seconds and a "record" is the
+// best met prescription. Weighted sets: volume adds weight×reps (kg), the
+// record is the heaviest met load, and estimateOneRepMax uses Epley.
 
-export function calculateVolume(records: readonly SetRecord[]): { reps: number; seconds: number } {
+export function calculateVolume(records: readonly SetRecord[]): { reps: number; seconds: number; loadKg: number } {
   let reps = 0
   let seconds = 0
+  let loadKg = 0
   for (const record of records) {
     if (!record.met) continue
-    if (record.prescribedReps != null) reps += record.prescribedReps
-    else if (record.prescribedSeconds != null) seconds += record.prescribedSeconds
+    const done = record.performedReps ?? record.prescribedReps
+    if (done != null) {
+      reps += done
+      if (record.weight != null) loadKg += record.weight * done
+    } else if (record.prescribedSeconds != null) seconds += record.prescribedSeconds
   }
-  return { reps, seconds }
+  return { reps, seconds, loadKg }
 }
 
-function metric(record: SetRecord): { unit: 'reps' | 'seconds'; value: number } | null {
-  if (record.prescribedReps != null) return { unit: 'reps', value: record.prescribedReps }
+// Epley: 1RM ≈ w × (1 + reps/30). Standard across Ischys/github-fitness.
+export function estimateOneRepMax(weightKg: number, reps: number): number {
+  if (reps <= 0) return 0
+  if (reps === 1) return weightKg
+  return Math.round(weightKg * (1 + reps / 30) * 10) / 10
+}
+
+function metric(record: SetRecord): { unit: 'reps' | 'seconds' | 'kg'; value: number; reps?: number } | null {
+  if (record.weight != null && (record.performedReps ?? record.prescribedReps) != null) {
+    return { unit: 'kg', value: record.weight, reps: record.performedReps ?? record.prescribedReps }
+  }
+  if (record.prescribedReps != null) return { unit: 'reps', value: record.performedReps ?? record.prescribedReps }
   if (record.prescribedSeconds != null) return { unit: 'seconds', value: record.prescribedSeconds }
   return null
 }
 
 // Only strictly improved values move a record (Ischys I8), so on a tie the
-// earlier session keeps it. Missed sets never set a record.
+// earlier session keeps it. Missed sets never set a record. For weighted
+// work the record is the heaviest met load; equal loads with more reps
+// also count as an improvement.
 export function detectPersonalRecords(records: readonly SetRecord[]): Map<string, PersonalRecord> {
   const best = new Map<string, PersonalRecord>()
   const ordered = [...records].sort((a, b) => a.sessionEndedAt.localeCompare(b.sessionEndedAt))
@@ -35,12 +51,19 @@ export function detectPersonalRecords(records: readonly SetRecord[]): Map<string
     const m = metric(record)
     if (!m) continue
     const current = best.get(record.exerciseId)
-    if (current && current.value >= m.value) continue
+    if (current) {
+      const better =
+        m.unit === 'kg' && current.unit === 'kg'
+          ? m.value > current.value || (m.value === current.value && (m.reps ?? 0) > (current.reps ?? 0))
+          : m.value > current.value
+      if (!better) continue
+    }
     best.set(record.exerciseId, {
       exerciseId: record.exerciseId,
       exerciseName: record.exerciseName,
       unit: m.unit,
       value: m.value,
+      ...(m.reps != null ? { reps: m.reps } : {}),
       sessionId: record.sessionId,
       sessionEndedAt: record.sessionEndedAt,
     })
@@ -108,9 +131,13 @@ export function perExerciseHistory(records: readonly SetRecord[], exerciseId: st
       sessionEndedAt: record.sessionEndedAt,
       unit: m.unit,
       prescribed: m.value,
+      ...(m.reps != null ? { reps: m.reps } : {}),
       metSets: 0,
       totalSets: 0,
     }
+    // Later sets win so the point reflects the load/reps the session ended on.
+    point.prescribed = m.value
+    if (m.reps != null) point.reps = m.reps
     point.totalSets += 1
     if (record.met) point.metSets += 1
     bySession.set(record.sessionId, point)

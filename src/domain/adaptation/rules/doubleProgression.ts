@@ -61,7 +61,7 @@ function computeUpLoad(currentLoad: number, policy: DoubleProgressionPolicy): nu
       ? currentLoad * (1 + (policy.upPercent ?? 0) / 100)
       : currentLoad + (policy.upFixed ?? 0)
   const capped = policy.maxWeightCap != null ? Math.min(raw, policy.maxWeightCap) : raw
-  return Math.round(capped)
+  return roundToHalf(capped)
 }
 
 function computeDownLoad(currentLoad: number, startingLoad: number, policy: DoubleProgressionPolicy): number {
@@ -69,7 +69,12 @@ function computeDownLoad(currentLoad: number, startingLoad: number, policy: Doub
     policy.downMode === 'percent'
       ? currentLoad * (1 - (policy.downPercent ?? 0) / 100)
       : currentLoad - (policy.downFixed ?? 0)
-  return Math.max(Math.round(raw), startingLoad)
+  return Math.max(roundToHalf(raw), startingLoad)
+}
+
+// Loads are kilograms; 0.5 kg is the finest real-world plate increment.
+function roundToHalf(value: number): number {
+  return Math.round(value * 2) / 2
 }
 
 export function evaluateDoubleProgression(input: DoubleProgressionInput): DoubleProgressionResult {

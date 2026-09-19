@@ -7,11 +7,15 @@ import {
   getProgression,
 } from '../../infrastructure/db/repositories/familiarityProgressionRepository'
 import type { SessionResult } from '../../domain/session/types'
+import { formatWeight } from '../units'
+import { useWeightUnit } from '../components/useWeightUnit'
 
 type Candidate = {
   exerciseId: string
   exerciseName: string
   detail: string
+  candidatePrescribedReps: number
+  candidateWeightKg?: number
 }
 
 export function SessionCompleteScreen() {
@@ -19,6 +23,7 @@ export function SessionCompleteScreen() {
   const [result, setResult] = useState<SessionResult | null>(null)
   const [candidates, setCandidates] = useState<Candidate[]>([])
   const [busyExerciseId, setBusyExerciseId] = useState<string | null>(null)
+  const [unit] = useWeightUnit()
 
   useEffect(() => {
     if (!sessionId) return
@@ -36,6 +41,8 @@ export function SessionCompleteScreen() {
         exerciseId: r.exerciseId,
         exerciseName: plan.exercises.find((e) => e.exerciseId === r.exerciseId)?.name ?? r.exerciseId,
         detail: r.pendingCandidate!.detail,
+        candidatePrescribedReps: r.pendingCandidate!.candidatePrescribedReps,
+        ...(r.pendingCandidate!.candidateWeightKg != null ? { candidateWeightKg: r.pendingCandidate!.candidateWeightKg } : {}),
       }))
   }
 
@@ -69,6 +76,10 @@ export function SessionCompleteScreen() {
             <div key={candidate.exerciseId} className="rounded-panel border border-edge bg-surface p-4 space-y-2">
               <p className="font-semibold">Try Next Level? {candidate.exerciseName}</p>
               <p className="text-sm text-ink-muted">{candidate.detail}</p>
+              <p className="text-sm">
+                Next: {candidate.candidatePrescribedReps} reps
+                {candidate.candidateWeightKg != null ? ` @ ${formatWeight(candidate.candidateWeightKg, unit)}` : ''}
+              </p>
               <div className="flex justify-center gap-2">
                 <button
                   className="rounded-panel bg-primary px-4 py-2 text-white"

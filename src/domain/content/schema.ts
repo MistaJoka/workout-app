@@ -23,6 +23,7 @@ const exerciseSchema = z.object({
     reps: z.boolean(),
     time: z.boolean(),
     hold: z.boolean(),
+    weight: z.boolean().optional(),
   }),
   mediaManifest: z.object({
     hero: z.string().optional(),
@@ -57,6 +58,7 @@ const workoutTemplateSchema = z.object({
         reps: z.number().int().positive().optional(),
         timeSeconds: z.number().int().positive().optional(),
         restSeconds: z.number().int().nonnegative(),
+        weightKg: z.number().nonnegative().optional(),
       }),
       order: z.number().int().nonnegative(),
       optional: z.boolean(),

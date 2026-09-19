@@ -1,4 +1,4 @@
-const CACHE_NAME = 'workout-app-shell-v3'
+const CACHE_NAME = 'workout-app-shell-v4'
 
 // Movement photos are precached so a workout works fully offline even if
 // the user never opened every exercise while online. Keep in sync with
@@ -58,9 +58,12 @@ self.addEventListener('fetch', (event) => {
 
   // Navigations (the HTML document): network-first so a new deploy is
   // picked up immediately, falling back to the cached shell when offline.
+  // `cache: 'no-store'` bypasses the browser's HTTP cache, which otherwise
+  // hands back a heuristically-cached index.html pointing at old asset
+  // hashes — observed as "new deploy, old app" after a restart.
   if (request.mode === 'navigate') {
     event.respondWith(
-      fetch(request)
+      fetch(new Request(request.url, { cache: 'no-store', credentials: 'same-origin' }))
         .then((response) => {
           const copy = response.clone()
           caches.open(CACHE_NAME).then((cache) => cache.put(request, copy))

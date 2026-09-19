@@ -47,6 +47,12 @@ export function projectSetRecords(
         setNumber,
         ...(exercise.reps != null ? { prescribedReps: exercise.reps } : {}),
         ...(exercise.timeSeconds != null ? { prescribedSeconds: exercise.timeSeconds } : {}),
+        ...(typeof event.payload.reps === 'number' ? { performedReps: event.payload.reps } : {}),
+        ...(typeof event.payload.weightKg === 'number'
+          ? { weight: event.payload.weightKg }
+          : exercise.weightKg != null
+            ? { weight: exercise.weightKg }
+            : {}),
         met: event.payload.met !== false,
       })
     })

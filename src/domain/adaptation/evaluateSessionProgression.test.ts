@@ -16,14 +16,14 @@ function plan(exercises: SessionPlan['exercises']): SessionPlan {
   }
 }
 
-function setCompleted(exerciseId: string, met: boolean, seq: number): SessionEvent {
+function setCompleted(exerciseId: string, met: boolean, seq: number, extra: Record<string, unknown> = {}): SessionEvent {
   return {
     seq,
     eventId: `evt-${seq}`,
     sessionId: 'session-1',
     type: 'SET_COMPLETED',
     timestamp: '2026-09-18T00:00:00.000Z',
-    payload: { exerciseId, met },
+    payload: { exerciseId, met, ...extra },
   }
 }
 
@@ -47,6 +47,19 @@ const plankExercise: SessionPlan['exercises'][number] = {
   order: 1,
 }
 
+const benchPress: SessionPlan['exercises'][number] = {
+  exerciseId: 'lib.Barbell_Bench_Press',
+  exerciseVersion: 1,
+  name: 'Barbell Bench Press',
+  sets: 3,
+  reps: 8,
+  authoredReps: 8,
+  weightKg: 40,
+  authoredWeightKg: 40,
+  restSeconds: 90,
+  order: 0,
+}
+
 describe('evaluateSessionProgression', () => {
   it('evaluates a reps-based exercise from its SET_COMPLETED events', () => {
     const events = [setCompleted('fs.bodyweight-squat', true, 1), setCompleted('fs.bodyweight-squat', true, 2)]
@@ -54,6 +67,7 @@ describe('evaluateSessionProgression', () => {
     expect(results).toHaveLength(1)
     expect(results[0].exerciseId).toBe('fs.bodyweight-squat')
     expect(results[0].reasonCode).toBe('ADJUSTED_WITHIN_BOUNDS')
+    expect(results[0].weighted).toBe(false)
   })
 
   it('skips a hold/time-based exercise entirely, even if it has completed-set events', () => {
@@ -71,9 +85,6 @@ describe('evaluateSessionProgression', () => {
     const events = [setCompleted('fs.bodyweight-squat', true, 1), setCompleted('fs.bodyweight-squat', true, 2)]
     const progression = new Map([['fs.bodyweight-squat', { currentPrescribedReps: 14, consecutiveFailureStreak: 0 }]])
     const results = evaluateSessionProgression(plan([squat]), events, progression)
-    // 14 is already the top of a 10-authored-rep default range extended by
-    // the policy's own +4 headroom, so clean completion at 14 should surface
-    // as a progression candidate rather than a further reps bump.
     expect(results[0].reasonCode).toBe('PROGRESSION_CANDIDATE')
   })
 
@@ -84,17 +95,34 @@ describe('evaluateSessionProgression', () => {
     expect(results[0].reasonCode).toBe('REGRESSED')
   })
 
-  it('anchors the policy to authoredReps, not the plan\'s already-overridden effective reps', () => {
-    // Regression test for a real bug: when a confirmed override is baked
-    // into the plan's exercise.reps (14, from applying a prior progression
-    // override before the session started), using exercise.reps as the
-    // policy anchor made targetHigh recede to 14+4=18 — so 14 could never
-    // register as "at the upper target" and PROGRESSION_CANDIDATE could
-    // never fire, even though it's already at the true authored ceiling.
+  it("anchors the policy to authoredReps, not the plan's already-overridden effective reps", () => {
     const overriddenSquat: SessionPlan['exercises'][number] = { ...squat, reps: 14, authoredReps: 10 }
     const events = [setCompleted('fs.bodyweight-squat', true, 1), setCompleted('fs.bodyweight-squat', true, 2)]
     const progression = new Map([['fs.bodyweight-squat', { currentPrescribedReps: 14, consecutiveFailureStreak: 0 }]])
     const results = evaluateSessionProgression(plan([overriddenSquat]), events, progression)
     expect(results[0].reasonCode).toBe('PROGRESSION_CANDIDATE')
+  })
+
+  it('evaluates a weighted exercise with the weighted policy, using the last logged load as the current load', () => {
+    const events = [
+      setCompleted('lib.Barbell_Bench_Press', true, 1, { weightKg: 42.5, reps: 10 }),
+      setCompleted('lib.Barbell_Bench_Press', true, 2, { weightKg: 42.5, reps: 10 }),
+      setCompleted('lib.Barbell_Bench_Press', true, 3, { weightKg: 42.5, reps: 10 }),
+    ]
+    const progression = new Map([['lib.Barbell_Bench_Press', { currentPrescribedReps: 10, currentWeightKg: 40, consecutiveFailureStreak: 0 }]])
+    const [result] = evaluateSessionProgression(plan([benchPress]), events, progression)
+    expect(result.weighted).toBe(true)
+    // 10 reps tops the 8..10 band -> load candidate from the logged 42.5, not the stored 40
+    expect(result.reasonCode).toBe('PROGRESSION_CANDIDATE')
+    expect(result.candidateLoad).toBe(45)
+    expect(result.candidatePrescribedReps).toBe(8)
+  })
+
+  it('treats a logged rep count below the prescription as a miss even if met was not sent', () => {
+    const events = [setCompleted('lib.Barbell_Bench_Press', true, 1, { weightKg: 40, reps: 5 })]
+    const progression = new Map([['lib.Barbell_Bench_Press', { currentPrescribedReps: 8, currentWeightKg: 40, consecutiveFailureStreak: 1 }]])
+    const [result] = evaluateSessionProgression(plan([benchPress]), events, progression)
+    expect(result.reasonCode).toBe('REGRESSED')
+    expect(result.nextLoad).toBe(40) // floored at the authored load
   })
 })
