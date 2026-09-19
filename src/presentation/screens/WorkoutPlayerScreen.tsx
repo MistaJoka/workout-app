@@ -182,20 +182,7 @@ export function WorkoutPlayerScreen() {
       )}
 
       {exerciseContent && (exerciseContent.setup || exerciseContent.executionPhases.length > 0) && (
-        <ol className="space-y-1.5 text-sm leading-snug">
-          {exerciseContent.setup && (
-            <li className="flex gap-2">
-              <span className="font-semibold text-ink-muted">1.</span>
-              <span>{exerciseContent.setup}</span>
-            </li>
-          )}
-          {exerciseContent.executionPhases.map((phase, i) => (
-            <li key={i} className="flex gap-2">
-              <span className="font-semibold text-ink-muted">{exerciseContent.setup ? i + 2 : i + 1}.</span>
-              <span>{phase}</span>
-            </li>
-          ))}
-        </ol>
+        <StepsList steps={[exerciseContent.setup, ...exerciseContent.executionPhases].filter(Boolean)} exerciseId={exercise.exerciseId} />
       )}
 
       {error && <p className="text-sm text-accent">{error}</p>}
@@ -269,6 +256,51 @@ export function WorkoutPlayerScreen() {
       <button className="text-sm text-ink-muted underline" disabled={busy} onClick={handleEndWorkout}>
         End workout
       </button>
+    </div>
+  )
+}
+
+const STEPS_SHOWN = 3
+const STEPS_CHAR_BUDGET = 320
+
+// Library instructions can run to 6+ long steps; the first few (bounded by
+// count and by length, since one upstream step can be a paragraph) plus the
+// photos carry the movement, and the Complete Set button must stay on a
+// phone screen. The rest is one tap away and re-collapses per exercise.
+function initialStepCount(steps: string[]): number {
+  let chars = 0
+  let count = 0
+  for (const step of steps) {
+    if (count >= STEPS_SHOWN) break
+    if (count > 0 && chars + step.length > STEPS_CHAR_BUDGET) break
+    chars += step.length
+    count += 1
+  }
+  return Math.max(1, count)
+}
+
+function StepsList({ steps, exerciseId }: { steps: string[]; exerciseId: string }) {
+  const [expanded, setExpanded] = useState(false)
+  useEffect(() => {
+    setExpanded(false)
+  }, [exerciseId])
+  const visible = expanded ? steps : steps.slice(0, initialStepCount(steps))
+  const hidden = steps.length - visible.length
+  return (
+    <div className="space-y-1.5">
+      <ol className="space-y-1.5 text-sm leading-snug">
+        {visible.map((step, i) => (
+          <li key={i} className="flex gap-2">
+            <span className="font-semibold text-ink-muted">{i + 1}.</span>
+            <span>{step}</span>
+          </li>
+        ))}
+      </ol>
+      {hidden > 0 && (
+        <button type="button" className="text-sm text-primary" onClick={() => setExpanded(true)}>
+          Show {hidden} more {hidden === 1 ? 'step' : 'steps'}
+        </button>
+      )}
     </div>
   )
 }

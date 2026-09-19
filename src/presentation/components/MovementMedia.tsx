@@ -26,7 +26,7 @@ export function MovementMedia({ name, start, finish }: Props) {
 
   return (
     <div className="movement-loop relative w-full overflow-hidden rounded-panel" aria-label={`${name} movement`}>
-      <img src={start} alt={`${name} — start position`} className="w-full object-cover" />
+      <img src={start} alt={`${name} — start position`} className="max-h-[34vh] w-full object-cover" />
       <img
         src={finish}
         alt=""
