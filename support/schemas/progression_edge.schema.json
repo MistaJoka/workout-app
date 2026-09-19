@@ -1,0 +1,71 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://workout-app.local/support/schemas/progression_edge.schema.json",
+  "title": "ProgressionEdge Support Schema",
+  "description": "Support-stage schema for explicit authored harder-variant progression edges. This file does not create production edges by itself.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "id",
+    "fromExerciseId",
+    "fromExerciseVersion",
+    "toExerciseId",
+    "toExerciseVersion",
+    "eligibility",
+    "status"
+  ],
+  "properties": {
+    "id": {
+      "type": "string",
+      "minLength": 1
+    },
+    "fromExerciseId": {
+      "type": "string",
+      "minLength": 1
+    },
+    "fromExerciseVersion": {
+      "type": "integer",
+      "minimum": 1
+    },
+    "toExerciseId": {
+      "type": "string",
+      "minLength": 1
+    },
+    "toExerciseVersion": {
+      "type": "integer",
+      "minimum": 1
+    },
+    "eligibility": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "kind",
+        "repMin",
+        "repMax",
+        "requiredCleanCompletions"
+      ],
+      "properties": {
+        "kind": {
+          "const": "clean-upper-rep-completion"
+        },
+        "repMin": {
+          "type": "integer",
+          "minimum": 1
+        },
+        "repMax": {
+          "type": "integer",
+          "minimum": 1
+        },
+        "requiredCleanCompletions": {
+          "type": "integer",
+          "minimum": 1
+        }
+      }
+    },
+    "status": {
+      "type": "string",
+      "enum": ["draft", "reviewed", "approved"]
+    }
+  },
+  "$comment": "Semantic validation must additionally enforce repMin <= repMax, from/to canonical content resolution, and production use of approved edges only. The engine must not infer missing edges or default requiredCleanCompletions."
+}

@@ -1,0 +1,34 @@
+{
+  "theme": "pixel-bloom",
+  "version": "1.0.0-draft",
+  "creativeOwner": "ChatGPT",
+  "implementationOwner": "Claude Code",
+  "status": "planned",
+  "firstProductionBatch": {
+    "mascot": [
+      "pb-anim-mascot-idle-breathe-v1",
+      "pb-anim-mascot-blink-v1",
+      "pb-anim-mascot-cheer-v1"
+    ],
+    "ui": [
+      "pb-anim-ui-button-pop-v1",
+      "pb-anim-ui-chip-select-v1",
+      "pb-anim-ui-progress-pulse-v1",
+      "pb-anim-ui-timer-pulse-v1"
+    ],
+    "rewards": [
+      "pb-anim-reward-workout-complete-v1",
+      "pb-anim-reward-badge-unlock-v1",
+      "pb-anim-reward-streak-pop-v1"
+    ],
+    "exerciseLoops": [
+      "pb-exercise-squat-loop-v1",
+      "pb-exercise-push-up-loop-v1",
+      "pb-exercise-band-row-loop-v1",
+      "pb-exercise-dead-bug-loop-v1",
+      "pb-exercise-step-up-loop-v1",
+      "pb-exercise-hip-flexor-stretch-loop-v1"
+    ]
+  },
+  "creativeSpec": "docs/PIXEL_BLOOM_ANIMATION_SYSTEM.md"
+}

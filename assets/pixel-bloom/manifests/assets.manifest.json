@@ -1,0 +1,45 @@
+{
+  "theme": "pixel-bloom",
+  "version": "1.0.0-draft",
+  "generatedAt": "2026-09-17",
+  "creativeOwner": "ChatGPT",
+  "implementationOwner": "Claude Code",
+  "assets": [
+    {
+      "id": "mascot-master-sheet",
+      "repoPath": "assets/pixel-bloom/character/mascot-master/pb-mascot-master-sheet-v1.png",
+      "width": 1448,
+      "height": 1086,
+      "bytes": 2036604,
+      "sha256": "f6f23e8ccc0e927179f97714c108be149047a6ac723d026b1dcdd77c8e276261",
+      "status": "generated-not-yet-committed-binary"
+    },
+    {
+      "id": "mascot-turnaround-pack",
+      "repoPath": "assets/pixel-bloom/character/turnarounds/pb-mascot-turnaround-pack-v1.png",
+      "width": 1448,
+      "height": 1086,
+      "bytes": 1709077,
+      "sha256": "44b8f8f99b053e8546383af031f9378ad7c6ba67296547c5d90ba3563aff4293",
+      "status": "generated-not-yet-committed-binary"
+    },
+    {
+      "id": "mascot-expression-pack",
+      "repoPath": "assets/pixel-bloom/character/expressions/pb-mascot-expression-pack-v1.png",
+      "width": 1448,
+      "height": 1086,
+      "bytes": 2053251,
+      "sha256": "5ed358b7f6254d729acd219432587acf86f02f48c189d814fd9d5ea5cbee8072",
+      "status": "generated-not-yet-committed-binary"
+    },
+    {
+      "id": "master-style-concept-board",
+      "repoPath": "assets/pixel-bloom/boards/master-style/pb-board-master-style-concept-v1.png",
+      "width": 1448,
+      "height": 1086,
+      "bytes": 1760672,
+      "sha256": "149ea4032023fe2918ab3442bd887a7d5719fc42c22b2d785096ba7fa79f82bd",
+      "status": "generated-not-yet-committed-binary"
+    }
+  ]
+}

@@ -1,0 +1,268 @@
+{
+  "fixtureVersion": 1,
+  "status": "support-fixture-not-runtime-content",
+  "requestId": "REQ-20260913-002",
+  "notes": [
+    "All exercise IDs in this file are intentionally fake placeholders.",
+    "This corpus specifies behavior only; it does not create production progression edges.",
+    "Production edges must reference approved canonical content."
+  ],
+  "baseEdge": {
+    "id": "fixture.edge.level-1-to-level-2",
+    "fromExerciseId": "placeholder.exercise.level-1",
+    "fromExerciseVersion": 1,
+    "toExerciseId": "placeholder.exercise.level-2",
+    "toExerciseVersion": 1,
+    "eligibility": {
+      "kind": "clean-upper-rep-completion",
+      "repMin": 8,
+      "repMax": 12,
+      "requiredCleanCompletions": 1
+    },
+    "status": "approved"
+  },
+  "cases": [
+    {
+      "id": "P001-01",
+      "name": "clean upper range creates candidate",
+      "edge": "baseEdge",
+      "history": [
+        {
+          "sessionId": "s1",
+          "exerciseId": "placeholder.exercise.level-1",
+          "exerciseVersion": 1,
+          "completedAt": "2026-09-17T20:00:00Z",
+          "sets": [
+            { "setNumber": 1, "targetReps": 12, "actualReps": 12, "skipped": false, "completed": true },
+            { "setNumber": 2, "targetReps": 12, "actualReps": 12, "skipped": false, "completed": true },
+            { "setNumber": 3, "targetReps": 12, "actualReps": 13, "skipped": false, "completed": true }
+          ]
+        }
+      ],
+      "expected": {
+        "reasonCode": "PROGRESSION_CANDIDATE",
+        "targetExerciseId": "placeholder.exercise.level-2",
+        "cleanCompletions": 1,
+        "requiredCleanCompletions": 1
+      }
+    },
+    {
+      "id": "P001-02",
+      "name": "missing edge cannot create candidate",
+      "edge": null,
+      "history": [
+        {
+          "sessionId": "s2",
+          "exerciseId": "placeholder.exercise.level-1",
+          "exerciseVersion": 1,
+          "completedAt": "2026-09-17T20:00:00Z",
+          "sets": [
+            { "setNumber": 1, "targetReps": 12, "actualReps": 12, "skipped": false, "completed": true }
+          ]
+        }
+      ],
+      "expected": { "reasonCode": "RETAINED" }
+    },
+    {
+      "id": "P001-03",
+      "name": "draft edge cannot create production candidate",
+      "edgeOverride": { "status": "draft" },
+      "history": [
+        {
+          "sessionId": "s3",
+          "exerciseId": "placeholder.exercise.level-1",
+          "exerciseVersion": 1,
+          "completedAt": "2026-09-17T20:00:00Z",
+          "sets": [
+            { "setNumber": 1, "targetReps": 12, "actualReps": 12, "skipped": false, "completed": true }
+          ]
+        }
+      ],
+      "expected": { "reasonCode": "RETAINED" }
+    },
+    {
+      "id": "P001-04",
+      "name": "target below upper range is not eligible",
+      "edge": "baseEdge",
+      "history": [
+        {
+          "sessionId": "s4",
+          "exerciseId": "placeholder.exercise.level-1",
+          "exerciseVersion": 1,
+          "completedAt": "2026-09-17T20:00:00Z",
+          "sets": [
+            { "setNumber": 1, "targetReps": 10, "actualReps": 12, "skipped": false, "completed": true },
+            { "setNumber": 2, "targetReps": 10, "actualReps": 12, "skipped": false, "completed": true }
+          ]
+        }
+      ],
+      "expected": { "reasonCode": "RETAINED" }
+    },
+    {
+      "id": "P001-05",
+      "name": "incomplete set invalidates clean completion",
+      "edge": "baseEdge",
+      "history": [
+        {
+          "sessionId": "s5",
+          "exerciseId": "placeholder.exercise.level-1",
+          "exerciseVersion": 1,
+          "completedAt": "2026-09-17T20:00:00Z",
+          "sets": [
+            { "setNumber": 1, "targetReps": 12, "actualReps": 12, "skipped": false, "completed": true },
+            { "setNumber": 2, "targetReps": 12, "actualReps": null, "skipped": false, "completed": false }
+          ]
+        }
+      ],
+      "expected": { "reasonCode": "RETAINED" }
+    },
+    {
+      "id": "P001-06",
+      "name": "skipped set invalidates clean completion",
+      "edge": "baseEdge",
+      "history": [
+        {
+          "sessionId": "s6",
+          "exerciseId": "placeholder.exercise.level-1",
+          "exerciseVersion": 1,
+          "completedAt": "2026-09-17T20:00:00Z",
+          "sets": [
+            { "setNumber": 1, "targetReps": 12, "actualReps": 12, "skipped": false, "completed": true },
+            { "setNumber": 2, "targetReps": 12, "actualReps": null, "skipped": true, "completed": false }
+          ]
+        }
+      ],
+      "expected": { "reasonCode": "RETAINED" }
+    },
+    {
+      "id": "P001-07",
+      "name": "one set below upper range invalidates clean completion",
+      "edge": "baseEdge",
+      "history": [
+        {
+          "sessionId": "s7",
+          "exerciseId": "placeholder.exercise.level-1",
+          "exerciseVersion": 1,
+          "completedAt": "2026-09-17T20:00:00Z",
+          "sets": [
+            { "setNumber": 1, "targetReps": 12, "actualReps": 12, "skipped": false, "completed": true },
+            { "setNumber": 2, "targetReps": 12, "actualReps": 11, "skipped": false, "completed": true }
+          ]
+        }
+      ],
+      "expected": { "reasonCode": "RETAINED" }
+    },
+    {
+      "id": "P001-08",
+      "name": "required clean completion count must be met",
+      "edgeOverride": {
+        "eligibility": {
+          "kind": "clean-upper-rep-completion",
+          "repMin": 8,
+          "repMax": 12,
+          "requiredCleanCompletions": 2
+        }
+      },
+      "history": [
+        {
+          "sessionId": "s8-1",
+          "exerciseId": "placeholder.exercise.level-1",
+          "exerciseVersion": 1,
+          "completedAt": "2026-09-16T20:00:00Z",
+          "sets": [
+            { "setNumber": 1, "targetReps": 12, "actualReps": 12, "skipped": false, "completed": true }
+          ]
+        }
+      ],
+      "expected": { "reasonCode": "RETAINED", "cleanCompletions": 1, "requiredCleanCompletions": 2 }
+    },
+    {
+      "id": "P001-09",
+      "name": "second required clean completion creates candidate",
+      "edgeOverride": {
+        "eligibility": {
+          "kind": "clean-upper-rep-completion",
+          "repMin": 8,
+          "repMax": 12,
+          "requiredCleanCompletions": 2
+        }
+      },
+      "history": [
+        {
+          "sessionId": "s9-1",
+          "exerciseId": "placeholder.exercise.level-1",
+          "exerciseVersion": 1,
+          "completedAt": "2026-09-16T20:00:00Z",
+          "sets": [
+            { "setNumber": 1, "targetReps": 12, "actualReps": 12, "skipped": false, "completed": true }
+          ]
+        },
+        {
+          "sessionId": "s9-2",
+          "exerciseId": "placeholder.exercise.level-1",
+          "exerciseVersion": 1,
+          "completedAt": "2026-09-17T20:00:00Z",
+          "sets": [
+            { "setNumber": 1, "targetReps": 12, "actualReps": 13, "skipped": false, "completed": true }
+          ]
+        }
+      ],
+      "expected": {
+        "reasonCode": "PROGRESSION_CANDIDATE",
+        "targetExerciseId": "placeholder.exercise.level-2",
+        "cleanCompletions": 2,
+        "requiredCleanCompletions": 2
+      }
+    },
+    {
+      "id": "P001-10",
+      "name": "exercise version mismatch cannot count",
+      "edge": "baseEdge",
+      "history": [
+        {
+          "sessionId": "s10",
+          "exerciseId": "placeholder.exercise.level-1",
+          "exerciseVersion": 2,
+          "completedAt": "2026-09-17T20:00:00Z",
+          "sets": [
+            { "setNumber": 1, "targetReps": 12, "actualReps": 12, "skipped": false, "completed": true }
+          ]
+        }
+      ],
+      "expected": { "reasonCode": "RETAINED" }
+    },
+    {
+      "id": "P001-11",
+      "name": "duplicate session observation counts once",
+      "edgeOverride": {
+        "eligibility": {
+          "kind": "clean-upper-rep-completion",
+          "repMin": 8,
+          "repMax": 12,
+          "requiredCleanCompletions": 2
+        }
+      },
+      "history": [
+        {
+          "sessionId": "s11",
+          "exerciseId": "placeholder.exercise.level-1",
+          "exerciseVersion": 1,
+          "completedAt": "2026-09-17T20:00:00Z",
+          "sets": [
+            { "setNumber": 1, "targetReps": 12, "actualReps": 12, "skipped": false, "completed": true }
+          ]
+        },
+        {
+          "sessionId": "s11",
+          "exerciseId": "placeholder.exercise.level-1",
+          "exerciseVersion": 1,
+          "completedAt": "2026-09-17T20:00:00Z",
+          "sets": [
+            { "setNumber": 1, "targetReps": 12, "actualReps": 12, "skipped": false, "completed": true }
+          ]
+        }
+      ],
+      "expected": { "reasonCode": "RETAINED", "cleanCompletions": 1, "requiredCleanCompletions": 2 }
+    }
+  ]
+}

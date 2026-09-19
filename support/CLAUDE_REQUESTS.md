@@ -16,15 +16,39 @@ Use this mailbox when implementation reaches a product/data/spec/asset/test gap 
 
 ## REQ-20260913-002 — Deterministic adaptation rule bundle + progression/substitution graph
 
-**Status:** PARTIALLY RESOLVED — progression is real and live, 2026-09-18; substitution remains open and out of V1 scope by decision
-**Progress:** `src/domain/adaptation/rules/doubleProgression.ts` (behaviorally derived from `Gman0909/FitnessTrack`, MIT) is now fully wired end-to-end and browser-verified: the Workout Player captures a simple "Did you complete all N reps?" Yes/No per set (`SET_COMPLETED` payload), `evaluateSessionProgression` reconstructs each exercise's outcome on session completion, `ProgressionRecord` persists a reps override/failure-streak/pending-candidate, and the Session Complete screen surfaces confirm/dismiss for any pending "Try Next Level?" candidate — confirming visibly changes next session's prescription, dismissing visibly doesn't. Policy is one generic v1 default (`defaultBodyweightRepsPolicy`) for all rep-based bodyweight content, not per-exercise tuning. **Substitution/regression-equivalence graph data is still untouched and, per 2026-09-18 product decision, is explicitly out of V1 scope** — "Adjust Exercise" stays deferred, matching the UI-shell plan's original Scope decision. Revisit only if/when real equivalence data arrives; do not build a placeholder mechanism for it.
-**Blocking:** no (the adaptation engine's pure decision-making shape/reason-code enum can be scaffolded now; it cannot make real decisions without this)
+**Status:** PARTIALLY RESOLVED — progression is real and live in the app (2026-09-18/19); ChatGPT's Promotion 001 progression-candidate slice delivered in parallel; substitution remains open and out of V1 scope by decision
+**Blocking:** no
+**Live implementation (Claude Code):** `src/domain/adaptation/rules/doubleProgression.ts` (behaviorally derived from `Gman0909/FitnessTrack`, MIT) is wired end-to-end and browser-verified: the Workout Player captures "Did you complete all N reps?" per set (plus the load used, for weight-capable exercises) in the `SET_COMPLETED` payload; `evaluateSessionProgression` reconstructs each exercise's outcome on session completion; `ProgressionRecord` persists reps/load overrides, a failure streak and a pending candidate; the Session Complete screen surfaces confirm/dismiss for any "Try Next Level?" candidate. Two generic v1 policies — `defaultBodyweightRepsPolicy` (rep bracket) and `defaultWeightedPolicy` (+2.5 kg candidates, floor at the authored load) — not per-exercise tuning. **Substitution/regression-equivalence graph data is still untouched and, per the 2026-09-18 product decision, out of V1 scope**; do not build a placeholder mechanism for it.
 **Implementation context:** reconciliation step 5 (pure domain engines), §7-8 of SOURCE_OF_TRUTH_V06.md
-**Need:** concrete rule values — the actual bounds for adjusting authored set/rep/rest within a session, which substitutions/regressions are approved-equivalent to which exercises, and the specific conditions that make a progression candidate eligible for "Try Next Level?"
-**Why it matters:** §7-8 describe the *categories* of allowed decisions (retain/remove-optional/adjust-within-bounds/regression-or-substitution/mark-progression-candidate/compress) but give no actual thresholds or graph edges. Guessing bounds or equivalence pairs would be inventing progression/substitution relationships, which CLAUDE.md explicitly forbids.
-**Requested output:** data (rule bundle) + schema
-**Constraints already known:** every material decision must carry a machine-readable reason code; the engine must never invent a movement or fake equivalence; familiarity and progression are separate systems; progression requires explicit user confirmation.
-**Proposed fallback if unresolved:** implement the engine's function signatures, reason-code enum, and control flow against a stub rule table with 1-2 obviously-placeholder rules, so the pure-domain-engine architecture (step 5) isn't blocked, while flagging that no session will actually adapt correctly until real rule data lands.
+
+**Delivered for the first progression slice:**
+
+- `docs/rnd/foss-fitness/PROMOTION_001_PROGRESSION_CANDIDATE.md`
+- `support/schemas/progression_edge.schema.json`
+- `support/fixtures/progression_candidate_cases.json`
+- pinned/verified FitnessTrack reference in `docs/rnd/foss-fitness/sources/fitnesstrack.md`
+
+**Resolved behavior:** a clean completion at an authored upper repetition bound may emit `PROGRESSION_CANDIDATE` only when an explicit approved harder-variant edge exists. The candidate never mutates the current immutable SessionPlan and never advances difficulty without explicit user confirmation.
+
+**Important compatibility decision:** FitnessTrack's weighted double-progression behavior remains R&D only. The current product defines progression as an authored harder-variant choice and the current SessionPlan model has no first-class load prescription, so weight bumps/deloads must not be transplanted into the live domain by inference.
+
+> **Superseded by the owner, 2026-09-19.** Andrae directed Claude Code to make the app contend with the open-source leaders ("uproot anything... full permission... all the best features"), which included weight logging. `prescription.weightKg` / `SessionPlanExercise.weightKg` are now first-class, and `defaultWeightedPolicy` applies +2.5 kg candidates (confirmation still required) and −2.5 kg deloads floored at the authored load. The bodyweight candidate is a higher rep bracket rather than a harder-variant edge, because no approved edges exist yet; when authored edges arrive, they should replace that fallback. Promotion 001's spec, schema and fixture corpus remain the reference for the edge-based path.
+
+**Still open / must not be guessed:**
+
+- actual production progression edges using reviewed canonical exercise IDs/versions;
+- approved regression/substitution graph edges;
+- concrete in-session authored set/rep/rest adjustment bounds beyond Promotion 001;
+- session-compression priority/coverage rules;
+- any future repeated-failure rule values not explicitly authored.
+
+**Why it matters:** the engine may now implement and verify the deterministic candidate mechanism against fake support fixtures, but production difficulty changes still require real reviewed content relationships. Guessing those relationships would violate `CLAUDE.md`.
+
+**Requested remaining output:** production data (progression/regression/substitution graph + authored adjustment bounds), then additional focused promotion specs as needed.
+
+**Constraints already known:** every material decision carries a machine-readable reason code; the engine never invents a movement or fake equivalence; familiarity and progression remain separate; progression requires explicit user confirmation; production edges must be authored and approved.
+
+**Safe implementation path now:** Claude may implement Promotion 001 as pure domain logic and tests using the support fixture corpus. With zero approved production edges loaded, production behavior must safely produce no progression candidate rather than infer one.
 
 ## REQ-20260913-003 — Pixel Bloom / Savage Core design tokens
 
