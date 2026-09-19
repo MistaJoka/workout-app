@@ -9,6 +9,8 @@
     "preview": "vite preview",
     "test": "vitest run",
     "check": "tsc -b --force && vitest run && vite build",
+    "e2e": "playwright test",
+    "e2e:install": "playwright install chromium",
     "generate:icons": "node scripts/generate-icons.mjs",
     "import:free-exercise-db": "tsx scripts/content/run-import-free-exercise-db.ts",
     "generate:library": "tsx scripts/content/generate-library.ts"
@@ -22,6 +24,7 @@
     "zod": "3.24.1"
   },
   "devDependencies": {
+    "@playwright/test": "1.63.0",
     "@types/node": "26.6.1",
     "@types/react": "19.0.2",
     "@types/react-dom": "19.0.2",
