@@ -1,3 +1,4 @@
+import { Link } from 'react-router-dom'
 import { useRef, useState } from 'react'
 import { useTheme } from '../theme/ThemeContext'
 import { exportAll, importAll, isValidExportBundle } from '../../infrastructure/exportImport/exportImport'
@@ -94,6 +95,12 @@ export function SettingsScreen() {
           }}
         />
         {status && <p className="text-sm text-ink-muted">{status}</p>}
+      </section>
+
+      <section>
+        <Link to="/about" className="block rounded-panel border border-edge px-4 py-3">
+          About this app · credits
+        </Link>
       </section>
     </div>
   )

@@ -13,6 +13,7 @@ import { RoutineDetailScreen } from './presentation/screens/RoutineDetailScreen'
 import { ProgressScreen } from './presentation/screens/ProgressScreen'
 import { ExerciseHistoryScreen } from './presentation/screens/ExerciseHistoryScreen'
 import { SettingsScreen } from './presentation/screens/SettingsScreen'
+import { AboutScreen } from './presentation/screens/AboutScreen'
 
 export default function App() {
   return (
@@ -29,6 +30,7 @@ export default function App() {
             <Route path="/progress" element={<ProgressScreen />} />
             <Route path="/progress/:exerciseId" element={<ExerciseHistoryScreen />} />
             <Route path="/settings" element={<SettingsScreen />} />
+            <Route path="/about" element={<AboutScreen />} />
           </Route>
           <Route path="/checkin/:templateId" element={<CheckInScreen />} />
           <Route path="/preview" element={<SessionPreviewScreen />} />
