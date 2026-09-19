@@ -3,6 +3,8 @@ import type { SessionEvent, SessionPlan, SessionResult } from '../../domain/sess
 import type { WorkoutTemplate } from '../../domain/content/types'
 
 export type CustomTemplateRecord = WorkoutTemplate & { createdAt: string; updatedAt: string }
+// One entry per local calendar day (id = YYYY-MM-DD); kilograms internally.
+export type BodyWeightRecord = { day: string; kg: number; recordedAt: string }
 
 export type SettingsRecord = { key: string; value: unknown }
 export type CheckInRecord = {
@@ -39,6 +41,7 @@ export class WorkoutDb extends Dexie {
   familiarity!: EntityTable<FamiliarityRecord, 'exerciseId'>
   progression!: EntityTable<ProgressionRecord, 'exerciseId'>
   customTemplates!: EntityTable<CustomTemplateRecord, 'id'>
+  bodyWeight!: EntityTable<BodyWeightRecord, 'day'>
 
   constructor() {
     super('workout-app-v06')
@@ -54,6 +57,10 @@ export class WorkoutDb extends Dexie {
     // v2: user-built routines. Additive only — existing stores untouched.
     this.version(2).stores({
       customTemplates: 'id, updatedAt',
+    })
+    // v3: body-weight log. Additive only.
+    this.version(3).stores({
+      bodyWeight: 'day',
     })
   }
 }

@@ -8,6 +8,7 @@ import type { PersonalRecord, WeekTotal } from '../../domain/progress/types'
 import type { SessionResult } from '../../domain/session/types'
 import { formatWeight } from '../units'
 import { useWeightUnit } from '../components/useWeightUnit'
+import { BodyWeightCard } from '../components/BodyWeightCard'
 
 type HistoryRow = SessionResult & { workoutName: string }
 
@@ -55,6 +56,8 @@ export function ProgressScreen() {
       <h1 className="text-xl font-bold">Progress</h1>
 
       {snapshot === null && <p className="text-ink-muted">Loading…</p>}
+
+      <BodyWeightCard />
 
       {rows && rows.length === 0 && (
         <p className="text-ink-muted">No workouts yet. Your first one will show up here.</p>
