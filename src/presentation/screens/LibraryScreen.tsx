@@ -33,7 +33,7 @@ export function LibraryScreen() {
     <div className="p-4 space-y-4">
       <div className="flex items-baseline justify-between">
         <h1 className="text-xl font-bold">Library</h1>
-        <Link to="/routines/new" className="rounded-panel bg-primary px-3 py-1.5 text-sm text-white">
+        <Link to="/routines/new" className="btn-primary btn-sm">
           + New routine
         </Link>
       </div>
@@ -45,7 +45,7 @@ export function LibraryScreen() {
             <Link
               key={template.id}
               to={`/routines/${template.id}`}
-              className="flex items-center justify-between rounded-panel border border-edge bg-surface px-4 py-3"
+              className="flex items-center justify-between card px-4 py-3"
             >
               <span className="font-semibold">{template.name}</span>
               <span className="text-sm text-ink-muted">{countLabel(template.exercises.length, 'exercise')}</span>
@@ -65,7 +65,7 @@ export function LibraryScreen() {
             setLimit(PAGE)
             setFilters((f) => ({ ...f, query: e.target.value || undefined }))
           }}
-          className="w-full rounded-panel border border-edge bg-surface px-4 py-3"
+          className="input"
         />
         <ChipRow>
           {MUSCLE_GROUPS.map((g) => (
@@ -100,7 +100,7 @@ export function LibraryScreen() {
             <li key={exercise.id}>
               <Link
                 to={`/exercise/${exercise.id}`}
-                className="flex items-center gap-3 rounded-panel border border-edge bg-surface p-2"
+                className="flex items-center gap-3 card p-2"
               >
                 {exercise.mediaManifest.start ? (
                   <img
@@ -117,7 +117,7 @@ export function LibraryScreen() {
                   <p className="truncate text-xs text-ink-muted">
                     {[exercise.taxonomy.primaryMuscles?.[0], exercise.taxonomy.equipment[0], exercise.taxonomy.level]
                       .filter(Boolean)
-                      .join(' · ')}
+                      .join(', ')}
                   </p>
                 </div>
               </Link>
@@ -126,7 +126,7 @@ export function LibraryScreen() {
         </ul>
         {results.length > limit && (
           <button
-            className="w-full rounded-panel border border-edge px-4 py-3"
+            className="btn-secondary w-full"
             onClick={() => setLimit((n) => n + PAGE)}
           >
             Show more
@@ -146,9 +146,7 @@ export function Chip({ active, onClick, children }: { active: boolean; onClick: 
     <button
       type="button"
       onClick={onClick}
-      className={`flex-none rounded-full border px-3 py-1.5 text-sm ${
-        active ? 'border-primary bg-primary text-white' : 'border-edge bg-surface'
-      }`}
+      className={`chip ${active ? 'chip-active' : ''}`}
     >
       {children}
     </button>

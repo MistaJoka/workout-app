@@ -38,6 +38,22 @@ export function evaluateSessionProgression(
     const currentPrescribedReps = state.currentPrescribedReps ?? exercise.reps
     const weighted = exercise.weightKg != null
 
+    // A session ended early (or a set skipped) is not evidence either way:
+    // every planned working set must be logged before anything changes.
+    // Caught by ChatGPT's Promotion 001 corpus (cases P001-05/06).
+    if (setEvents.length < exercise.sets) {
+      results.push({
+        exerciseId: exercise.exerciseId,
+        reasonCode: 'RETAINED',
+        detail: 'Not every planned set was done, so nothing changes.',
+        nextPrescribedReps: currentPrescribedReps,
+        nextLoad: weighted ? state.currentWeightKg ?? exercise.weightKg ?? 0 : 0,
+        nextFailureStreak: state.consecutiveFailureStreak,
+        weighted,
+      })
+      continue
+    }
+
     // For weighted work the load actually lifted this session wins over
     // the prescription: the player lets the user adjust it per set, and the
     // last logged value is what the next session should build on.

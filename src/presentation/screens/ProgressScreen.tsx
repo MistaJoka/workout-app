@@ -71,8 +71,8 @@ export function ProgressScreen() {
             <Stat value={snapshot.streak} label="day streak" />
           </div>
 
-          <section className="rounded-panel border border-edge bg-surface p-3">
-            <p className="text-xs text-ink-muted">Workouts per week · last 8 weeks</p>
+          <section className="card p-3">
+            <p className="text-xs text-ink-muted">Workouts per week, last 8 weeks</p>
             <WeekBars weeks={snapshot.weeks} />
           </section>
 
@@ -84,7 +84,7 @@ export function ProgressScreen() {
                   <li key={record.exerciseId}>
                     <Link
                       to={`/progress/${encodeURIComponent(record.exerciseId)}`}
-                      className="flex items-center justify-between gap-2 rounded-panel border border-edge bg-surface px-4 py-3"
+                      className="flex items-center justify-between gap-2 card px-4 py-3"
                     >
                       <span className="min-w-0 truncate font-semibold">{record.exerciseName}</span>
                       <span className="flex-none text-sm text-ink-muted">
@@ -107,14 +107,14 @@ export function ProgressScreen() {
           <p className="text-sm font-semibold text-ink-muted">History</p>
           <ul className="space-y-2">
             {rows.map((row) => (
-              <li key={row.sessionId} className="rounded-panel border border-edge bg-surface p-3">
+              <li key={row.sessionId} className="card p-3">
                 <div className="flex items-baseline justify-between gap-2">
                   <p className="font-semibold">{row.workoutName}</p>
                   <p className="text-xs text-ink-muted">{formatDate(row.endedAt)}</p>
                 </div>
                 <p className="text-sm text-ink-muted">
                   {row.totalSetsCompleted}/{row.totalSetsPlanned} sets
-                  {row.status === 'COMPLETED_SHORTENED' ? ' · ended early' : ''}
+                  {row.status === 'COMPLETED_SHORTENED' ? ', ended early' : ''}
                 </p>
               </li>
             ))}
@@ -127,7 +127,7 @@ export function ProgressScreen() {
 
 function Stat({ value, label }: { value: number; label: string }) {
   return (
-    <div className="flex-1 rounded-panel border border-edge bg-surface p-3 text-center">
+    <div className="flex-1 field-info p-3 text-center">
       <p className="text-2xl font-bold">{value}</p>
       <p className="text-xs text-ink-muted">{label}</p>
     </div>

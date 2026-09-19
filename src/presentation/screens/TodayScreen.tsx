@@ -60,9 +60,9 @@ export function TodayScreen() {
       {inProgress && inProgress.length > 0 && (
         <Link
           to={`/session/${inProgress[0].id}`}
-          className="block rounded-panel border-2 border-primary bg-surface p-4"
+          className="block field-calm p-4"
         >
-          <p className="font-semibold text-primary">Resume workout</p>
+          <p className="font-bold">Resume workout</p>
           <p className="text-sm text-ink-muted">You have one in progress</p>
         </Link>
       )}
@@ -73,14 +73,14 @@ export function TodayScreen() {
           <Link
             key={template.id}
             to={`/checkin/${template.id}`}
-            className={`block rounded-panel border bg-surface p-4 ${suggested ? 'border-primary' : 'border-edge'}`}
+            className={`block p-4 ${suggested ? 'field-primary' : 'card'}`}
           >
-            <div className="flex items-baseline justify-between gap-2">
-              <p className="text-lg font-semibold">{template.name}</p>
-              {suggested && <span className="text-xs font-semibold uppercase text-primary">Up next</span>}
+            <div className="flex items-center justify-between gap-2">
+              <p className="text-lg font-bold">{template.name}</p>
+              {suggested && <span className="rounded-control bg-primary px-2.5 py-1 text-xs font-bold text-white">Up next</span>}
             </div>
             <p className="text-sm text-ink-muted">
-              {countLabel(template.exercises.length, 'exercise')} · about {estimateMinutes(templateById.get(template.id))} min
+              {countLabel(template.exercises.length, 'exercise')}, about {estimateMinutes(templateById.get(template.id))} min
             </p>
           </Link>
         )
@@ -93,11 +93,11 @@ export function TodayScreen() {
             <Link
               key={template.id}
               to={`/checkin/${template.id}`}
-              className="block rounded-panel border border-edge bg-surface p-4"
+              className="block card p-4"
             >
               <p className="text-lg font-semibold">{template.name}</p>
               <p className="text-sm text-ink-muted">
-                {countLabel(template.exercises.length, 'exercise')} · about {estimateMinutes(template)} min
+                {countLabel(template.exercises.length, 'exercise')}, about {estimateMinutes(template)} min
               </p>
             </Link>
           ))}

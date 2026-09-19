@@ -155,10 +155,10 @@ describe('Promotion 001 corpus against the live progression engine', () => {
   // ended after one clean top-range set still proposes progression. The
   // corpus requires every planned working set to be completed. Fix belongs
   // in evaluateSessionProgression (compare completed count to plan sets).
-  it.fails('P001-05 an incomplete set invalidates clean completion', () => {
+  it('P001-05 an incomplete set invalidates clean completion', () => {
     expect(last(caseById('P001-05'))!.reasonCode).not.toBe('PROGRESSION_CANDIDATE')
   })
-  it.fails('P001-06 a skipped set invalidates clean completion', () => {
+  it('P001-06 a skipped set invalidates clean completion', () => {
     expect(last(caseById('P001-06'))!.reasonCode).not.toBe('PROGRESSION_CANDIDATE')
   })
 

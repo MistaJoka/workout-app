@@ -52,7 +52,7 @@ export function ExerciseHistoryScreen() {
 
   return (
     <div className="p-4 space-y-4">
-      <button className="text-sm text-ink-muted" onClick={() => navigate(-1)}>
+      <button className="btn-ghost -ml-3" onClick={() => navigate(-1)}>
         ‹ Back
       </button>
       <h1 className="text-2xl font-bold">{view.name}</h1>
@@ -67,22 +67,23 @@ export function ExerciseHistoryScreen() {
         )}
       </div>
 
-      <section className="rounded-panel border border-edge bg-surface p-3">
+      <section className="card p-3">
         <p className="text-xs text-ink-muted">
-          {metricUnit === 'kg' ? `Load (${unit})` : metricUnit === 'seconds' ? 'Seconds' : 'Reps'} per session · filled = every set done
+          {metricUnit === 'kg' ? `Load (${unit})` : metricUnit === 'seconds' ? 'Seconds' : 'Reps'} per session, filled = every set done
         </p>
         <Sparkline points={view.points} />
       </section>
 
       <ul className="space-y-2">
         {[...view.points].reverse().map((point) => (
-          <li key={point.sessionId} className="flex items-center justify-between rounded-panel border border-edge bg-surface px-4 py-3">
+          <li key={point.sessionId} className="flex items-center justify-between card px-4 py-3">
             <span className="text-sm">{formatDate(point.sessionEndedAt)}</span>
             <span className="text-sm text-ink-muted">
               {metricUnit === 'kg'
                 ? `${point.reps ?? '?'} × ${formatWeight(point.prescribed, unit)}`
-                : `${point.prescribed}${metricUnit === 'seconds' ? 's' : ' reps'}`}{' '}
-              · {point.metSets}/{point.totalSets} sets
+                : `${point.prescribed}${metricUnit === 'seconds' ? 's' : ' reps'}`}
+              {', '}
+              {point.metSets}/{point.totalSets} sets
             </span>
           </li>
         ))}
@@ -93,7 +94,7 @@ export function ExerciseHistoryScreen() {
 
 function Stat({ value, label }: { value: string | number; label: string }) {
   return (
-    <div className="flex-1 rounded-panel border border-edge bg-surface p-3 text-center">
+    <div className="flex-1 field-info p-3 text-center">
       <p className="text-xl font-bold">{value}</p>
       <p className="text-xs text-ink-muted">{label}</p>
     </div>

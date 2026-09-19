@@ -126,7 +126,7 @@ export function WorkoutPlayerScreen() {
       <div className="p-6 text-center space-y-4">
         <p className="text-lg">Paused</p>
         {error && <p className="text-sm text-accent">{error}</p>}
-        <button className="rounded-panel bg-primary px-4 py-2 text-white" disabled={busy} onClick={() => handleAction('RESUMED')}>
+        <button className="btn-primary" disabled={busy} onClick={() => handleAction('RESUMED')}>
           Resume
         </button>
       </div>
@@ -192,7 +192,7 @@ export function WorkoutPlayerScreen() {
             <div className="flex items-center justify-between rounded-panel bg-bg p-2">
               <button
                 type="button"
-                className="h-11 w-11 rounded-full border border-edge bg-surface text-xl"
+                className="stepper-btn"
                 aria-label="Less weight"
                 onClick={() => setLoggedWeightKg(Math.max(0, unitToKg(roundToStep(kgToUnit(setWeightKg, unit), unit) - stepInUnit(unit), unit)))}
               >
@@ -201,7 +201,7 @@ export function WorkoutPlayerScreen() {
               <span className="font-semibold tabular-nums">{formatWeight(setWeightKg, unit)}</span>
               <button
                 type="button"
-                className="h-11 w-11 rounded-full border border-edge bg-surface text-xl"
+                className="stepper-btn"
                 aria-label="More weight"
                 onClick={() => setLoggedWeightKg(unitToKg(roundToStep(kgToUnit(setWeightKg, unit), unit) + stepInUnit(unit), unit))}
               >
@@ -212,7 +212,7 @@ export function WorkoutPlayerScreen() {
           <p className="text-sm">Did you complete all {exercise.reps} reps?</p>
           <div className="flex gap-2">
             <button
-              className="rounded-panel bg-primary px-4 py-2 text-white"
+              className="btn-primary"
               disabled={busy}
               onClick={() =>
                 handleAction('SET_COMPLETED', {
@@ -225,7 +225,7 @@ export function WorkoutPlayerScreen() {
               Yes
             </button>
             <button
-              className="rounded-panel border border-edge px-4 py-2"
+              className="btn-secondary"
               disabled={busy}
               onClick={() =>
                 handleAction('SET_COMPLETED', {
@@ -241,11 +241,11 @@ export function WorkoutPlayerScreen() {
         </div>
       ) : (
         <div className="flex gap-2">
-          <button className="rounded-panel border border-edge px-4 py-2" disabled={busy} onClick={() => handleAction('PAUSED')}>
+          <button className="btn-secondary" disabled={busy} onClick={() => handleAction('PAUSED')}>
             Pause
           </button>
           <button
-            className="rounded-panel bg-primary px-4 py-2 text-white"
+            className="btn-primary"
             disabled={busy}
             onClick={() => handleCompleteSetClick(exercise.exerciseId, exercise.reps != null)}
           >
@@ -253,7 +253,7 @@ export function WorkoutPlayerScreen() {
           </button>
         </div>
       )}
-      <button className="text-sm text-ink-muted underline" disabled={busy} onClick={handleEndWorkout}>
+      <button className="btn-ghost" disabled={busy} onClick={handleEndWorkout}>
         End workout
       </button>
     </div>
@@ -346,20 +346,20 @@ function RestingView({
   const seconds = Math.ceil(remainingMs / 1000)
 
   return (
-    <div className="p-6 text-center space-y-6">
-      <p className="text-lg">Rest</p>
-      <p className="text-6xl font-bold tabular-nums" role="timer">
+    <div className="field-calm min-h-screen rounded-none p-6 pt-16 text-center space-y-6">
+      <p className="text-lg font-bold">Rest</p>
+      <p className="text-7xl font-extrabold tabular-nums" role="timer">
         {Math.floor(seconds / 60)}:{String(seconds % 60).padStart(2, '0')}
       </p>
       {error && <p className="text-sm text-accent">{error}</p>}
       <div className="flex justify-center gap-2">
-        <button className="rounded-panel border border-edge px-4 py-2" disabled={busy} onClick={onPause}>
+        <button className="btn-secondary" disabled={busy} onClick={onPause}>
           Pause
         </button>
-        <button className="rounded-panel border border-edge px-4 py-2" disabled={busy} onClick={onExtend}>
+        <button className="btn-secondary" disabled={busy} onClick={onExtend}>
           +15s
         </button>
-        <button className="rounded-panel border border-edge px-4 py-2" disabled={busy} onClick={onSkip}>
+        <button className="btn-secondary" disabled={busy} onClick={onSkip}>
           Skip rest
         </button>
       </div>

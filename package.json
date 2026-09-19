@@ -12,6 +12,7 @@
     "generate:library": "tsx scripts/content/generate-library.ts"
   },
   "dependencies": {
+    "@fontsource-variable/nunito": "5.3.0",
     "dexie": "4.0.10",
     "react": "19.0.0",
     "react-dom": "19.0.0",

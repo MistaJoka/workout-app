@@ -75,7 +75,7 @@ export function CheckInScreen() {
         unit=" min"
       />
       <button
-        className="w-full rounded-panel bg-primary px-4 py-3 text-lg text-white disabled:opacity-50"
+        className="btn-primary btn-lg w-full"
         disabled={busy}
         onClick={handleContinue}
       >

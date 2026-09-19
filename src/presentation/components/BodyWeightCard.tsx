@@ -33,13 +33,13 @@ export function BodyWeightCard() {
   }
 
   return (
-    <section className="rounded-panel border border-edge bg-surface p-3 space-y-2">
+    <section className="card p-3 space-y-2">
       <div className="flex items-baseline justify-between">
         <p className="text-xs text-ink-muted">Body weight</p>
         {summary && summary.changeKg != null && (
           <p className="text-xs text-ink-muted">
             {summary.changeKg > 0 ? '+' : ''}
-            {formatWeight(summary.changeKg, unit)} · 30 days
+            {formatWeight(summary.changeKg, unit)}, 30 days
           </p>
         )}
       </div>
@@ -60,7 +60,7 @@ export function BodyWeightCard() {
           <div className="flex items-center justify-between rounded-panel bg-bg p-2">
             <button
               type="button"
-              className="h-11 w-11 rounded-full border border-edge bg-surface text-xl"
+              className="stepper-btn"
               aria-label="Lower body weight"
               onClick={() => setDraftKg(unitToKg(Math.max(0, draftInUnit - step), unit))}
             >
@@ -69,7 +69,7 @@ export function BodyWeightCard() {
             <span className="font-semibold tabular-nums">{formatWeight(draftKg, unit)}</span>
             <button
               type="button"
-              className="h-11 w-11 rounded-full border border-edge bg-surface text-xl"
+              className="stepper-btn"
               aria-label="Raise body weight"
               onClick={() => setDraftKg(unitToKg(draftInUnit + step, unit))}
             >
@@ -77,16 +77,16 @@ export function BodyWeightCard() {
             </button>
           </div>
           <div className="flex gap-2">
-            <button className="flex-1 rounded-panel bg-primary px-4 py-2 text-white" onClick={save}>
+            <button className="btn-primary flex-1" onClick={save}>
               Save today
             </button>
-            <button className="rounded-panel border border-edge px-4 py-2" onClick={() => setLogging(false)}>
+            <button className="btn-secondary" onClick={() => setLogging(false)}>
               Cancel
             </button>
           </div>
         </div>
       ) : (
-        <button className="w-full rounded-panel border border-edge px-4 py-2 text-sm" onClick={() => setLogging(true)}>
+        <button className="btn-secondary w-full" onClick={() => setLogging(true)}>
           {summary ? 'Log today' : 'Log body weight'}
         </button>
       )}

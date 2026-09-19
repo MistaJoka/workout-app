@@ -4,7 +4,7 @@ export function AboutScreen() {
   const navigate = useNavigate()
   return (
     <div className="p-4 space-y-4 text-sm">
-      <button className="text-sm text-ink-muted" onClick={() => navigate(-1)}>
+      <button className="btn-ghost -ml-3" onClick={() => navigate(-1)}>
         ‹ Back
       </button>
       <h1 className="text-xl font-bold">About</h1>

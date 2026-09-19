@@ -61,8 +61,8 @@ export function SessionCompleteScreen() {
   }
 
   return (
-    <div className="p-6 text-center space-y-4">
-      <p className="text-xl font-semibold">Workout complete</p>
+    <div className="field-success min-h-screen rounded-none p-6 pt-16 text-center space-y-4">
+      <p className="text-3xl font-extrabold">Workout complete</p>
       {result && (
         <p className="text-ink-muted">
           {result.totalSetsCompleted} of {result.totalSetsPlanned} sets completed
@@ -73,7 +73,7 @@ export function SessionCompleteScreen() {
       {candidates.length > 0 && (
         <div className="space-y-3 text-left">
           {candidates.map((candidate) => (
-            <div key={candidate.exerciseId} className="rounded-panel border border-edge bg-surface p-4 space-y-2">
+            <div key={candidate.exerciseId} className="card p-4 space-y-2">
               <p className="font-semibold">Try Next Level? {candidate.exerciseName}</p>
               <p className="text-sm text-ink-muted">{candidate.detail}</p>
               <p className="text-sm">
@@ -82,14 +82,14 @@ export function SessionCompleteScreen() {
               </p>
               <div className="flex justify-center gap-2">
                 <button
-                  className="rounded-panel bg-primary px-4 py-2 text-white"
+                  className="btn-primary"
                   disabled={busyExerciseId === candidate.exerciseId}
                   onClick={() => handleConfirm(candidate.exerciseId)}
                 >
                   Yes, try it
                 </button>
                 <button
-                  className="rounded-panel border border-edge px-4 py-2"
+                  className="btn-secondary"
                   disabled={busyExerciseId === candidate.exerciseId}
                   onClick={() => handleDismiss(candidate.exerciseId)}
                 >
@@ -101,7 +101,7 @@ export function SessionCompleteScreen() {
         </div>
       )}
 
-      <Link to="/" className="inline-block rounded-panel bg-primary px-4 py-2 text-white">
+      <Link to="/" className="btn-primary">
         Back to Today
       </Link>
     </div>

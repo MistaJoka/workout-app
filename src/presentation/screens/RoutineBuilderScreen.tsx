@@ -130,9 +130,9 @@ export function RoutineBuilderScreen() {
   const canSave = name.trim().length > 0 && rows.length > 0
 
   return (
-    <div className="p-4 space-y-4 pb-36">
+    <div className="p-4 space-y-4 pb-44">
       <div className="flex items-center justify-between">
-        <button className="text-sm text-ink-muted" onClick={() => navigate(-1)}>
+        <button className="btn-ghost -ml-3" onClick={() => navigate(-1)}>
           ‹ Back
         </button>
         <h1 className="text-lg font-bold">{editingId ? 'Edit routine' : 'New routine'}</h1>
@@ -144,14 +144,14 @@ export function RoutineBuilderScreen() {
         placeholder="Routine name"
         value={name}
         onChange={(e) => setName(e.target.value)}
-        className="w-full rounded-panel border border-edge bg-surface px-4 py-3 text-lg font-semibold"
+        className="input text-lg font-semibold"
       />
 
       {rows.length === 0 && <p className="text-sm text-ink-muted">Add an exercise to get started.</p>}
 
       <ul className="space-y-3">
         {rows.map((row, index) => (
-          <li key={row.exercise.id} className="rounded-panel border border-edge bg-surface p-3 space-y-3">
+          <li key={row.exercise.id} className="card p-3 space-y-3">
             <div className="flex items-center gap-2">
               {row.exercise.mediaManifest.start && (
                 <img src={row.exercise.mediaManifest.start} alt="" className="h-12 w-16 flex-none rounded-panel object-cover" />
@@ -213,9 +213,9 @@ export function RoutineBuilderScreen() {
         + Add exercise
       </button>
 
-      <div className="fixed bottom-14 left-0 right-0 border-t border-edge bg-surface p-4">
+      <div className="fixed bottom-16 left-0 right-0 border-t-2 border-edge bg-surface p-4">
         <button
-          className="w-full rounded-panel bg-primary px-4 py-3 text-lg text-white disabled:opacity-50"
+          className="btn-primary btn-lg w-full"
           disabled={!canSave || saving}
           onClick={handleSave}
         >
@@ -249,7 +249,7 @@ function Stepper({
       <div className="flex items-center justify-between">
         <button
           type="button"
-          className="h-9 w-9 rounded-full border border-edge bg-surface text-lg"
+          className="stepper-btn h-10 w-10 text-lg"
           aria-label={`Decrease ${label}`}
           onClick={() => onChange(Math.max(min, value - step))}
         >
@@ -261,7 +261,7 @@ function Stepper({
         </span>
         <button
           type="button"
-          className="h-9 w-9 rounded-full border border-edge bg-surface text-lg"
+          className="stepper-btn h-10 w-10 text-lg"
           aria-label={`Increase ${label}`}
           onClick={() => onChange(Math.min(max, value + step))}
         >
@@ -309,7 +309,7 @@ function ExercisePicker({
         placeholder="Search exercises"
         value={query}
         onChange={(e) => setQuery(e.target.value)}
-        className="w-full rounded-panel border border-edge bg-surface px-4 py-3"
+        className="input"
       />
       <div className="flex gap-2 overflow-x-auto pb-1">
         {MUSCLE_GROUPS.map((g) => (
@@ -331,7 +331,7 @@ function ExercisePicker({
           <li key={exercise.id}>
             <button
               type="button"
-              className="flex w-full items-center gap-3 rounded-panel border border-edge bg-surface p-2 text-left"
+              className="flex w-full items-center gap-3 card p-2 text-left"
               onClick={() => onPick(exercise)}
             >
               {exercise.mediaManifest.start ? (
@@ -342,7 +342,7 @@ function ExercisePicker({
               <span className="min-w-0 flex-1">
                 <span className="block truncate font-semibold">{exercise.name}</span>
                 <span className="block truncate text-xs text-ink-muted">
-                  {[exercise.taxonomy.primaryMuscles?.[0], exercise.taxonomy.equipment[0]].filter(Boolean).join(' · ')}
+                  {[exercise.taxonomy.primaryMuscles?.[0], exercise.taxonomy.equipment[0]].filter(Boolean).join(', ')}
                 </span>
               </span>
               <span className="flex-none text-primary">+</span>

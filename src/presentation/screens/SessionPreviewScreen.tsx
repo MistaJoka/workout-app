@@ -42,7 +42,7 @@ export function SessionPreviewScreen() {
       <h1 className="text-xl font-bold">Session Preview</h1>
       <ul className="space-y-2">
         {plan.exercises.map((exercise) => (
-          <li key={exercise.exerciseId} className="rounded-panel border border-edge bg-surface p-3">
+          <li key={exercise.exerciseId} className="card p-3">
             <p className="font-semibold">{exercise.name}</p>
             <p className="text-sm text-ink-muted">
               {exercise.sets} sets × {exercise.reps ? `${exercise.reps} reps` : `${exercise.timeSeconds}s`}
@@ -53,7 +53,7 @@ export function SessionPreviewScreen() {
       </ul>
       {error && <p className="text-sm text-accent">{error}</p>}
       <button
-        className="rounded-panel bg-primary px-4 py-2 text-white disabled:opacity-50"
+        className="btn-primary"
         disabled={starting}
         onClick={handleStart}
       >

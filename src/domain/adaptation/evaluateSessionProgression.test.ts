@@ -89,7 +89,7 @@ describe('evaluateSessionProgression', () => {
   })
 
   it('carries forward a persisted failure streak into the evaluation', () => {
-    const events = [setCompleted('fs.bodyweight-squat', false, 1)]
+    const events = [setCompleted('fs.bodyweight-squat', false, 1), setCompleted('fs.bodyweight-squat', false, 2)]
     const progression = new Map([['fs.bodyweight-squat', { currentPrescribedReps: null, consecutiveFailureStreak: 1 }]])
     const results = evaluateSessionProgression(plan([squat]), events, progression)
     expect(results[0].reasonCode).toBe('REGRESSED')
@@ -101,6 +101,17 @@ describe('evaluateSessionProgression', () => {
     const progression = new Map([['fs.bodyweight-squat', { currentPrescribedReps: 14, consecutiveFailureStreak: 0 }]])
     const results = evaluateSessionProgression(plan([overriddenSquat]), events, progression)
     expect(results[0].reasonCode).toBe('PROGRESSION_CANDIDATE')
+  })
+
+  it('retains without touching the streak when fewer sets were logged than planned (session ended early)', () => {
+    // squat plans 2 sets; only one clean set at the ceiling was logged
+    const events = [setCompleted('fs.bodyweight-squat', true, 1)]
+    const progression = new Map([['fs.bodyweight-squat', { currentPrescribedReps: 14, consecutiveFailureStreak: 1 }]])
+    const [result] = evaluateSessionProgression(plan([squat]), events, progression)
+    expect(result.reasonCode).toBe('RETAINED')
+    expect(result.nextPrescribedReps).toBe(14)
+    expect(result.nextFailureStreak).toBe(1)
+    expect(result.candidatePrescribedReps).toBeUndefined()
   })
 
   it('evaluates a weighted exercise with the weighted policy, using the last logged load as the current load', () => {
@@ -119,7 +130,7 @@ describe('evaluateSessionProgression', () => {
   })
 
   it('treats a logged rep count below the prescription as a miss even if met was not sent', () => {
-    const events = [setCompleted('lib.Barbell_Bench_Press', true, 1, { weightKg: 40, reps: 5 })]
+    const events = [1, 2, 3].map((seq) => setCompleted('lib.Barbell_Bench_Press', true, seq, { weightKg: 40, reps: 5 }))
     const progression = new Map([['lib.Barbell_Bench_Press', { currentPrescribedReps: 8, currentWeightKg: 40, consecutiveFailureStreak: 1 }]])
     const [result] = evaluateSessionProgression(plan([benchPress]), events, progression)
     expect(result.reasonCode).toBe('REGRESSED')

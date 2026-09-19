@@ -35,11 +35,11 @@ export function ExerciseDetailScreen() {
 
   return (
     <div className="p-4 space-y-4 pb-24">
-      <button className="text-sm text-ink-muted" onClick={() => navigate(-1)}>
+      <button className="btn-ghost -ml-3" onClick={() => navigate(-1)}>
         ‹ Back
       </button>
       <h1 className="text-2xl font-bold">{exercise.name}</h1>
-      <p className="text-sm capitalize text-ink-muted">{meta.join(' · ')}</p>
+      <p className="text-sm capitalize text-ink-muted">{meta.join(', ')}</p>
 
       <MovementMedia name={exercise.name} start={exercise.mediaManifest.start} finish={exercise.mediaManifest.finish} />
 
@@ -53,7 +53,7 @@ export function ExerciseDetailScreen() {
       </ol>
 
       <button
-        className="w-full rounded-panel bg-primary px-4 py-3 text-lg text-white"
+        className="btn-primary btn-lg w-full"
         onClick={() => navigate(`/routines/new?add=${encodeURIComponent(exercise.id)}`)}
       >
         Add to a routine

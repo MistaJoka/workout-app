@@ -87,10 +87,10 @@ export function SettingsScreen() {
       <section className="space-y-2">
         <p className="font-semibold">Backup</p>
         <div className="flex gap-2">
-          <button className="rounded-panel border border-edge px-4 py-2" onClick={handleExport}>
+          <button className="btn-secondary" onClick={handleExport}>
             Export data
           </button>
-          <button className="rounded-panel border border-edge px-4 py-2" onClick={() => fileInputRef.current?.click()}>
+          <button className="btn-secondary" onClick={() => fileInputRef.current?.click()}>
             Import data
           </button>
         </div>
@@ -108,8 +108,8 @@ export function SettingsScreen() {
       </section>
 
       <section>
-        <Link to="/about" className="block rounded-panel border border-edge px-4 py-3">
-          About this app · credits
+        <Link to="/about" className="btn-secondary w-full">
+          About this app, credits
         </Link>
       </section>
     </div>
@@ -129,9 +129,7 @@ function ThemeButton({
 }) {
   return (
     <button
-      className={`rounded-panel border px-3 py-2 ${capitalize ? 'capitalize' : ''} ${
-        active ? 'border-primary text-primary' : 'border-edge'
-      }`}
+      className={`chip ${capitalize ? 'capitalize' : ''} ${active ? 'chip-active' : ''}`}
       onClick={onClick}
     >
       {label}

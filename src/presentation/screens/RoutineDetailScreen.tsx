@@ -43,8 +43,8 @@ export function RoutineDetailScreen() {
   }
 
   return (
-    <div className="p-4 space-y-4 pb-36">
-      <button className="text-sm text-ink-muted" onClick={() => navigate(-1)}>
+    <div className="p-4 space-y-4 pb-44">
+      <button className="btn-ghost -ml-3" onClick={() => navigate(-1)}>
         ‹ Back
       </button>
       <h1 className="text-2xl font-bold">{template.name}</h1>
@@ -61,7 +61,7 @@ export function RoutineDetailScreen() {
             <li key={te.exerciseId}>
               <Link
                 to={`/exercise/${te.exerciseId}`}
-                className="flex items-center gap-3 rounded-panel border border-edge bg-surface p-2"
+                className="flex items-center gap-3 card p-2"
               >
                 {exercise?.mediaManifest.start ? (
                   <img src={exercise.mediaManifest.start} alt="" className="h-12 w-16 flex-none rounded-panel object-cover" />
@@ -78,7 +78,7 @@ export function RoutineDetailScreen() {
 
       {custom && (
         <div className="flex gap-2">
-          <Link to={`/routines/${template.id}/edit`} className="flex-1 rounded-panel border border-edge px-4 py-2 text-center">
+          <Link to={`/routines/${template.id}/edit`} className="btn-secondary flex-1">
             Edit
           </Link>
           {confirmingDelete ? (
@@ -86,17 +86,17 @@ export function RoutineDetailScreen() {
               Yes, delete
             </button>
           ) : (
-            <button className="flex-1 rounded-panel border border-edge px-4 py-2" onClick={() => setConfirmingDelete(true)}>
+            <button className="btn-secondary flex-1" onClick={() => setConfirmingDelete(true)}>
               Delete
             </button>
           )}
         </div>
       )}
 
-      <div className="fixed bottom-14 left-0 right-0 border-t border-edge bg-surface p-4">
+      <div className="fixed bottom-16 left-0 right-0 border-t-2 border-edge bg-surface p-4">
         <Link
           to={`/checkin/${template.id}`}
-          className="block w-full rounded-panel bg-primary px-4 py-3 text-center text-lg text-white"
+          className="btn-primary btn-lg w-full"
         >
           Start workout
         </Link>
