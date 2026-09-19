@@ -6,8 +6,13 @@ import { isRestComplete, remainingRestMs } from '../../domain/session/restTimer'
 import { getExercises } from '../../domain/content/catalog'
 import type { Exercise } from '../../domain/content/types'
 import { MovementMedia } from '../components/MovementMedia'
+import { getLastTimeSummary } from '../../application/lastTime'
+import { primeAudio, restEndFeedback } from '../../application/restFeedback'
+import { useFeedbackSettings } from '../components/useFeedbackSettings'
 
 type ActionType = 'SET_COMPLETED' | 'REST_ENDED' | 'REST_SKIPPED' | 'PAUSED' | 'RESUMED'
+
+const REST_EXTENSION_MS = 15_000
 
 export function WorkoutPlayerScreen() {
   const { sessionId } = useParams()
@@ -18,6 +23,11 @@ export function WorkoutPlayerScreen() {
   const [busy, setBusy] = useState(false)
   const [awaitingRepCheck, setAwaitingRepCheck] = useState(false)
   const [exerciseById, setExerciseById] = useState<Map<string, Exercise>>(new Map())
+  const [lastTime, setLastTime] = useState<string | null>(null)
+  // UI-local only: extends the displayed rest without touching the persisted
+  // state machine (restEndsAt derives from SET_COMPLETED + restSeconds).
+  const [restExtensionMs, setRestExtensionMs] = useState(0)
+  const [feedback] = useFeedbackSettings()
 
   const refresh = useCallback(async () => {
     if (!sessionId) return
@@ -38,6 +48,24 @@ export function WorkoutPlayerScreen() {
     }
   }, [state, sessionId, navigate])
 
+  const currentExerciseId = plan && state ? plan.exercises[state.currentExerciseIndex]?.exerciseId : undefined
+  useEffect(() => {
+    if (!currentExerciseId) return
+    let cancelled = false
+    setLastTime(null)
+    getLastTimeSummary(currentExerciseId).then((summary) => {
+      if (!cancelled) setLastTime(summary)
+    })
+    return () => {
+      cancelled = true
+    }
+  }, [currentExerciseId])
+
+  // A new rest period (new restEndsAt) always starts unextended.
+  useEffect(() => {
+    setRestExtensionMs(0)
+  }, [state?.restEndsAt])
+
   async function handleAction(type: ActionType, payload: Record<string, unknown> = {}) {
     if (!sessionId) return
     setBusy(true)
@@ -54,6 +82,8 @@ export function WorkoutPlayerScreen() {
   }
 
   function handleCompleteSetClick(exerciseId: string, isRepsBased: boolean) {
+    // User gesture: unlock audio so the rest-end chime can play later (iOS).
+    if (feedback.sound) primeAudio()
     if (!isRepsBased) {
       // Hold/time-based exercises (e.g. Plank) aren't evaluated by the
       // reps-only v1 progression policy, so there's no "met" to record.
@@ -96,9 +126,14 @@ export function WorkoutPlayerScreen() {
     return (
       <RestingView
         restEndsAt={state.restEndsAt}
+        extensionMs={restExtensionMs}
         busy={busy}
         error={error}
-        onRestComplete={() => handleAction('REST_ENDED')}
+        onRestComplete={() => {
+          restEndFeedback(feedback)
+          void handleAction('REST_ENDED')
+        }}
+        onExtend={() => setRestExtensionMs((ms) => ms + REST_EXTENSION_MS)}
         onSkip={() => handleAction('REST_SKIPPED')}
         onPause={() => handleAction('PAUSED')}
       />
@@ -122,6 +157,7 @@ export function WorkoutPlayerScreen() {
         Set {state.currentSetNumber} of {exercise.sets}
         {exercise.reps ? ` — ${exercise.reps} reps` : exercise.timeSeconds ? ` — ${exercise.timeSeconds}s hold` : ''}
       </p>
+      {lastTime && <p className="text-sm text-ink-muted">{lastTime}</p>}
 
       {exerciseContent && (
         <MovementMedia
@@ -192,32 +228,41 @@ export function WorkoutPlayerScreen() {
 
 function RestingView({
   restEndsAt,
+  extensionMs,
   busy,
   error,
   onRestComplete,
+  onExtend,
   onSkip,
   onPause,
 }: {
   restEndsAt: string
+  extensionMs: number
   busy: boolean
   error: string | null
   onRestComplete: () => void
+  onExtend: () => void
   onSkip: () => void
   onPause: () => void
 }) {
-  const [remainingMs, setRemainingMs] = useState(() => remainingRestMs(restEndsAt))
+  // The extension shifts the deadline the timer counts toward; the persisted
+  // restEndsAt is untouched, so a refresh mid-rest drops the extension —
+  // acceptable for a UI-local nicety.
+  const effectiveEndsAt = new Date(new Date(restEndsAt).getTime() + extensionMs).toISOString()
+  const [remainingMs, setRemainingMs] = useState(() => remainingRestMs(effectiveEndsAt))
 
   useEffect(() => {
+    setRemainingMs(remainingRestMs(effectiveEndsAt))
     const interval = setInterval(() => {
-      setRemainingMs(remainingRestMs(restEndsAt))
-      if (isRestComplete(restEndsAt)) {
+      setRemainingMs(remainingRestMs(effectiveEndsAt))
+      if (isRestComplete(effectiveEndsAt)) {
         clearInterval(interval)
         onRestComplete()
       }
     }, 250)
     return () => clearInterval(interval)
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [restEndsAt])
+  }, [effectiveEndsAt])
 
   const seconds = Math.ceil(remainingMs / 1000)
 
@@ -231,6 +276,9 @@ function RestingView({
       <div className="flex justify-center gap-2">
         <button className="rounded-panel border border-edge px-4 py-2" disabled={busy} onClick={onPause}>
           Pause
+        </button>
+        <button className="rounded-panel border border-edge px-4 py-2" disabled={busy} onClick={onExtend}>
+          +15s
         </button>
         <button className="rounded-panel border border-edge px-4 py-2" disabled={busy} onClick={onSkip}>
           Skip rest

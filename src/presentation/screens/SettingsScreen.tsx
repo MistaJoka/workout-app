@@ -1,9 +1,11 @@
 import { useRef, useState } from 'react'
 import { useTheme } from '../theme/ThemeContext'
 import { exportAll, importAll, isValidExportBundle } from '../../infrastructure/exportImport/exportImport'
+import { useFeedbackSettings } from '../components/useFeedbackSettings'
 
 export function SettingsScreen() {
   const { theme, setTheme, motion, setMotion } = useTheme()
+  const [feedback, updateFeedback] = useFeedbackSettings()
   const fileInputRef = useRef<HTMLInputElement>(null)
   const [status, setStatus] = useState<string | null>(null)
 
@@ -52,6 +54,22 @@ export function SettingsScreen() {
           {(['full', 'reduced', 'off'] as const).map((option) => (
             <ThemeButton key={option} label={option} active={motion === option} onClick={() => setMotion(option)} capitalize />
           ))}
+        </div>
+      </section>
+
+      <section className="space-y-2">
+        <p className="font-semibold">Rest timer</p>
+        <div className="flex gap-2">
+          <ThemeButton
+            label={`Sound ${feedback.sound ? 'on' : 'off'}`}
+            active={feedback.sound}
+            onClick={() => updateFeedback({ sound: !feedback.sound })}
+          />
+          <ThemeButton
+            label={`Vibration ${feedback.vibration ? 'on' : 'off'}`}
+            active={feedback.vibration}
+            onClick={() => updateFeedback({ vibration: !feedback.vibration })}
+          />
         </div>
       </section>
 
