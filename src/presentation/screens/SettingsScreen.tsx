@@ -1,9 +1,14 @@
 import { Link } from 'react-router-dom'
-import { useRef, useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import { useTheme } from '../theme/ThemeContext'
 import { exportAll, importAll, isValidExportBundle } from '../../infrastructure/exportImport/exportImport'
+import { downloadBackup } from '../../infrastructure/exportImport/downloadBackup'
+import { getSetting, setSetting } from '../../infrastructure/db/repositories/settingsRepository'
+import { db } from '../../infrastructure/db/schema'
 import { useFeedbackSettings } from '../components/useFeedbackSettings'
 import { useWeightUnit } from '../components/useWeightUnit'
+
+const LAST_EXPORT_KEY = 'lastExportAt'
 
 export function SettingsScreen() {
   const { theme, setTheme, motion, setMotion } = useTheme()
@@ -11,17 +16,21 @@ export function SettingsScreen() {
   const [unit, setUnit] = useWeightUnit()
   const fileInputRef = useRef<HTMLInputElement>(null)
   const [status, setStatus] = useState<string | null>(null)
+  const [lastExportAt, setLastExportAt] = useState<string | null>(null)
+  const [resetText, setResetText] = useState('')
+  const [resetting, setResetting] = useState(false)
+
+  useEffect(() => {
+    getSetting<string>(LAST_EXPORT_KEY).then((value) => setLastExportAt(value ?? null))
+  }, [])
 
   async function handleExport() {
     const bundle = await exportAll()
-    const blob = new Blob([JSON.stringify(bundle, null, 2)], { type: 'application/json' })
-    const url = URL.createObjectURL(blob)
-    const link = document.createElement('a')
-    link.href = url
-    link.download = `workout-app-backup-${new Date().toISOString().slice(0, 10)}.json`
-    link.click()
-    URL.revokeObjectURL(url)
-    setStatus('Export downloaded.')
+    downloadBackup(bundle)
+    const now = new Date().toISOString()
+    await setSetting(LAST_EXPORT_KEY, now)
+    setLastExportAt(now)
+    setStatus('Backup downloaded.')
   }
 
   async function handleImportFile(file: File) {
@@ -29,14 +38,22 @@ export function SettingsScreen() {
       const text = await file.text()
       const bundle = JSON.parse(text)
       if (!isValidExportBundle(bundle)) {
-        setStatus('Import failed — this file is not a valid backup.')
+        setStatus('Import failed: this file is not a valid backup.')
         return
       }
       await importAll(bundle)
       setStatus('Import complete.')
     } catch {
-      setStatus('Import failed — check the file and try again.')
+      setStatus('Import failed: check the file and try again.')
     }
+  }
+
+  async function handleReset() {
+    setResetting(true)
+    await db.transaction('rw', db.tables, async () => {
+      for (const table of db.tables) await table.clear()
+    })
+    location.reload()
   }
 
   return (
@@ -94,6 +111,9 @@ export function SettingsScreen() {
             Import data
           </button>
         </div>
+        <p className="text-sm text-ink-muted">
+          Last backup: {lastExportAt ? new Date(lastExportAt).toLocaleString() : 'never'}
+        </p>
         <input
           ref={fileInputRef}
           type="file"
@@ -105,6 +125,24 @@ export function SettingsScreen() {
           }}
         />
         {status && <p className="text-sm text-ink-muted">{status}</p>}
+      </section>
+
+      <section className="space-y-2">
+        <p className="font-semibold">Reset all data</p>
+        <p className="text-sm text-ink-muted">Erases every workout, routine and setting on this device. Export a backup first.</p>
+        <input
+          type="text"
+          inputMode="text"
+          autoCapitalize="characters"
+          placeholder="Type DELETE to enable"
+          value={resetText}
+          onChange={(e) => setResetText(e.target.value)}
+          className="input"
+          aria-label="Type DELETE to enable reset"
+        />
+        <button className="btn flex-1 w-full bg-accent text-white" disabled={resetText !== 'DELETE' || resetting} onClick={handleReset}>
+          Erase everything
+        </button>
       </section>
 
       <section>
@@ -128,10 +166,7 @@ function ThemeButton({
   capitalize?: boolean
 }) {
   return (
-    <button
-      className={`chip ${capitalize ? 'capitalize' : ''} ${active ? 'chip-active' : ''}`}
-      onClick={onClick}
-    >
+    <button className={`chip ${capitalize ? 'capitalize' : ''} ${active ? 'chip-active' : ''}`} onClick={onClick}>
       {label}
     </button>
   )

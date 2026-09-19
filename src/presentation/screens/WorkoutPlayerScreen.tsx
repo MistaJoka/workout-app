@@ -10,6 +10,7 @@ import { getLastTimeSummary } from '../../application/lastTime'
 import { primeAudio, restEndFeedback } from '../../application/restFeedback'
 import { useFeedbackSettings } from '../components/useFeedbackSettings'
 import { useWeightUnit } from '../components/useWeightUnit'
+import { useWakeLock } from '../pwa/useWakeLock'
 import { formatWeight, kgToUnit, roundToStep, stepInUnit, unitToKg } from '../units'
 
 type ActionType = 'SET_COMPLETED' | 'REST_ENDED' | 'REST_SKIPPED' | 'PAUSED' | 'RESUMED'
@@ -19,6 +20,8 @@ const REST_EXTENSION_MS = 15_000
 export function WorkoutPlayerScreen() {
   const { sessionId } = useParams()
   const navigate = useNavigate()
+  // Keep the screen awake for the whole workout; released when leaving.
+  useWakeLock(true)
   const [plan, setPlan] = useState<SessionPlan | null>(null)
   const [state, setState] = useState<SessionState | null>(null)
   const [error, setError] = useState<string | null>(null)
