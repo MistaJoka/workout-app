@@ -48,6 +48,21 @@ export async function getResult(sessionId: string): Promise<SessionResult | unde
   return db.sessionResults.get(sessionId)
 }
 
+// Read-only snapshot for progress projections (src/domain/progress).
+export async function getAllSessionHistory(): Promise<{
+  plans: SessionPlan[]
+  results: SessionResult[]
+  events: SessionEvent[]
+}> {
+  // `type` isn't indexed; projectSetRecords filters to SET_COMPLETED itself.
+  const [plans, results, events] = await Promise.all([
+    db.sessionPlans.toArray(),
+    db.sessionResults.toArray(),
+    db.sessionEvents.toArray(),
+  ])
+  return { plans, results, events }
+}
+
 export async function getInProgressSessions(): Promise<SessionPlan[]> {
   const [plans, results] = await Promise.all([db.sessionPlans.toArray(), db.sessionResults.toArray()])
   const completedIds = new Set(results.map((r) => r.sessionId))
