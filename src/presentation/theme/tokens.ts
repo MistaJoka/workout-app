@@ -6,6 +6,8 @@ export type ThemeTokens = {
   colorSurface: string
   colorPrimary: string
   colorPrimaryShadow: string
+  // Text/icon color placed on the primary color (white on pink, ink on cyan).
+  colorOnPrimary: string
   colorAccent: string
   colorText: string
   colorTextMuted: string
@@ -32,6 +34,7 @@ export const THEME_TOKENS: Record<ThemeName, ThemeTokens> = {
     colorSurface: '#ffffff',
     colorPrimary: '#ec4899',
     colorPrimaryShadow: '#b4286f',
+    colorOnPrimary: '#ffffff',
     colorAccent: '#8b5cf6',
     colorText: '#2b2d42',
     colorTextMuted: '#5f627a',
@@ -49,6 +52,7 @@ export const THEME_TOKENS: Record<ThemeName, ThemeTokens> = {
     colorSurface: '#1a1a21',
     colorPrimary: '#22d3ee',
     colorPrimaryShadow: '#0e7f90',
+    colorOnPrimary: '#0f0f13',
     colorAccent: '#f43f5e',
     colorText: '#f4f4f5',
     colorTextMuted: '#9a9aa6',
@@ -68,6 +72,7 @@ const TOKEN_CSS_VAR: Record<keyof ThemeTokens, string> = {
   colorSurface: '--color-surface',
   colorPrimary: '--color-primary',
   colorPrimaryShadow: '--color-primary-shadow',
+  colorOnPrimary: '--color-on-primary',
   colorAccent: '--color-accent',
   colorText: '--color-text',
   colorTextMuted: '--color-text-muted',

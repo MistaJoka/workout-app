@@ -82,7 +82,7 @@ export function RoutineDetailScreen() {
             Edit
           </Link>
           {confirmingDelete ? (
-            <button className="flex-1 rounded-panel bg-accent px-4 py-2 text-white" onClick={handleDelete}>
+            <button className="btn flex-1 bg-accent text-white" onClick={handleDelete}>
               Yes, delete
             </button>
           ) : (

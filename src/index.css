@@ -7,6 +7,7 @@
   --color-surface: #ffffff;
   --color-primary: #ec4899;
   --color-primary-shadow: #b4286f;
+  --color-on-primary: #ffffff;
   --color-accent: #8b5cf6;
   --color-text: #2b2d42;
   --color-text-muted: #5f627a;
@@ -58,7 +59,8 @@ h2 {
     pointer-events: none;
   }
   .btn-primary {
-    @apply btn text-white;
+    @apply btn;
+    color: var(--color-on-primary);
     background-color: var(--color-primary);
     box-shadow: 0 4px 0 var(--color-primary-shadow);
   }
@@ -133,7 +135,14 @@ h2 {
   .chip-active {
     background-color: var(--color-primary);
     border-color: var(--color-primary);
-    color: #fff;
+    color: var(--color-on-primary);
+  }
+  .badge-primary {
+    @apply inline-flex items-center text-xs font-bold;
+    border-radius: var(--radius-control);
+    padding: 0.25rem 0.625rem;
+    background-color: var(--color-primary);
+    color: var(--color-on-primary);
   }
   .stepper-btn {
     @apply inline-flex h-11 w-11 items-center justify-center text-xl font-bold;

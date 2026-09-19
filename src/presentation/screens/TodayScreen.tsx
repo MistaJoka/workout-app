@@ -77,7 +77,7 @@ export function TodayScreen() {
           >
             <div className="flex items-center justify-between gap-2">
               <p className="text-lg font-bold">{template.name}</p>
-              {suggested && <span className="rounded-control bg-primary px-2.5 py-1 text-xs font-bold text-white">Up next</span>}
+              {suggested && <span className="badge-primary">Up next</span>}
             </div>
             <p className="text-sm text-ink-muted">
               {countLabel(template.exercises.length, 'exercise')}, about {estimateMinutes(templateById.get(template.id))} min
