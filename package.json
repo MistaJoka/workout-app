@@ -8,6 +8,8 @@
     "build": "tsc -b && vite build",
     "preview": "vite preview",
     "test": "vitest run",
+    "check": "tsc -b --force && vitest run && vite build",
+    "generate:icons": "node scripts/generate-icons.mjs",
     "import:free-exercise-db": "tsx scripts/content/run-import-free-exercise-db.ts",
     "generate:library": "tsx scripts/content/generate-library.ts"
   },

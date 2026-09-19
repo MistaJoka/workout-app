@@ -4,6 +4,10 @@ import App from './App'
 import '@fontsource-variable/nunito'
 import './index.css'
 import { registerServiceWorker } from './presentation/pwa/registerServiceWorker'
+import { requestPersistentStorage } from './presentation/pwa/storagePersistence'
+import { ErrorBoundary } from './presentation/components/ErrorBoundary'
+import { OfflineBanner } from './presentation/components/OfflineBanner'
+import { UpdateToast } from './presentation/components/UpdateToast'
 
 const rootElement = document.getElementById('root')
 if (!rootElement) {
@@ -12,8 +16,13 @@ if (!rootElement) {
 
 createRoot(rootElement).render(
   <StrictMode>
-    <App />
+    <ErrorBoundary>
+      <OfflineBanner />
+      <UpdateToast />
+      <App />
+    </ErrorBoundary>
   </StrictMode>
 )
 
 registerServiceWorker()
+void requestPersistentStorage()
