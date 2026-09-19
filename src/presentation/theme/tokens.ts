@@ -12,19 +12,20 @@ export type ThemeTokens = {
   radiusPanel: string
 }
 
-// PLACEHOLDER TOKEN VALUES — see support/CLAUDE_REQUESTS.md REQ-20260913-003.
-// Not final product visual design. Exists so the theme-switching
-// architecture (shared component tree, semantic tokens, no per-theme
-// forking) can be built and verified before real design tokens land.
+// Pixel Bloom values are the v0 candidate creative tokens from
+// docs/PIXEL_BLOOM_ASSET_SYSTEM.md §4 (Cloud / Blush / Ink / Pink / Purple);
+// colorTextMuted is Ink softened, since the candidate set has no muted
+// text value yet. Savage Core has no delivered token set — still a
+// placeholder pending REQ-20260913-003.
 export const THEME_TOKENS: Record<ThemeName, ThemeTokens> = {
   'pixel-bloom': {
-    colorBackground: '#fdf2f8',
+    colorBackground: '#f8faff',
     colorSurface: '#ffffff',
     colorPrimary: '#ec4899',
     colorAccent: '#8b5cf6',
-    colorText: '#3f2a44',
-    colorTextMuted: '#8b7a92',
-    colorBorder: '#f3d9ea',
+    colorText: '#2b2d42',
+    colorTextMuted: '#6b6f86',
+    colorBorder: '#ffd6e7',
     radiusPanel: '16px',
   },
   'savage-core': {
@@ -57,6 +58,7 @@ export function applyThemeTokens(theme: ThemeName): void {
   for (const key of Object.keys(tokens) as (keyof ThemeTokens)[]) {
     root.style.setProperty(TOKEN_CSS_VAR[key], tokens[key])
   }
+  document.querySelector('meta[name="theme-color"]')?.setAttribute('content', tokens.colorBackground)
 }
 
 export function applyMotionPreference(motion: MotionPreference): void {

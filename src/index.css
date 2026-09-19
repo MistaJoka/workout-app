@@ -3,19 +3,39 @@
 @tailwind utilities;
 
 :root {
-  --color-background: #fdf2f8;
+  --color-background: #f8faff;
   --color-surface: #ffffff;
   --color-primary: #ec4899;
   --color-accent: #8b5cf6;
-  --color-text: #3f2a44;
-  --color-text-muted: #8b7a92;
-  --color-border: #f3d9ea;
+  --color-text: #2b2d42;
+  --color-text-muted: #6b6f86;
+  --color-border: #ffd6e7;
   --radius-panel: 16px;
 }
 
 body {
   background-color: var(--color-background);
   color: var(--color-text);
+}
+
+/* Two-frame movement loop: the finish frame fades in over the start frame
+   and back, so the photos read as the movement rather than two stills. */
+@keyframes movement-loop-frame {
+  0%,
+  35% {
+    opacity: 0;
+  }
+  50%,
+  85% {
+    opacity: 1;
+  }
+  100% {
+    opacity: 0;
+  }
+}
+
+.movement-loop__finish {
+  animation: movement-loop-frame 2.4s ease-in-out infinite;
 }
 
 /* Explicit reduced/off always wins. */

@@ -1,17 +1,22 @@
+import { existsSync } from 'node:fs'
+import { join } from 'node:path'
 import { describe, expect, it } from 'vitest'
 import { validateContentPack } from '../schema'
 import {
+  ROTATION,
   foundationStrengthStarterExercises,
   foundationStrengthStarterPack,
-  foundationStrengthStarterTemplate,
+  foundationStrengthStarterTemplates,
+  quick10,
+  templateById,
 } from './foundationStrengthStarter'
 
 describe('foundationStrengthStarter', () => {
-  it('validates as a referentially consistent, schema-valid content pack', () => {
+  it('validates as a referentially consistent, schema-valid content pack across all templates', () => {
     const result = validateContentPack(
       foundationStrengthStarterPack,
       foundationStrengthStarterExercises,
-      [foundationStrengthStarterTemplate]
+      foundationStrengthStarterTemplates
     )
     expect(result.valid).toBe(true)
     expect(result.errors).toEqual([])
@@ -19,8 +24,8 @@ describe('foundationStrengthStarter', () => {
 
   it('never shows placeholder text in any user-facing exercise or template field', () => {
     const haystacks = [
-      foundationStrengthStarterTemplate.name,
       foundationStrengthStarterPack.name,
+      ...foundationStrengthStarterTemplates.map((t) => t.name),
       ...foundationStrengthStarterExercises.flatMap((e) => [e.name, e.setup, ...e.executionPhases]),
     ]
     for (const text of haystacks) {
@@ -36,9 +41,44 @@ describe('foundationStrengthStarter', () => {
     }
   })
 
-  it('gives the static-hold exercise a time-based prescription, not reps', () => {
-    const plankInTemplate = foundationStrengthStarterTemplate.exercises.find((e) => e.exerciseId === 'fs.plank')
-    expect(plankInTemplate?.prescription.timeSeconds).toBeGreaterThan(0)
-    expect(plankInTemplate?.prescription.reps).toBeUndefined()
+  it('gives every exercise real setup + execution steps (no empty instruction sets)', () => {
+    for (const exercise of foundationStrengthStarterExercises) {
+      expect(exercise.setup.length).toBeGreaterThan(0)
+      expect(exercise.executionPhases.length).toBeGreaterThan(0)
+    }
+  })
+
+  it('references start/finish movement photos that actually exist as static assets', () => {
+    for (const exercise of foundationStrengthStarterExercises) {
+      const { start, finish } = exercise.mediaManifest
+      expect(start).toBeTruthy()
+      expect(finish).toBeTruthy()
+      for (const path of [start!, finish!]) {
+        expect(existsSync(join(process.cwd(), 'public', path)), `${exercise.id}: ${path}`).toBe(true)
+      }
+    }
+  })
+
+  it('prescribes hold-based exercises by time, never reps, in every template', () => {
+    for (const template of foundationStrengthStarterTemplates) {
+      for (const te of template.exercises) {
+        const exercise = foundationStrengthStarterExercises.find((e) => e.id === te.exerciseId)!
+        if (exercise.prescriptionCapabilities.hold) {
+          expect(te.prescription.timeSeconds).toBeGreaterThan(0)
+          expect(te.prescription.reps).toBeUndefined()
+        } else {
+          expect(te.prescription.reps).toBeGreaterThan(0)
+          expect(te.prescription.timeSeconds).toBeUndefined()
+        }
+      }
+    }
+  })
+
+  it('rotates between the two full sessions and keeps Quick 10 out of the rotation', () => {
+    expect(ROTATION).toHaveLength(2)
+    expect(ROTATION).not.toContain(quick10.id)
+    for (const id of ROTATION) {
+      expect(templateById.has(id)).toBe(true)
+    }
   })
 })

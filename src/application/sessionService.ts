@@ -110,4 +110,17 @@ async function updateProgressionAfterSession(sessionId: string): Promise<void> {
   for (const outcome of outcomes) {
     await progressionRepo.applyProgressionOutcome(outcome.exerciseId, outcome)
   }
+
+  // Familiarity (§8: how much guidance to show) is a separate system from
+  // progression — it only counts exposures, and only for exercises the user
+  // actually performed at least one set of in this session.
+  const exposedAt = new Date().toISOString()
+  const performedExerciseIds = new Set(
+    events.filter((e) => e.type === 'SET_COMPLETED').map((e) => e.payload.exerciseId as string | undefined)
+  )
+  for (const exercise of plan.exercises) {
+    if (performedExerciseIds.has(exercise.exerciseId)) {
+      await progressionRepo.recordExposure(exercise.exerciseId, exposedAt)
+    }
+  }
 }

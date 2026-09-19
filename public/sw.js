@@ -1,5 +1,21 @@
-const CACHE_NAME = 'workout-app-shell-v2'
-const SHELL_URLS = ['/', '/manifest.json']
+const CACHE_NAME = 'workout-app-shell-v3'
+
+// Movement photos are precached so a workout works fully offline even if
+// the user never opened every exercise while online. Keep in sync with
+// src/domain/content/fixtures/foundationStrengthStarter.ts mediaManifest.
+const MEDIA_IDS = [
+  'Bodyweight_Squat',
+  'Incline_Push-Up',
+  'Single_Leg_Glute_Bridge',
+  'Dead_Bug',
+  'Plank',
+  'Bodyweight_Walking_Lunge',
+  'Butt_Lift_Bridge',
+  'Crunches',
+  'Superman',
+]
+const MEDIA_URLS = MEDIA_IDS.flatMap((id) => [`/exercise-media/${id}/0.jpg`, `/exercise-media/${id}/1.jpg`])
+const SHELL_URLS = ['/', '/manifest.json', ...MEDIA_URLS]
 
 self.addEventListener('install', (event) => {
   event.waitUntil(caches.open(CACHE_NAME).then((cache) => cache.addAll(SHELL_URLS)))

@@ -2,7 +2,7 @@ import { useState } from 'react'
 import { useNavigate, useParams } from 'react-router-dom'
 import {
   foundationStrengthStarterExercises,
-  foundationStrengthStarterTemplate,
+  templateById,
 } from '../../domain/content/fixtures/foundationStrengthStarter'
 import { createSessionPlanFromTemplate } from '../../domain/session/createSessionPlan'
 import { getProgression } from '../../infrastructure/db/repositories/familiarityProgressionRepository'
@@ -13,14 +13,25 @@ export function CheckInScreen() {
   const [energy, setEnergy] = useState(3)
   const [comfort, setComfort] = useState(3)
   const [availableMinutes, setAvailableMinutes] = useState(30)
+  const [busy, setBusy] = useState(false)
+
+  const template = templateId ? templateById.get(templateId) : undefined
+
+  if (!template) {
+    return (
+      <div className="p-4 space-y-2">
+        <p>That workout isn't available.</p>
+        <button className="underline" onClick={() => navigate('/')}>
+          Back to Today
+        </button>
+      </div>
+    )
+  }
 
   async function handleContinue() {
-    if (templateId !== foundationStrengthStarterTemplate.id) {
-      return
-    }
-    const progressionRecords = await Promise.all(
-      foundationStrengthStarterExercises.map((e) => getProgression(e.id))
-    )
+    if (!template) return
+    setBusy(true)
+    const progressionRecords = await Promise.all(template.exercises.map((e) => getProgression(e.exerciseId)))
     const repsOverridesByExerciseId = new Map(
       progressionRecords
         .filter((r) => r.currentPrescribedReps != null)
@@ -29,7 +40,7 @@ export function CheckInScreen() {
     const plan = createSessionPlanFromTemplate({
       id: crypto.randomUUID(),
       createdAt: new Date().toISOString(),
-      template: foundationStrengthStarterTemplate,
+      template,
       exercises: foundationStrengthStarterExercises,
       checkIn: { energy, comfort, availableMinutes },
       ruleVersion: 'foundation-strength-starter-v1',
@@ -40,11 +51,26 @@ export function CheckInScreen() {
 
   return (
     <div className="p-4 space-y-6">
-      <h1 className="text-xl font-bold">Check-In</h1>
-      <RangeField label="Energy" value={energy} onChange={setEnergy} />
-      <RangeField label="Comfort" value={comfort} onChange={setComfort} />
-      <RangeField label="Available minutes" value={availableMinutes} onChange={setAvailableMinutes} min={5} max={90} step={5} />
-      <button className="rounded-panel bg-primary px-4 py-2 text-white" onClick={handleContinue}>
+      <div>
+        <p className="text-sm text-ink-muted">{template.name}</p>
+        <h1 className="text-xl font-bold">How are you feeling?</h1>
+      </div>
+      <RangeField label="Energy" value={energy} onChange={setEnergy} low="Low" high="High" />
+      <RangeField label="Comfort" value={comfort} onChange={setComfort} low="Sore" high="Great" />
+      <RangeField
+        label="Time available"
+        value={availableMinutes}
+        onChange={setAvailableMinutes}
+        min={5}
+        max={90}
+        step={5}
+        unit=" min"
+      />
+      <button
+        className="w-full rounded-panel bg-primary px-4 py-3 text-lg text-white disabled:opacity-50"
+        disabled={busy}
+        onClick={handleContinue}
+      >
         Continue
       </button>
     </div>
@@ -58,6 +84,9 @@ function RangeField({
   min = 1,
   max = 5,
   step = 1,
+  low,
+  high,
+  unit = '',
 }: {
   label: string
   value: number
@@ -65,11 +94,18 @@ function RangeField({
   min?: number
   max?: number
   step?: number
+  low?: string
+  high?: string
+  unit?: string
 }) {
   return (
     <label className="block space-y-1">
-      <span className="text-sm text-ink-muted">
-        {label}: {value}
+      <span className="flex justify-between text-sm">
+        <span className="font-semibold">{label}</span>
+        <span className="text-ink-muted">
+          {value}
+          {unit}
+        </span>
       </span>
       <input
         type="range"
@@ -78,8 +114,14 @@ function RangeField({
         step={step}
         value={value}
         onChange={(event) => onChange(Number(event.target.value))}
-        className="w-full"
+        className="w-full accent-[var(--color-primary)]"
       />
+      {(low || high) && (
+        <span className="flex justify-between text-xs text-ink-muted">
+          <span>{low}</span>
+          <span>{high}</span>
+        </span>
+      )}
     </label>
   )
 }

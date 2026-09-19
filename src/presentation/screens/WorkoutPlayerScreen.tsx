@@ -3,9 +3,8 @@ import { useNavigate, useParams } from 'react-router-dom'
 import { getCurrentState, getPlan, recordEvent } from '../../application/sessionService'
 import type { SessionPlan, SessionState } from '../../domain/session/types'
 import { isRestComplete, remainingRestMs } from '../../domain/session/restTimer'
-import { foundationStrengthStarterExercises } from '../../domain/content/fixtures/foundationStrengthStarter'
-
-const exerciseById = new Map(foundationStrengthStarterExercises.map((e) => [e.id, e]))
+import { exerciseById } from '../../domain/content/fixtures/foundationStrengthStarter'
+import { MovementMedia } from '../components/MovementMedia'
 
 type ActionType = 'SET_COMPLETED' | 'REST_ENDED' | 'REST_SKIPPED' | 'PAUSED' | 'RESUMED'
 
@@ -118,8 +117,16 @@ export function WorkoutPlayerScreen() {
       <h2 className="text-2xl font-bold">{exercise.name}</h2>
       <p className="text-lg font-semibold">
         Set {state.currentSetNumber} of {exercise.sets}
-        {exercise.reps ? ` — ${exercise.reps} reps` : exercise.timeSeconds ? ` — ${exercise.timeSeconds}s` : ''}
+        {exercise.reps ? ` — ${exercise.reps} reps` : exercise.timeSeconds ? ` — ${exercise.timeSeconds}s hold` : ''}
       </p>
+
+      {exerciseContent && (
+        <MovementMedia
+          name={exerciseContent.name}
+          start={exerciseContent.mediaManifest.start}
+          finish={exerciseContent.mediaManifest.finish}
+        />
+      )}
 
       {exerciseContent && (exerciseContent.setup || exerciseContent.executionPhases.length > 0) && (
         <ol className="space-y-1.5 text-sm leading-snug">

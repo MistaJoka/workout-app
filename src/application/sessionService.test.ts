@@ -133,6 +133,25 @@ describe('recordEvent', () => {
     expect(progression.currentPrescribedReps).toBe(12) // ADJUSTED_WITHIN_BOUNDS: 10 + repsStep(2)
   })
 
+  it('records one familiarity exposure per performed exercise when the session completes', async () => {
+    const { getFamiliarity } = await import('../infrastructure/db/repositories/familiarityProgressionRepository')
+    await db.familiarity.clear()
+    const repsPlan: SessionPlan = {
+      ...plan,
+      id: 'session-familiarity-1',
+      exercises: [
+        { exerciseId: 'ex1', exerciseVersion: 1, name: 'Exercise One', sets: 1, reps: 10, restSeconds: 60, order: 0 },
+        { exerciseId: 'ex2', exerciseVersion: 1, name: 'Exercise Two', sets: 1, reps: 10, restSeconds: 60, order: 1 },
+      ],
+    }
+    await startSession(repsPlan)
+    await recordEvent(repsPlan.id, 'SET_COMPLETED', 'evt-set-1', { exerciseId: 'ex1', met: true })
+    await recordEvent(repsPlan.id, 'SESSION_COMPLETED_SHORTENED', 'evt-end')
+
+    expect((await getFamiliarity('ex1')).exposureCount).toBe(1)
+    expect((await getFamiliarity('ex2')).exposureCount).toBe(0)
+  })
+
   it('does not double-apply progression on an idempotent replay of the completing event', async () => {
     const repsPlan: SessionPlan = {
       ...plan,
