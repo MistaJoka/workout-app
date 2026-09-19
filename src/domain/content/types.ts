@@ -8,6 +8,15 @@ export type Exercise = {
   taxonomy: {
     category: string
     equipment: string[]
+    // Promoted from the upstream dataset once Library filtering became a
+    // concrete consumer (docs/rnd/foss-fitness/sources/free-exercise-db.md,
+    // "Schema-extension candidates"). Optional: curated/authored content
+    // may omit them.
+    primaryMuscles?: string[]
+    secondaryMuscles?: string[]
+    level?: 'beginner' | 'intermediate' | 'expert'
+    mechanic?: 'compound' | 'isolation'
+    force?: 'push' | 'pull' | 'static'
   }
   setup: string
   executionPhases: string[]

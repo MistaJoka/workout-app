@@ -6,7 +6,8 @@ export function AppShell() {
       <main className="flex-1 pb-16">
         <Outlet />
       </main>
-      <nav className="fixed bottom-0 left-0 right-0 flex border-t border-edge bg-surface">
+      {/* Fixed height so screens with their own bottom CTA can sit at bottom-14. */}
+      <nav className="fixed bottom-0 left-0 right-0 z-10 flex h-14 border-t border-edge bg-surface">
         <NavItem to="/" label="Today" end />
         <NavItem to="/library" label="Library" />
         <NavItem to="/progress" label="Progress" />

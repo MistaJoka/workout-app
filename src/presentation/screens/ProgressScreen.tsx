@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react'
 import { db } from '../../infrastructure/db/schema'
 import { getPlan } from '../../infrastructure/db/repositories/sessionRepository'
-import { templateById } from '../../domain/content/fixtures/foundationStrengthStarter'
+import { getTemplate } from '../../domain/content/catalog'
 import type { SessionResult } from '../../domain/session/types'
 
 type HistoryRow = SessionResult & { workoutName: string }
@@ -19,7 +19,7 @@ export function ProgressScreen() {
     return Promise.all(
       sorted.map(async (result) => {
         const plan = await getPlan(result.planId)
-        const workoutName = (plan && templateById.get(plan.templateId)?.name) ?? 'Workout'
+        const workoutName = (plan && (await getTemplate(plan.templateId))?.name) ?? 'Workout'
         return { ...result, workoutName }
       })
     )

@@ -1,33 +1,156 @@
-import {
-  exerciseById,
-  foundationStrengthStarterPack,
-  foundationStrengthStarterTemplates,
-} from '../../domain/content/fixtures/foundationStrengthStarter'
+import { countLabel } from '../format'
+import { useEffect, useMemo, useState } from 'react'
+import { Link } from 'react-router-dom'
+import { loadLibrary } from '../../domain/content/catalog'
+import { EQUIPMENT_OPTIONS, MUSCLE_GROUPS, filterExercises, type LibraryFilters } from '../../domain/content/library'
+import type { Exercise } from '../../domain/content/types'
+import { foundationStrengthStarterTemplates } from '../../domain/content/fixtures/foundationStrengthStarter'
+import { listCustomTemplates } from '../../infrastructure/db/repositories/customTemplateRepository'
+import type { WorkoutTemplate } from '../../domain/content/types'
+
+const PAGE = 40
 
 export function LibraryScreen() {
+  const [library, setLibrary] = useState<Exercise[] | null>(null)
+  const [custom, setCustom] = useState<WorkoutTemplate[]>([])
+  const [filters, setFilters] = useState<LibraryFilters>({})
+  const [limit, setLimit] = useState(PAGE)
+
+  useEffect(() => {
+    loadLibrary().then(setLibrary)
+    listCustomTemplates().then(setCustom)
+  }, [])
+
+  const results = useMemo(() => (library ? filterExercises(library, filters) : []), [library, filters])
+  const filtering = Boolean(filters.query || filters.muscle || filters.equipment || filters.level)
+
+  function toggle<K extends keyof LibraryFilters>(key: K, value: LibraryFilters[K]) {
+    setLimit(PAGE)
+    setFilters((f) => ({ ...f, [key]: f[key] === value ? undefined : value }))
+  }
+
   return (
     <div className="p-4 space-y-4">
-      <h1 className="text-xl font-bold">Library</h1>
-      <p className="text-sm text-ink-muted">{foundationStrengthStarterPack.name}</p>
-      {foundationStrengthStarterTemplates.map((template) => (
-        <div key={template.id} className="rounded-panel border border-edge bg-surface p-4">
-          <p className="font-semibold">{template.name}</p>
-          <ul className="mt-2 space-y-1 text-sm">
-            {template.exercises.map((te) => {
-              const exercise = exerciseById.get(te.exerciseId)
-              const dose = te.prescription.reps
-                ? `${te.prescription.sets} × ${te.prescription.reps}`
-                : `${te.prescription.sets} × ${te.prescription.timeSeconds}s`
-              return (
-                <li key={te.exerciseId} className="flex justify-between gap-2">
-                  <span>{exercise?.name ?? te.exerciseId}</span>
-                  <span className="text-ink-muted">{dose}</span>
-                </li>
-              )
-            })}
-          </ul>
-        </div>
-      ))}
+      <div className="flex items-baseline justify-between">
+        <h1 className="text-xl font-bold">Library</h1>
+        <Link to="/routines/new" className="rounded-panel bg-primary px-3 py-1.5 text-sm text-white">
+          + New routine
+        </Link>
+      </div>
+
+      {!filtering && (
+        <section className="space-y-2">
+          <p className="text-sm font-semibold text-ink-muted">Routines</p>
+          {[...foundationStrengthStarterTemplates, ...custom].map((template) => (
+            <Link
+              key={template.id}
+              to={`/routines/${template.id}`}
+              className="flex items-center justify-between rounded-panel border border-edge bg-surface px-4 py-3"
+            >
+              <span className="font-semibold">{template.name}</span>
+              <span className="text-sm text-ink-muted">{countLabel(template.exercises.length, 'exercise')}</span>
+            </Link>
+          ))}
+        </section>
+      )}
+
+      <section className="space-y-2">
+        <p className="text-sm font-semibold text-ink-muted">Exercises</p>
+        <input
+          type="search"
+          inputMode="search"
+          placeholder="Search exercises"
+          value={filters.query ?? ''}
+          onChange={(e) => {
+            setLimit(PAGE)
+            setFilters((f) => ({ ...f, query: e.target.value || undefined }))
+          }}
+          className="w-full rounded-panel border border-edge bg-surface px-4 py-3"
+        />
+        <ChipRow>
+          {MUSCLE_GROUPS.map((g) => (
+            <Chip key={g.id} active={filters.muscle === g.id} onClick={() => toggle('muscle', g.id)}>
+              {g.label}
+            </Chip>
+          ))}
+        </ChipRow>
+        <ChipRow>
+          {EQUIPMENT_OPTIONS.map((o) => (
+            <Chip key={o.id} active={filters.equipment === o.id} onClick={() => toggle('equipment', o.id)}>
+              {o.label}
+            </Chip>
+          ))}
+        </ChipRow>
+        <ChipRow>
+          {(['beginner', 'intermediate', 'expert'] as const).map((l) => (
+            <Chip key={l} active={filters.level === l} onClick={() => toggle('level', l)}>
+              {l[0].toUpperCase() + l.slice(1)}
+            </Chip>
+          ))}
+        </ChipRow>
+
+        {library === null && <p className="text-ink-muted">Loading library…</p>}
+        {library && (
+          <p className="text-xs text-ink-muted">
+            {countLabel(results.length, 'exercise')}
+          </p>
+        )}
+        <ul className="space-y-2">
+          {results.slice(0, limit).map((exercise) => (
+            <li key={exercise.id}>
+              <Link
+                to={`/exercise/${exercise.id}`}
+                className="flex items-center gap-3 rounded-panel border border-edge bg-surface p-2"
+              >
+                {exercise.mediaManifest.start ? (
+                  <img
+                    src={exercise.mediaManifest.start}
+                    alt=""
+                    loading="lazy"
+                    className="h-14 w-20 flex-none rounded-panel object-cover"
+                  />
+                ) : (
+                  <div className="h-14 w-20 flex-none rounded-panel bg-bg" />
+                )}
+                <div className="min-w-0">
+                  <p className="truncate font-semibold">{exercise.name}</p>
+                  <p className="truncate text-xs text-ink-muted">
+                    {[exercise.taxonomy.primaryMuscles?.[0], exercise.taxonomy.equipment[0], exercise.taxonomy.level]
+                      .filter(Boolean)
+                      .join(' · ')}
+                  </p>
+                </div>
+              </Link>
+            </li>
+          ))}
+        </ul>
+        {results.length > limit && (
+          <button
+            className="w-full rounded-panel border border-edge px-4 py-3"
+            onClick={() => setLimit((n) => n + PAGE)}
+          >
+            Show more
+          </button>
+        )}
+      </section>
     </div>
+  )
+}
+
+function ChipRow({ children }: { children: React.ReactNode }) {
+  return <div className="flex gap-2 overflow-x-auto pb-1 [-webkit-overflow-scrolling:touch]">{children}</div>
+}
+
+export function Chip({ active, onClick, children }: { active: boolean; onClick: () => void; children: React.ReactNode }) {
+  return (
+    <button
+      type="button"
+      onClick={onClick}
+      className={`flex-none rounded-full border px-3 py-1.5 text-sm ${
+        active ? 'border-primary bg-primary text-white' : 'border-edge bg-surface'
+      }`}
+    >
+      {children}
+    </button>
   )
 }

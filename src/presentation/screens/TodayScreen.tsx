@@ -1,3 +1,4 @@
+import { countLabel } from '../format'
 import { useEffect, useState } from 'react'
 import { Link } from 'react-router-dom'
 import {
@@ -6,11 +7,12 @@ import {
   templateById,
 } from '../../domain/content/fixtures/foundationStrengthStarter'
 import { getInProgressSessions, getPlan } from '../../infrastructure/db/repositories/sessionRepository'
+import { listCustomTemplates } from '../../infrastructure/db/repositories/customTemplateRepository'
 import { db } from '../../infrastructure/db/schema'
 import type { SessionPlan } from '../../domain/session/types'
+import type { WorkoutTemplate } from '../../domain/content/types'
 
-function estimateMinutes(templateId: string): number {
-  const template = templateById.get(templateId)
+function estimateMinutes(template: WorkoutTemplate | undefined): number {
   if (!template) return 0
   // ~3s per rep, plus ~15s per set to get into position; rounded up to 5 min.
   const seconds = template.exercises.reduce((sum, e) => {
@@ -23,10 +25,12 @@ function estimateMinutes(templateId: string): number {
 export function TodayScreen() {
   const [inProgress, setInProgress] = useState<SessionPlan[] | null>(null)
   const [suggestedId, setSuggestedId] = useState<string>(ROTATION[0])
+  const [custom, setCustom] = useState<WorkoutTemplate[]>([])
 
   useEffect(() => {
     getInProgressSessions().then(setInProgress)
     suggestNext().then(setSuggestedId)
+    listCustomTemplates().then(setCustom)
   }, [])
 
   async function suggestNext(): Promise<string> {
@@ -73,11 +77,29 @@ export function TodayScreen() {
               {suggested && <span className="text-xs font-semibold uppercase text-primary">Up next</span>}
             </div>
             <p className="text-sm text-ink-muted">
-              {template.exercises.length} exercises · about {estimateMinutes(template.id)} min
+              {countLabel(template.exercises.length, 'exercise')} · about {estimateMinutes(templateById.get(template.id))} min
             </p>
           </Link>
         )
       })}
+
+      {custom.length > 0 && (
+        <>
+          <p className="pt-2 text-sm font-semibold text-ink-muted">Your routines</p>
+          {custom.map((template) => (
+            <Link
+              key={template.id}
+              to={`/checkin/${template.id}`}
+              className="block rounded-panel border border-edge bg-surface p-4"
+            >
+              <p className="text-lg font-semibold">{template.name}</p>
+              <p className="text-sm text-ink-muted">
+                {countLabel(template.exercises.length, 'exercise')} · about {estimateMinutes(template)} min
+              </p>
+            </Link>
+          ))}
+        </>
+      )}
     </div>
   )
 }

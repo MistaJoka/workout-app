@@ -3,7 +3,8 @@ import { useNavigate, useParams } from 'react-router-dom'
 import { getCurrentState, getPlan, recordEvent } from '../../application/sessionService'
 import type { SessionPlan, SessionState } from '../../domain/session/types'
 import { isRestComplete, remainingRestMs } from '../../domain/session/restTimer'
-import { exerciseById } from '../../domain/content/fixtures/foundationStrengthStarter'
+import { getExercises } from '../../domain/content/catalog'
+import type { Exercise } from '../../domain/content/types'
 import { MovementMedia } from '../components/MovementMedia'
 
 type ActionType = 'SET_COMPLETED' | 'REST_ENDED' | 'REST_SKIPPED' | 'PAUSED' | 'RESUMED'
@@ -16,12 +17,14 @@ export function WorkoutPlayerScreen() {
   const [error, setError] = useState<string | null>(null)
   const [busy, setBusy] = useState(false)
   const [awaitingRepCheck, setAwaitingRepCheck] = useState(false)
+  const [exerciseById, setExerciseById] = useState<Map<string, Exercise>>(new Map())
 
   const refresh = useCallback(async () => {
     if (!sessionId) return
     const [loadedPlan, loadedState] = await Promise.all([getPlan(sessionId), getCurrentState(sessionId)])
     setPlan(loadedPlan ?? null)
     setState(loadedState)
+    if (loadedPlan) setExerciseById(await getExercises(loadedPlan.exercises.map((e) => e.exerciseId)))
   }, [sessionId])
 
   useEffect(() => {

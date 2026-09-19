@@ -7,6 +7,9 @@ import { SessionPreviewScreen } from './presentation/screens/SessionPreviewScree
 import { WorkoutPlayerScreen } from './presentation/screens/WorkoutPlayerScreen'
 import { SessionCompleteScreen } from './presentation/screens/SessionCompleteScreen'
 import { LibraryScreen } from './presentation/screens/LibraryScreen'
+import { ExerciseDetailScreen } from './presentation/screens/ExerciseDetailScreen'
+import { RoutineBuilderScreen } from './presentation/screens/RoutineBuilderScreen'
+import { RoutineDetailScreen } from './presentation/screens/RoutineDetailScreen'
 import { ProgressScreen } from './presentation/screens/ProgressScreen'
 import { SettingsScreen } from './presentation/screens/SettingsScreen'
 
@@ -18,6 +21,10 @@ export default function App() {
           <Route element={<AppShell />}>
             <Route path="/" element={<TodayScreen />} />
             <Route path="/library" element={<LibraryScreen />} />
+            <Route path="/exercise/:exerciseId" element={<ExerciseDetailScreen />} />
+            <Route path="/routines/new" element={<RoutineBuilderScreen />} />
+            <Route path="/routines/:templateId/edit" element={<RoutineBuilderScreen />} />
+            <Route path="/routines/:templateId" element={<RoutineDetailScreen />} />
             <Route path="/progress" element={<ProgressScreen />} />
             <Route path="/settings" element={<SettingsScreen />} />
           </Route>

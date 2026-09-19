@@ -9,6 +9,11 @@ const exerciseSchema = z.object({
   taxonomy: z.object({
     category: z.string().min(1),
     equipment: z.array(z.string()),
+    primaryMuscles: z.array(z.string()).optional(),
+    secondaryMuscles: z.array(z.string()).optional(),
+    level: z.enum(['beginner', 'intermediate', 'expert']).optional(),
+    mechanic: z.enum(['compound', 'isolation']).optional(),
+    force: z.enum(['push', 'pull', 'static']).optional(),
   }),
   setup: z.string(),
   executionPhases: z.array(z.string()),

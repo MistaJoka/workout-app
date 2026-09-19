@@ -1,5 +1,5 @@
 import { db } from '../db/schema'
-import type { CheckInRecord, FamiliarityRecord, ProgressionRecord, SettingsRecord } from '../db/schema'
+import type { CheckInRecord, CustomTemplateRecord, FamiliarityRecord, ProgressionRecord, SettingsRecord } from '../db/schema'
 import type { SessionEvent, SessionPlan, SessionResult } from '../../domain/session/types'
 
 export type ExportBundle = {
@@ -12,6 +12,8 @@ export type ExportBundle = {
   sessionResults: SessionResult[]
   familiarity: FamiliarityRecord[]
   progression: ProgressionRecord[]
+  // Added with DB v2; absent from older bundles, which still import fine.
+  customTemplates?: CustomTemplateRecord[]
 }
 
 export async function exportAll(): Promise<ExportBundle> {
@@ -25,6 +27,7 @@ export async function exportAll(): Promise<ExportBundle> {
     sessionResults: await db.sessionResults.toArray(),
     familiarity: await db.familiarity.toArray(),
     progression: await db.progression.toArray(),
+    customTemplates: await db.customTemplates.toArray(),
   }
 }
 
@@ -46,6 +49,9 @@ export function isValidExportBundle(value: unknown): value is ExportBundle {
   if (typeof candidate.version !== 'number' || typeof candidate.exportedAt !== 'string') {
     return false
   }
+  if (candidate.customTemplates !== undefined && !Array.isArray(candidate.customTemplates)) {
+    return false
+  }
   return EXPORT_BUNDLE_ARRAY_FIELDS.every((field) => Array.isArray(candidate[field]))
 }
 
@@ -55,7 +61,16 @@ export async function importAll(bundle: ExportBundle): Promise<void> {
   }
   await db.transaction(
     'rw',
-    [db.settings, db.checkIns, db.sessionPlans, db.sessionEvents, db.sessionResults, db.familiarity, db.progression],
+    [
+      db.settings,
+      db.checkIns,
+      db.sessionPlans,
+      db.sessionEvents,
+      db.sessionResults,
+      db.familiarity,
+      db.progression,
+      db.customTemplates,
+    ],
     async () => {
       await db.settings.bulkPut(bundle.settings)
       await db.checkIns.bulkPut(bundle.checkIns)
@@ -64,6 +79,9 @@ export async function importAll(bundle: ExportBundle): Promise<void> {
       await db.sessionResults.bulkPut(bundle.sessionResults)
       await db.familiarity.bulkPut(bundle.familiarity)
       await db.progression.bulkPut(bundle.progression)
+      if (bundle.customTemplates) {
+        await db.customTemplates.bulkPut(bundle.customTemplates)
+      }
     }
   )
 }

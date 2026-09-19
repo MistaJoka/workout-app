@@ -34,6 +34,26 @@ self.addEventListener('fetch', (event) => {
   if (request.method !== 'GET') return
 
   const url = new URL(request.url)
+
+  // Library exercise photos live at the pinned upstream revision and are
+  // cached the first time they're viewed (cache-first afterwards), so a
+  // routine built from the library keeps its photos offline once seen.
+  if (url.hostname === 'raw.githubusercontent.com' && url.pathname.includes('/free-exercise-db/')) {
+    event.respondWith(
+      caches.match(request).then((cached) => {
+        if (cached) return cached
+        return fetch(request).then((response) => {
+          if (response.ok || response.type === 'opaque') {
+            const copy = response.clone()
+            caches.open(CACHE_NAME).then((cache) => cache.put(request, copy))
+          }
+          return response
+        })
+      })
+    )
+    return
+  }
+
   if (url.origin !== self.location.origin) return
 
   // Navigations (the HTML document): network-first so a new deploy is

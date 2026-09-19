@@ -1,23 +1,26 @@
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import { useNavigate, useParams } from 'react-router-dom'
-import {
-  foundationStrengthStarterExercises,
-  templateById,
-} from '../../domain/content/fixtures/foundationStrengthStarter'
+import { getExercises, getTemplate } from '../../domain/content/catalog'
+import type { WorkoutTemplate } from '../../domain/content/types'
 import { createSessionPlanFromTemplate } from '../../domain/session/createSessionPlan'
 import { getProgression } from '../../infrastructure/db/repositories/familiarityProgressionRepository'
 
 export function CheckInScreen() {
   const { templateId } = useParams()
   const navigate = useNavigate()
+  const [template, setTemplate] = useState<WorkoutTemplate | null | undefined>(undefined)
   const [energy, setEnergy] = useState(3)
   const [comfort, setComfort] = useState(3)
   const [availableMinutes, setAvailableMinutes] = useState(30)
   const [busy, setBusy] = useState(false)
 
-  const template = templateId ? templateById.get(templateId) : undefined
+  useEffect(() => {
+    if (!templateId) return
+    getTemplate(templateId).then((t) => setTemplate(t ?? null))
+  }, [templateId])
 
-  if (!template) {
+  if (template === undefined) return <div className="p-4">Loading…</div>
+  if (template === null) {
     return (
       <div className="p-4 space-y-2">
         <p>That workout isn't available.</p>
@@ -31,7 +34,8 @@ export function CheckInScreen() {
   async function handleContinue() {
     if (!template) return
     setBusy(true)
-    const progressionRecords = await Promise.all(template.exercises.map((e) => getProgression(e.exerciseId)))
+    const ids = template.exercises.map((e) => e.exerciseId)
+    const [exercises, progressionRecords] = await Promise.all([getExercises(ids), Promise.all(ids.map(getProgression))])
     const repsOverridesByExerciseId = new Map(
       progressionRecords
         .filter((r) => r.currentPrescribedReps != null)
@@ -41,7 +45,7 @@ export function CheckInScreen() {
       id: crypto.randomUUID(),
       createdAt: new Date().toISOString(),
       template,
-      exercises: foundationStrengthStarterExercises,
+      exercises: [...exercises.values()],
       checkIn: { energy, comfort, availableMinutes },
       ruleVersion: 'foundation-strength-starter-v1',
       repsOverridesByExerciseId,

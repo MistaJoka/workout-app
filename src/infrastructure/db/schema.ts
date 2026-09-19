@@ -1,5 +1,8 @@
 import Dexie, { type EntityTable } from 'dexie'
 import type { SessionEvent, SessionPlan, SessionResult } from '../../domain/session/types'
+import type { WorkoutTemplate } from '../../domain/content/types'
+
+export type CustomTemplateRecord = WorkoutTemplate & { createdAt: string; updatedAt: string }
 
 export type SettingsRecord = { key: string; value: unknown }
 export type CheckInRecord = {
@@ -32,6 +35,7 @@ export class WorkoutDb extends Dexie {
   sessionResults!: EntityTable<SessionResult, 'sessionId'>
   familiarity!: EntityTable<FamiliarityRecord, 'exerciseId'>
   progression!: EntityTable<ProgressionRecord, 'exerciseId'>
+  customTemplates!: EntityTable<CustomTemplateRecord, 'id'>
 
   constructor() {
     super('workout-app-v06')
@@ -43,6 +47,10 @@ export class WorkoutDb extends Dexie {
       sessionResults: 'sessionId, planId, endedAt',
       familiarity: 'exerciseId',
       progression: 'exerciseId',
+    })
+    // v2: user-built routines. Additive only — existing stores untouched.
+    this.version(2).stores({
+      customTemplates: 'id, updatedAt',
     })
   }
 }
