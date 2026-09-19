@@ -11,6 +11,7 @@ import { listCustomTemplates } from '../../infrastructure/db/repositories/custom
 import { db } from '../../infrastructure/db/schema'
 import type { SessionPlan } from '../../domain/session/types'
 import type { WorkoutTemplate } from '../../domain/content/types'
+import { WelcomeCard } from '../components/WelcomeCard'
 
 function estimateMinutes(template: WorkoutTemplate | undefined): number {
   if (!template) return 0
@@ -51,6 +52,8 @@ export function TodayScreen() {
   return (
     <div className="p-4 space-y-4">
       <h1 className="text-xl font-bold">Today</h1>
+
+      <WelcomeCard />
 
       {inProgress === null && <p className="text-ink-muted">Loading…</p>}
 
