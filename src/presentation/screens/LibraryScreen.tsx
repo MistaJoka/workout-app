@@ -40,7 +40,12 @@ export function LibraryScreen() {
 
       {!filtering && (
         <section className="space-y-2">
-          <p className="text-sm font-semibold text-ink-muted">Routines</p>
+          <div className="flex items-baseline justify-between">
+            <p className="text-sm font-semibold text-ink-muted">Routines</p>
+            <Link to="/schedule" className="text-sm font-semibold text-primary">
+              Plan your week
+            </Link>
+          </div>
           {[...foundationStrengthStarterTemplates, ...custom].map((template) => (
             <Link
               key={template.id}
