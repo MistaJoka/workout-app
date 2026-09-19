@@ -261,7 +261,7 @@ export function WorkoutPlayerScreen() {
 }
 
 const STEPS_SHOWN = 3
-const STEPS_CHAR_BUDGET = 320
+const STEPS_CHAR_BUDGET = 480
 
 // Library instructions can run to 6+ long steps; the first few (bounded by
 // count and by length, since one upstream step can be a paragraph) plus the
