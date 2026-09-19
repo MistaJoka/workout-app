@@ -173,6 +173,14 @@ h2 {
   outline-offset: 2px;
 }
 
+/* Horizontally scrolling chip rows: swipe, don't show a desktop scrollbar. */
+.overflow-x-auto {
+  scrollbar-width: none;
+}
+.overflow-x-auto::-webkit-scrollbar {
+  display: none;
+}
+
 input[type='range'] {
   accent-color: var(--color-primary);
   height: 2.25rem;
