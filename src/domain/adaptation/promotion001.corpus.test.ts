@@ -150,11 +150,13 @@ describe('Promotion 001 corpus against the live progression engine', () => {
     expect(outcome.candidatePrescribedReps).toBeUndefined()
   })
 
-  // REAL DISCREPANCY (not covered by the owner override): the engine only
-  // sees the sets that produced SET_COMPLETED events, so a session that
-  // ended after one clean top-range set still proposes progression. The
-  // corpus requires every planned working set to be completed. Fix belongs
-  // in evaluateSessionProgression (compare completed count to plan sets).
+  // These two cases first surfaced a real gap: the engine only saw the sets
+  // that produced SET_COMPLETED events, so a session that ended after one
+  // clean top-range set still proposed progression. Fixed in
+  // evaluateSessionProgression: when fewer sets were logged than the plan
+  // calls for, the exercise is RETAINED (and any pending candidate is left
+  // untouched) — every planned working set must be logged before anything
+  // changes.
   it('P001-05 an incomplete set invalidates clean completion', () => {
     expect(last(caseById('P001-05'))!.reasonCode).not.toBe('PROGRESSION_CANDIDATE')
   })

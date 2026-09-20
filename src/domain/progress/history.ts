@@ -7,8 +7,11 @@ import type { SetRecord } from './types'
 // The k-th SET_COMPLETED event of a session is the k-th set slot of its
 // immutable plan — the session machine advances exactly one slot per
 // SET_COMPLETED — so exercise and set number come from the plan, not from
-// the event payload. Payload `met` is the only thing read from the event:
-// false is a miss; true or absent (time-based sets, older events) is met.
+// the event payload. Three payload fields are read from the event, all
+// optional: `met` (false is a miss; true or absent — time-based sets, older
+// events — is met), `reps` (performed reps, when the player logged them),
+// and `weightKg` (the load actually lifted; falls back to the plan's
+// prescribed weight for weighted exercises).
 export function projectSetRecords(
   plans: readonly SessionPlan[],
   results: readonly SessionResult[],

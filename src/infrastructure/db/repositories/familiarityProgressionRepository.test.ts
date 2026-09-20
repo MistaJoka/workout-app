@@ -81,6 +81,23 @@ describe('progression', () => {
     expect(progression.level).toBe(0)
   })
 
+  it('keeps an unanswered pending candidate when the outcome asks to preserve it (session ended early)', async () => {
+    await applyProgressionOutcome(
+      'ex1',
+      outcome({ reasonCode: 'PROGRESSION_CANDIDATE', nextPrescribedReps: 10, candidatePrescribedReps: 12, detail: 'Ready.' })
+    )
+    // Next session: not every planned set was logged — no evidence either
+    // way, so the offer the user never answered must still be there.
+    await applyProgressionOutcome(
+      'ex1',
+      outcome({ reasonCode: 'RETAINED', nextPrescribedReps: 10, nextFailureStreak: 0 }),
+      { preservePending: true }
+    )
+    const progression = await getProgression('ex1')
+    expect(progression.pendingCandidate).toEqual({ candidatePrescribedReps: 12, detail: 'Ready.' })
+    expect(progression.currentPrescribedReps).toBe(10)
+  })
+
   it('persists the regressed load for a weighted exercise, and never touches load for a bodyweight one', async () => {
     await applyProgressionOutcome('w', outcome({ exerciseId: 'w', reasonCode: 'REGRESSED', nextLoad: 37.5 }), { weighted: true })
     await applyProgressionOutcome('b', outcome({ exerciseId: 'b', reasonCode: 'REGRESSED', nextLoad: 0 }))

@@ -114,6 +114,18 @@ describe('evaluateSessionProgression', () => {
     expect(result.candidatePrescribedReps).toBeUndefined()
   })
 
+  it('flags an early-ended exercise so a still-pending candidate is preserved, and never flags a full evaluation', () => {
+    const partial = evaluateSessionProgression(plan([squat]), [setCompleted('fs.bodyweight-squat', true, 1)], new Map())
+    expect(partial[0].preservePending).toBe(true)
+
+    const full = evaluateSessionProgression(
+      plan([squat]),
+      [setCompleted('fs.bodyweight-squat', true, 1), setCompleted('fs.bodyweight-squat', true, 2)],
+      new Map()
+    )
+    expect(full[0].preservePending).toBeUndefined()
+  })
+
   it('evaluates a weighted exercise with the weighted policy, using the last logged load as the current load', () => {
     const events = [
       setCompleted('lib.Barbell_Bench_Press', true, 1, { weightKg: 42.5, reps: 10 }),
