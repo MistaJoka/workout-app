@@ -1,31 +1,131 @@
 # R&D Backlog
 
-Non-blocking support work that can be produced in ChatGPT and promoted into GitHub when useful.
+Non-blocking support work that ChatGPT can research/specify/produce and promote into GitHub. Current product authority is v0.7.
+
+## Context-engineering baseline now delivered
+
+The following previously broad gaps now have authoritative framing:
+
+- product scope reconciliation: `docs/SOURCE_OF_TRUTH_V07.md`;
+- context loading/authority map: `docs/CONTEXT_ENGINEERING_INDEX.md`;
+- current architecture/invariants: `docs/ARCHITECTURE.md`;
+- iPhone/PWA platform contract: `docs/IOS_PWA_RUNTIME.md`;
+- quality/reliability strategy: `docs/TESTING_AND_RELIABILITY.md`;
+- privacy/security model: `docs/SECURITY_AND_PRIVACY.md`;
+- Pixel Bloom creative -> frontend contract: `docs/PIXEL_BLOOM_FRONTEND_CONTEXT.md`;
+- explicit delivery gates: `docs/DEFINITION_OF_DONE.md`;
+- trusted external source index: `docs/RESEARCH_SOURCES.md`;
+- current FOSS product benchmark: `docs/rnd/foss-fitness/PRODUCT_BENCHMARK_2026-09.md`.
+
+These documents define what needs to be proven; the focused corpora/assets below are still valuable implementation inputs.
 
 ## P0 — highest leverage
 
-1. **Foundation Strength production-review pack**
-   - finalize exercise instructions, cues, common errors, prescriptions, provenance and progression/substitution relationships.
+1. **True offline + WebKit acceptance pack**
+   - concrete Playwright project/test cases for WebKit/iPhone-like execution;
+   - real network-disabled relaunch/resume/complete path;
+   - stale cache/new deploy/active-session scenarios;
+   - service-worker update failure matrix.
 
-2. **Session edge-case corpus**
-   - refresh, close/reopen, double taps, undo, skipped rest, finish early, mid-session substitution, clock changes, storage-write failures.
+2. **Session durability edge-case corpus**
+   - orphan plan/no start event;
+   - atomic session-start acceptance cases;
+   - refresh/close/reopen;
+   - duplicate/retried events;
+   - background rest expiry;
+   - durable rest extension;
+   - failed IndexedDB writes;
+   - clock change cases;
+   - finish early.
 
-3. **Offline/PWA/iPhone test matrix**
-   - first online install, fully offline relaunch, stale caches, content-version upgrade, interrupted update, standalone-mode behavior.
+3. **Foundation Strength production-review pack**
+   - finalize exercise instructions, cues, common errors, prescriptions, provenance and review metadata;
+   - separate imported discovery content from approved coaching content;
+   - ensure curated guaranteed-offline media is controlled locally.
 
-4. **Theme component-state matrix**
-   - active/rest/completed/disabled/warning/success/focus states in Pixel Bloom and Savage Core, Full/Reduced/Off motion, contrast checks.
+4. **Export/import corruption corpus**
+   - old schema/version;
+   - missing/unknown fields;
+   - duplicate events/results;
+   - bad references/timestamps;
+   - partial import/rollback;
+   - profile-scope collision;
+   - round-trip truth comparison.
 
-## P1 — content/asset depth
+5. **Pixel Bloom first production integration pack**
+   - mascot/app-icon approved binaries in repo;
+   - UI SVG primitive set;
+   - Today/Check-In/Complete visual states;
+   - first 3–5 gold-standard exercise frame loops;
+   - Full/Reduced/Off fallbacks;
+   - asset byte/cache budget.
 
-5. Exercise media production packs: ChatGPT prompts, hero/start/mid/finish/sequence/loop storyboards, alt text, anatomy/form review checklists, approved/rejected examples.
-6. Progression/substitution verification corpus with positive and negative equivalence cases.
-7. Content provenance/reviewer metadata and pack release-note format.
-8. Progress analytics fixtures separating raw history from derived familiarity/progression/capability metrics.
+## P1 — product depth
 
-## P2 — resilience/future-proofing
+6. **Theme component-state matrix**
+   - active/rest/completed/disabled/warning/success/focus/error states;
+   - Pixel Bloom + Savage Core;
+   - Full/Reduced/Off;
+   - contrast/focus/touch review.
 
-9. Export/import corruption corpus: old schema, missing fields, unknown fields, duplicate events, bad hashes, partial imports and rollback cases.
-10. Content-pack dependency/version migration fixtures.
-11. Accessibility scenario pack for large text, VoiceOver semantics, focus order, reduced motion and one-handed interaction.
-12. Performance/media budgets for iPhone PWA storage, cache and startup behavior.
+7. **Production progression/substitution relationships**
+   - reviewed exercise IDs/versions;
+   - harder/regression/substitution edges;
+   - explicit negative cases;
+   - no taxonomy-only inference.
+
+8. **Exercise media production system**
+   - shot/key-pose templates;
+   - start/mid/finish consistency rubric;
+   - anatomy/form review checklist;
+   - sprite/frame/WebP/GIF export recipes;
+   - alt text/static fallback requirements.
+
+9. **Progress analytics verification pack**
+   - PR/e1RM/volume/streak/body-weight fixtures;
+   - clearly distinguish raw durable history from derived projections.
+
+10. **Performance/storage budget**
+    - startup JS/CSS;
+    - generated library lazy-load cost;
+    - curated offline media budget;
+    - Pixel Bloom animation budget;
+    - Cache Storage + IndexedDB diagnostic thresholds.
+
+## P2 — accessibility / resilience / future-proofing
+
+11. **Accessibility scenario pack**
+    - VoiceOver-oriented semantic cases;
+    - large text;
+    - one-handed interaction;
+    - focus order/obscuring;
+    - reduced motion;
+    - autoplaying/looping animation control;
+    - target-size audit.
+
+12. **Content-pack version/dependency migration fixtures**
+    - renamed/retired exercise IDs;
+    - old custom routine referencing removed library item;
+    - pack upgrade while historical SessionPlans remain immutable.
+
+13. **Storage pressure / persistence diagnostics**
+    - `navigator.storage.estimate()` interpretation;
+    - persistence request behavior;
+    - QuotaExceeded handling;
+    - export warning UX thresholds.
+
+14. **Security/deployment hardening pack**
+    - CSP compatible with actual hosting/static resources;
+    - remote origin inventory;
+    - dependency/network audit checklist;
+    - backup privacy review.
+
+## Deferred unless product direction changes
+
+- cloud account/sync;
+- social feed/sharing network;
+- runtime AI coach;
+- camera form tracking;
+- microphone/voice coach;
+- mandatory wearables/sensors;
+- GPS/endurance tracking engine.
