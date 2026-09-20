@@ -32,7 +32,7 @@ The pre-reconciliation prototype remains preserved on branch `legacy-mvp-2026-09
 npm run check                 # tsc -b --force && vitest run && vite build — run before every commit
 npm run e2e                   # Playwright: phone-viewport journeys against a production build (first time: npm run e2e:install)
 npm run generate:library      # regenerate src/domain/content/generated/libraryExercises.json from the pinned free-exercise-db revision
-npm run build && systemctl --user restart workout-app.service   # deploy: LAN http://192.168.1.129:4173, tailnet https://nomad.tailed9e33.ts.net:8443
+npm run build && systemctl --user restart workout-app.service   # deploy: tailnet https://nomad.tailed9e33.ts.net:8443 (stable); LAN http://<this machine's DHCP IP>:4173 — `ip -4 -br addr`, was 192.168.1.130 on 2026-09-19
 ```
 
 Always `git fetch origin` before pushing: the ChatGPT support agent commits directly to `origin/master` (under `support/`, `docs/`, `README.md`, `AGENTS.md`, and this file).
