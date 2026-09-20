@@ -5,6 +5,7 @@ import { exportAll, importAll, isValidExportBundle } from '../../infrastructure/
 import { downloadBackup } from '../../infrastructure/exportImport/downloadBackup'
 import { getSetting, setSetting } from '../../infrastructure/db/repositories/settingsRepository'
 import { db } from '../../infrastructure/db/schema'
+import { activeProfile, loadProfiles } from '../../infrastructure/profiles'
 import { useFeedbackSettings } from '../components/useFeedbackSettings'
 import { useWeightUnit } from '../components/useWeightUnit'
 
@@ -19,6 +20,10 @@ export function SettingsScreen() {
   const [lastExportAt, setLastExportAt] = useState<string | null>(null)
   const [resetText, setResetText] = useState('')
   const [resetting, setResetting] = useState(false)
+  // Reset clears the active profile's database only (one Dexie DB per
+  // profile), so the copy names who it affects.
+  const [profile] = useState(() => activeProfile())
+  const [otherPeople] = useState(() => loadProfiles().profiles.length > 1)
 
   useEffect(() => {
     getSetting<string>(LAST_EXPORT_KEY).then((value) => setLastExportAt(value ?? null))
@@ -129,7 +134,10 @@ export function SettingsScreen() {
 
       <section className="space-y-2">
         <p className="font-semibold">Reset all data</p>
-        <p className="text-sm text-ink-muted">Erases every workout, routine and setting on this device. Export a backup first.</p>
+        <p className="text-sm text-ink-muted">
+          Erases every workout, routine and setting for {profile.name}.
+          {otherPeople ? ' Other people on this device keep their data.' : ''} Export a backup first.
+        </p>
         <input
           type="text"
           inputMode="text"
@@ -140,7 +148,7 @@ export function SettingsScreen() {
           className="input"
           aria-label="Type DELETE to enable reset"
         />
-        <button className="btn flex-1 w-full bg-accent text-white" disabled={resetText !== 'DELETE' || resetting} onClick={handleReset}>
+        <button className="btn-danger w-full" disabled={resetText !== 'DELETE' || resetting} onClick={handleReset}>
           Erase everything
         </button>
       </section>

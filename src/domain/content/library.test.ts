@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest'
-import { filterExercises } from './library'
+import { filterExercises, searchHaystack } from './library'
 import type { Exercise } from './types'
 
 function exercise(overrides: Partial<Exercise> & { id: string; name: string }): Exercise {
@@ -44,5 +44,21 @@ describe('filterExercises', () => {
 
   it('returns everything for empty filters', () => {
     expect(filterExercises(all, {})).toHaveLength(3)
+  })
+})
+
+describe('searchHaystack', () => {
+  it('normalizes name, aliases and primary muscles into one lowercase string', () => {
+    const e = exercise({ id: 'h', name: 'Push-Up (Incline)', aliases: ['Incline Press Up'] })
+    expect(searchHaystack(e)).toBe('push up incline incline press up chest')
+  })
+
+  it('is computed once per exercise object', () => {
+    const e = exercise({ id: 'h2', name: 'Plank' })
+    const first = searchHaystack(e)
+    // Exercises are immutable records, so the cached string is reused even
+    // if the object were mutated afterwards.
+    e.aliases.push('Front Hold')
+    expect(searchHaystack(e)).toBe(first)
   })
 })

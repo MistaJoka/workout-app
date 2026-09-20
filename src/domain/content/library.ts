@@ -31,6 +31,20 @@ function normalize(text: string): string {
   return text.toLowerCase().replace(/[^a-z0-9 ]+/g, ' ').replace(/\s+/g, ' ').trim()
 }
 
+// The normalized search text for an exercise, computed once per exercise
+// object: the library is ~870 immutable records and search runs per
+// keystroke, so re-normalizing every haystack each time was the cost.
+const haystacks = new WeakMap<Exercise, string>()
+
+export function searchHaystack(e: Exercise): string {
+  let haystack = haystacks.get(e)
+  if (haystack === undefined) {
+    haystack = normalize([e.name, ...e.aliases, ...(e.taxonomy.primaryMuscles ?? [])].join(' '))
+    haystacks.set(e, haystack)
+  }
+  return haystack
+}
+
 export function filterExercises(exercises: readonly Exercise[], filters: LibraryFilters): Exercise[] {
   const query = filters.query ? normalize(filters.query) : ''
   const terms = query ? query.split(' ') : []
@@ -38,7 +52,7 @@ export function filterExercises(exercises: readonly Exercise[], filters: Library
 
   return exercises.filter((e) => {
     if (terms.length > 0) {
-      const haystack = normalize([e.name, ...e.aliases, ...(e.taxonomy.primaryMuscles ?? [])].join(' '))
+      const haystack = searchHaystack(e)
       if (!terms.every((t) => haystack.includes(t))) return false
     }
     if (group && !(e.taxonomy.primaryMuscles ?? []).some((m) => group.muscles.includes(m))) return false

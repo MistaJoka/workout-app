@@ -1,5 +1,5 @@
 import { countLabel } from '../format'
-import { useEffect, useMemo, useState } from 'react'
+import { useDeferredValue, useEffect, useMemo, useState } from 'react'
 import { Link } from 'react-router-dom'
 import { loadLibrary } from '../../domain/content/catalog'
 import { EQUIPMENT_OPTIONS, MUSCLE_GROUPS, filterExercises, type LibraryFilters } from '../../domain/content/library'
@@ -21,7 +21,13 @@ export function LibraryScreen() {
     listCustomTemplates().then(setCustom)
   }, [])
 
-  const results = useMemo(() => (library ? filterExercises(library, filters) : []), [library, filters])
+  // Filtering ~870 rows is deferred so the keystroke paints first and the
+  // list catches up; the input itself stays bound to the live filters.
+  const deferredFilters = useDeferredValue(filters)
+  const results = useMemo(
+    () => (library ? filterExercises(library, deferredFilters) : []),
+    [library, deferredFilters]
+  )
   const filtering = Boolean(filters.query || filters.muscle || filters.equipment || filters.level)
 
   function toggle<K extends keyof LibraryFilters>(key: K, value: LibraryFilters[K]) {
@@ -102,7 +108,7 @@ export function LibraryScreen() {
         )}
         <ul className="space-y-2">
           {results.slice(0, limit).map((exercise) => (
-            <li key={exercise.id}>
+            <li key={exercise.id} className="[content-visibility:auto] [contain-intrinsic-size:auto_76px]">
               <Link
                 to={`/exercise/${exercise.id}`}
                 className="flex items-center gap-3 card p-2"
