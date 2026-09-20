@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useState } from 'react'
+import { useCallback, useEffect, useRef, useState } from 'react'
 import { useNavigate, useParams } from 'react-router-dom'
 import { getCurrentState, getPlan, recordEvent } from '../../application/sessionService'
 import type { SessionPlan, SessionState } from '../../domain/session/types'
@@ -13,7 +13,7 @@ import { useWeightUnit } from '../components/useWeightUnit'
 import { useWakeLock } from '../pwa/useWakeLock'
 import { formatWeight, kgToUnit, roundToStep, stepInUnit, unitToKg } from '../units'
 
-type ActionType = 'SET_COMPLETED' | 'REST_ENDED' | 'REST_SKIPPED' | 'PAUSED' | 'RESUMED'
+type ActionType = 'SET_COMPLETED' | 'REST_ENDED' | 'REST_EXTENDED' | 'REST_SKIPPED' | 'PAUSED' | 'RESUMED'
 
 const REST_EXTENSION_MS = 15_000
 
@@ -29,9 +29,6 @@ export function WorkoutPlayerScreen() {
   const [awaitingRepCheck, setAwaitingRepCheck] = useState(false)
   const [exerciseById, setExerciseById] = useState<Map<string, Exercise>>(new Map())
   const [lastTime, setLastTime] = useState<string | null>(null)
-  // UI-local only: extends the displayed rest without touching the persisted
-  // state machine (restEndsAt derives from SET_COMPLETED + restSeconds).
-  const [restExtensionMs, setRestExtensionMs] = useState(0)
   const [feedback] = useFeedbackSettings()
   const [unit] = useWeightUnit()
   // Load actually used for the set being logged (kg); null = use the plan's.
@@ -68,11 +65,6 @@ export function WorkoutPlayerScreen() {
       cancelled = true
     }
   }, [currentExerciseId])
-
-  // A new rest period (new restEndsAt) always starts unextended.
-  useEffect(() => {
-    setRestExtensionMs(0)
-  }, [state?.restEndsAt])
 
   // A logged weight carries across the sets of one exercise (you rarely
   // change plates mid-exercise) but never into the next exercise.
@@ -140,14 +132,15 @@ export function WorkoutPlayerScreen() {
     return (
       <RestingView
         restEndsAt={state.restEndsAt}
-        extensionMs={restExtensionMs}
         busy={busy}
         error={error}
         onRestComplete={() => {
           restEndFeedback(feedback)
           void handleAction('REST_ENDED')
         }}
-        onExtend={() => setRestExtensionMs((ms) => ms + REST_EXTENSION_MS)}
+        // Persisted like every other session action, so a refresh or
+        // reopen mid-rest keeps the extended deadline.
+        onExtend={() => handleAction('REST_EXTENDED', { byMs: REST_EXTENSION_MS })}
         onSkip={() => handleAction('REST_SKIPPED')}
         onPause={() => handleAction('PAUSED')}
       />
@@ -185,7 +178,7 @@ export function WorkoutPlayerScreen() {
       )}
 
       {exerciseContent && (exerciseContent.setup || exerciseContent.executionPhases.length > 0) && (
-        <StepsList steps={[exerciseContent.setup, ...exerciseContent.executionPhases].filter(Boolean)} exerciseId={exercise.exerciseId} />
+        <StepsList key={exercise.exerciseId} steps={[exerciseContent.setup, ...exerciseContent.executionPhases].filter(Boolean)} />
       )}
 
       {error && <p className="text-sm text-accent">{error}</p>}
@@ -269,7 +262,8 @@ const STEPS_CHAR_BUDGET = 480
 // Library instructions can run to 6+ long steps; the first few (bounded by
 // count and by length, since one upstream step can be a paragraph) plus the
 // photos carry the movement, and the Complete Set button must stay on a
-// phone screen. The rest is one tap away and re-collapses per exercise.
+// phone screen. The rest is one tap away; the list is keyed by exercise id
+// so it remounts (collapsed) when the exercise changes.
 function initialStepCount(steps: string[]): number {
   let chars = 0
   let count = 0
@@ -282,11 +276,8 @@ function initialStepCount(steps: string[]): number {
   return Math.max(1, count)
 }
 
-function StepsList({ steps, exerciseId }: { steps: string[]; exerciseId: string }) {
+function StepsList({ steps }: { steps: string[] }) {
   const [expanded, setExpanded] = useState(false)
-  useEffect(() => {
-    setExpanded(false)
-  }, [exerciseId])
   const visible = expanded ? steps : steps.slice(0, initialStepCount(steps))
   const hidden = steps.length - visible.length
   return (
@@ -308,9 +299,12 @@ function StepsList({ steps, exerciseId }: { steps: string[]; exerciseId: string 
   )
 }
 
+function secondsUntil(restEndsAt: string): number {
+  return Math.ceil(remainingRestMs(restEndsAt) / 1000)
+}
+
 function RestingView({
   restEndsAt,
-  extensionMs,
   busy,
   error,
   onRestComplete,
@@ -319,7 +313,6 @@ function RestingView({
   onPause,
 }: {
   restEndsAt: string
-  extensionMs: number
   busy: boolean
   error: string | null
   onRestComplete: () => void
@@ -327,26 +320,28 @@ function RestingView({
   onSkip: () => void
   onPause: () => void
 }) {
-  // The extension shifts the deadline the timer counts toward; the persisted
-  // restEndsAt is untouched, so a refresh mid-rest drops the extension —
-  // acceptable for a UI-local nicety.
-  const effectiveEndsAt = new Date(new Date(restEndsAt).getTime() + extensionMs).toISOString()
-  const [remainingMs, setRemainingMs] = useState(() => remainingRestMs(effectiveEndsAt))
+  // The timer derives from the persisted restEndsAt alone (+15s moves that
+  // timestamp via REST_EXTENDED), so a refresh mid-rest shows the same
+  // countdown. State holds whole seconds: the 250ms tick keeps the display
+  // honest at second boundaries but React bails out on the equal value, so
+  // the view re-renders once per second, not four times.
+  const [seconds, setSeconds] = useState(() => secondsUntil(restEndsAt))
+  // Latest callback in a ref so the interval never calls a stale closure
+  // (e.g. feedback settings that arrived after the rest started).
+  const onRestCompleteRef = useRef(onRestComplete)
+  onRestCompleteRef.current = onRestComplete
 
   useEffect(() => {
-    setRemainingMs(remainingRestMs(effectiveEndsAt))
+    setSeconds(secondsUntil(restEndsAt))
     const interval = setInterval(() => {
-      setRemainingMs(remainingRestMs(effectiveEndsAt))
-      if (isRestComplete(effectiveEndsAt)) {
+      setSeconds(secondsUntil(restEndsAt))
+      if (isRestComplete(restEndsAt)) {
         clearInterval(interval)
-        onRestComplete()
+        onRestCompleteRef.current()
       }
     }, 250)
     return () => clearInterval(interval)
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [effectiveEndsAt])
-
-  const seconds = Math.ceil(remainingMs / 1000)
+  }, [restEndsAt])
 
   return (
     <div className="field-calm min-h-screen rounded-none p-6 pt-16 text-center space-y-6">

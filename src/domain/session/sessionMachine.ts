@@ -55,6 +55,15 @@ export function applyEvent(plan: SessionPlan, state: SessionState, event: Sessio
       }
     }
 
+    case 'REST_EXTENDED': {
+      // Only meaningful mid-rest; elsewhere it's recorded (idempotency) but
+      // changes nothing. Extensions stack, each under its own event id.
+      if (state.status !== 'RESTING' || !state.restEndsAt) return { ...state, appliedEventIds }
+      const byMs = typeof event.payload.byMs === 'number' && event.payload.byMs > 0 ? event.payload.byMs : 0
+      const restEndsAt = new Date(new Date(state.restEndsAt).getTime() + byMs).toISOString()
+      return { ...state, restEndsAt, appliedEventIds }
+    }
+
     case 'REST_ENDED':
     case 'REST_SKIPPED':
       return { ...state, status: 'ACTIVE', restStartedAt: null, restEndsAt: null, appliedEventIds }

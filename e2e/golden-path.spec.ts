@@ -49,10 +49,17 @@ test.describe('golden path', () => {
     await page.getByRole('button', { name: 'Start Workout' }).click()
     await page.getByRole('button', { name: 'Complete Set' }).click()
     await page.getByRole('button', { name: 'Yes', exact: true }).click()
-    await expect(page.getByRole('timer')).toBeVisible()
+    const timer = page.getByRole('timer')
+    await expect(timer).toBeVisible()
 
+    // +15s is persisted (REST_EXTENDED), so the extended deadline survives
+    // a reload. Quick 10 rests are 30s; after the bump the countdown must
+    // still read above 30s once the page comes back.
+    await page.getByRole('button', { name: '+15s' }).click({ timeout: 3_000, force: true })
+    await expect(timer).toHaveText(/^0:(3[1-9]|4[0-5])$/)
     await page.reload()
-    await expect(page.getByRole('timer')).toBeVisible()
+    await expect(timer).toBeVisible()
+    await expect(timer).toHaveText(/^0:(3[1-9]|4[0-5])$/)
 
     await page.goto('/#/')
     await expect(page.getByText('Resume workout')).toBeVisible()
