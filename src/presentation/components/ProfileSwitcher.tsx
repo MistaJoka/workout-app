@@ -1,7 +1,6 @@
 import { useState } from 'react'
 import Dexie from 'dexie'
 import {
-  activeProfile,
   addProfile,
   dbNameFor,
   loadProfiles,
@@ -21,7 +20,8 @@ export function ProfileSwitcher() {
   const [draft, setDraft] = useState('')
   const [renaming, setRenaming] = useState<Profile | null>(null)
   const [confirmRemove, setConfirmRemove] = useState<Profile | null>(null)
-  const active = activeProfile()
+  // Derived from the state already in memory — no localStorage parse per render.
+  const active = state.profiles.find((p) => p.id === state.activeId) ?? state.profiles[0]
 
   function refresh() {
     setState(loadProfiles())
