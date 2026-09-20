@@ -1,4 +1,17 @@
-const CACHE_NAME = 'workout-app-shell-v4'
+// Two caches with different lifetimes:
+//
+// - CACHE_NAME holds the app shell (index.html, manifest, hashed chunks, the
+//   precached curated photos). It is versioned and replaced wholesale on
+//   activate. Bump CACHE_NAME whenever anything in SHELL_URLS changes
+//   (including manifest.json) — an installed PWA only re-runs install when
+//   the worker's own bytes change, so an unbumped edit is never picked up.
+// - MEDIA_CACHE_NAME holds library photos fetched from the pinned upstream
+//   revision as the user views them. It is long-lived: activate never
+//   deletes it, so a routine built from the library keeps its photos
+//   offline across app updates. The upstream revision is pinned, so the
+//   entries never go stale.
+const CACHE_NAME = 'workout-app-shell-v5'
+const MEDIA_CACHE_NAME = 'workout-app-media-v1'
 
 // Movement photos are precached so a workout works fully offline even if
 // the user never opened every exercise while online. Keep in sync with
@@ -24,7 +37,11 @@ self.addEventListener('install', (event) => {
 
 self.addEventListener('activate', (event) => {
   event.waitUntil(
-    caches.keys().then((keys) => Promise.all(keys.filter((k) => k !== CACHE_NAME).map((k) => caches.delete(k))))
+    caches
+      .keys()
+      .then((keys) =>
+        Promise.all(keys.filter((k) => k !== CACHE_NAME && k !== MEDIA_CACHE_NAME).map((k) => caches.delete(k)))
+      )
   )
   self.clients.claim()
 })
@@ -36,20 +53,20 @@ self.addEventListener('fetch', (event) => {
   const url = new URL(request.url)
 
   // Library exercise photos live at the pinned upstream revision and are
-  // cached the first time they're viewed (cache-first afterwards), so a
-  // routine built from the library keeps its photos offline once seen.
+  // cached the first time they're viewed (cache-first afterwards) in the
+  // long-lived media cache, so a routine built from the library keeps its
+  // photos offline once seen — including across app updates.
   if (url.hostname === 'raw.githubusercontent.com' && url.pathname.includes('/free-exercise-db/')) {
     event.respondWith(
-      caches.match(request).then((cached) => {
-        if (cached) return cached
-        return fetch(request).then((response) => {
-          if (response.ok || response.type === 'opaque') {
-            const copy = response.clone()
-            caches.open(CACHE_NAME).then((cache) => cache.put(request, copy))
-          }
-          return response
+      caches.open(MEDIA_CACHE_NAME).then((cache) =>
+        cache.match(request).then((cached) => {
+          if (cached) return cached
+          return fetch(request).then((response) => {
+            if (response.ok || response.type === 'opaque') cache.put(request, response.clone())
+            return response
+          })
         })
-      })
+      )
     )
     return
   }
