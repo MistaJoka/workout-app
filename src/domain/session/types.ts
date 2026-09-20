@@ -56,6 +56,9 @@ export type SessionEventType =
   | 'SESSION_STARTED'
   | 'SET_COMPLETED'
   | 'REST_ENDED'
+  // payload.byMs: pushes the persisted restEndsAt forward, so an extended
+  // rest survives refresh/reopen like every other piece of session state.
+  | 'REST_EXTENDED'
   | 'REST_SKIPPED'
   | 'PAUSED'
   | 'RESUMED'

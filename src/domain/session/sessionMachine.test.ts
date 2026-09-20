@@ -40,6 +40,38 @@ describe('initSessionState', () => {
 })
 
 describe('applyEvent', () => {
+  it('REST_EXTENDED moves the persisted restEndsAt forward by payload.byMs and keeps RESTING', () => {
+    const active = applyEvent(plan, initSessionState(), event({ eventId: 'e1', type: 'SESSION_STARTED' }))
+    const resting = applyEvent(
+      plan,
+      active,
+      event({ eventId: 'e2', type: 'SET_COMPLETED', timestamp: '2026-09-13T00:01:00.000Z' })
+    )
+    const extended = applyEvent(
+      plan,
+      resting,
+      event({ eventId: 'e3', type: 'REST_EXTENDED', timestamp: '2026-09-13T00:01:30.000Z', payload: { byMs: 15_000 } })
+    )
+    expect(extended.status).toBe('RESTING')
+    expect(extended.restStartedAt).toBe('2026-09-13T00:01:00.000Z')
+    expect(extended.restEndsAt).toBe('2026-09-13T00:02:45.000Z')
+    // Replaying the same event id is a no-op, so a double tap adds 15s once.
+    expect(applyEvent(plan, extended, event({ eventId: 'e3', type: 'REST_EXTENDED', payload: { byMs: 15_000 } }))).toBe(
+      extended
+    )
+    // Two distinct extensions stack.
+    const twice = applyEvent(plan, extended, event({ eventId: 'e4', type: 'REST_EXTENDED', payload: { byMs: 15_000 } }))
+    expect(twice.restEndsAt).toBe('2026-09-13T00:03:00.000Z')
+  })
+
+  it('REST_EXTENDED outside a rest period changes nothing but is still recorded as applied', () => {
+    const active = applyEvent(plan, initSessionState(), event({ eventId: 'e1', type: 'SESSION_STARTED' }))
+    const after = applyEvent(plan, active, event({ eventId: 'e2', type: 'REST_EXTENDED', payload: { byMs: 15_000 } }))
+    expect(after.status).toBe('ACTIVE')
+    expect(after.restEndsAt).toBeNull()
+    expect(after.appliedEventIds).toEqual(['e1', 'e2'])
+  })
+
   it('SESSION_STARTED moves DRAFT to ACTIVE', () => {
     const state = applyEvent(plan, initSessionState(), event({ eventId: 'e1', type: 'SESSION_STARTED' }))
     expect(state.status).toBe('ACTIVE')
