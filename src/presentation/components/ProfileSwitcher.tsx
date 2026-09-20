@@ -116,7 +116,7 @@ export function ProfileSwitcher() {
                         </button>
                         {!isActive && state.profiles.length > 1 && (
                           confirmRemove?.id === profile.id ? (
-                            <button type="button" className="btn btn-sm bg-accent text-white" onClick={() => handleRemove(profile)}>
+                            <button type="button" className="btn-danger btn-sm" onClick={() => handleRemove(profile)}>
                               Delete all their data
                             </button>
                           ) : (
