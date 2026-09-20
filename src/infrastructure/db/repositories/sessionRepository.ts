@@ -34,14 +34,26 @@ export async function getEventsForSession(sessionId: string): Promise<SessionEve
   return db.sessionEvents.where('sessionId').equals(sessionId).sortBy('seq')
 }
 
-export async function saveResult(result: SessionResult): Promise<void> {
-  const existing = await db.sessionResults.get(result.sessionId)
-  if (existing) {
-    throw new Error(
-      `Session result for ${result.sessionId} already exists — SessionResults are immutable once recorded`
-    )
+export class SessionResultExistsError extends Error {
+  constructor(sessionId: string) {
+    super(`Session result for ${sessionId} already exists — SessionResults are immutable once recorded`)
+    this.name = 'SessionResultExistsError'
   }
-  await db.sessionResults.put(result)
+}
+
+// Atomic: `add` (not get-then-put) so two concurrent writers for the same
+// session can never both succeed — the loser gets SessionResultExistsError.
+// A double-tap that completes a session relies on this to apply progression
+// exactly once (see sessionService.persistResultIfMissing).
+export async function saveResult(result: SessionResult): Promise<void> {
+  try {
+    await db.sessionResults.add(result)
+  } catch (error) {
+    if (error instanceof Error && error.name === 'ConstraintError') {
+      throw new SessionResultExistsError(result.sessionId)
+    }
+    throw error
+  }
 }
 
 export async function getResult(sessionId: string): Promise<SessionResult | undefined> {

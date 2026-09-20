@@ -39,10 +39,14 @@ export async function getProgression(exerciseId: string): Promise<ProgressionRec
 // as pending and requires a separate explicit confirmation (advanceProgression)
 // before it takes effect. `weighted` says whether nextLoad/candidateLoad are
 // meaningful for this exercise (bodyweight exercises always evaluate at load 0).
+// `preservePending` (set by evaluateSessionProgression when not every planned
+// set was logged) keeps an existing pending candidate in place: a session that
+// produced no evidence must not silently withdraw an offer the user has not
+// answered — only confirmation or dismissal may clear it.
 export async function applyProgressionOutcome(
   exerciseId: string,
   outcome: DoubleProgressionResult,
-  options: { weighted?: boolean } = {}
+  options: { weighted?: boolean; preservePending?: boolean } = {}
 ): Promise<void> {
   const existing = await getProgression(exerciseId)
 
@@ -64,7 +68,7 @@ export async function applyProgressionOutcome(
     currentPrescribedReps: outcome.nextPrescribedReps,
     ...(options.weighted ? { currentWeightKg: outcome.nextLoad } : {}),
     consecutiveFailureStreak: outcome.nextFailureStreak,
-    pendingCandidate: null,
+    pendingCandidate: options.preservePending ? existing.pendingCandidate : null,
   })
 }
 

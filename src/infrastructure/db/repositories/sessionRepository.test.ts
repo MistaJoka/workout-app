@@ -124,6 +124,23 @@ describe('sessionRepository', () => {
     await expect(sessionRepo.saveResult(result)).rejects.toThrow(plan.id)
   })
 
+  it('saveResult lets exactly one of two concurrent writers through (the guard is atomic, not get-then-put)', async () => {
+    const result: SessionResult = {
+      sessionId: plan.id,
+      planId: plan.id,
+      status: 'COMPLETED',
+      startedAt: '2026-09-13T00:00:00.000Z',
+      endedAt: '2026-09-13T00:10:00.000Z',
+      totalSetsCompleted: 1,
+      totalSetsPlanned: 1,
+    }
+    const settled = await Promise.allSettled([sessionRepo.saveResult(result), sessionRepo.saveResult(result)])
+    const outcomes = settled.map((s) => s.status).sort()
+    expect(outcomes).toEqual(['fulfilled', 'rejected'])
+    const rejected = settled.find((s) => s.status === 'rejected') as PromiseRejectedResult
+    expect(rejected.reason).toBeInstanceOf(sessionRepo.SessionResultExistsError)
+  })
+
   it('getInProgressSessions returns plans with no persisted result, and excludes plans that have one', async () => {
     const otherPlan: SessionPlan = { ...plan, id: 'session-2' }
     await sessionRepo.savePlan(plan)

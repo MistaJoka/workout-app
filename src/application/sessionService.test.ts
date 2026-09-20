@@ -165,4 +165,25 @@ describe('recordEvent', () => {
     const progression = await getProgression('ex1')
     expect(progression.currentPrescribedReps).toBe(12)
   })
+
+  it('applies progression exactly once when a double-tap fires two completing events concurrently', async () => {
+    // A double-tap on "Complete Set" produces two events with different ids
+    // (the UI mints a fresh UUID per tap), so appendEvent's idempotency does
+    // not short-circuit the second call — both reach the completion branch
+    // at the same time. Only one may persist the result and apply progression.
+    const repsPlan: SessionPlan = {
+      ...plan,
+      id: 'session-progression-3',
+      exercises: [{ exerciseId: 'ex1', exerciseVersion: 1, name: 'Exercise One', sets: 1, reps: 10, restSeconds: 60, order: 0 }],
+    }
+    await startSession(repsPlan)
+    await Promise.all([
+      recordEvent(repsPlan.id, 'SET_COMPLETED', 'evt-tap-a', { exerciseId: 'ex1', met: true }),
+      recordEvent(repsPlan.id, 'SET_COMPLETED', 'evt-tap-b', { exerciseId: 'ex1', met: true }),
+    ])
+
+    const progression = await getProgression('ex1')
+    expect(progression.currentPrescribedReps).toBe(12) // not 14 — a second pass would compound
+    expect(await sessionRepo.getResult(repsPlan.id)).toMatchObject({ status: 'COMPLETED' })
+  })
 })

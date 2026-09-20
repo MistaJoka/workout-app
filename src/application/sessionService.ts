@@ -47,10 +47,13 @@ export async function recordEvent(
   if (state.status === 'COMPLETED' || state.status === 'COMPLETED_SHORTENED') {
     const didPersist = await persistResultIfMissing(sessionId, state)
     // Gated on didPersist, not just "session is complete": recordEvent can
-    // replay this branch on every idempotent/duplicate call once a session
-    // is done, and progression outcomes are not safe to apply more than
-    // once (see evaluateSessionProgression's use of already-persisted
-    // progression state as its input — a second pass would compound).
+    // reach this branch more than once per session — an idempotent replay of
+    // the same eventId, or a double-tap that mints two different eventIds
+    // and runs both calls concurrently. Progression outcomes are not safe to
+    // apply more than once (evaluateSessionProgression reads the persisted
+    // progression state as its input — a second pass would compound), so
+    // exactly one caller may win, and the win is decided by the atomic
+    // result insert below, not by anything checked earlier in this function.
     if (didPersist) {
       await updateProgressionAfterSession(sessionId)
     }
@@ -83,13 +86,17 @@ async function persistResultIfMissing(sessionId: string, state: SessionState): P
   try {
     await sessionRepo.saveResult(result)
     return true
-  } catch {
-    // Another call already persisted the result between our getResult
-    // check and this write (e.g. a retried/duplicate recordEvent call
-    // racing itself). saveResult's own guard rejected the second write —
-    // that's fine, the result is already correctly persisted once, and we
-    // report "did not persist" so the caller doesn't double-apply progression.
-    return false
+  } catch (error) {
+    // The getResult check above is only a fast path; it is not what makes
+    // this safe. Two concurrent calls can both pass it. saveResult is an
+    // atomic insert, so exactly one of them lands and the other gets
+    // SessionResultExistsError — reported as "did not persist" so only the
+    // winner applies progression. Anything else (quota, closed DB) is a real
+    // failure and must surface.
+    if (error instanceof sessionRepo.SessionResultExistsError) {
+      return false
+    }
+    throw error
   }
 }
 
@@ -112,7 +119,10 @@ async function updateProgressionAfterSession(sessionId: string): Promise<void> {
   )
   const outcomes = evaluateSessionProgression(plan, events, progressionByExerciseId)
   for (const outcome of outcomes) {
-    await progressionRepo.applyProgressionOutcome(outcome.exerciseId, outcome, { weighted: outcome.weighted })
+    await progressionRepo.applyProgressionOutcome(outcome.exerciseId, outcome, {
+      weighted: outcome.weighted,
+      preservePending: outcome.preservePending,
+    })
   }
 
   // Familiarity (§8: how much guidance to show) is a separate system from
