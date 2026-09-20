@@ -9,6 +9,10 @@ export type ThemeTokens = {
   // Text/icon color placed on the primary color (white on pink, ink on cyan).
   colorOnPrimary: string
   colorAccent: string
+  // Text/icon color placed on the accent color (destructive confirms).
+  // Every on-color/fill pair must reach WCAG AA 4.5:1 — tokens.test.ts
+  // checks it, since buttons are 16px bold ("normal" text).
+  colorOnAccent: string
   colorText: string
   colorTextMuted: string
   colorBorder: string
@@ -26,16 +30,20 @@ export type ThemeTokens = {
 // Pixel Bloom values are the v0 candidate creative tokens from
 // docs/PIXEL_BLOOM_ASSET_SYSTEM.md §4 (Cloud / Blush / Mint / Sky /
 // Lavender / Peach / Ink / Pink / Purple); colorTextMuted is Ink softened.
+// Pink and Purple are one shade darker than the §4 candidates (#ec4899 →
+// #db2777, #8b5cf6 → #7c3aed): the candidates give white text only
+// 3.5:1 / 4.1:1, under AA for button labels, and no on-color fixes that.
 // Savage Core has no delivered token set — still a placeholder pending
 // REQ-20260913-003, kept structurally identical so nothing forks.
 export const THEME_TOKENS: Record<ThemeName, ThemeTokens> = {
   'pixel-bloom': {
     colorBackground: '#f8faff',
     colorSurface: '#ffffff',
-    colorPrimary: '#ec4899',
+    colorPrimary: '#db2777',
     colorPrimaryShadow: '#b4286f',
     colorOnPrimary: '#ffffff',
-    colorAccent: '#8b5cf6',
+    colorAccent: '#7c3aed',
+    colorOnAccent: '#ffffff',
     colorText: '#2b2d42',
     colorTextMuted: '#5f627a',
     colorBorder: '#ffd6e7',
@@ -54,6 +62,7 @@ export const THEME_TOKENS: Record<ThemeName, ThemeTokens> = {
     colorPrimaryShadow: '#0e7f90',
     colorOnPrimary: '#0f0f13',
     colorAccent: '#f43f5e',
+    colorOnAccent: '#0f0f13',
     colorText: '#f4f4f5',
     colorTextMuted: '#9a9aa6',
     colorBorder: '#2c2c36',
@@ -74,6 +83,7 @@ const TOKEN_CSS_VAR: Record<keyof ThemeTokens, string> = {
   colorPrimaryShadow: '--color-primary-shadow',
   colorOnPrimary: '--color-on-primary',
   colorAccent: '--color-accent',
+  colorOnAccent: '--color-on-accent',
   colorText: '--color-text',
   colorTextMuted: '--color-text-muted',
   colorBorder: '--color-border',

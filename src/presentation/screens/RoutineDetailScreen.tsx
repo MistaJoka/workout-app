@@ -82,7 +82,7 @@ export function RoutineDetailScreen() {
             Edit
           </Link>
           {confirmingDelete ? (
-            <button className="btn flex-1 bg-accent text-white" onClick={handleDelete}>
+            <button className="btn-danger flex-1" onClick={handleDelete}>
               Yes, delete
             </button>
           ) : (

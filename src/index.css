@@ -5,10 +5,11 @@
 :root {
   --color-background: #f8faff;
   --color-surface: #ffffff;
-  --color-primary: #ec4899;
+  --color-primary: #db2777;
   --color-primary-shadow: #b4286f;
   --color-on-primary: #ffffff;
-  --color-accent: #8b5cf6;
+  --color-accent: #7c3aed;
+  --color-on-accent: #ffffff;
   --color-text: #2b2d42;
   --color-text-muted: #5f627a;
   --color-border: #ffd6e7;
@@ -77,6 +78,14 @@ h2 {
   .btn-secondary:active {
     transform: translateY(2px);
     box-shadow: 0 1px 0 var(--color-border);
+  }
+  /* Destructive confirm ("Yes, delete", "Erase everything"): accent fill
+     with its own on-color token — never hardcoded white, which fails AA on
+     both themes' accents. */
+  .btn-danger {
+    @apply btn;
+    color: var(--color-on-accent);
+    background-color: var(--color-accent);
   }
   .btn-ghost {
     @apply btn;
@@ -203,6 +212,12 @@ input[type='range'] {
 }
 
 .movement-loop__finish {
+  /* Base opacity 0: if the animation is ever stripped (reduced motion,
+     fill-mode none after a single iteration), the start frame stays
+     visible instead of the finish frame covering it. MovementMedia also
+     switches to the side-by-side markup whenever motion is reduced, by
+     app setting or by the OS, so both frames stay visible. */
+  opacity: 0;
   animation: movement-loop-frame 2.4s ease-in-out infinite;
 }
 
@@ -215,7 +230,9 @@ input[type='range'] {
 }
 
 /* 'full' means "no explicit app-level override" — still respect the OS
-   accessibility setting as the fallback SOURCE_OF_TRUTH_V06.md §11 requires. */
+   accessibility setting as the fallback SOURCE_OF_TRUTH_V06.md §11 requires.
+   Components that would lose information without motion must also check
+   the media query themselves (see MovementMedia). */
 @media (prefers-reduced-motion: reduce) {
   [data-motion='full'] * {
     animation-duration: 0.01ms !important;
