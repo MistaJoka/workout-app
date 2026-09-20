@@ -48,7 +48,7 @@ Use this mailbox when implementation reaches a product/data/spec/asset/test gap 
 
 **Constraints already known:** every material decision carries a machine-readable reason code; the engine never invents a movement or fake equivalence; familiarity and progression remain separate; progression requires explicit user confirmation; production edges must be authored and approved.
 
-**Safe implementation path now:** Claude may implement Promotion 001 as pure domain logic and tests using the support fixture corpus. With zero approved production edges loaded, production behavior must safely produce no progression candidate rather than infer one.
+**Safe implementation path now:** Claude may implement Promotion 001 as pure domain logic and tests using the support fixture corpus. With zero approved production edges loaded, the engine emits a rep-bracket candidate at the authored upper bound (owner override above, 2026-09-19) rather than a harder-variant edge; it must never infer an edge or a substitution.
 
 ## REQ-20260913-003 — Pixel Bloom / Savage Core design tokens
 
