@@ -1,16 +1,14 @@
 import { useEffect, useState } from 'react'
 import { Link } from 'react-router-dom'
-import { getAllSessionHistory, getPlan } from '../../infrastructure/db/repositories/sessionRepository'
+import { getAllSessionHistory } from '../../infrastructure/db/repositories/sessionRepository'
 import { getTemplate } from '../../domain/content/catalog'
 import { projectSetRecords } from '../../domain/progress/history'
 import { calculateStreak, detectPersonalRecords, weeklyTotals } from '../../domain/progress/stats'
 import type { PersonalRecord, WeekTotal } from '../../domain/progress/types'
-import type { SessionResult } from '../../domain/session/types'
 import { formatWeight } from '../units'
 import { useWeightUnit } from '../components/useWeightUnit'
 import { BodyWeightCard } from '../components/BodyWeightCard'
-
-type HistoryRow = SessionResult & { workoutName: string }
+import { buildHistoryRows, type HistoryRow } from './progressHistoryRows'
 
 type Snapshot = {
   rows: HistoryRow[]
@@ -29,14 +27,7 @@ export function ProgressScreen() {
 
   async function load(): Promise<Snapshot> {
     const { plans, results, events } = await getAllSessionHistory()
-    const sorted = [...results].sort((a, b) => b.endedAt.localeCompare(a.endedAt))
-    const rows = await Promise.all(
-      sorted.map(async (result) => {
-        const plan = await getPlan(result.planId)
-        const workoutName = (plan && (await getTemplate(plan.templateId))?.name) ?? 'Workout'
-        return { ...result, workoutName }
-      })
-    )
+    const rows = await buildHistoryRows(plans, results, getTemplate)
     const setRecords = projectSetRecords(plans, results, events)
     const now = new Date()
     return {

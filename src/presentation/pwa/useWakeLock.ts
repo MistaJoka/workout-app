@@ -1,41 +1,19 @@
 import { useEffect } from 'react'
+import { createWakeLockController, type WakeLockLike } from './wakeLockController'
 
-type WakeLockSentinelLike = { release: () => Promise<void>; addEventListener?: (t: string, l: () => void) => void }
-
-// Keeps the screen on while `active` (e.g. during a workout). Browsers drop
-// the lock whenever the page is hidden, so it is re-requested on return.
-// Silent no-op where the Screen Wake Lock API is unavailable or refused.
+// Keeps the screen on while `active` (e.g. during a workout). Silent no-op
+// where the Screen Wake Lock API is unavailable or refused. The race
+// handling (unmount during an in-flight request, re-acquire on visibility
+// return) lives in wakeLockController so it can be unit-tested.
 export function useWakeLock(active: boolean): void {
   useEffect(() => {
     if (!active) return
-    const wakeLock = (navigator as Navigator & { wakeLock?: { request: (type: 'screen') => Promise<WakeLockSentinelLike> } })
-      .wakeLock
+    const wakeLock = (navigator as Navigator & { wakeLock?: WakeLockLike }).wakeLock
     if (!wakeLock) return
-
-    let sentinel: WakeLockSentinelLike | null = null
-    let cancelled = false
-
-    async function acquire() {
-      if (cancelled || document.visibilityState !== 'visible') return
-      try {
-        sentinel = await wakeLock!.request('screen')
-      } catch {
-        sentinel = null
-      }
-    }
-
-    function onVisibility() {
-      if (document.visibilityState === 'visible') void acquire()
-    }
-
-    void acquire()
-    document.addEventListener('visibilitychange', onVisibility)
-
+    const controller = createWakeLockController(wakeLock, document)
+    controller.start()
     return () => {
-      cancelled = true
-      document.removeEventListener('visibilitychange', onVisibility)
-      void sentinel?.release().catch(() => {})
-      sentinel = null
+      void controller.stop()
     }
   }, [active])
 }

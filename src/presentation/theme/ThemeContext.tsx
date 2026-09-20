@@ -1,6 +1,8 @@
-import { createContext, useContext, useEffect, useState, type ReactNode } from 'react'
+import { createContext, useContext, useEffect, useLayoutEffect, useState, type ReactNode } from 'react'
 import { applyMotionPreference, applyThemeTokens, type MotionPreference, type ThemeName } from './tokens'
 import { getSetting, setSetting } from '../../infrastructure/db/repositories/settingsRepository'
+import { activeProfile } from '../../infrastructure/profiles'
+import { readCachedTheme, writeCachedTheme } from './themeCache'
 
 type ThemeContextValue = {
   theme: ThemeName
@@ -12,7 +14,11 @@ type ThemeContextValue = {
 const ThemeContext = createContext<ThemeContextValue | null>(null)
 
 export function ThemeProvider({ children }: { children: ReactNode }) {
-  const [theme, setThemeState] = useState<ThemeName>('pixel-bloom')
+  // Seed from the synchronous localStorage mirror so the first paint is
+  // already in the right theme; Dexie remains the source of truth and
+  // corrects the state if the mirror is missing or stale.
+  const [profileId] = useState(() => activeProfile().id)
+  const [theme, setThemeState] = useState<ThemeName>(() => readCachedTheme(profileId) ?? 'pixel-bloom')
   const [motion, setMotionState] = useState<MotionPreference>('full')
 
   useEffect(() => {
@@ -23,25 +29,31 @@ export function ThemeProvider({ children }: { children: ReactNode }) {
         getSetting<MotionPreference>('motion'),
       ])
       if (cancelled) return
-      if (storedTheme) setThemeState(storedTheme)
+      if (storedTheme) {
+        setThemeState(storedTheme)
+        writeCachedTheme(profileId, storedTheme)
+      }
       if (storedMotion) setMotionState(storedMotion)
     }
     void loadPreferences()
     return () => {
       cancelled = true
     }
-  }, [])
+  }, [profileId])
 
-  useEffect(() => {
+  // Layout effects run before the browser paints, so the tokens for the
+  // seeded theme are on <html> before anything is visible.
+  useLayoutEffect(() => {
     applyThemeTokens(theme)
   }, [theme])
 
-  useEffect(() => {
+  useLayoutEffect(() => {
     applyMotionPreference(motion)
   }, [motion])
 
   function setTheme(next: ThemeName) {
     setThemeState(next)
+    writeCachedTheme(profileId, next)
     void setSetting('theme', next)
   }
 
