@@ -1,36 +1,111 @@
 # Bespoke Fitness PWA
 
-A private, single-user, offline-first fitness PWA foundation for a curated exercise program and durable guided workout experience.
+A private, local-first, iPhone-first fitness PWA for guided workouts, exercise discovery, custom routines, durable history and deterministic progression.
 
 ## Current state
 
-This repository holds the v0.6 foundation: domain types, IndexedDB persistence, and an event-sourced session engine. There are no UI screens yet — that is a follow-up plan built on top of this foundation.
+The repository is a functional v0.7 foundation/product, not a UI-less prototype. Current capabilities include:
 
-Governing docs (read before changing application code):
+- Today/check-in/session-preview/workout-complete flow;
+- durable event-sourced Workout Player with rest/pause/resume;
+- IndexedDB/Dexie local persistence;
+- multiple isolated local profiles on one device;
+- curated starter workouts plus a large lazy-loaded exercise library;
+- exercise detail/history;
+- local routine builder and weekly schedule;
+- reps/timed/weighted prescriptions and per-set load logging;
+- progress/body-weight history and deterministic progression candidates;
+- export/import backup;
+- PWA/service-worker infrastructure;
+- Pixel Bloom + Savage Core shared theme architecture;
+- Full / Reduced / Off motion preferences;
+- unit/infrastructure tests, phone-viewport Playwright E2E and GitHub Actions CI.
+
+Pixel Bloom creative production is in progress. The functional frontend currently uses the shared semantic theme foundation plus temporary/legacy exercise media while approved mascot/world/exercise animation assets are produced and integrated.
+
+## Start here
+
+Before changing application code:
 
 1. `CLAUDE.md`
-2. `docs/SOURCE_OF_TRUTH_V06.md`
-3. `docs/AI_COLLABORATION_PROTOCOL.md`
-4. `support/CLAUDE_REQUESTS.md`
+2. `docs/CONTEXT_ENGINEERING_INDEX.md`
+3. `docs/SOURCE_OF_TRUTH_V07.md`
+4. `docs/ARCHITECTURE.md`
+5. the focused documentation for the subsystem being changed
+
+Important focused docs:
+
+- `docs/TESTING_AND_RELIABILITY.md`
+- `docs/IOS_PWA_RUNTIME.md`
+- `docs/SECURITY_AND_PRIVACY.md`
+- `docs/DEFINITION_OF_DONE.md`
+- `docs/PIXEL_BLOOM_ASSET_SYSTEM.md`
+- `docs/PIXEL_BLOOM_ANIMATION_SYSTEM.md`
+- `docs/PIXEL_BLOOM_FRONTEND_CONTEXT.md`
+- `docs/RESEARCH_SOURCES.md`
+
+`docs/SOURCE_OF_TRUTH_V06.md` and the older `docs/superpowers/` plans are retained as historical context. v0.7 is current authority.
 
 ## Tech stack
 
-- Vite
-- React
-- TypeScript
-- Dexie (IndexedDB wrapper)
+- Vite 6
+- React 19
+- TypeScript 5.7
+- Dexie / IndexedDB
 - Zod
+- Tailwind CSS
 - Vitest
+- Playwright
 
 ## Setup
 
 ```bash
 npm install
-npm run dev     # start the dev server
-npm run build   # type-check and build for production
-npm test        # run the test suite
+npm run dev
+npm run build
+npm test
+npm run check
+npm run e2e
 ```
+
+Install Playwright browsers when needed:
+
+```bash
+npm run e2e:install
+```
+
+## Architecture
+
+```text
+presentation / React
+      ↓
+application use cases
+      ↓
+pure TypeScript domain
+      ↓
+infrastructure
+  ├─ Dexie / IndexedDB
+  ├─ profile-scoped repositories
+  ├─ content/media loading
+  ├─ service worker / PWA
+  └─ export/import
+```
+
+See `docs/ARCHITECTURE.md` for the real module map and invariants.
 
 ## Development model
 
-Claude Code owns implementation. ChatGPT supplies research, specs, structured data, fixtures, test matrices, reviewed reference assets, and reconciliation support. Missing product truth should be requested through `support/CLAUDE_REQUESTS.md`, not invented in code.
+- **Claude Code:** implementation, migrations, refactors, tests/builds, integration.
+- **ChatGPT:** R&D, specifications, structured data, research, fixtures, creative assets and audits.
+- **Human owner:** product direction, approval and release decisions.
+
+Missing product truth belongs in `support/CLAUDE_REQUESTS.md`; implementation agents should not silently invent it.
+
+## Current high-value hardening work
+
+- add WebKit/iPhone-like Playwright project;
+- prove real network-disabled offline relaunch/execution;
+- harden session-start atomicity;
+- make user-visible rest extensions durable if exact recovery is promised;
+- expand export/import corruption tests;
+- integrate approved Pixel Bloom assets/animation in controlled batches.
