@@ -13,7 +13,10 @@
     "e2e:install": "playwright install chromium",
     "generate:icons": "node scripts/generate-icons.mjs",
     "import:free-exercise-db": "tsx scripts/content/run-import-free-exercise-db.ts",
-    "generate:library": "tsx scripts/content/generate-library.ts"
+    "generate:library": "tsx scripts/content/generate-library.ts",
+    "assets:generate": "python3 scripts/assets/generate-pixel-bloom-system.py",
+    "assets:index": "node scripts/assets/build-asset-index.mjs",
+    "assets:validate": "node scripts/assets/validate-assets.mjs"
   },
   "dependencies": {
     "@fontsource-variable/nunito": "5.3.0",

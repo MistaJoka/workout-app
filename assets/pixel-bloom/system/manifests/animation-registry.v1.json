@@ -1,0 +1,33 @@
+{
+  "schemaVersion": 1,
+  "theme": "pixel-bloom",
+  "animations": [
+    {
+      "id": "character.bloom.idle",
+      "path": "assets/pixel-bloom/system/runtime/svg/pb-anim-bloom-idle-v1.svg",
+      "motionModes": {
+        "full": "animated SVG",
+        "reduced": "static first frame",
+        "off": "static character"
+      }
+    },
+    {
+      "id": "character.bloom.celebrate",
+      "path": "assets/pixel-bloom/system/runtime/svg/pb-anim-bloom-celebrate-v1.svg",
+      "motionModes": {
+        "full": "animated SVG",
+        "reduced": "static celebration pose",
+        "off": "static character"
+      }
+    },
+    {
+      "id": "exercise.bodyweight-squat.preview",
+      "path": "assets/pixel-bloom/system/runtime/svg/pb-anim-exercise-squat-v1.svg",
+      "motionModes": {
+        "full": "animated preview",
+        "reduced": "start/finish only",
+        "off": "keyframe sheet + written instructions"
+      }
+    }
+  ]
+}

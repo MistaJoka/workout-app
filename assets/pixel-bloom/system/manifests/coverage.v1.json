@@ -1,0 +1,24 @@
+{
+  "theme": "pixel-bloom",
+  "version": 1,
+  "generatedAt": "2026-09-21",
+  "complete": {
+    "characterMaster": true,
+    "expressions": true,
+    "poses": true,
+    "uiKit": true,
+    "workoutCoverSystem": true,
+    "worldMap": true,
+    "collectibles": true,
+    "stateIllustrations": true,
+    "squatKeyframes": true,
+    "idleAnimation": true,
+    "celebrationAnimation": true,
+    "squatAnimationPreview": true,
+    "schemas": true,
+    "tokens": true,
+    "registry": true,
+    "validation": true
+  },
+  "guardrail": "Do not create misleading exercise-specific movement art. Existing canonical/public exercise media remains the fallback until a movement-specific Pixel Bloom set is reviewed."
+}

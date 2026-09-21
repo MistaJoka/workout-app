@@ -1,0 +1,163 @@
+{
+  "schemaVersion": 1,
+  "theme": "pixel-bloom",
+  "generatedAt": "2026-09-21",
+  "assets": [
+    {
+      "id": "svg.bloom.master",
+      "path": "assets/pixel-bloom/system/runtime/svg/pb-bloom-master-sheet-v1.svg",
+      "kind": "svg",
+      "role": "character-master",
+      "status": "runtime-ready",
+      "fallbackId": null,
+      "metadata": {
+        "theme": "pixel-bloom",
+        "version": 1,
+        "creator": "OpenAI ChatGPT"
+      }
+    },
+    {
+      "id": "svg.bloom.expressions",
+      "path": "assets/pixel-bloom/system/runtime/svg/pb-bloom-expressions-v1.svg",
+      "kind": "svg",
+      "role": "expression-sheet",
+      "status": "runtime-ready",
+      "fallbackId": null,
+      "metadata": {
+        "theme": "pixel-bloom",
+        "version": 1,
+        "creator": "OpenAI ChatGPT"
+      }
+    },
+    {
+      "id": "svg.bloom.poses",
+      "path": "assets/pixel-bloom/system/runtime/svg/pb-bloom-poses-v1.svg",
+      "kind": "svg",
+      "role": "pose-sheet",
+      "status": "runtime-ready",
+      "fallbackId": null,
+      "metadata": {
+        "theme": "pixel-bloom",
+        "version": 1,
+        "creator": "OpenAI ChatGPT"
+      }
+    },
+    {
+      "id": "svg.ui.kit",
+      "path": "assets/pixel-bloom/system/runtime/svg/pb-ui-kit-v1.svg",
+      "kind": "svg",
+      "role": "ui-kit",
+      "status": "runtime-ready",
+      "fallbackId": null,
+      "metadata": {
+        "theme": "pixel-bloom",
+        "version": 1,
+        "creator": "OpenAI ChatGPT"
+      }
+    },
+    {
+      "id": "svg.workout.covers",
+      "path": "assets/pixel-bloom/system/runtime/svg/pb-workout-covers-v1.svg",
+      "kind": "svg",
+      "role": "workout-cover-sheet",
+      "status": "runtime-ready",
+      "fallbackId": null,
+      "metadata": {
+        "theme": "pixel-bloom",
+        "version": 1,
+        "creator": "OpenAI ChatGPT"
+      }
+    },
+    {
+      "id": "svg.exercise.squat.frames",
+      "path": "assets/pixel-bloom/system/runtime/svg/pb-exercise-squat-frames-v1.svg",
+      "kind": "svg",
+      "role": "exercise-keyframes",
+      "status": "runtime-ready",
+      "fallbackId": null,
+      "metadata": {
+        "theme": "pixel-bloom",
+        "version": 1,
+        "creator": "OpenAI ChatGPT"
+      }
+    },
+    {
+      "id": "svg.world.map",
+      "path": "assets/pixel-bloom/system/runtime/svg/pb-world-map-v1.svg",
+      "kind": "svg",
+      "role": "world-map",
+      "status": "runtime-ready",
+      "fallbackId": null,
+      "metadata": {
+        "theme": "pixel-bloom",
+        "version": 1,
+        "creator": "OpenAI ChatGPT"
+      }
+    },
+    {
+      "id": "svg.collectibles",
+      "path": "assets/pixel-bloom/system/runtime/svg/pb-collectibles-v1.svg",
+      "kind": "svg",
+      "role": "collectible-sheet",
+      "status": "runtime-ready",
+      "fallbackId": null,
+      "metadata": {
+        "theme": "pixel-bloom",
+        "version": 1,
+        "creator": "OpenAI ChatGPT"
+      }
+    },
+    {
+      "id": "svg.states",
+      "path": "assets/pixel-bloom/system/runtime/svg/pb-states-v1.svg",
+      "kind": "svg",
+      "role": "state-sheet",
+      "status": "runtime-ready",
+      "fallbackId": null,
+      "metadata": {
+        "theme": "pixel-bloom",
+        "version": 1,
+        "creator": "OpenAI ChatGPT"
+      }
+    },
+    {
+      "id": "svg.animation.bloom.idle",
+      "path": "assets/pixel-bloom/system/runtime/svg/pb-anim-bloom-idle-v1.svg",
+      "kind": "svg",
+      "role": "animated-svg",
+      "status": "runtime-ready",
+      "fallbackId": null,
+      "metadata": {
+        "theme": "pixel-bloom",
+        "version": 1,
+        "creator": "OpenAI ChatGPT"
+      }
+    },
+    {
+      "id": "svg.animation.bloom.celebrate",
+      "path": "assets/pixel-bloom/system/runtime/svg/pb-anim-bloom-celebrate-v1.svg",
+      "kind": "svg",
+      "role": "animated-svg",
+      "status": "runtime-ready",
+      "fallbackId": null,
+      "metadata": {
+        "theme": "pixel-bloom",
+        "version": 1,
+        "creator": "OpenAI ChatGPT"
+      }
+    },
+    {
+      "id": "svg.animation.exercise.squat",
+      "path": "assets/pixel-bloom/system/runtime/svg/pb-anim-exercise-squat-v1.svg",
+      "kind": "svg",
+      "role": "animated-svg",
+      "status": "runtime-ready",
+      "fallbackId": null,
+      "metadata": {
+        "theme": "pixel-bloom",
+        "version": 1,
+        "creator": "OpenAI ChatGPT"
+      }
+    }
+  ]
+}

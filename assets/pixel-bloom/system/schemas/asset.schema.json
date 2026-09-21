@@ -1,0 +1,48 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "Pixel Bloom Asset",
+  "type": "object",
+  "required": [
+    "id",
+    "path",
+    "kind",
+    "status"
+  ],
+  "properties": {
+    "id": {
+      "type": "string"
+    },
+    "path": {
+      "type": "string"
+    },
+    "kind": {
+      "enum": [
+        "svg",
+        "image",
+        "sprite-sheet",
+        "reference",
+        "audio",
+        "data"
+      ]
+    },
+    "status": {
+      "enum": [
+        "planned",
+        "generated",
+        "reviewed",
+        "approved",
+        "runtime-ready",
+        "deprecated"
+      ]
+    },
+    "fallbackId": {
+      "type": [
+        "string",
+        "null"
+      ]
+    },
+    "metadata": {
+      "type": "object"
+    }
+  }
+}
