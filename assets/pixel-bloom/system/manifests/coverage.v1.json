@@ -19,7 +19,10 @@
     "tokens": true,
     "registry": true,
     "validation": true,
-    "fullIndividualAssetLibrary": true
+    "fullIndividualAssetLibrary": true,
+    "semanticCatalog": true,
+    "sourceRecipes": true,
+    "aiReferenceLayer": true
   },
   "guardrail": "Do not create misleading exercise-specific movement art. Existing canonical/public exercise media remains the fallback until a movement-specific Pixel Bloom set is reviewed.",
   "libraryCounts": {
@@ -31,6 +34,7 @@
     "collectibles": 25,
     "mapZones": 6,
     "uiIcons": 6,
-    "additionalPresentationAnimations": 6
+    "additionalPresentationAnimations": 6,
+    "registeredAnimations": 9
   }
 }

@@ -1,0 +1,10 @@
+{
+  "id": "motion.pixel-bloom",
+  "status": "canonical-creative-reference",
+  "modes": {
+    "full": "normal authored motion",
+    "reduced": "minimal transform/fade or static key pose",
+    "off": "static asset; no information may be lost"
+  },
+  "exerciseRule": "Do not fabricate exercise biomechanics. Pixel Bloom discovery art is decorative; canonical exercise media/written guidance remains form authority unless a movement-specific Pixel Bloom set is reviewed."
+}

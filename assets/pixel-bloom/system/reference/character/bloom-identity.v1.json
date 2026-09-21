@@ -1,0 +1,23 @@
+{
+  "id": "character.bloom",
+  "status": "canonical-creative-reference",
+  "identity": {
+    "adult": true,
+    "race": "Black woman",
+    "skinTone": "fair/warm brown",
+    "hair": "dark natural curly hair",
+    "ears": "long soft droopy bunny ears",
+    "body": "friendly athletic adult proportions",
+    "defaultOutfit": "pastel fitness outfit"
+  },
+  "driftForbidden": [
+    "skin tone",
+    "age coding",
+    "hair silhouette",
+    "ear shape",
+    "body proportions"
+  ],
+  "runtimeMaster": "svg.bloom.master",
+  "expressionSheet": "svg.bloom.expressions",
+  "poseSheet": "svg.bloom.poses"
+}
