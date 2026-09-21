@@ -156,3 +156,29 @@ See the updated `support/RND_BACKLOG.md`; P0 now focuses on:
 3. Foundation Strength production review;
 4. export/import corruption corpus;
 5. first production Pixel Bloom integration pack.
+
+## DEL-20260920-001 — Content + Creative Production v1
+
+**Status:** DELIVERED / DRAFT CONTENT READY FOR REVIEW  
+**Authoritative changes:** no — staging content and creative production inputs only  
+**Implementation authority:** no — Claude Code remains the implementation owner
+
+Delivered:
+
+- 77 exercise editorial records split across two staging files;
+- 30 draft workouts and 6 multi-week programs;
+- 30 explicit progression/regression/variation/complement relationship edges;
+- draft XP rules, 20 badges, 25 collectibles and 6 Pixel Bloom map zones;
+- UI copy for workout, offline, persistence failure, backup, profile, empty-state and progression surfaces;
+- Pixel Bloom production manifest covering 30 workout covers, 25 P0 exercise-media targets and 10 mascot states;
+- 8 directly usable starter badge SVG symbols;
+- a dedicated Claude integration handoff with mapping, provenance, immutability, offline and promotion boundaries.
+
+Primary entrypoints:
+
+- `content/staging/v1/README.md`
+- `assets/pixel-bloom/manifests/creative-production-v1.json`
+- `support/CLAUDE_HANDOFF_CONTENT_CREATIVE_20260920.md`
+- `support/deliveries/DEL-20260920-001.md`
+
+Nothing in this delivery changes runtime code or silently promotes draft fitness content into approved canonical coaching truth.
