@@ -3,10 +3,22 @@ import path from "node:path";
 import { pathToFileURL } from "node:url";
 
 const ROOT = process.cwd();
-const DATA_PATH = path.join(ROOT, "content/staging/v2/routine-intelligence/routine-intelligence.v1.json");
+const DATA_DIR = path.join(ROOT, "content/staging/v2/routine-intelligence");
+
+function readJson(fileName) {
+  return JSON.parse(fs.readFileSync(path.join(DATA_DIR, fileName), "utf8"));
+}
 
 export function loadRoutineIntelligence() {
-  return JSON.parse(fs.readFileSync(DATA_PATH, "utf8"));
+  const config = readJson("routine-config.v1.json");
+  const presets = readJson("constraint-presets.v1.json").presets;
+  const templates = readJson("workout-templates.v1.json").templates;
+  const programs = readJson("program-templates.v1.json").programs;
+  const exerciseFiles = fs.readdirSync(DATA_DIR)
+    .filter((fileName) => /^exercise-suitability-[a-f]\.v1\.json$/.test(fileName))
+    .sort();
+  const exercises = exerciseFiles.flatMap((fileName) => readJson(fileName).exercises);
+  return { ...config, presets, templates, programs, exercises };
 }
 
 const balanceRank = { low: 0, medium: 1, high: 2 };
