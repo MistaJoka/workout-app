@@ -18,7 +18,19 @@
     "schemas": true,
     "tokens": true,
     "registry": true,
-    "validation": true
+    "validation": true,
+    "fullIndividualAssetLibrary": true
   },
-  "guardrail": "Do not create misleading exercise-specific movement art. Existing canonical/public exercise media remains the fallback until a movement-specific Pixel Bloom set is reviewed."
+  "guardrail": "Do not create misleading exercise-specific movement art. Existing canonical/public exercise media remains the fallback until a movement-specific Pixel Bloom set is reviewed.",
+  "libraryCounts": {
+    "runtimeAssets": 140,
+    "workoutCovers": 30,
+    "exerciseDiscoveryThumbnails": 25,
+    "mascotStates": 10,
+    "badges": 20,
+    "collectibles": 25,
+    "mapZones": 6,
+    "uiIcons": 6,
+    "additionalPresentationAnimations": 6
+  }
 }
