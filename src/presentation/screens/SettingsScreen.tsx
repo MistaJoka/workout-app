@@ -12,7 +12,7 @@ import { useWeightUnit } from '../components/useWeightUnit'
 const LAST_EXPORT_KEY = 'lastExportAt'
 
 export function SettingsScreen() {
-  const { theme, setTheme, motion, setMotion } = useTheme()
+  const { motion, setMotion } = useTheme()
   const [feedback, updateFeedback] = useFeedbackSettings()
   const [unit, setUnit] = useWeightUnit()
   const fileInputRef = useRef<HTMLInputElement>(null)
@@ -64,14 +64,6 @@ export function SettingsScreen() {
   return (
     <div className="p-4 space-y-6">
       <h1 className="text-xl font-bold">Settings</h1>
-
-      <section className="space-y-2">
-        <p className="font-semibold">Theme</p>
-        <div className="flex justify-end gap-2">
-          <ThemeButton label="Pixel Bloom" active={theme === 'pixel-bloom'} onClick={() => setTheme('pixel-bloom')} />
-          <ThemeButton label="Savage Core" active={theme === 'savage-core'} onClick={() => setTheme('savage-core')} />
-        </div>
-      </section>
 
       <section className="space-y-2">
         <p className="font-semibold">Motion</p>

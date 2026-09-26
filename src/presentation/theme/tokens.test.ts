@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest'
-import { DEFAULT_THEME, THEME_TOKENS, type ThemeName } from './tokens'
+import { PIXEL_BLOOM_TOKENS as t } from './tokens'
 
 // WCAG 2.x relative luminance and contrast ratio.
 function channel(hex: string): number {
@@ -18,40 +18,29 @@ export function contrastRatio(a: string, b: string): number {
 }
 
 const AA_NORMAL_TEXT = 4.5
-const THEMES: ThemeName[] = ['pixel-bloom', 'savage-core']
 
 // Buttons are 16px bold (index.css .btn) — "normal" text under WCAG, so
 // the 4.5:1 threshold applies, not the 3:1 large-text one.
 describe('theme token contrast', () => {
-  it.each(THEMES)('%s: on-primary text on the primary fill reaches AA', (theme) => {
-    const t = THEME_TOKENS[theme]
+  it('on-primary text on the primary fill reaches AA', () => {
     expect(contrastRatio(t.colorOnPrimary, t.colorPrimary)).toBeGreaterThanOrEqual(AA_NORMAL_TEXT)
   })
 
-  it.each(THEMES)('%s: on-accent text on the accent fill reaches AA', (theme) => {
-    const t = THEME_TOKENS[theme]
+  it('on-accent text on the accent fill reaches AA', () => {
     expect(contrastRatio(t.colorOnAccent, t.colorAccent)).toBeGreaterThanOrEqual(AA_NORMAL_TEXT)
   })
 
-  it.each(THEMES)('%s: body text on background and surface reaches AA', (theme) => {
-    const t = THEME_TOKENS[theme]
+  it('body text on background and surface reaches AA', () => {
     expect(contrastRatio(t.colorText, t.colorBackground)).toBeGreaterThanOrEqual(AA_NORMAL_TEXT)
     expect(contrastRatio(t.colorText, t.colorSurface)).toBeGreaterThanOrEqual(AA_NORMAL_TEXT)
     expect(contrastRatio(t.colorTextMuted, t.colorSurface)).toBeGreaterThanOrEqual(AA_NORMAL_TEXT)
   })
 
   // Fields hold real copy (up next, rest timer, done, stats, notices).
-  it.each(THEMES)('%s: body and muted text on every field reaches AA', (theme) => {
-    const t = THEME_TOKENS[theme]
+  it('body and muted text on every field reaches AA', () => {
     for (const field of [t.colorFieldPrimary, t.colorFieldCalm, t.colorFieldSuccess, t.colorFieldInfo, t.colorFieldNotice]) {
       expect(contrastRatio(t.colorText, field)).toBeGreaterThanOrEqual(AA_NORMAL_TEXT)
       expect(contrastRatio(t.colorTextMuted, field)).toBeGreaterThanOrEqual(AA_NORMAL_TEXT)
     }
-  })
-})
-
-describe('default theme', () => {
-  it('is the Savage Core tactical HUD', () => {
-    expect(DEFAULT_THEME).toBe('savage-core')
   })
 })

@@ -25,7 +25,7 @@ Do not begin from historical plans or broad R&D dumps unless the current context
 - Progression is deterministic and requires explicit confirmation.
 - Do not invent exercise substitutions, progression edges, safety rules or medical advice.
 - Core workouts do not require backend/cloud/AI services.
-- Pixel Bloom and Savage Core share one behavior/component/domain architecture.
+- Pixel Bloom is the only theme (owner decision 2026-09-26; Savage Core retired).
 - Full/Reduced/Off motion must preserve information.
 
 ## Ownership

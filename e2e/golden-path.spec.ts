@@ -172,9 +172,3 @@ test.describe('utilities', () => {
   })
 })
 
-// Guards the parity run itself: each project must really render its theme,
-// or the Pixel Bloom pass would silently re-test Savage Core.
-test('renders the theme this project is testing', async ({ page }, testInfo) => {
-  await page.goto('/')
-  await expect(page.locator('html')).toHaveAttribute('data-theme', testInfo.project.name)
-})

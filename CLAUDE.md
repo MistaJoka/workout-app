@@ -53,7 +53,7 @@ Always `git fetch origin` before pushing: the ChatGPT support agent commits dire
 - Never invent exercises, equipment, exercise equivalence/substitution edges, or safety rules.
 - Exercise/character/media art is authored externally, reviewed, then consumed as static/runtime assets. Curated photos live in `public/exercise-media/`; library photos are fetched from the pinned upstream revision and cached by the service worker. No runtime image-generation API.
 - No runtime LLM coach, camera pose tracking, microphone coach or required wearable integration.
-- Exactly two first-class themes: `pixel-bloom` and `savage-core`, sharing routes, components, domain logic, exercise data and execution semantics. Savage Core (tactical HUD) is the default; its geometry lives only in `[data-theme='savage-core']` rules in `src/index.css`. Components tagged `btn-*`/`field-*` via `@apply` do not carry the base `.btn`/`.field` class, so theme selectors must list them (`:is(...)`). E2E runs every journey under both themes (Playwright projects).
+- Exactly one theme: **Pixel Bloom** (owner decision 2026-09-26 — Savage Core was built, then retired; no theme picker). Styling stays token-driven (`src/presentation/theme/tokens.ts` → CSS vars). A leftover `theme` setting in an older profile is ignored. Components tagged `btn-*`/`field-*` via `@apply` do not carry the base `.btn`/`.field` class, so any selector scoping them must list them (`:is(...)`).
 - Motion preference: `full`, `reduced`, `off`. A motion setting (app-level or OS `prefers-reduced-motion`) must never remove information.
 
 ## Architecture rules
@@ -83,7 +83,7 @@ Primary guided flow: `Today -> Check-In -> Session Preview -> Workout Player -> 
 - An Offline banner is not proof of offline function; test an actually network-disabled reload/execution path.
 - Wake lock/audio/animation are progressive enhancement and must fail safely.
 - Storage quota/eviction/write failures are real local failure modes; do not mislabel them as network failures.
-- Text on colored fills uses `--color-on-primary` / `--color-on-accent` (never hardcoded white); `tokens.test.ts` enforces ≥ 4.5:1 for both themes.
+- Text on colored fills uses `--color-on-primary` / `--color-on-accent` (never hardcoded white); `tokens.test.ts` enforces ≥ 4.5:1, including body and muted text on every field.
 - Follow `docs/DEFINITION_OF_DONE.md` before calling a feature complete.
 
 ## Gotchas

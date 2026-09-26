@@ -153,10 +153,10 @@ shared React components
       ↓
 semantic CSS variables/tokens
       ↓
-Pixel Bloom | Savage Core
+Pixel Bloom (the only theme — Savage Core retired by the owner 2026-09-26)
 ```
 
-Never create `PixelBloomWorkoutPlayer.tsx` and `SavageWorkoutPlayer.tsx` versions of the same behavior.
+Never fork components by visual style; restyle through tokens.
 
 Visual assets may differ, but component/state semantics remain shared.
 

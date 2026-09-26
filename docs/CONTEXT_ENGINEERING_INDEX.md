@@ -100,7 +100,7 @@ This reduces stale-context collisions and makes violations easier to detect.
 - Started workouts execute immutable `SessionPlan` snapshots.
 - Session history is event/result based and durable.
 - Progression is deterministic and confirmation-gated.
-- Pixel Bloom and Savage Core share one component/domain tree.
+- Pixel Bloom is the only theme (Savage Core retired 2026-09-26); one component/domain tree.
 - Motion modes are Full / Reduced / Off.
 - Rae production assets use the canonical asset DB and production pipeline rather than ad hoc filenames or per-screen art handling.
 - No runtime LLM/image generation, camera coaching, microphone coaching or required cloud service.

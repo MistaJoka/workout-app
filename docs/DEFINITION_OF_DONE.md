@@ -24,7 +24,7 @@ Done only when:
 - fixed controls respect safe-area insets;
 - keyboard/focus behavior remains sensible;
 - Full/Reduced/Off motion preserve the same information;
-- Pixel Bloom and Savage Core share behavior/component structure;
+- Pixel Bloom is the only theme; styling changes go through tokens;
 - no critical action depends on hover;
 - no durable business truth exists only in component state.
 

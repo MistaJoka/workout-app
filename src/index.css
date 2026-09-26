@@ -19,11 +19,8 @@
   --color-field-info: #d9c8ff;
   --color-field-notice: #ffe1b8;
   --radius-panel: 18px;
-  --color-signal: #10b981;
-  --color-glow: transparent;
   --radius-control: 999px;
   --font-body: 'Nunito Variable', ui-rounded, 'SF Pro Rounded', system-ui, sans-serif;
-  --font-display: var(--font-body);
 }
 
 html {
@@ -40,14 +37,12 @@ body {
 
 h1,
 h2 {
-  font-family: var(--font-display);
   letter-spacing: -0.01em;
 }
 
 /* Timers, reps, weights and stats: fixed-width digits so a ticking timer
-   doesn't jitter, in the theme's display face. */
+   doesn't jitter. */
 .hud-num {
-  font-family: var(--font-display);
   font-variant-numeric: tabular-nums;
 }
 
@@ -193,238 +188,7 @@ h2 {
   outline-offset: 2px;
 }
 
-/* ------------------------------------------------------------------
-   Savage Core: tactical HUD geometry (SOURCE_OF_TRUTH_V07.md §13).
-   Same components and markup as Pixel Bloom; only these rules differ.
-   Chamfered controls, hairline panels with corner brackets, a faint
-   grid, glow instead of the offset "game" shadow. Nothing here carries
-   information: every mark is decoration over text that already says it.
-   ------------------------------------------------------------------ */
-[data-theme='savage-core'] body {
-  background-image:
-    radial-gradient(120% 60% at 50% -10%, rgba(34, 211, 238, 0.08), transparent 60%),
-    linear-gradient(rgba(255, 255, 255, 0.022) 1px, transparent 1px),
-    linear-gradient(90deg, rgba(255, 255, 255, 0.022) 1px, transparent 1px);
-  background-size:
-    100% 100%,
-    24px 24px,
-    24px 24px;
-  background-attachment: fixed;
-}
-
-[data-theme='savage-core'] h1,
-[data-theme='savage-core'] h2 {
-  letter-spacing: 0.01em;
-}
-
-@layer components {
-  [data-theme='savage-core'] :is(.btn, .btn-primary, .btn-secondary, .btn-danger, .btn-ghost) {
-    --chamfer: 10px;
-    font-family: var(--font-display);
-    font-weight: 700;
-    letter-spacing: 0.03em;
-    clip-path: polygon(
-      var(--chamfer) 0,
-      100% 0,
-      100% calc(100% - var(--chamfer)),
-      calc(100% - var(--chamfer)) 100%,
-      0 100%,
-      0 var(--chamfer)
-    );
-  }
-  /* A clipped control would clip its own focus ring. */
-  [data-theme='savage-core'] :is(.btn, .btn-primary, .btn-secondary, .btn-danger, .btn-ghost):focus-visible {
-    clip-path: none;
-  }
-  [data-theme='savage-core'] .btn-primary {
-    background-image: linear-gradient(180deg, rgba(255, 255, 255, 0.18), transparent 55%);
-    box-shadow: none;
-  }
-  [data-theme='savage-core'] .btn-primary:active,
-  [data-theme='savage-core'] .btn-danger:active {
-    transform: translateY(1px);
-    box-shadow: none;
-    filter: brightness(0.82);
-  }
-  [data-theme='savage-core'] .btn-secondary {
-    background-color: var(--color-surface);
-    background-image: linear-gradient(90deg, var(--color-primary) 3px, transparent 3px);
-    border: 1px solid var(--color-border);
-    box-shadow: none;
-    clip-path: none;
-  }
-  [data-theme='savage-core'] .btn-secondary:active {
-    transform: translateY(1px);
-    border-color: var(--color-primary);
-    box-shadow: 0 0 0 3px var(--color-glow);
-  }
-  [data-theme='savage-core'] .btn-ghost {
-    clip-path: none;
-  }
-  [data-theme='savage-core'] .btn-ghost:active {
-    background-color: var(--color-field-primary);
-    color: var(--color-primary);
-  }
-
-  /* Panels: hairline edge plus two cyan corner brackets, painted as
-     background layers so no card needs position:relative. */
-  [data-theme='savage-core'] .card {
-    border-width: 1px;
-    background-image:
-      linear-gradient(var(--color-primary), var(--color-primary)),
-      linear-gradient(var(--color-primary), var(--color-primary)),
-      linear-gradient(var(--color-primary), var(--color-primary)),
-      linear-gradient(var(--color-primary), var(--color-primary));
-    background-repeat: no-repeat;
-    background-size:
-      12px 2px,
-      2px 12px,
-      12px 2px,
-      2px 12px;
-    background-position:
-      top left,
-      top left,
-      bottom right,
-      bottom right;
-  }
-
-  /* Fields keep their tint and gain a status edge in the field's hue. */
-  [data-theme='savage-core'] :is(.field, .field-primary, .field-calm, .field-success, .field-info, .field-notice) {
-    border: 1px solid rgba(255, 255, 255, 0.06);
-    border-left: 3px solid var(--field-edge, var(--color-border));
-  }
-  [data-theme='savage-core'] .field-primary {
-    --field-edge: var(--color-primary);
-  }
-  [data-theme='savage-core'] .field-calm {
-    --field-edge: #38bdf8;
-  }
-  [data-theme='savage-core'] .field-success {
-    --field-edge: var(--color-signal);
-  }
-  [data-theme='savage-core'] .field-info {
-    --field-edge: #a78bfa;
-  }
-  [data-theme='savage-core'] .field-notice {
-    --field-edge: #f59e0b;
-  }
-  /* Full-screen fields (rest, complete) are a whole HUD view, not a
-     panel: no edge, a scan grid in the field's hue instead. */
-  [data-theme='savage-core'] :is(.field, .field-primary, .field-calm, .field-success, .field-info, .field-notice).min-h-screen,
-  [data-theme='savage-core'] :is(.field, .field-primary, .field-calm, .field-success, .field-info, .field-notice).rounded-none {
-    border: 0;
-  }
-  [data-theme='savage-core'] :is(.field, .field-primary, .field-calm, .field-success, .field-info, .field-notice).min-h-screen {
-    background-image:
-      linear-gradient(color-mix(in srgb, var(--field-edge) 10%, transparent) 1px, transparent 1px),
-      linear-gradient(90deg, color-mix(in srgb, var(--field-edge) 10%, transparent) 1px, transparent 1px);
-    background-size: 32px 32px;
-    box-shadow: inset 0 0 120px rgba(0, 0, 0, 0.55);
-  }
-
-  [data-theme='savage-core'] .chip {
-    font-family: var(--font-display);
-    border-width: 1px;
-  }
-  [data-theme='savage-core'] .chip-active {
-    box-shadow: 0 0 0 3px var(--color-glow);
-  }
-  [data-theme='savage-core'] .badge-primary {
-    font-family: var(--font-display);
-    letter-spacing: 0.04em;
-  }
-  [data-theme='savage-core'] .stepper-btn {
-    border-width: 1px;
-    box-shadow: none;
-    color: var(--color-primary);
-  }
-  [data-theme='savage-core'] .stepper-btn:active {
-    border-color: var(--color-primary);
-    box-shadow: 0 0 0 3px var(--color-glow);
-  }
-  [data-theme='savage-core'] .input {
-    border-width: 1px;
-  }
-  [data-theme='savage-core'] .input:focus {
-    box-shadow: 0 0 0 3px var(--color-glow);
-  }
-}
-
-[data-theme='savage-core'] :focus-visible {
-  outline: 2px solid var(--color-primary);
-  box-shadow: 0 0 0 5px var(--color-glow);
-}
-
-/* Bottom nav: the active tab gets a lit bar on its top edge. */
-[data-theme='savage-core'] nav a[aria-current='page'] {
-  box-shadow: inset 0 2px 0 var(--color-primary);
-  background-image: linear-gradient(180deg, var(--color-glow), transparent 70%);
-}
-[data-theme='savage-core'] nav a {
-  font-family: var(--font-display);
-  letter-spacing: 0.03em;
-}
-
-/* Exercise photos are white-background studio shots; on graphite they
-   sit in a bracketed viewport rather than floating as bright slabs. */
-[data-theme='savage-core'] .movement-media {
-  padding: 4px;
-  border: 1px solid var(--color-border);
-  border-radius: var(--radius-panel);
-  background-color: var(--color-surface);
-  background-image:
-    linear-gradient(var(--color-primary), var(--color-primary)),
-    linear-gradient(var(--color-primary), var(--color-primary)),
-    linear-gradient(var(--color-primary), var(--color-primary)),
-    linear-gradient(var(--color-primary), var(--color-primary));
-  background-repeat: no-repeat;
-  background-size:
-    14px 2px,
-    2px 14px,
-    14px 2px,
-    2px 14px;
-  background-position:
-    top left,
-    top left,
-    bottom right,
-    bottom right;
-}
-
-/* Entrance: panels resolve left-to-right like a scan line. Motion 'full'
-   only — the reduced/off rules below cut it to an instant, and
-   fill-mode backwards leaves the finished frame, so nothing is hidden. */
-@keyframes hud-scan-in {
-  from {
-    opacity: 0.2;
-    clip-path: inset(0 100% 0 0);
-  }
-  to {
-    opacity: 1;
-    clip-path: inset(0 0 0 0);
-  }
-}
-[data-theme='savage-core'][data-motion='full'] .card,
-[data-theme='savage-core'][data-motion='full'] :is(.field, .field-primary, .field-calm, .field-success, .field-info, .field-notice):not(.min-h-screen):not(.rounded-none) {
-  animation: hud-scan-in 280ms cubic-bezier(0.2, 0.7, 0.2, 1) backwards;
-}
-
-/* Rest-over / set-done punch: one hard pulse of the primary glow. */
-@keyframes hud-pulse {
-  0% {
-    box-shadow: 0 0 0 0 var(--color-glow);
-  }
-  40% {
-    box-shadow: 0 0 0 14px var(--color-glow);
-  }
-  100% {
-    box-shadow: 0 0 0 0 transparent;
-  }
-}
-[data-theme='savage-core'] .hud-pulse {
-  animation: hud-pulse 700ms ease-out 2;
-}
-
-/* Rest countdown bar (both themes): pure decoration over the numeric
+/* Rest countdown bar: pure decoration over the numeric
    timer, width driven inline from the persisted rest end time. */
 .rest-bar {
   height: 6px;
@@ -437,10 +201,6 @@ h2 {
   height: 100%;
   background-color: var(--color-primary);
   transition: width 250ms linear;
-}
-[data-theme='savage-core'] .rest-bar__fill {
-  box-shadow: 0 0 12px var(--color-glow);
-  background-image: repeating-linear-gradient(90deg, transparent 0 6px, rgba(0, 0, 0, 0.35) 6px 8px);
 }
 
 /* Horizontally scrolling chip rows: swipe, don't show a desktop scrollbar. */

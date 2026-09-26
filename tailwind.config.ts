@@ -26,7 +26,6 @@ const config: Config = {
       },
       fontFamily: {
         sans: ['var(--font-body)'],
-        display: ['var(--font-display)'],
       },
     },
   },
