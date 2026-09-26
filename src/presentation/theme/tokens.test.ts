@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest'
-import { THEME_TOKENS, type ThemeName } from './tokens'
+import { DEFAULT_THEME, THEME_TOKENS, type ThemeName } from './tokens'
 
 // WCAG 2.x relative luminance and contrast ratio.
 function channel(hex: string): number {
@@ -38,5 +38,20 @@ describe('theme token contrast', () => {
     expect(contrastRatio(t.colorText, t.colorBackground)).toBeGreaterThanOrEqual(AA_NORMAL_TEXT)
     expect(contrastRatio(t.colorText, t.colorSurface)).toBeGreaterThanOrEqual(AA_NORMAL_TEXT)
     expect(contrastRatio(t.colorTextMuted, t.colorSurface)).toBeGreaterThanOrEqual(AA_NORMAL_TEXT)
+  })
+
+  // Fields hold real copy (up next, rest timer, done, stats, notices).
+  it.each(THEMES)('%s: body and muted text on every field reaches AA', (theme) => {
+    const t = THEME_TOKENS[theme]
+    for (const field of [t.colorFieldPrimary, t.colorFieldCalm, t.colorFieldSuccess, t.colorFieldInfo, t.colorFieldNotice]) {
+      expect(contrastRatio(t.colorText, field)).toBeGreaterThanOrEqual(AA_NORMAL_TEXT)
+      expect(contrastRatio(t.colorTextMuted, field)).toBeGreaterThanOrEqual(AA_NORMAL_TEXT)
+    }
+  })
+})
+
+describe('default theme', () => {
+  it('is the Savage Core tactical HUD', () => {
+    expect(DEFAULT_THEME).toBe('savage-core')
   })
 })
