@@ -8,18 +8,28 @@
 **Implementation owner:** Claude Code  
 **Final approval owner:** project owner
 
-This document supports the approved Rae image. It does **not** supersede how Rae looks in that image.
+This document is the **semantic authority** for Rae v1. The approved character-bible raster is the **visual authority** for proportions, silhouette, palette relationships, rendering language, and overall likeness.
 
-## Source-of-truth hierarchy
+AI systems MUST NOT inspect the image and invent or reinterpret facts already defined here.
 
-1. **The exact approved Rae v1 character-bible image is the visual source of truth for Rae's appearance.**
-2. Explicit visual corrections/approvals from the project owner that produced that image explain ambiguous details.
-3. This document, the lock JSON, and the asset database are written transcriptions used to preserve and enforce what the approved image shows.
-4. Prompts, older generated sheets, draft assets, and AI memory are not authoritative.
+---
 
-If any supporting document describes Rae differently from the approved visual reference, **the approved image wins and the document must be corrected**. Supporting docs must follow the image, never reinterpret it.
+## 0. Authority hierarchy
 
-The source-of-truth rule applies to Rae's **visual depiction**. Incidental labels/text rendered inside an AI-generated reference board are not semantic authority when they contradict the depicted character or explicit owner approval. Example: the approved Rae image visually shows two bunny ears and no human ears; that visual depiction is authoritative.
+When generating, editing, animating, or implementing Rae, use this order:
+
+1. **Explicit fields in `assets/pixel-bloom/db/rae-character-lock.v1.json`** — machine-readable non-negotiable facts.
+2. **This document** — human-readable semantic specification.
+3. **Approved canonical image** — visual geometry/style/color reference.
+4. **Approved derivative assets** — pose/expression/animation-specific references.
+5. Prompts, AI memory, older drafts, generated labels, and model assumptions — **non-authoritative**.
+
+### Conflict rule
+
+- If the image is visually ambiguous but text is explicit, **text wins**.
+- If text does not specify a visual nuance, use the canonical image.
+- AI-rendered words inside the reference image are not authoritative metadata.
+- Never invent missing details. Preserve the nearest canonical form or mark the detail as `UNSPECIFIED` and request/await approval.
 
 ---
 
@@ -30,195 +40,253 @@ The source-of-truth rule applies to Rae's **visual depiction**. Incidental label
 **Dimensions:** `1536 × 1024`  
 **SHA-256:** `e0390ef9d39fe92d2d93544d62cb0568a6e9e2b3cd5e6e8305c333b7f3217beb`
 
-This hash identifies the exact approved raster. A visually similar regeneration is **not** the same source of truth.
+This exact raster is the approved visual master. A similar regeneration is not equivalent.
 
-Future asset generation should use the approved image itself as the primary visual reference wherever the toolchain supports image conditioning/reference input. Text prompts are supplemental constraints, not a replacement for the image.
+Use the raster as the visual reference whenever the generation/edit tool supports image conditioning.
 
 ---
 
-## 2. What the approved image visually locks
-
-### Character
+## 2. Canonical identity
 
 - **Name:** Rae
+- **Character type:** adult bunny girl
+- **Human identity basis:** stylized likeness of the project owner's wife
 - **Age read:** adult woman
-- **Character type:** bunny girl
-- **Presentation:** warm, confident, supportive, playful, determined
-- **Role in app:** guide, workout companion, mascot, progression/reward character
-- **Design intent:** recognizable stylized likeness of Rae without photoreal rendering
+- **Role:** guide, workout companion, mascot, progression/reward character
+- **Personality read:** kind, calm, confident, supportive, playful, determined
+- **Overall tone:** cozy, cute, motivating, non-judgmental, capable
+- **Rendering:** stylized high-bit pixel art; never photoreal
 
-### Complexion
+Rae must never read as a child, teenager, schoolgirl, or generic anime mascot.
+
+---
+
+## 3. Complexion
 
 - Warm **medium-deep brown complexion**.
-- The approved image itself is the tonal target.
-- Future assets should be color-matched to the reference rather than choosing a new generic skin value.
+- The approved raster is the tonal target.
+- Do not lighten Rae relative to the approved image.
+- Do not introduce pale/pink skin rendering, ashy highlights, or inconsistent skin tone between frames.
+- Shading may shift with environment lighting, but base complexion must remain stable.
 
-### Hair
+---
 
-- **Black 4C natural hair.**
-- Dense, tightly coiled/kinky texture is a core silhouette feature.
-- The approved image shows a voluminous natural 4C updo/puff with tightly coiled volume and selected hanging coils/tendrils.
-- Hair must not be converted into straight, straightened, silky-straight, loose-wave, or generic curly hair.
-- Secondary animation motion should respect the compact/coiled 4C mass rather than flowing like straight hair.
+## 4. Hair
 
-### Face
+### Non-negotiable
+
+- **Color:** black.
+- **Texture:** **4C natural hair**.
+- Dense, tightly coiled/kinky texture.
+- Voluminous natural updo/puff silhouette.
+- Selected tightly coiled tendrils may frame the face.
+
+### Forbidden drift
+
+Do not render Rae with:
+
+- straight hair;
+- straightened hair;
+- silky hair;
+- loose beach waves;
+- generic large ringlets that erase 4C texture;
+- brown/auburn hair as the dominant read.
+
+Animation follow-through must respect dense 4C volume; it does not flow like straight hair.
+
+---
+
+## 5. Face
 
 - Stylized adult likeness, not photorealistic.
 - Soft rounded/oval facial structure.
 - Friendly expressive eyes.
 - Warm smile and readable brows.
-- Facial detail remains compatible with high-bit handheld pixel art.
-- Rae does **not** need to look directly at the viewer; gaze should follow the scene/action naturally.
+- High-bit pixel-art facial planes and simplified forms.
+- Likeness comes from face proportions, smile, glasses, skin tone, hair silhouette, and overall styling—not realistic pores or painted skin.
 
-### Glasses
+### Gaze
 
-- Thin **gold round wire-frame glasses**.
-- Lens geometry and bridge should remain recognizable across angles.
+Rae does **not** need to look directly at the viewer.
+
+- Neutral/profile/reward art may use natural off-axis gaze.
+- Exercise art should follow movement direction and form clarity.
+- Do not force camera eye contact during exercises.
 
 ---
 
-## 3. Bunny anatomy
+## 6. Glasses
+
+- Thin round **gold wire-frame glasses**.
+- Fine bridge and rims.
+- Keep recognizable across all views.
+- Do not replace with thick plastic frames, square frames, oversized fashion glasses, or rimless glasses.
+
+---
+
+## 7. Bunny anatomy
 
 ### Ears
 
-The approved image visually establishes:
+Rae has **exactly two ears total**.
 
-- **Exactly two ears total.**
 - Both are bunny ears.
-- **No human ears.**
-- Outer ear fur: **tan**.
-- Inner ear: **flesh pink**.
-- Shape: moderately long, semi-upright, with a soft natural bend rather than heavily floppy ears.
-- Ears emerge through/from the upper 4C hair silhouette and maintain consistent base placement.
+- **No human ears exist or are visible.**
+- Outer ear: **tan**.
+- Inner ear: **soft flesh pink**.
+- Moderately long.
+- Semi-upright.
+- Gentle natural bend; not dramatically floppy.
+- Ears emerge through/from the upper hair silhouette.
+- Ear base position must remain consistent across turnarounds and animation frames.
 
-Any future image with visible human ears does not match the source-of-truth image and is rejected.
+Any visible human ear is an automatic rejection.
 
 ### Tail
 
-- One small, round, fluffy **brown bunny tail**.
-- Positioned anatomically at the rear pelvis/upper glute area as shown in the turnaround.
-- Brown—not white—in Rae v1.
+- Exactly one bunny tail.
+- Small.
+- Round/fluffy.
+- **Brown**.
+- Rear pelvis/upper glute placement.
+- Not white, pink, oversized, or elongated.
 
 ---
 
-## 4. Body and proportions
-
-The approved image is the proportion master.
+## 8. Body and proportions
 
 - Adult fuller/curvy build.
-- Strong, athletic visual read while preserving natural curves.
+- Strong and athletic visual read.
 - Grounded human-like proportions adapted to stylized pixel art.
-- No extreme waist reduction, exaggerated caricature, or child/teen proportions.
-- Limb lengths, torso length, head scale, shoulder width, hip width, and foot size should be compared visually against the approved turnaround rather than recreated from prose alone.
+- Preserve natural curves.
+- No extreme hourglass distortion.
+- No tiny waist exaggeration.
+- No oversized bust/hips for fan-service.
+- No childlike head/body ratio.
 
-### Animation production grid
+The approved turnaround is the proportion master.
 
-The visual design comes from the source image; production sprites are normalized onto:
+### Production normalization
 
-- full-body logical animation canvas: **256 × 256 px**;
-- default high-DPI export: **512 × 512 px at exact 2× nearest-neighbor scale**.
+- Full-body logical animation canvas: **256 × 256 px**.
+- Default high-DPI export: **512 × 512 px**.
+- Scale: exact integer **2× nearest-neighbor** for pixel masters.
 
-These production dimensions do not alter Rae's proportions.
+Canvas size does not redefine anatomy.
 
 ---
 
-## 5. Tattoo
+## 9. Tattoo — exact canonical rule
 
-The approved image shows **one tattoo on Rae**.
+Rae has **exactly one tattoo total**.
 
 ### Design
 
-- The tattoo is the project-owner-supplied **single black/gray lotus flower design**.
-- Preserve the recognizable lotus silhouette/petal structure rather than substituting another floral symbol.
+- The owner-supplied black/gray **lotus flower tattoo**.
+- Preserve the recognizable layered lotus petal structure from the approved tattoo reference.
+- Do not substitute a generic flower, mandala, rose, leaf spray, or alternate lotus.
 
 ### Placement
 
 - Rae's **anatomical left side**.
-- Upper chest / front shoulder region.
-- **Under the left collarbone and near the shoulder.**
-- Slightly beneath / partially overlapped by the left training-top strap as shown.
-- Not on the outside deltoid, upper arm, center chest, or opposite side.
+- Under the **left collarbone**.
+- Near the **left shoulder/front deltoid transition**.
+- Slightly beneath / partially overlapped by the left training-top strap.
+- It is not centered on the chest.
+- It is not on the outer upper arm.
+- It is not on the right side.
 
-The tattoo-detail inset in the reference sheet is a magnified reference to the same single tattoo; it is **not** a second tattoo on Rae.
+The tattoo-detail inset in the character bible is a magnified view of the **same single tattoo**, not another tattoo.
+
+Automatic rejection if two tattoos appear.
 
 ---
 
-## 6. Jewelry
+## 10. Jewelry
 
 ### Necklace
 
-The approved image shows:
-
-- thin, delicate gold chain;
-- small **letter `A` pendant**;
-- pendant is deliberately subtle rather than oversized;
+- Thin delicate gold chain.
+- Small letter **`A` pendant**.
 - `A` is worn for her husband.
+- Pendant is deliberately **small/subtle**.
+- Never replace `A` with `R`.
+- Never enlarge into a large medallion.
 
 ### Rings
 
-The approved portrait shows fine hand jewelry treatment:
+- Thin, dainty, layered/stacked rings.
+- Fine gold jewelry aesthetic.
+- Multiple delicate bands are acceptable.
+- No large stones.
+- No large rocks.
+- No chunky statement rings.
+- No thick heavy bands.
 
-- thin, dainty, layered rings/bands;
-- fine-scale gold jewelry aesthetic;
-- no large rocks;
-- no chunky/thick statement rings.
-
-Jewelry remains secondary to Rae's silhouette and exercise readability.
+Jewelry must never reduce exercise-form readability.
 
 ---
 
-## 7. Default outfit
-
-The approved image visually locks the default training look.
+## 11. Default outfit
 
 ### Top
 
-- Pink fitted training/sports top.
-- Clean Pixel Bloom styling.
-- Small light Pixel Bloom/flower-like chest mark as shown may be preserved.
+- Pink fitted Pixel Bloom training/sports top.
+- Small light Pixel Bloom/flower-like chest mark may be preserved.
+- Athletic, practical, adult.
 
 ### Bottom
 
 - Lavender high-waisted athletic leggings.
-- Clean, animation-friendly shape.
+- Animation-friendly silhouette.
 
 ### Shoes
 
-- **Black-and-white Panda Dunk-inspired sneaker look** as shown in the approved sheet.
-- Preserve the high-contrast black/white panel language and silhouette.
-- Runtime artwork should remain genericized and need not reproduce protected logos/trademarks.
+- Black-and-white **Panda Dunk-inspired** low-top sneaker visual language.
+- High-contrast black/white paneling.
+- Runtime art remains genericized and does not require protected brand logos.
+- Do not revert to pastel multicolor sneakers unless a future outfit variant explicitly allows it.
 
 ---
 
-## 8. Pixel-art visual style
+## 12. Pixel-art visual language
 
-The approved sheet itself is the visual style reference.
+Target:
 
-Production interpretation:
-
-- high-bit late-handheld/GBA-era-inspired pixel art;
-- intentional visible pixel clusters;
-- crisp silhouette;
-- controlled high-color shading;
+- premium high-bit late-handheld / GBA-era-inspired pixel art;
+- visible intentional pixel clusters;
+- crisp silhouettes;
+- high-color controlled shading;
 - selective color-matched outlines / selout;
-- readable forms at small size;
-- simplified pixel-art face rather than realistic skin rendering;
+- readable anatomy and expression at small size;
+- controlled anti-aliasing;
 - stable palette and anatomy across frames.
 
-Reject future assets that drift toward photorealistic faces, smooth digital-paint/anime rendering, random pixelation filters, excessive blur/anti-aliasing, or inconsistent frame-to-frame anatomy.
+### Forbidden style drift
+
+Reject:
+
+- photoreal faces;
+- smooth digital painting;
+- generic modern anime rendering;
+- pseudo-pixel filters over smooth art;
+- heavy blur;
+- excessive anti-aliasing that hides pixel structure;
+- inconsistent sprite resolution;
+- frame-to-frame anatomy mutation.
 
 ---
 
-## 9. Color authority
+## 13. Palette authority
 
-**The approved image is the color source.**
+The canonical raster is the color source. Claude Code should extract and maintain deterministic palette ramps rather than invent colors from names.
 
-Claude Code should sample/curate stable named palette ramps from the exact canonical raster rather than inventing colors from these labels:
+Required named families:
 
 - `rae-skin-*`
 - `rae-hair-*`
 - `rae-ear-tan-*`
-- `rae-ear-inner-*`
+- `rae-ear-inner-flesh-*`
 - `rae-tail-brown-*`
 - `rae-pink-*`
 - `rae-lavender-*`
@@ -226,63 +294,139 @@ Claude Code should sample/curate stable named palette ramps from the exact canon
 - `rae-shoe-black-*`
 - `rae-shoe-white-*`
 
-Once extracted, the palette file is a deterministic technical representation of the image—not an independent creative authority.
+Once generated and approved, the palette file becomes the technical source for repeatable exports.
 
 ---
 
-## 10. View and gaze
+## 14. Exercise animation rules
 
-### Character / reward / world art
+Exercise assets are instructional first and character art second.
 
-- Front, 3/4, side, and back angles may be derived from the approved turnaround.
-- Direct camera gaze is optional.
-- Rae may look at UI elements, objects, direction of travel, workout equipment, or off-axis naturally.
+For one movement sequence:
 
-### Exercise instruction art
+- fixed camera;
+- fixed canvas;
+- fixed character scale;
+- fixed floor/baseline;
+- stable limb lengths;
+- stable head/body ratio;
+- stable outfit;
+- stable hair silhouette;
+- stable ear bases;
+- stable tattoo anchor;
+- stable glasses geometry;
+- stable jewelry treatment;
+- stable footwear.
 
-- Select camera for form clarity, usually orthographic side or front.
-- Keep fixed camera, scale, and baseline inside one movement sequence.
-- Rae should look naturally in the movement direction rather than unnaturally turning toward the viewer.
-- Form clarity outranks personality posing.
+Form clarity outranks dramatic posing.
+
+Do not independently regenerate every frame. Use approved key poses and deterministic interpolation/manual cleanup.
 
 ---
 
-## 11. Production comparison rule
+## 15. Allowed variation
 
-Every future Rae asset is compared visually against the canonical image, not merely checked against text keywords.
+Without creating Rae v1.1, assets MAY vary:
 
-At review, verify:
+- pose;
+- facial expression;
+- gaze direction;
+- arm/leg position;
+- camera angle from approved turnaround families;
+- environment lighting within complexion-preserving limits;
+- subtle jewelry visibility due to pose;
+- subtle ear secondary motion;
+- subtle hair secondary motion;
+- outfit deformation caused by natural body movement.
 
-- face/overall likeness to approved sheet;
-- medium-deep brown complexion;
-- black 4C hair and silhouette;
-- exactly two tan/flesh-pink bunny ears and no human ears;
+These are **not** identity changes.
+
+---
+
+## 16. Changes requiring a new character version
+
+Do not silently change:
+
+- complexion target;
+- hair color or 4C texture;
+- ear count/anatomy/colors;
+- human-ear rule;
+- tail color/shape;
+- tattoo design/count/location;
+- glasses type;
+- `A` pendant identity;
+- default body proportions;
+- default outfit color system;
+- default footwear design;
+- core pixel-art style.
+
+Any such change requires owner approval and version increment.
+
+---
+
+## 17. AI anti-hallucination rules
+
+Before generating Rae, AI MUST load this document and the lock JSON.
+
+AI MUST NOT:
+
+- infer human ears because humans normally have them;
+- infer pink bunny ears because bunny mascots often use pink ears;
+- infer a white bunny tail;
+- infer an `R` necklace because the character is named Rae;
+- infer multiple tattoos from the tattoo detail inset;
+- infer straight/loose-curly hair from a low-resolution frame;
+- invent shoe colors;
+- replace 4C hair with easier-to-render hair;
+- add earrings because the side of the head looks empty;
+- add extra jewelry beyond the specified delicate system;
+- reinterpret the lotus placement from camera perspective;
+- use generic "Black woman" defaults instead of Rae's explicit lock.
+
+If a requested asset conflicts with these rules, preserve canon and flag the conflict.
+
+---
+
+## 18. Production comparison checklist
+
+Every Rae asset must be checked for:
+
+- adult Rae likeness;
+- correct medium-deep warm brown complexion;
+- black 4C hair;
+- exactly two tan/flesh-pink bunny ears;
+- no human ears;
 - one brown bunny tail;
 - thin round gold glasses;
-- one correct lotus at left collarbone/shoulder area;
+- exactly one correct lotus at left collarbone/near shoulder under strap;
 - small gold `A` pendant;
-- dainty layered rings when visible;
-- pink top and lavender leggings;
+- thin dainty layered rings when visible;
+- pink top;
+- lavender leggings;
 - black/white Panda-inspired shoes;
 - curvy/strong adult proportions;
 - high-bit pixel-art treatment;
-- natural scene-appropriate gaze.
+- pose-appropriate gaze;
+- no accidental duplicated anatomy or accessories.
 
-A technically compliant asset that **does not visually look like the approved Rae image still fails**.
+A technically compliant asset that does not visually resemble the approved Rae still fails visual review.
 
 ---
 
-## 12. Change control
+## 19. Change control
 
-Rae v1.0 is frozen around the exact approved image.
+Rae v1.0 is frozen.
 
-A visual change requires:
+A canonical change requires:
 
-1. explicit project-owner direction;
-2. a newly approved visual reference;
-3. a new hash;
-4. character-bible version update (`v1.1`, `v2.0`, etc.);
-5. lock JSON and asset DB update;
-6. impact review for previously approved sprites/animations.
+1. explicit owner instruction;
+2. approved revised visual reference;
+3. new SHA-256;
+4. version increment (`v1.1`, `v2.0`, etc.);
+5. update to this document;
+6. update to `rae-character-lock.v1.json` or successor;
+7. asset DB update;
+8. impact review of existing approved sprites/animations;
+9. regression approval before release.
 
-Do not modify the written spec first and then force Rae to match the text. **Approve the visual change first; supporting documentation follows it.**
+Do not silently mutate Rae while creating new assets.
