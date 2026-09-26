@@ -17,26 +17,6 @@ export default defineConfig({
     hasTouch: true,
     trace: 'retain-on-failure',
   },
-  // Theme parity (SOURCE_OF_TRUTH_V07.md §13): every journey runs under
-  // both themes. Savage Core is the default; Pixel Bloom is seeded through
-  // the theme's synchronous localStorage mirror for the default profile.
-  projects: [
-    { name: 'savage-core' },
-    {
-      name: 'pixel-bloom',
-      use: {
-        storageState: {
-          cookies: [],
-          origins: [
-            {
-              origin: 'http://localhost:4199',
-              localStorage: [{ name: 'workout-app:theme:default', value: 'pixel-bloom' }],
-            },
-          ],
-        },
-      },
-    },
-  ],
   webServer: {
     command: 'npm run build && npm run preview -- --port 4199 --strictPort',
     url: 'http://localhost:4199',

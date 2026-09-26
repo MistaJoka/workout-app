@@ -72,7 +72,7 @@ export function SessionCompleteScreen() {
 
   return (
     <div className="field-success min-h-screen rounded-none p-6 pt-16 pb-28 text-center space-y-4">
-      <p className="font-display text-3xl font-extrabold">Workout complete</p>
+      <p className="text-3xl font-extrabold">Workout complete</p>
       {result && (
         <p className="text-ink-muted">
           {result.totalSetsCompleted} of {result.totalSetsPlanned} sets completed

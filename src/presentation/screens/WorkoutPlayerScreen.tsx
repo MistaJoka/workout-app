@@ -375,7 +375,7 @@ function RestingView({
     <div className="field-calm min-h-screen rounded-none p-6 pt-16 pb-32 text-center space-y-6">
       <p className="text-lg font-bold">Rest</p>
       <p
-        className={`hud-num mx-auto w-fit rounded-panel px-3 text-7xl font-extrabold tabular-nums ${seconds <= 3 ? 'hud-pulse' : ''}`}
+        className="hud-num text-7xl font-extrabold tabular-nums"
         role="timer"
       >
         {Math.floor(seconds / 60)}:{String(seconds % 60).padStart(2, '0')}

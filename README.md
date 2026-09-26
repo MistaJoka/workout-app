@@ -17,7 +17,7 @@ The repository is a functional v0.7 foundation/product, not a UI-less prototype.
 - progress/body-weight history and deterministic progression candidates;
 - export/import backup;
 - PWA/service-worker infrastructure;
-- Pixel Bloom + Savage Core shared theme architecture;
+- Pixel Bloom theme (token-driven; the only theme since 2026-09-26);
 - Full / Reduced / Off motion preferences;
 - unit/infrastructure tests, phone-viewport Playwright E2E and GitHub Actions CI.
 

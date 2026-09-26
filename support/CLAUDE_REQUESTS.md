@@ -52,7 +52,7 @@ Use this mailbox when implementation reaches a product/data/spec/asset/test gap 
 
 ## REQ-20260913-003 — Pixel Bloom / Savage Core design tokens
 
-**Status:** PARTIALLY RESOLVED — Savage Core delivered 2026-09-26 by owner direction (the "Tactical build"): final token set in `src/presentation/theme/tokens.ts`, HUD geometry under `[data-theme='savage-core']` in `src/index.css`, Chakra Petch + Inter bundled, and it is the default theme for profiles with no stored theme. Pixel Bloom tokens remain the v0 candidate palette; its art integration stays open.
+**Status:** PARTIALLY RESOLVED — Savage Core is out of scope: built 2026-09-26, then removed the same day by owner decision (Pixel Bloom is the only theme; no theme picker). Pixel Bloom tokens remain the v0 candidate palette; its art integration stays open.
 **Blocking:** no
 **Implementation context:** reconciliation step 12 (shared semantic theme engine), §11 of SOURCE_OF_TRUTH_V06.md
 **Need:** actual design tokens (color values, typography scale, spacing, motion durations/easing for full/reduced/off) for both themes — §11 only gives a narrative description ("pastel foundations," "near-black/graphite surfaces," "electric accents").

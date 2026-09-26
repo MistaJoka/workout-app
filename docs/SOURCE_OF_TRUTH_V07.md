@@ -18,7 +18,7 @@ The app should feel more like a polished personal fitness game/tool than a gener
 - local data is durable and exportable;
 - exercise/workout guidance is data-driven and reviewable;
 - progression/adaptation is deterministic rather than generative;
-- Pixel Bloom and Savage Core are presentation systems over the same product behavior.
+- Pixel Bloom is the presentation system over the product behavior (the only theme; owner decision 2026-09-26).
 
 The product is **not** a medical diagnostic product, social fitness network, runtime AI coach, camera pose-analysis system, or cloud-required SaaS.
 
@@ -42,7 +42,7 @@ The following are first-class v0.7 behaviors because they exist in the reconcile
 - workout/progress history;
 - export/import backup;
 - offline/PWA behavior;
-- two themes and three motion preferences.
+- one theme (Pixel Bloom) and three motion preferences.
 
 These additions do not authorize unrelated scope expansion.
 
@@ -260,21 +260,15 @@ Instructional exercise animation must prioritize consistent anatomy and readable
 
 ## 13. Theme and motion system
 
-Exactly two first-class themes:
+Exactly one theme: Pixel Bloom. **Owner decision 2026-09-26:** Savage Core was built as a tactical HUD, then retired at the owner's direction; there is no theme picker.
 
 ### Pixel Bloom
 
 Cozy premium pixel-inspired fitness-game world with pastel fields, playful progression, the approved adult Black woman/bunny mascot, collectibles, rewards and restrained game-like motion.
 
-### Savage Core
-
-Dark premium tactical fitness HUD with graphite surfaces, electric accents, crisp geometry and controlled high-impact motion.
-
 Rules:
 - one shared route/component/domain tree;
-- semantic design tokens control theme styling;
-- exercise prescriptions/content do not change by theme;
-- theme parity is tested for behavior, not necessarily identical visual composition.
+- semantic design tokens control styling.
 
 Motion preference:
 - `full`;
@@ -400,7 +394,6 @@ A release-quality v0.7 should satisfy all of the following:
 - profiles remain isolated;
 - backup export/import round-trips validated data;
 - progression still requires confirmation;
-- both themes share behavior;
 - Full/Reduced/Off motion preserve information;
 - Pixel Bloom assets can be integrated through the documented asset contract without changing domain behavior;
 - no runtime AI/backend/cloud dependency is required for core use.
