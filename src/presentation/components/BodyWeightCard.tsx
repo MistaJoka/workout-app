@@ -57,7 +57,7 @@ export function BodyWeightCard() {
 
       {logging ? (
         <div className="space-y-2">
-          <div className="flex items-center justify-between rounded-panel bg-bg p-2">
+          <div className="flex items-center justify-center gap-6 rounded-panel bg-bg p-2">
             <button
               type="button"
               className="stepper-btn"

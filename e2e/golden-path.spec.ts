@@ -72,7 +72,9 @@ test.describe('library and routines', () => {
     await expect(page.getByText(/\d+ exercises/).first()).toBeVisible()
 
     await page.getByPlaceholder('Search exercises').fill('squat')
+    await page.getByRole('button', { name: /^Filters/ }).click()
     await page.getByRole('button', { name: 'No equipment' }).click()
+    await page.getByRole('button', { name: 'Done' }).click()
     await expect(page.getByText('2 exercises')).toBeVisible()
 
     await page.getByRole('link', { name: /Bodyweight Squat/ }).first().click()

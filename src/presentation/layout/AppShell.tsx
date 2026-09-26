@@ -9,14 +9,17 @@ export function AppShell() {
         <Outlet />
       </main>
       {/* Fixed height so screens with their own bottom CTA can sit at bottom-16. */}
+      {/* Order is right-thumb reach, hardest to easiest, not visit frequency:
+          Settings (rarest) sits leftmost, Today (most-used) sits rightmost,
+          the easiest slot for a right-handed one-handed grip. */}
       <nav
         className="fixed bottom-0 left-0 right-0 z-10 flex h-16 border-t-2 border-edge bg-surface"
         style={{ paddingBottom: 'env(safe-area-inset-bottom)' }}
       >
-        <NavItem to="/" label="Today" end icon={<TodayIcon />} />
-        <NavItem to="/library" label="Library" icon={<LibraryIcon />} />
-        <NavItem to="/progress" label="Progress" icon={<ProgressIcon />} />
         <NavItem to="/settings" label="Settings" icon={<SettingsIcon />} />
+        <NavItem to="/progress" label="Progress" icon={<ProgressIcon />} />
+        <NavItem to="/library" label="Library" icon={<LibraryIcon />} />
+        <NavItem to="/" label="Today" end icon={<TodayIcon />} />
       </nav>
     </div>
   )

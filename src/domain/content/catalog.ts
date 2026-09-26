@@ -16,9 +16,8 @@ export async function listAllTemplates(): Promise<{ curated: WorkoutTemplate[]; 
 
 let libraryPromise: Promise<Exercise[]> | null = null
 
-// The full library (~870 exercises, ~800KB) is loaded on demand so the
-// Today/Workout paths never pay for it; curated exercises resolve
-// synchronously from the bundled pack.
+// The full library is loaded on demand so the Today/Workout paths never pay
+// for it; curated exercises resolve synchronously from the bundled pack.
 export function loadLibrary(): Promise<Exercise[]> {
   if (!libraryPromise) {
     libraryPromise = import('./generated/libraryExercises.json').then((m) => m.default as Exercise[])

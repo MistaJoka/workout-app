@@ -157,7 +157,7 @@ export function WorkoutPlayerScreen() {
   const setWeightKg = loggedWeightKg ?? exercise.weightKg ?? 0
 
   return (
-    <div className="p-6 space-y-4">
+    <div className="p-6 pb-40 space-y-4">
       <p className="text-sm text-ink-muted">
         Exercise {state.currentExerciseIndex + 1} of {plan.exercises.length}
       </p>
@@ -182,76 +182,82 @@ export function WorkoutPlayerScreen() {
       )}
 
       {error && <p className="text-sm text-accent">{error}</p>}
-      {awaitingRepCheck ? (
-        <div className="space-y-3">
-          {weighted && (
-            <div className="flex items-center justify-between rounded-panel bg-bg p-2">
-              <button
-                type="button"
-                className="stepper-btn"
-                aria-label="Less weight"
-                onClick={() => setLoggedWeightKg(Math.max(0, unitToKg(roundToStep(kgToUnit(setWeightKg, unit), unit) - stepInUnit(unit), unit)))}
-              >
-                −
-              </button>
-              <span className="font-semibold tabular-nums">{formatWeight(setWeightKg, unit)}</span>
-              <button
-                type="button"
-                className="stepper-btn"
-                aria-label="More weight"
-                onClick={() => setLoggedWeightKg(unitToKg(roundToStep(kgToUnit(setWeightKg, unit), unit) + stepInUnit(unit), unit))}
-              >
-                +
-              </button>
-            </div>
-          )}
-          <p className="text-sm">Did you complete all {exercise.reps} reps?</p>
-          <div className="flex gap-2">
-            <button
-              className="btn-primary"
-              disabled={busy}
-              onClick={() =>
-                handleAction('SET_COMPLETED', {
-                  exerciseId: exercise.exerciseId,
-                  met: true,
-                  ...(weighted ? { weightKg: setWeightKg } : {}),
-                })
-              }
-            >
-              Yes
-            </button>
-            <button
-              className="btn-secondary"
-              disabled={busy}
-              onClick={() =>
-                handleAction('SET_COMPLETED', {
-                  exerciseId: exercise.exerciseId,
-                  met: false,
-                  ...(weighted ? { weightKg: setWeightKg } : {}),
-                })
-              }
-            >
-              No, fell short
-            </button>
-          </div>
-        </div>
-      ) : (
-        <div className="flex gap-2">
-          <button className="btn-secondary" disabled={busy} onClick={() => handleAction('PAUSED')}>
-            Pause
-          </button>
+      {awaitingRepCheck && weighted && (
+        <div className="flex items-center justify-center gap-6 rounded-panel bg-bg p-2">
           <button
-            className="btn-primary"
-            disabled={busy}
-            onClick={() => handleCompleteSetClick(exercise.exerciseId, exercise.reps != null)}
+            type="button"
+            className="stepper-btn"
+            aria-label="Less weight"
+            onClick={() => setLoggedWeightKg(Math.max(0, unitToKg(roundToStep(kgToUnit(setWeightKg, unit), unit) - stepInUnit(unit), unit)))}
           >
-            Complete Set
+            −
+          </button>
+          <span className="font-semibold tabular-nums">{formatWeight(setWeightKg, unit)}</span>
+          <button
+            type="button"
+            className="stepper-btn"
+            aria-label="More weight"
+            onClick={() => setLoggedWeightKg(unitToKg(roundToStep(kgToUnit(setWeightKg, unit), unit) + stepInUnit(unit), unit))}
+          >
+            +
           </button>
         </div>
       )}
-      <button className="btn-ghost" disabled={busy} onClick={handleEndWorkout}>
-        End workout
-      </button>
+
+      {/* Complete Set is the most-tapped control in the app — pinned to a
+          fixed bottom bar so it's always in thumb reach regardless of how
+          much media/instruction content is above it. */}
+      <div className="fixed bottom-0 left-0 right-0 border-t-2 border-edge bg-surface p-4 space-y-2">
+        {awaitingRepCheck ? (
+          <>
+            <p className="text-sm text-center">Did you complete all {exercise.reps} reps?</p>
+            <div className="flex gap-2">
+              <button
+                className="btn-secondary flex-1"
+                disabled={busy}
+                onClick={() =>
+                  handleAction('SET_COMPLETED', {
+                    exerciseId: exercise.exerciseId,
+                    met: false,
+                    ...(weighted ? { weightKg: setWeightKg } : {}),
+                  })
+                }
+              >
+                No, fell short
+              </button>
+              <button
+                className="btn-primary flex-1"
+                disabled={busy}
+                onClick={() =>
+                  handleAction('SET_COMPLETED', {
+                    exerciseId: exercise.exerciseId,
+                    met: true,
+                    ...(weighted ? { weightKg: setWeightKg } : {}),
+                  })
+                }
+              >
+                Yes
+              </button>
+            </div>
+          </>
+        ) : (
+          <div className="flex gap-2">
+            <button className="btn-secondary" disabled={busy} onClick={() => handleAction('PAUSED')}>
+              Pause
+            </button>
+            <button
+              className="btn-primary flex-1"
+              disabled={busy}
+              onClick={() => handleCompleteSetClick(exercise.exerciseId, exercise.reps != null)}
+            >
+              Complete Set
+            </button>
+          </div>
+        )}
+        <button className="btn-ghost w-full" disabled={busy} onClick={handleEndWorkout}>
+          End workout
+        </button>
+      </div>
     </div>
   )
 }
@@ -344,20 +350,22 @@ function RestingView({
   }, [restEndsAt])
 
   return (
-    <div className="field-calm min-h-screen rounded-none p-6 pt-16 text-center space-y-6">
+    <div className="field-calm min-h-screen rounded-none p-6 pt-16 pb-32 text-center space-y-6">
       <p className="text-lg font-bold">Rest</p>
       <p className="text-7xl font-extrabold tabular-nums" role="timer">
         {Math.floor(seconds / 60)}:{String(seconds % 60).padStart(2, '0')}
       </p>
       {error && <p className="text-sm text-accent">{error}</p>}
-      <div className="flex justify-center gap-2">
-        <button className="btn-secondary" disabled={busy} onClick={onPause}>
+      {/* Bottom-anchored rather than sitting right under the timer, so these
+          land in easy thumb reach instead of the upper third of the screen. */}
+      <div className="fixed bottom-0 left-0 right-0 flex justify-center gap-2 border-t-2 border-edge bg-surface p-4">
+        <button className="btn-secondary flex-1" disabled={busy} onClick={onPause}>
           Pause
         </button>
-        <button className="btn-secondary" disabled={busy} onClick={onExtend}>
+        <button className="btn-secondary flex-1" disabled={busy} onClick={onExtend}>
           +15s
         </button>
-        <button className="btn-secondary" disabled={busy} onClick={onSkip}>
+        <button className="btn-secondary flex-1" disabled={busy} onClick={onSkip}>
           Skip rest
         </button>
       </div>
