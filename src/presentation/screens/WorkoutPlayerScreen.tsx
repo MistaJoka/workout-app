@@ -6,6 +6,7 @@ import { isRestComplete, remainingRestMs } from '../../domain/session/restTimer'
 import { getExercises } from '../../domain/content/catalog'
 import type { Exercise } from '../../domain/content/types'
 import { MovementMedia } from '../components/MovementMedia'
+import { ThumbBar } from '../components/ThumbBar'
 import { getLastTimeSummary } from '../../application/lastTime'
 import { primeAudio, restEndFeedback } from '../../application/restFeedback'
 import { useFeedbackSettings } from '../components/useFeedbackSettings'
@@ -118,12 +119,17 @@ export function WorkoutPlayerScreen() {
 
   if (state.status === 'PAUSED') {
     return (
-      <div className="p-6 text-center space-y-4">
-        <p className="text-lg">Paused</p>
+      <div className="p-6 pt-16 pb-32 text-center space-y-4">
+        <p className="text-2xl font-bold">Paused</p>
+        <p className="text-ink-muted">
+          {plan.exercises[state.currentExerciseIndex]?.name}, set {state.currentSetNumber}
+        </p>
         {error && <p className="text-sm text-accent">{error}</p>}
-        <button className="btn-primary" disabled={busy} onClick={() => handleAction('RESUMED')}>
-          Resume
-        </button>
+        <ThumbBar armKey="paused">
+          <button className="btn-primary btn-lg w-full" disabled={busy} onClick={() => handleAction('RESUMED')}>
+            Resume
+          </button>
+        </ThumbBar>
       </div>
     )
   }
@@ -159,16 +165,22 @@ export function WorkoutPlayerScreen() {
 
   return (
     <div className="p-6 pb-40 space-y-4">
-      {/* End workout lives up here, out of the thumb bar: it used to sit at
-          the bottom exactly where the rest screen's "Skip rest" is, so a
-          double tap on Skip rest ended the whole session. */}
+      {/* Rare actions live up here, out of the thumb bar: End workout used
+          to sit exactly where the rest screen's "Skip rest" is (a double tap
+          ended the session), and mid-set there's no timer to pause, so
+          Pause only crowded Complete Set. */}
       <div className="flex items-center justify-between">
         <p className="text-sm text-ink-muted">
           Exercise {state.currentExerciseIndex + 1} of {plan.exercises.length}
         </p>
-        <button className="btn-ghost btn-sm -mr-3" disabled={busy} onClick={handleEndWorkout}>
-          End workout
-        </button>
+        <div className="-mr-3 flex">
+          <button className="btn-ghost btn-sm" disabled={busy} onClick={() => handleAction('PAUSED')}>
+            Pause
+          </button>
+          <button className="btn-ghost btn-sm" disabled={busy} onClick={handleEndWorkout}>
+            End workout
+          </button>
+        </div>
       </div>
       <h2 className="text-2xl font-bold">{exercise.name}</h2>
       <p className="text-lg font-semibold">
@@ -216,7 +228,10 @@ export function WorkoutPlayerScreen() {
       {/* Complete Set is the most-tapped control in the app — pinned to a
           fixed bottom bar so it's always in thumb reach regardless of how
           much media/instruction content is above it. */}
-      <div className="fixed bottom-0 left-0 right-0 border-t-2 border-edge bg-surface p-4 space-y-2">
+      <ThumbBar
+        armKey={`${state.currentExerciseIndex}:${state.currentSetNumber}:${awaitingRepCheck}`}
+        className="space-y-2"
+      >
         {awaitingRepCheck ? (
           <>
             <p className="text-sm text-center">Did you complete all {exercise.reps} reps?</p>
@@ -250,20 +265,15 @@ export function WorkoutPlayerScreen() {
             </div>
           </>
         ) : (
-          <div className="flex gap-2">
-            <button className="btn-secondary" disabled={busy} onClick={() => handleAction('PAUSED')}>
-              Pause
-            </button>
-            <button
-              className="btn-primary flex-1"
-              disabled={busy}
-              onClick={() => handleCompleteSetClick(exercise.exerciseId, exercise.reps != null)}
-            >
-              Complete Set
-            </button>
-          </div>
+          <button
+            className="btn-primary btn-lg w-full"
+            disabled={busy}
+            onClick={() => handleCompleteSetClick(exercise.exerciseId, exercise.reps != null)}
+          >
+            Complete Set
+          </button>
         )}
-      </div>
+      </ThumbBar>
     </div>
   )
 }
@@ -373,6 +383,11 @@ function RestingView({
 
   return (
     <div className="field-calm min-h-screen rounded-none p-6 pt-16 pb-32 text-center space-y-6">
+      <div className="flex justify-end">
+        <button className="btn-ghost btn-sm -mr-3 -mt-10" disabled={busy} onClick={onPause}>
+          Pause
+        </button>
+      </div>
       <p className="text-lg font-bold">Rest</p>
       <p
         className="hud-num text-7xl font-extrabold tabular-nums"
@@ -382,19 +397,16 @@ function RestingView({
       </p>
       <RestBar restStartedAt={restStartedAt} restEndsAt={restEndsAt} seconds={seconds} />
       {error && <p className="text-sm text-accent">{error}</p>}
-      {/* Bottom-anchored rather than sitting right under the timer, so these
-          land in easy thumb reach instead of the upper third of the screen. */}
-      <div className="fixed bottom-0 left-0 right-0 flex justify-center gap-2 border-t-2 border-edge bg-surface p-4">
-        <button className="btn-secondary flex-1" disabled={busy} onClick={onPause}>
-          Pause
-        </button>
-        <button className="btn-secondary flex-1" disabled={busy} onClick={onExtend}>
+      {/* Skip rest is the tap after nearly every rest: primary, full reach.
+          +15s beside it; Pause (a phone call, a doorbell) stays up top. */}
+      <ThumbBar armKey="rest" className="flex gap-2">
+        <button className="btn-secondary" disabled={busy} onClick={onExtend}>
           +15s
         </button>
-        <button className="btn-secondary flex-1" disabled={busy} onClick={onSkip}>
+        <button className="btn-primary btn-lg flex-1" disabled={busy} onClick={onSkip}>
           Skip rest
         </button>
-      </div>
+      </ThumbBar>
     </div>
   )
 }

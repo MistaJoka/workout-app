@@ -48,8 +48,6 @@ export function ProgressScreen() {
 
       {snapshot === null && <p className="text-ink-muted">Loading…</p>}
 
-      <BodyWeightCard />
-
       {rows && rows.length === 0 && (
         <p className="text-ink-muted">No workouts yet. Your first one will show up here.</p>
       )}
@@ -92,6 +90,10 @@ export function ProgressScreen() {
           )}
         </>
       )}
+
+      {/* After the workout wins, not before them: opening Progress should
+          lead with what you've done, not a scale prompt. */}
+      <BodyWeightCard />
 
       {rows && rows.length > 0 && (
         <section className="space-y-2">

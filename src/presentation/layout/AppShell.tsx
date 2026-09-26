@@ -1,10 +1,8 @@
 import { NavLink, Outlet } from 'react-router-dom'
-import { ProfileSwitcher } from '../components/ProfileSwitcher'
 
 export function AppShell() {
   return (
     <div className="min-h-screen bg-bg text-ink flex flex-col">
-      <ProfileSwitcher />
       <main className="flex-1 pb-20">
         <Outlet />
       </main>

@@ -1,9 +1,10 @@
 import { useEffect, useState } from 'react'
-import { useNavigate } from 'react-router-dom'
+import { BackButton } from '../components/BackButton'
+import { useTheme } from '../theme/ThemeContext'
 import { requestPersistentStorage, storageStatusLabel, type StorageStatus } from '../pwa/storagePersistence'
 
 export function AboutScreen() {
-  const navigate = useNavigate()
+  const { motion, setMotion } = useTheme()
   const [storage, setStorage] = useState<StorageStatus>('unknown')
 
   useEffect(() => {
@@ -12,9 +13,7 @@ export function AboutScreen() {
 
   return (
     <div className="p-4 space-y-4 text-sm">
-      <button className="btn-ghost -ml-3" onClick={() => navigate(-1)}>
-        ‹ Back
-      </button>
+      <BackButton />
       <h1 className="text-xl font-bold">About</h1>
       <p>
         Foundation Strength is a private, offline-first workout app. Everything stays on this device; there is no
@@ -26,6 +25,30 @@ export function AboutScreen() {
           Version {__APP_VERSION__} ({__GIT_SHA__}), built {new Date(__BUILD_DATE__).toLocaleDateString()}
         </p>
         <p>{storageStatusLabel(storage)}</p>
+      </section>
+
+      {/* Moved here from Settings: most people never need it, and the
+          phone's own reduce-motion setting is respected either way. Less and
+          Off never hide information — photos show side by side instead. */}
+      <section className="space-y-2">
+        <p className="font-semibold">Animations</p>
+        <div className="flex gap-2">
+          {(
+            [
+              ['full', 'On'],
+              ['reduced', 'Less'],
+              ['off', 'Off'],
+            ] as const
+          ).map(([value, label]) => (
+            <button
+              key={value}
+              className={`chip ${motion === value ? 'chip-active' : ''}`}
+              onClick={() => setMotion(value)}
+            >
+              {label}
+            </button>
+          ))}
+        </div>
       </section>
 
       <section className="space-y-1">

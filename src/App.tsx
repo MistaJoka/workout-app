@@ -1,9 +1,8 @@
-import { HashRouter, Route, Routes } from 'react-router-dom'
+import { HashRouter, Navigate, Route, Routes } from 'react-router-dom'
 import { ThemeProvider } from './presentation/theme/ThemeContext'
 import { AppShell } from './presentation/layout/AppShell'
 import { TodayScreen } from './presentation/screens/TodayScreen'
 import { CheckInScreen } from './presentation/screens/CheckInScreen'
-import { SessionPreviewScreen } from './presentation/screens/SessionPreviewScreen'
 import { WorkoutPlayerScreen } from './presentation/screens/WorkoutPlayerScreen'
 import { SessionCompleteScreen } from './presentation/screens/SessionCompleteScreen'
 import { LibraryScreen } from './presentation/screens/LibraryScreen'
@@ -35,7 +34,8 @@ export default function App() {
             <Route path="/about" element={<AboutScreen />} />
           </Route>
           <Route path="/checkin/:templateId" element={<CheckInScreen />} />
-          <Route path="/preview" element={<SessionPreviewScreen />} />
+          {/* Preview merged into check-in; an old /preview link has no plan state. */}
+          <Route path="/preview" element={<Navigate to="/" replace />} />
           <Route path="/session/:sessionId" element={<WorkoutPlayerScreen />} />
           <Route path="/session/:sessionId/complete" element={<SessionCompleteScreen />} />
         </Routes>

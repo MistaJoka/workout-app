@@ -9,8 +9,7 @@ import {
 import type { SessionResult } from '../../domain/session/types'
 import { formatWeight } from '../units'
 import { useWeightUnit } from '../components/useWeightUnit'
-
-const LEAVE_ARM_MS = 700
+import { ThumbBar } from '../components/ThumbBar'
 
 type Candidate = {
   exerciseId: string
@@ -25,14 +24,6 @@ export function SessionCompleteScreen() {
   const [result, setResult] = useState<SessionResult | null>(null)
   const [candidates, setCandidates] = useState<Candidate[]>([])
   const [busyExerciseId, setBusyExerciseId] = useState<string | null>(null)
-  // "Back to Today" sits exactly where the player's last "Yes"/"Complete
-  // Set" was, so a double tap on the final set would skip straight past
-  // this screen (and any Try Next Level offer). Ignore taps briefly.
-  const [leaveArmed, setLeaveArmed] = useState(false)
-  useEffect(() => {
-    const timer = setTimeout(() => setLeaveArmed(true), LEAVE_ARM_MS)
-    return () => clearTimeout(timer)
-  }, [])
   const [unit] = useWeightUnit()
 
   useEffect(() => {
@@ -111,18 +102,14 @@ export function SessionCompleteScreen() {
         </div>
       )}
 
-      <div className="fixed bottom-0 left-0 right-0 border-t-2 border-edge bg-surface p-4">
-        <Link
-          to="/"
-          className="btn-primary btn-lg w-full"
-          aria-disabled={!leaveArmed}
-          onClick={(event) => {
-            if (!leaveArmed) event.preventDefault()
-          }}
-        >
+      {/* ThumbBar ignores taps briefly: this button sits where the player's
+          last "Yes"/"Complete Set" was, so a double tap on the final set
+          would skip straight past this screen and any Try Next Level offer. */}
+      <ThumbBar armKey="complete">
+        <Link to="/" className="btn-primary btn-lg w-full">
           Back to Today
         </Link>
-      </div>
+      </ThumbBar>
     </div>
   )
 }

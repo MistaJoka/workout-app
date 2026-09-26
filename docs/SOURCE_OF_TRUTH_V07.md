@@ -89,8 +89,7 @@ Exactly four persistent primary tabs:
 4. Settings
 
 Secondary routes may include:
-- Check-In;
-- Session Preview;
+- Check-In (includes the session preview — merged by owner decision 2026-09-26);
 - Workout Player;
 - Workout Complete;
 - Exercise Detail;
@@ -108,8 +107,7 @@ Do not add a fifth persistent tab without an explicit product decision.
 
 ```text
 Today
- -> Check-In
- -> Session Preview
+ -> Check-In + preview (one screen)
  -> Workout Player
     <-> Rest
     <-> Pause
@@ -123,8 +121,7 @@ Today
 Library / Exercise Detail
  -> Routine Builder
  -> Routine Detail
- -> Check-In
- -> Session Preview
+ -> Check-In + preview (one screen)
  -> Workout Player
 ```
 
