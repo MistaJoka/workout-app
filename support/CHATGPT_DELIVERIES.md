@@ -95,67 +95,21 @@ Claude Code can now implement Promotion 001 without inventing the eligibility ru
 **Authoritative changes:** yes — reconciles current product, architecture, platform and quality contracts  
 **Implementation authority:** no — Claude Code remains the implementation owner
 
-### Why this delivery exists
+Primary new documents:
 
-The live app had advanced beyond the original v0.6 contract: multiple local profiles, user-built routines, weekly scheduling, weighted prescriptions/logging, body-weight tracking, a large exercise library and richer progress behavior were implemented while the root docs still described a single-user app with no in-app builder. This pack removes that contradiction and gives future agents a task-scoped context-loading system.
+- `AGENTS.md`
+- `docs/CONTEXT_ENGINEERING_INDEX.md`
+- `docs/SOURCE_OF_TRUTH_V07.md`
+- `docs/ARCHITECTURE.md`
+- `docs/IOS_PWA_RUNTIME.md`
+- `docs/TESTING_AND_RELIABILITY.md`
+- `docs/SECURITY_AND_PRIVACY.md`
+- `docs/DEFINITION_OF_DONE.md`
+- `docs/PIXEL_BLOOM_FRONTEND_CONTEXT.md`
+- `docs/RESEARCH_SOURCES.md`
+- `docs/rnd/foss-fitness/PRODUCT_BENCHMARK_2026-09.md`
 
-### New authoritative/context documents
-
-- `AGENTS.md` — agent-agnostic entrypoint;
-- `docs/CONTEXT_ENGINEERING_INDEX.md` — authority order and task-specific context routing;
-- `docs/SOURCE_OF_TRUTH_V07.md` — reconciled current product/domain/UX contract;
-- `docs/ARCHITECTURE.md` — actual module/state architecture and invariants;
-- `docs/IOS_PWA_RUNTIME.md` — iPhone/WebKit/PWA/storage/offline/audio/wake-lock research converted to acceptance rules;
-- `docs/TESTING_AND_RELIABILITY.md` — test layers, WebKit/offline gates and failure corpus;
-- `docs/SECURITY_AND_PRIVACY.md` — local-data threat model, import/network/CSP/privacy boundaries;
-- `docs/DEFINITION_OF_DONE.md` — explicit feature/screen/session/PWA/content/asset/release gates;
-- `docs/PIXEL_BLOOM_FRONTEND_CONTEXT.md` — creative-to-frontend integration and animation-format strategy;
-- `docs/RESEARCH_SOURCES.md` — trusted primary-source index;
-- `docs/rnd/foss-fitness/PRODUCT_BENCHMARK_2026-09.md` — current leader capability benchmark.
-
-### Updated routing/governance docs
-
-- `CLAUDE.md` now points to v0.7/context routing and no longer tells Claude the product is single-user/no-builder;
-- `README.md` now describes the actual functional app rather than saying no UI screens exist;
-- `docs/AI_COLLABORATION_PROTOCOL.md` now uses task-scoped context loading and clarifies creative asset ownership;
-- `support/RND_BACKLOG.md` reprioritized around the remaining concrete gaps.
-
-### Current-source research captured
-
-Primary references were reviewed for:
-- WebKit/Safari storage quotas, eviction and persistent-storage behavior;
-- iOS/iPadOS Home Screen web apps;
-- PWA standalone/display/icon behavior;
-- safe-area CSS environment variables;
-- Screen Wake Lock lifecycle/failure semantics;
-- browser audio/autoplay user-gesture restrictions;
-- Playwright WebKit/mobile projects/emulation;
-- WCAG 2.2 target sizing, moving-content controls and flash thresholds;
-- modern web image/animation format tradeoffs;
-- CSP/XSS defense-in-depth;
-- U.S. public-health physical-activity framing;
-- current FOSS fitness product patterns including Liftosaur/wger plus existing local research sources.
-
-### Important findings promoted into context
-
-- offline acceptance requires a truly network-disabled reload/execution test, not only an Offline banner;
-- iPhone-first requires WebKit/iPhone-like E2E in addition to phone-sized Chromium;
-- browser storage is durable but can fail/be evicted, so export and write-failure behavior are core reliability concerns;
-- wake lock/audio/motion are progressive enhancement and may fail without breaking workout truth;
-- current session startup has a documented atomicity risk (plan write then start-event write);
-- current `+15s` rest extension is UI-local and not exact-recovery durable;
-- current two-frame movement crossfade is a temporary fallback, not the final Pixel Bloom exercise-animation system;
-- runtime Pixel Bloom should prefer SVG/CSS for UI motion and controlled frames/sprites/animated WebP for character/exercise motion, with GIF primarily for preview/small intentional loops;
-- local profiles are not authentication and export files should be treated as sensitive data.
-
-### Remaining highest-leverage R&D
-
-See the updated `support/RND_BACKLOG.md`; P0 now focuses on:
-1. true offline + WebKit acceptance pack;
-2. session durability edge-case corpus;
-3. Foundation Strength production review;
-4. export/import corruption corpus;
-5. first production Pixel Bloom integration pack.
+This delivery reconciled the live multi-profile/custom-routine/scheduling/weighted-library product with its previously stale single-user/no-builder docs and established task-scoped context loading for future coding agents.
 
 ## DEL-20260920-001 — Content + Creative Production v1
 
@@ -182,3 +136,27 @@ Primary entrypoints:
 - `support/deliveries/DEL-20260920-001.md`
 
 Nothing in this delivery changes runtime code or silently promotes draft fitness content into approved canonical coaching truth.
+
+## DEL-20260926-001 — Rae avatar + animation asset database
+
+**Status:** DELIVERED / PRODUCTION REGISTRY READY  
+**Authoritative changes:** yes, for Rae identity, asset IDs, perspectives, motion metadata, and creative consistency  
+**Implementation authority:** no — Claude Code remains the implementation owner
+
+Delivered:
+
+- `assets/pixel-bloom/db/asset-db.schema.json` — validation contract;
+- `assets/pixel-bloom/db/asset-db.json` — canonical queryable registry;
+- `docs/RAE_AVATAR_ANIMATION_DB.md` — production rules and handoff contract;
+- legacy `assets.manifest.json` and `animations.manifest.json` converted to compatibility pointers so there is one inventory source of truth.
+
+The database locks Rae's approved visual identity: stylized adult Black woman likeness, round gold glasses, natural hair, fuller/curvy proportions, exactly two semi-upright bunny ears, bunny tail, R necklace, default Pixel Bloom outfit, and the lotus tattoo on Rae's anatomical left upper chest/shoulder near the collarbone under the left strap. It also locks the high-bit handheld pixel-art treatment and explicitly rejects photorealistic face rendering.
+
+Initial registered motion set:
+
+- `rae-idle-breathe`;
+- `rae-blink`;
+- `rae-cheer`;
+- `rae-bodyweight-squat-side`.
+
+Each animation record carries frame/FPS/loop information, sprite/WebP/GIF export paths, motion-full/reduced/off behavior, and a static fallback. The next creative step is to generate the canonical Rae reference plus the first approved frame sequences and update their statuses from `planned` to `approved` after review.
