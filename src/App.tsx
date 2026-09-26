@@ -14,6 +14,7 @@ import { ProgressScreen } from './presentation/screens/ProgressScreen'
 import { ExerciseHistoryScreen } from './presentation/screens/ExerciseHistoryScreen'
 import { SettingsScreen } from './presentation/screens/SettingsScreen'
 import { AboutScreen } from './presentation/screens/AboutScreen'
+import { MeetRaeScreen } from './presentation/screens/MeetRaeScreen'
 
 export default function App() {
   return (
@@ -32,6 +33,7 @@ export default function App() {
             <Route path="/progress/:exerciseId" element={<ExerciseHistoryScreen />} />
             <Route path="/settings" element={<SettingsScreen />} />
             <Route path="/about" element={<AboutScreen />} />
+            <Route path="/rae" element={<MeetRaeScreen />} />
           </Route>
           <Route path="/checkin/:templateId" element={<CheckInScreen />} />
           {/* Preview merged into check-in; an old /preview link has no plan state. */}

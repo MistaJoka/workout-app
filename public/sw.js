@@ -10,7 +10,7 @@
 //   deletes it, so a routine built from the library keeps its photos
 //   offline across app updates. The upstream revision is pinned, so the
 //   entries never go stale.
-const CACHE_NAME = 'workout-app-shell-v7'
+const CACHE_NAME = 'workout-app-shell-v8'
 const MEDIA_CACHE_NAME = 'workout-app-media-v1'
 
 // Movement photos are precached so a workout works fully offline even if
@@ -28,7 +28,18 @@ const MEDIA_IDS = [
   'Superman',
 ]
 const MEDIA_URLS = MEDIA_IDS.flatMap((id) => [`/exercise-media/${id}/0.jpg`, `/exercise-media/${id}/1.jpg`])
-const SHELL_URLS = ['/', '/manifest.json', ...MEDIA_URLS]
+// Rae's images (scripts/assets/derive-rae-preview.py) show on Today, in the
+// player and at the finish, so they must be there offline too.
+const RAE_EXPRESSIONS = ['neutral', 'smile', 'happy', 'cheer', 'focused', 'determined', 'tired', 'surprised', 'laugh', 'wink']
+const RAE_URLS = [
+  ...RAE_EXPRESSIONS.map((e) => `/rae/expr-${e}.png`),
+  '/rae/full-front.png',
+  '/rae/full-3q.png',
+  '/rae/motion-jumping-jack.webp',
+  '/rae/motion-jumping-jack-start.png',
+  '/rae/motion-jumping-jack-top.png',
+]
+const SHELL_URLS = ['/', '/manifest.json', ...MEDIA_URLS, ...RAE_URLS]
 
 self.addEventListener('install', (event) => {
   event.waitUntil(caches.open(CACHE_NAME).then((cache) => cache.addAll(SHELL_URLS)))

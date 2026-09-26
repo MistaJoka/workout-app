@@ -10,6 +10,7 @@ import type { SessionResult } from '../../domain/session/types'
 import { formatWeight } from '../units'
 import { useWeightUnit } from '../components/useWeightUnit'
 import { ThumbBar } from '../components/ThumbBar'
+import { RaeFace } from '../components/Rae'
 
 type Candidate = {
   exerciseId: string
@@ -63,6 +64,7 @@ export function SessionCompleteScreen() {
 
   return (
     <div className="field-success min-h-screen rounded-none p-6 pt-16 pb-28 text-center space-y-4">
+      <RaeFace expression="cheer" size={120} motion="pop" className="mx-auto" />
       <p className="text-3xl font-extrabold">Workout complete</p>
       {result && (
         <p className="text-ink-muted">

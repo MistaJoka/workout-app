@@ -242,6 +242,21 @@ input[type='range'] {
   animation: movement-loop-frame 2.4s ease-in-out infinite;
 }
 
+/* Rae: a gentle idle bob, and a one-shot spring for celebrations. Both are
+   stripped by the reduced/off rules below. */
+@keyframes rae-bob {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-3px); }
+}
+@keyframes rae-pop {
+  0% { transform: scale(0.6) translateY(12px); opacity: 0; }
+  60% { transform: scale(1.08) translateY(-4px); opacity: 1; }
+  100% { transform: scale(1) translateY(0); }
+}
+.rae-bob { animation: rae-bob 2.6s ease-in-out infinite; }
+.rae-pop { animation: rae-pop 0.55s cubic-bezier(0.2, 0.9, 0.3, 1.2) both; }
+.pixelated { image-rendering: pixelated; }
+
 /* Explicit reduced/off always wins. */
 [data-motion='reduced'] *,
 [data-motion='off'] * {

@@ -19,7 +19,7 @@ export function effectiveMotion(motion: MotionPreference, osPrefersReduced: bool
 
 const REDUCE_QUERY = '(prefers-reduced-motion: reduce)'
 
-function usePrefersReducedMotion(): boolean {
+export function usePrefersReducedMotion(): boolean {
   const [prefers, setPrefers] = useState(
     () => typeof window !== 'undefined' && typeof window.matchMedia === 'function' && window.matchMedia(REDUCE_QUERY).matches
   )

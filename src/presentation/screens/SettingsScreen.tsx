@@ -120,7 +120,10 @@ export function SettingsScreen() {
       </section>
 
 
-      <section>
+      <section className="space-y-2">
+        <Link to="/rae" className="btn-secondary w-full">
+          Meet Rae
+        </Link>
         <Link to="/about" className="btn-secondary w-full">
           About, animations, credits
         </Link>

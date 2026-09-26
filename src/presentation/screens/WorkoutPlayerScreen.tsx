@@ -6,6 +6,7 @@ import { isRestComplete, remainingRestMs } from '../../domain/session/restTimer'
 import { getExercises } from '../../domain/content/catalog'
 import type { Exercise } from '../../domain/content/types'
 import { MovementMedia } from '../components/MovementMedia'
+import { RaeFace } from '../components/Rae'
 import { ThumbBar } from '../components/ThumbBar'
 import { getLastTimeSummary } from '../../application/lastTime'
 import { primeAudio, restEndFeedback } from '../../application/restFeedback'
@@ -170,9 +171,12 @@ export function WorkoutPlayerScreen() {
           ended the session), and mid-set there's no timer to pause, so
           Pause only crowded Complete Set. */}
       <div className="flex items-center justify-between">
-        <p className="text-sm text-ink-muted">
-          Exercise {state.currentExerciseIndex + 1} of {plan.exercises.length}
-        </p>
+        <div className="flex items-center gap-2">
+          <RaeFace expression="focused" size={36} motion="none" />
+          <p className="text-sm text-ink-muted">
+            Exercise {state.currentExerciseIndex + 1} of {plan.exercises.length}
+          </p>
+        </div>
         <div className="-mr-3 flex">
           <button className="btn-ghost btn-sm" disabled={busy} onClick={() => handleAction('PAUSED')}>
             Pause
@@ -388,6 +392,7 @@ function RestingView({
           Pause
         </button>
       </div>
+      <RaeFace expression="tired" size={88} className="mx-auto" />
       <p className="text-lg font-bold">Rest</p>
       <p
         className="hud-num text-7xl font-extrabold tabular-nums"
