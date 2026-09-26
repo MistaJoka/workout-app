@@ -5,6 +5,7 @@ import type { Exercise, WorkoutTemplate } from '../../domain/content/types'
 import { deleteCustomTemplate, isCustomTemplateId } from '../../infrastructure/db/repositories/customTemplateRepository'
 import { formatWeight } from '../units'
 import { useWeightUnit } from '../components/useWeightUnit'
+import { BackButton } from '../components/BackButton'
 
 export function RoutineDetailScreen() {
   const { templateId } = useParams()
@@ -44,9 +45,7 @@ export function RoutineDetailScreen() {
 
   return (
     <div className="p-4 space-y-4 pb-44">
-      <button className="btn-ghost -ml-3" onClick={() => navigate(-1)}>
-        ‹ Back
-      </button>
+      <BackButton />
       <h1 className="text-2xl font-bold">{template.name}</h1>
 
       <ul className="space-y-2">

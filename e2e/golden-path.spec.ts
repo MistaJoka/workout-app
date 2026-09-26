@@ -9,13 +9,12 @@ test.describe('golden path', () => {
     await page.getByRole('button', { name: 'Got it' }).click()
     await expect(page.getByText('Welcome')).toBeHidden()
 
+    // Check-in and the workout preview are one screen, with one Start.
     await page.getByRole('link', { name: /Full-Body A/ }).click()
     await expect(page.getByText('How are you feeling?')).toBeVisible()
-    await page.getByRole('button', { name: 'Continue' }).click()
-
-    await expect(page.getByText('Session Preview')).toBeVisible()
     await expect(page.getByText('Bodyweight Squat')).toBeVisible()
-    await page.getByRole('button', { name: 'Start Workout' }).click()
+    await page.getByRole('radio', { name: '4' }).first().click()
+    await page.getByRole('button', { name: 'Start workout' }).click()
 
     // The player shows the movement and its steps, not just a name.
     await expect(page.getByRole('heading', { name: 'Bodyweight Squat' })).toBeVisible()
@@ -45,8 +44,7 @@ test.describe('golden path', () => {
     await page.goto('/')
     await dismissWelcome(page)
     await page.getByRole('link', { name: /Quick 10/ }).click()
-    await page.getByRole('button', { name: 'Continue' }).click()
-    await page.getByRole('button', { name: 'Start Workout' }).click()
+    await page.getByRole('button', { name: 'Start workout' }).click()
     await page.getByRole('button', { name: 'Complete Set' }).click()
     await page.getByRole('button', { name: 'Yes', exact: true }).click()
     const timer = page.getByRole('timer')
@@ -55,6 +53,7 @@ test.describe('golden path', () => {
     // +15s is persisted (REST_EXTENDED), so the extended deadline survives
     // a reload. Quick 10 rests are 30s; after the bump the countdown must
     // still read above 30s once the page comes back.
+    await expect(page.locator('[data-armed="true"]')).toBeVisible()
     await page.getByRole('button', { name: '+15s' }).click({ timeout: 3_000, force: true })
     await expect(timer).toHaveText(/^0:(3[1-9]|4[0-5])$/)
     await page.reload()
@@ -64,6 +63,31 @@ test.describe('golden path', () => {
     await page.goto('/#/')
     await expect(page.getByText('Resume workout')).toBeVisible()
   })
+})
+
+test('a double tap on Skip rest does not also complete the next set', async ({ page }) => {
+  await page.goto('/')
+  await dismissWelcome(page)
+  await page.getByRole('link', { name: /Full-Body A/ }).click()
+  await page.getByRole('button', { name: 'Start workout' }).click()
+  await page.getByRole('button', { name: 'Complete Set' }).click()
+  await page.getByRole('button', { name: 'Yes', exact: true }).click()
+  await expect(page.getByRole('timer')).toBeVisible()
+  await expect(page.locator('[data-armed="true"]')).toBeVisible()
+
+  // Two quick taps on the same spot: the second lands where the player's
+  // Complete Set appears, and must be ignored.
+  const box = await page.getByRole('button', { name: 'Skip rest' }).boundingBox()
+  if (!box) throw new Error('Skip rest not laid out')
+  const x = box.x + box.width / 2
+  const y = box.y + box.height / 2
+  await page.mouse.click(x, y)
+  await page.waitForTimeout(250)
+  await page.mouse.click(x, y)
+
+  await expect(page.getByText(/Set 2 of 2/)).toBeVisible()
+  await page.waitForTimeout(300)
+  await expect(page.getByText(/Did you complete all/)).toBeHidden()
 })
 
 test.describe('library and routines', () => {
@@ -89,7 +113,6 @@ test.describe('library and routines', () => {
     await expect(page.getByText('4 × 10')).toBeVisible()
 
     await page.getByRole('link', { name: 'Start workout' }).click()
-    await page.getByRole('button', { name: 'Continue' }).click()
     await expect(page.getByText('4 sets × 10 reps')).toBeVisible()
 
     await page.goto('/#/')
@@ -110,8 +133,7 @@ test.describe('library and routines', () => {
     await expect(page.getByText(/3 × 10 @ 50 lb/)).toBeVisible()
 
     await page.getByRole('link', { name: 'Start workout' }).click()
-    await page.getByRole('button', { name: 'Continue' }).click()
-    await page.getByRole('button', { name: 'Start Workout' }).click()
+    await page.getByRole('button', { name: 'Start workout' }).click()
     await expect(page.getByText(/10 reps @ 50 lb/)).toBeVisible()
     await page.getByRole('button', { name: 'Complete Set' }).click()
     await page.getByRole('button', { name: 'More weight' }).click()
@@ -124,8 +146,10 @@ test.describe('setup for two people', () => {
     await page.goto('/#/schedule')
     await expect(page.getByText('Your week')).toBeVisible()
     const today = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'][new Date().getDay()]
-    const row = page.locator('section, li, div').filter({ hasText: new RegExp(`^${today}`) }).first()
-    await row.getByRole('button', { name: 'Quick 10' }).click()
+    // One button per day; tapping it opens that day's choices.
+    await page.getByRole('button', { name: new RegExp(`^${today}`) }).click()
+    await page.getByRole('radiogroup', { name: `${today} plan` }).getByRole('radio', { name: 'Quick 10' }).click()
+    await expect(page.getByRole('button', { name: new RegExp(`^${today} Quick 10`) })).toBeVisible()
 
     await page.goto('/#/')
     const card = page.getByRole('link', { name: /Quick 10/ })
@@ -137,6 +161,8 @@ test.describe('setup for two people', () => {
     await page.getByRole('button', { name: 'Got it' }).click()
     await expect(page.getByText('Welcome')).toBeHidden()
 
+    // Who's working out lives at the top of Settings.
+    await page.getByRole('link', { name: 'Settings' }).click()
     await page.getByRole('button', { name: /Profile: Me/ }).click()
     await page.getByRole('button', { name: '+ Add a person' }).click()
     await page.getByPlaceholder('Their name').fill('Kay')
@@ -144,12 +170,15 @@ test.describe('setup for two people', () => {
 
     // New person: fresh data, so the welcome card is back.
     await expect(page.getByRole('button', { name: /Profile: Kay/ })).toBeVisible()
+    await page.getByRole('link', { name: 'Today' }).click()
     await expect(page.getByText('Welcome')).toBeVisible()
 
+    await page.getByRole('link', { name: 'Settings' }).click()
     await page.getByRole('button', { name: /Profile: Kay/ }).click()
     // The row button's accessible name is its initial plus the name: "M Me".
     await page.getByRole('dialog').getByRole('button', { name: /\bMe\b/ }).click()
     await expect(page.getByRole('button', { name: /Profile: Me/ })).toBeVisible()
+    await page.getByRole('link', { name: 'Today' }).click()
     await expect(page.getByText('Welcome')).toBeHidden()
   })
 })
@@ -165,6 +194,7 @@ test.describe('utilities', () => {
     await expect(page.getByText(/Offline/)).toBeHidden()
 
     await page.goto('/#/settings')
+    await page.getByText('Danger zone').click()
     const erase = page.getByRole('button', { name: 'Erase everything' })
     await expect(erase).toBeDisabled()
     await page.getByPlaceholder('Type DELETE to enable').fill('DELETE')

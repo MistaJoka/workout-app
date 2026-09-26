@@ -13,6 +13,7 @@ import { buildEditRows, type EditRow } from './routineBuilderRows'
 import { FilterSheet } from '../components/FilterSheet'
 import { kgToUnit, roundToStep, stepInUnit, unitToKg } from '../units'
 import { useWeightUnit } from '../components/useWeightUnit'
+import { BackButton } from '../components/BackButton'
 
 type Row = EditRow
 
@@ -128,9 +129,7 @@ export function RoutineBuilderScreen() {
   return (
     <div className="p-4 space-y-4 pb-44">
       <div className="flex items-center justify-between">
-        <button className="btn-ghost -ml-3" onClick={() => navigate(-1)}>
-          ‹ Back
-        </button>
+        <BackButton />
         <h1 className="text-lg font-bold">{editingId ? 'Edit routine' : 'New routine'}</h1>
         <span className="w-12" />
       </div>
@@ -352,9 +351,8 @@ function ExercisePicker({
         ))}
       </ul>
 
-      {/* Fixed bottom Cancel replaces the old top-right text link, which (a)
-          required a top-corner reach and (b) visually overlapped the
-          ProfileSwitcher avatar in that same corner. */}
+      {/* Fixed bottom Cancel replaces the old top-right text link, which
+          required a top-corner reach. */}
       <div className="fixed bottom-16 left-0 right-0 border-t-2 border-edge bg-surface p-4">
         <button className="btn-secondary w-full" onClick={onClose}>
           Cancel

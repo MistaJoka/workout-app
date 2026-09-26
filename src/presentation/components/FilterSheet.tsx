@@ -36,13 +36,13 @@ export function FilterSheet({
             role="dialog"
             aria-label="Filters"
           >
-            <div className="flex items-center justify-between">
-              <p className="text-lg font-bold">Filters</p>
-              <button type="button" className="btn-primary btn-sm" onClick={() => setOpen(false)}>
-                Done
-              </button>
-            </div>
+            <p className="text-lg font-bold">Filters</p>
             {children}
+            {/* Done at the bottom: the thumb is already down here after the
+                last chip. */}
+            <button type="button" className="btn-primary btn-lg w-full" onClick={() => setOpen(false)}>
+              Done
+            </button>
           </div>
         </div>
       )}

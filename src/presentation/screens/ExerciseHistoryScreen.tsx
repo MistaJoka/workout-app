@@ -6,6 +6,7 @@ import { detectPersonalRecords, estimateOneRepMax, perExerciseHistory } from '..
 import type { ExerciseHistoryPoint, PersonalRecord } from '../../domain/progress/types'
 import { formatWeight } from '../units'
 import { useWeightUnit } from '../components/useWeightUnit'
+import { BackButton } from '../components/BackButton'
 
 type View = {
   name: string
@@ -52,9 +53,7 @@ export function ExerciseHistoryScreen() {
 
   return (
     <div className="p-4 space-y-4">
-      <button className="btn-ghost -ml-3" onClick={() => navigate(-1)}>
-        ‹ Back
-      </button>
+      <BackButton />
       <h1 className="text-2xl font-bold">{view.name}</h1>
 
       <div className="flex gap-3">

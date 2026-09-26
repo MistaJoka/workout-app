@@ -1,18 +1,17 @@
 import { Link } from 'react-router-dom'
 import { useEffect, useRef, useState } from 'react'
-import { useTheme } from '../theme/ThemeContext'
 import { exportAll, importAll, isValidExportBundle } from '../../infrastructure/exportImport/exportImport'
 import { downloadBackup } from '../../infrastructure/exportImport/downloadBackup'
 import { getSetting, setSetting } from '../../infrastructure/db/repositories/settingsRepository'
 import { db } from '../../infrastructure/db/schema'
 import { activeProfile, loadProfiles } from '../../infrastructure/profiles'
+import { ProfileSwitcher } from '../components/ProfileSwitcher'
 import { useFeedbackSettings } from '../components/useFeedbackSettings'
 import { useWeightUnit } from '../components/useWeightUnit'
 
 const LAST_EXPORT_KEY = 'lastExportAt'
 
 export function SettingsScreen() {
-  const { motion, setMotion } = useTheme()
   const [feedback, updateFeedback] = useFeedbackSettings()
   const [unit, setUnit] = useWeightUnit()
   const fileInputRef = useRef<HTMLInputElement>(null)
@@ -66,12 +65,8 @@ export function SettingsScreen() {
       <h1 className="text-xl font-bold">Settings</h1>
 
       <section className="space-y-2">
-        <p className="font-semibold">Motion</p>
-        <div className="flex justify-end gap-2">
-          {(['full', 'reduced', 'off'] as const).map((option) => (
-            <ThemeButton key={option} label={option} active={motion === option} onClick={() => setMotion(option)} capitalize />
-          ))}
-        </div>
+        <p className="font-semibold">Who's working out</p>
+        <ProfileSwitcher />
       </section>
 
       <section className="space-y-2">
@@ -124,49 +119,45 @@ export function SettingsScreen() {
         {status && <p className="text-sm text-ink-muted">{status}</p>}
       </section>
 
-      <section className="space-y-2">
-        <p className="font-semibold">Reset all data</p>
-        <p className="text-sm text-ink-muted">
-          Erases every workout, routine and setting for {profile.name}.
-          {otherPeople ? ' Other people on this device keep their data.' : ''} Export a backup first.
-        </p>
-        <input
-          type="text"
-          inputMode="text"
-          autoCapitalize="characters"
-          placeholder="Type DELETE to enable"
-          value={resetText}
-          onChange={(e) => setResetText(e.target.value)}
-          className="input"
-          aria-label="Type DELETE to enable reset"
-        />
-        <button className="btn-danger w-full" disabled={resetText !== 'DELETE' || resetting} onClick={handleReset}>
-          Erase everything
-        </button>
-      </section>
 
       <section>
         <Link to="/about" className="btn-secondary w-full">
-          About this app, credits
+          About, animations, credits
         </Link>
       </section>
+
+      {/* Collapsed and last: nobody should meet this on the way to
+          something else. */}
+      <details className="card p-3 [&_summary]:cursor-pointer">
+        <summary className="font-semibold">Danger zone</summary>
+        <div className="space-y-2 pt-3">
+          <p className="font-semibold">Reset all data</p>
+          <p className="text-sm text-ink-muted">
+            Erases every workout, routine and setting for {profile.name}.
+            {otherPeople ? ' Other people on this device keep their data.' : ''} Export a backup first.
+          </p>
+          <input
+            type="text"
+            inputMode="text"
+            autoCapitalize="characters"
+            placeholder="Type DELETE to enable"
+            value={resetText}
+            onChange={(e) => setResetText(e.target.value)}
+            className="input"
+            aria-label="Type DELETE to enable reset"
+          />
+          <button className="btn-danger w-full" disabled={resetText !== 'DELETE' || resetting} onClick={handleReset}>
+            Erase everything
+          </button>
+        </div>
+      </details>
     </div>
   )
 }
 
-function ThemeButton({
-  label,
-  active,
-  onClick,
-  capitalize,
-}: {
-  label: string
-  active: boolean
-  onClick: () => void
-  capitalize?: boolean
-}) {
+function ThemeButton({ label, active, onClick }: { label: string; active: boolean; onClick: () => void }) {
   return (
-    <button className={`chip ${capitalize ? 'capitalize' : ''} ${active ? 'chip-active' : ''}`} onClick={onClick}>
+    <button className={`chip ${active ? 'chip-active' : ''}`} onClick={onClick}>
       {label}
     </button>
   )

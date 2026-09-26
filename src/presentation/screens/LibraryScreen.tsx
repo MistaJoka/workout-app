@@ -38,24 +38,11 @@ export function LibraryScreen() {
 
   return (
     <div className="p-4 pb-20 space-y-4">
-      {/* pr-14 keeps this clear of the fixed ProfileSwitcher avatar in the
-          same corner — without it the button text renders half-hidden
-          behind the avatar. */}
-      <div className="flex items-baseline justify-between pr-14">
-        <h1 className="text-xl font-bold">Library</h1>
-        <Link to="/routines/new" className="btn-primary btn-sm">
-          + New routine
-        </Link>
-      </div>
+      <h1 className="text-xl font-bold">Library</h1>
 
       {!filtering && (
         <section className="space-y-2">
-          <div className="flex items-baseline justify-between">
-            <p className="text-sm font-semibold text-ink-muted">Routines</p>
-            <Link to="/schedule" className="text-sm font-semibold text-primary">
-              Plan your week
-            </Link>
-          </div>
+          <p className="text-sm font-semibold text-ink-muted">Routines</p>
           {[...foundationStrengthStarterTemplates, ...custom].map((template) => (
             <Link
               key={template.id}
@@ -66,6 +53,11 @@ export function LibraryScreen() {
               <span className="text-sm text-ink-muted">{countLabel(template.exercises.length, 'exercise')}</span>
             </Link>
           ))}
+          {/* Sits with the routines it adds to, not in the header corner:
+              the top right is the hardest reach, and this is rarely used. */}
+          <Link to="/routines/new" className="btn-secondary w-full">
+            + New routine
+          </Link>
         </section>
       )}
 

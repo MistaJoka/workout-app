@@ -4,6 +4,7 @@ import { getExercise } from '../../domain/content/catalog'
 import { muscleGroupLabel } from '../../domain/content/library'
 import type { Exercise } from '../../domain/content/types'
 import { MovementMedia } from '../components/MovementMedia'
+import { BackButton } from '../components/BackButton'
 
 export function ExerciseDetailScreen() {
   const { exerciseId } = useParams()
@@ -35,9 +36,7 @@ export function ExerciseDetailScreen() {
 
   return (
     <div className="p-4 space-y-4 pb-24">
-      <button className="btn-ghost -ml-3" onClick={() => navigate(-1)}>
-        ‹ Back
-      </button>
+      <BackButton />
       <h1 className="text-2xl font-bold">{exercise.name}</h1>
       <p className="text-sm capitalize text-ink-muted">{meta.join(', ')}</p>
 

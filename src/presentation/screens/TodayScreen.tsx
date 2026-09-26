@@ -143,9 +143,11 @@ export function TodayScreen() {
         </>
       )}
 
-      {plan && !plan.hasSchedule && (
+      {/* The one way into the weekly schedule (Library used to have a
+          second, differently named link). */}
+      {plan && (
         <Link to="/schedule" className="block text-center text-sm font-semibold text-primary">
-          Set up your week
+          {plan.hasSchedule ? 'Edit your week' : 'Set up your week'}
         </Link>
       )}
     </div>

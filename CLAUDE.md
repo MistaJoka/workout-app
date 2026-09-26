@@ -73,9 +73,14 @@ Always `git fetch origin` before pushing: the ChatGPT support agent commits dire
 
 Exactly four persistent primary tabs: Today, Library, Progress, Settings.
 
-Secondary routes such as Schedule, Routine Builder/Detail, Exercise Detail/History, About, Check-In, Preview and active-session screens do not become new persistent tabs without an explicit product decision.
+Secondary routes such as Schedule, Routine Builder/Detail, Exercise Detail/History, About, Check-In (which includes the session preview) and active-session screens do not become new persistent tabs without an explicit product decision.
 
-Primary guided flow: `Today -> Check-In -> Session Preview -> Workout Player -> Rest/Pause -> Complete -> Progress`
+Primary guided flow: `Today -> Check-In + preview (one screen) -> Workout Player -> Rest/Pause -> Complete -> Progress`
+
+Placement rules (owner-approved button pass, 2026-09-26):
+- Every screen outside the tab bar has a way out (`components/BackButton.tsx`, falls back to Today on a deep link) — a home-screen PWA has no browser back.
+- Fixed bottom action bars use `components/ThumbBar.tsx`: it ignores taps for 700ms whenever its content changes, so a double tap can't land on the button that replaced the first one. Give it an `armKey` that changes with the bar's content. E2E helpers wait for `[data-armed="true"]`.
+- Rare/destructive actions (Pause, End workout, Erase everything) stay out of the thumb bar. Profile switching lives in Settings, not a corner of every screen.
 
 ## Platform quality rules
 

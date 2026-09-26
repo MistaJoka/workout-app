@@ -10,8 +10,10 @@ import {
   type Profile,
 } from '../../infrastructure/profiles'
 
-// Who's working out. A small initial in the top corner; tapping it opens a
-// sheet to switch, add, rename or remove a person. Switching reloads the
+// Who's working out. A row at the top of Settings (each of you has your
+// own phone, so switching is rare — it no longer sits in the corner of
+// every screen); tapping it opens a sheet to switch, add, rename or remove
+// a person. Switching reloads the
 // app because every store is bound to the active profile's database.
 export function ProfileSwitcher() {
   const [open, setOpen] = useState(false)
@@ -53,10 +55,13 @@ export function ProfileSwitcher() {
         type="button"
         aria-label={`Profile: ${active.name}. Switch person`}
         onClick={() => setOpen(true)}
-        className="fixed right-4 z-20 flex h-10 w-10 items-center justify-center rounded-control bg-field-primary text-sm font-extrabold text-ink"
-        style={{ top: 'calc(env(safe-area-inset-top) + 0.75rem)' }}
+        className="card flex w-full items-center gap-3 p-3 text-left"
       >
-        {active.name.trim().charAt(0).toUpperCase() || '?'}
+        <span className="flex h-10 w-10 flex-none items-center justify-center rounded-control bg-field-primary text-sm font-extrabold">
+          {active.name.trim().charAt(0).toUpperCase() || '?'}
+        </span>
+        <span className="flex-1 font-semibold">{active.name}</span>
+        <span className="text-sm font-semibold text-primary">Switch</span>
       </button>
 
       {open && (
