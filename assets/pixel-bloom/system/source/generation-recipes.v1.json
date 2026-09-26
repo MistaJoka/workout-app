@@ -1,0 +1,19 @@
+{
+  "version": 1,
+  "principle": "humans/AI create -> scripts normalize -> metadata describes -> registry exposes -> application consumes",
+  "generators": [
+    {
+      "script": "scripts/assets/generate-pixel-bloom-system.py",
+      "purpose": "core platform, master sheets, tokens, schemas and core motion"
+    },
+    {
+      "script": "scripts/assets/generate-pixel-bloom-library.py",
+      "purpose": "individual workout/reward/world/exercise-discovery/UI asset library"
+    },
+    {
+      "script": "scripts/assets/finalize-pixel-bloom-platform.py",
+      "purpose": "semantic references, animation registry and AI catalog"
+    }
+  ],
+  "validation": "node scripts/assets/validate-assets.mjs"
+}

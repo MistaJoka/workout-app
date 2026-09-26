@@ -1,0 +1,16 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "generator-request.schema.json",
+  "title": "Routine Intelligence Generator Request",
+  "type": "object",
+  "required": ["preset", "location", "durationMinutes", "equipment"],
+  "properties": {
+    "preset": {"enum": ["supportive-start", "low-impact-beginner", "gym-confidence", "mobility-core-reset"]},
+    "location": {"enum": ["home", "gym", "outdoors"]},
+    "durationMinutes": {"type": "integer", "minimum": 10, "maximum": 90},
+    "equipment": {"type": "array", "items": {"type": "string"}},
+    "sessionType": {"enum": ["full-body", "mobility", "quick", "upper"]},
+    "templateId": {"type": "string"}
+  },
+  "additionalProperties": false
+}

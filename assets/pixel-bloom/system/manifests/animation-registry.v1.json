@@ -1,0 +1,87 @@
+{
+  "schemaVersion": 1,
+  "theme": "pixel-bloom",
+  "animations": [
+    {
+      "id": "character.bloom.idle",
+      "path": "assets/pixel-bloom/system/runtime/svg/pb-anim-bloom-idle-v1.svg",
+      "motionModes": {
+        "full": "animated SVG",
+        "reduced": "static first frame",
+        "off": "static character"
+      }
+    },
+    {
+      "id": "character.bloom.celebrate",
+      "path": "assets/pixel-bloom/system/runtime/svg/pb-anim-bloom-celebrate-v1.svg",
+      "motionModes": {
+        "full": "animated SVG",
+        "reduced": "static celebration pose",
+        "off": "static character"
+      }
+    },
+    {
+      "id": "exercise.bodyweight-squat.preview",
+      "path": "assets/pixel-bloom/system/runtime/svg/pb-anim-exercise-squat-v1.svg",
+      "motionModes": {
+        "full": "animated preview",
+        "reduced": "start/finish only",
+        "off": "keyframe sheet + written instructions"
+      }
+    },
+    {
+      "id": "character.bloom.blink",
+      "path": "assets/pixel-bloom/system/runtime/svg/motion/pb-anim-bloom-blink-v1.svg",
+      "motionModes": {
+        "full": "animated SVG",
+        "reduced": "static Bloom pose",
+        "off": "static Bloom pose"
+      }
+    },
+    {
+      "id": "character.bloom.rest",
+      "path": "assets/pixel-bloom/system/runtime/svg/motion/pb-anim-bloom-rest-v1.svg",
+      "motionModes": {
+        "full": "animated SVG",
+        "reduced": "static resting Bloom pose",
+        "off": "static resting Bloom pose"
+      }
+    },
+    {
+      "id": "ui.button.pop",
+      "path": "assets/pixel-bloom/system/runtime/svg/motion/pb-anim-ui-button-pop-v1.svg",
+      "motionModes": {
+        "full": "animated SVG",
+        "reduced": "static button state",
+        "off": "static button state"
+      }
+    },
+    {
+      "id": "ui.progress.pulse",
+      "path": "assets/pixel-bloom/system/runtime/svg/motion/pb-anim-ui-progress-pulse-v1.svg",
+      "motionModes": {
+        "full": "animated SVG",
+        "reduced": "static progress state",
+        "off": "static progress state"
+      }
+    },
+    {
+      "id": "reward.badge.unlock",
+      "path": "assets/pixel-bloom/system/runtime/svg/motion/pb-anim-badge-unlock-v1.svg",
+      "motionModes": {
+        "full": "animated SVG",
+        "reduced": "static unlocked badge",
+        "off": "static unlocked badge"
+      }
+    },
+    {
+      "id": "ui.timer.pulse",
+      "path": "assets/pixel-bloom/system/runtime/svg/motion/pb-anim-timer-pulse-v1.svg",
+      "motionModes": {
+        "full": "animated SVG",
+        "reduced": "static timer state",
+        "off": "static timer state"
+      }
+    }
+  ]
+}

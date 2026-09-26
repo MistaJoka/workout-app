@@ -66,7 +66,7 @@ export function BodyWeightCard() {
             >
               −
             </button>
-            <span className="font-semibold tabular-nums">{formatWeight(draftKg, unit)}</span>
+            <span className="hud-num font-semibold tabular-nums">{formatWeight(draftKg, unit)}</span>
             <button
               type="button"
               className="stepper-btn"

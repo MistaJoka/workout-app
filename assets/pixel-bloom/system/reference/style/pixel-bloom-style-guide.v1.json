@@ -1,0 +1,14 @@
+{
+  "id": "style.pixel-bloom",
+  "status": "canonical-creative-reference",
+  "description": "Premium cozy fitness game: modern pixel-inspired illustration, pastel handheld-game nostalgia, crisp silhouettes, adult proportions, expressive character motion, clean instructional hierarchy and polished mobile UI.",
+  "rules": [
+    "game-art styling for emotion; instructional clarity for movement",
+    "no baked instructional text in raster artwork",
+    "consistent character identity across every asset",
+    "clean silhouettes and restrained texture",
+    "runtime assets must have semantic IDs",
+    "motion must preserve Full/Reduced/Off information parity"
+  ],
+  "paletteSource": "assets/pixel-bloom/system/tokens/pixel-bloom.tokens.json"
+}

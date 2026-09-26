@@ -131,6 +131,7 @@ export function WorkoutPlayerScreen() {
   if (state.status === 'RESTING' && state.restEndsAt) {
     return (
       <RestingView
+        restStartedAt={state.restStartedAt}
         restEndsAt={state.restEndsAt}
         busy={busy}
         error={error}
@@ -158,9 +159,17 @@ export function WorkoutPlayerScreen() {
 
   return (
     <div className="p-6 pb-40 space-y-4">
-      <p className="text-sm text-ink-muted">
-        Exercise {state.currentExerciseIndex + 1} of {plan.exercises.length}
-      </p>
+      {/* End workout lives up here, out of the thumb bar: it used to sit at
+          the bottom exactly where the rest screen's "Skip rest" is, so a
+          double tap on Skip rest ended the whole session. */}
+      <div className="flex items-center justify-between">
+        <p className="text-sm text-ink-muted">
+          Exercise {state.currentExerciseIndex + 1} of {plan.exercises.length}
+        </p>
+        <button className="btn-ghost btn-sm -mr-3" disabled={busy} onClick={handleEndWorkout}>
+          End workout
+        </button>
+      </div>
       <h2 className="text-2xl font-bold">{exercise.name}</h2>
       <p className="text-lg font-semibold">
         Set {state.currentSetNumber} of {exercise.sets}
@@ -192,7 +201,7 @@ export function WorkoutPlayerScreen() {
           >
             −
           </button>
-          <span className="font-semibold tabular-nums">{formatWeight(setWeightKg, unit)}</span>
+          <span className="hud-num font-semibold tabular-nums">{formatWeight(setWeightKg, unit)}</span>
           <button
             type="button"
             className="stepper-btn"
@@ -254,9 +263,6 @@ export function WorkoutPlayerScreen() {
             </button>
           </div>
         )}
-        <button className="btn-ghost w-full" disabled={busy} onClick={handleEndWorkout}>
-          End workout
-        </button>
       </div>
     </div>
   )
@@ -305,11 +311,26 @@ function StepsList({ steps }: { steps: string[] }) {
   )
 }
 
+// Decoration over the numeric timer (which stays the source of truth):
+// the share of this rest still left, from the persisted timestamps.
+function RestBar({ restStartedAt, restEndsAt, seconds }: { restStartedAt: string | null; restEndsAt: string; seconds: number }) {
+  if (!restStartedAt) return null
+  const totalMs = Date.parse(restEndsAt) - Date.parse(restStartedAt)
+  if (!(totalMs > 0)) return null
+  const left = Math.min(1, Math.max(0, (seconds * 1000) / totalMs))
+  return (
+    <div className="rest-bar mx-auto max-w-xs" aria-hidden="true">
+      <div className="rest-bar__fill" style={{ width: `${left * 100}%` }} />
+    </div>
+  )
+}
+
 function secondsUntil(restEndsAt: string): number {
   return Math.ceil(remainingRestMs(restEndsAt) / 1000)
 }
 
 function RestingView({
+  restStartedAt,
   restEndsAt,
   busy,
   error,
@@ -318,6 +339,7 @@ function RestingView({
   onSkip,
   onPause,
 }: {
+  restStartedAt: string | null
   restEndsAt: string
   busy: boolean
   error: string | null
@@ -352,9 +374,13 @@ function RestingView({
   return (
     <div className="field-calm min-h-screen rounded-none p-6 pt-16 pb-32 text-center space-y-6">
       <p className="text-lg font-bold">Rest</p>
-      <p className="text-7xl font-extrabold tabular-nums" role="timer">
+      <p
+        className={`hud-num mx-auto w-fit rounded-panel px-3 text-7xl font-extrabold tabular-nums ${seconds <= 3 ? 'hud-pulse' : ''}`}
+        role="timer"
+      >
         {Math.floor(seconds / 60)}:{String(seconds % 60).padStart(2, '0')}
       </p>
+      <RestBar restStartedAt={restStartedAt} restEndsAt={restEndsAt} seconds={seconds} />
       {error && <p className="text-sm text-accent">{error}</p>}
       {/* Bottom-anchored rather than sitting right under the timer, so these
           land in easy thumb reach instead of the upper third of the screen. */}

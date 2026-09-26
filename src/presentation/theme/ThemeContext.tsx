@@ -1,5 +1,5 @@
 import { createContext, useContext, useEffect, useLayoutEffect, useState, type ReactNode } from 'react'
-import { applyMotionPreference, applyThemeTokens, type MotionPreference, type ThemeName } from './tokens'
+import { applyMotionPreference, applyThemeTokens, DEFAULT_THEME, type MotionPreference, type ThemeName } from './tokens'
 import { getSetting, setSetting } from '../../infrastructure/db/repositories/settingsRepository'
 import { activeProfile } from '../../infrastructure/profiles'
 import { readCachedTheme, writeCachedTheme } from './themeCache'
@@ -18,7 +18,7 @@ export function ThemeProvider({ children }: { children: ReactNode }) {
   // already in the right theme; Dexie remains the source of truth and
   // corrects the state if the mirror is missing or stale.
   const [profileId] = useState(() => activeProfile().id)
-  const [theme, setThemeState] = useState<ThemeName>(() => readCachedTheme(profileId) ?? 'pixel-bloom')
+  const [theme, setThemeState] = useState<ThemeName>(() => readCachedTheme(profileId) ?? DEFAULT_THEME)
   const [motion, setMotionState] = useState<MotionPreference>('full')
 
   useEffect(() => {

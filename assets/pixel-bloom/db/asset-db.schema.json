@@ -1,0 +1,87 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "pixel-bloom.asset-db.schema.json",
+  "title": "Pixel Bloom Asset Database",
+  "type": "object",
+  "required": ["schemaVersion", "theme", "characters", "assets", "animations"],
+  "properties": {
+    "schemaVersion": { "type": "string" },
+    "theme": { "const": "pixel-bloom" },
+    "characters": {
+      "type": "array",
+      "items": { "$ref": "#/$defs/character" }
+    },
+    "assets": {
+      "type": "array",
+      "items": { "$ref": "#/$defs/asset" }
+    },
+    "animations": {
+      "type": "array",
+      "items": { "$ref": "#/$defs/animation" }
+    }
+  },
+  "$defs": {
+    "character": {
+      "type": "object",
+      "required": ["id", "name", "status", "identityLocks"],
+      "properties": {
+        "id": { "type": "string", "pattern": "^[a-z0-9-]+$" },
+        "name": { "type": "string" },
+        "status": { "enum": ["draft", "canonical", "retired"] },
+        "identityLocks": { "type": "object", "additionalProperties": true },
+        "styleLocks": { "type": "object", "additionalProperties": true }
+      }
+    },
+    "asset": {
+      "type": "object",
+      "required": ["id", "characterId", "kind", "status", "repoPath", "perspective", "format"],
+      "properties": {
+        "id": { "type": "string", "pattern": "^[a-z0-9-]+$" },
+        "characterId": { "type": "string" },
+        "kind": { "enum": ["reference", "avatar", "portrait", "pose", "exercise-pose", "expression", "outfit", "accessory", "fallback", "sprite-sheet", "frame-sequence", "animated-webp", "gif"] },
+        "status": { "enum": ["planned", "generated", "review", "approved", "rejected", "retired"] },
+        "repoPath": { "type": "string" },
+        "perspective": { "enum": ["front", "front-3q-left", "front-3q-right", "side-left", "side-right", "back", "back-3q-left", "back-3q-right", "isometric", "n-a"] },
+        "format": { "enum": ["png", "webp", "gif", "svg", "json"] },
+        "width": { "type": ["integer", "null"] },
+        "height": { "type": ["integer", "null"] },
+        "transparent": { "type": "boolean" },
+        "tags": { "type": "array", "items": { "type": "string" } },
+        "sourceAssetId": { "type": ["string", "null"] },
+        "notes": { "type": "string" }
+      }
+    },
+    "animation": {
+      "type": "object",
+      "required": ["id", "characterId", "category", "status", "perspective", "sourceType", "fps", "loop", "fallbackAssetId"],
+      "properties": {
+        "id": { "type": "string", "pattern": "^[a-z0-9-]+$" },
+        "characterId": { "type": "string" },
+        "category": { "enum": ["idle", "expression", "celebration", "transition", "exercise", "recovery", "reward"] },
+        "status": { "enum": ["planned", "frames-ready", "review", "approved", "rejected", "retired"] },
+        "perspective": { "enum": ["front", "front-3q-left", "front-3q-right", "side-left", "side-right", "back", "n-a"] },
+        "sourceType": { "enum": ["frame-sequence", "sprite-sheet", "svg-css"] },
+        "frameCount": { "type": "integer", "minimum": 1 },
+        "fps": { "type": "number", "exclusiveMinimum": 0 },
+        "durationMs": { "type": "integer", "minimum": 1 },
+        "loop": { "type": "boolean" },
+        "fallbackAssetId": { "type": "string" },
+        "exports": {
+          "type": "object",
+          "properties": {
+            "framesPath": { "type": "string" },
+            "spriteSheetPath": { "type": "string" },
+            "webpPath": { "type": "string" },
+            "gifPath": { "type": "string" }
+          },
+          "additionalProperties": false
+        },
+        "motionFull": { "type": "string" },
+        "motionReduced": { "type": "string" },
+        "motionOff": { "type": "string" },
+        "exerciseId": { "type": ["string", "null"] },
+        "notes": { "type": "string" }
+      }
+    }
+  }
+}

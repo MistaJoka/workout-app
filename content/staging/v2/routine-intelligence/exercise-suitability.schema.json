@@ -1,0 +1,30 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "exercise-suitability.schema.json",
+  "title": "Routine Intelligence Exercise Suitability",
+  "type": "object",
+  "required": ["id", "movementPattern", "impact", "supportLevel", "balanceDemand", "floorTransitionRequired", "beginnerFriendly", "equipment", "locationFit", "assetBindings"],
+  "properties": {
+    "id": {"type": "string", "minLength": 1},
+    "canonicalExerciseId": {"type": ["string", "null"]},
+    "mappingStatus": {"enum": ["staging-slug-needs-canonical-id", "canonical-mapped"]},
+    "movementPattern": {"enum": ["squat", "hinge", "push", "pull", "core", "cardio", "mobility", "accessory"]},
+    "trainingTypes": {"type": "array", "items": {"type": "string"}},
+    "impact": {"enum": ["low", "moderate", "high"]},
+    "supportLevel": {"enum": ["none", "chair", "wall", "bench", "machine", "band", "cable", "floor"]},
+    "balanceDemand": {"enum": ["low", "medium", "high"]},
+    "floorTransitionRequired": {"type": "boolean"},
+    "position": {"type": "string"},
+    "rangeOfMotionAdjustable": {"type": "boolean"},
+    "beginnerFriendly": {"type": "boolean"},
+    "supportedVariationAvailable": {"type": "boolean"},
+    "jointDemand": {"type": "object", "required": ["knee", "hip", "shoulder", "wrist"], "additionalProperties": {"enum": ["low", "medium", "high"]}},
+    "equipment": {"type": "array", "items": {"type": "string"}},
+    "locationFit": {"type": "array", "items": {"enum": ["home", "gym", "outdoors"]}},
+    "tags": {"type": "array", "items": {"type": "string"}},
+    "assetBindings": {"type": "object", "required": ["thumbnailId", "instructionalAssetId", "fallback"]},
+    "progressions": {"type": "array", "items": {"type": "string"}},
+    "regressions": {"type": "array", "items": {"type": "string"}}
+  },
+  "additionalProperties": false
+}

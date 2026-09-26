@@ -1,0 +1,33 @@
+name: Validate Routine Intelligence
+
+on:
+  push:
+    branches: [master]
+    paths:
+      - 'content/staging/v2/routine-intelligence/**'
+      - 'scripts/content/generate-routine-intelligence.mjs'
+      - 'scripts/content/validate-routine-intelligence.mjs'
+      - 'package.json'
+      - '.github/workflows/validate-routine-intelligence.yml'
+  workflow_dispatch:
+
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+
+      - name: Validate registries and acceptance cases
+        run: npm run routine:validate
+
+      - name: Smoke test supportive home generation
+        run: npm run routine:generate -- --preset supportive-start --location home --minutes 30 --equipment chair,band,wall --template supportive-full-body-a > /tmp/supportive-home-30.json
+
+      - name: Smoke test gym generation
+        run: npm run routine:generate -- --preset gym-confidence --location gym --minutes 35 --equipment leg-press,chest-press,lat-pulldown,leg-curl,stationary-bike --template gym-confidence-a > /tmp/gym-confidence-35.json

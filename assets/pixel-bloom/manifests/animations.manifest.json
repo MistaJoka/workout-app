@@ -1,34 +1,9 @@
 {
   "theme": "pixel-bloom",
-  "version": "1.0.0-draft",
-  "creativeOwner": "ChatGPT",
-  "implementationOwner": "Claude Code",
-  "status": "planned",
-  "firstProductionBatch": {
-    "mascot": [
-      "pb-anim-mascot-idle-breathe-v1",
-      "pb-anim-mascot-blink-v1",
-      "pb-anim-mascot-cheer-v1"
-    ],
-    "ui": [
-      "pb-anim-ui-button-pop-v1",
-      "pb-anim-ui-chip-select-v1",
-      "pb-anim-ui-progress-pulse-v1",
-      "pb-anim-ui-timer-pulse-v1"
-    ],
-    "rewards": [
-      "pb-anim-reward-workout-complete-v1",
-      "pb-anim-reward-badge-unlock-v1",
-      "pb-anim-reward-streak-pop-v1"
-    ],
-    "exerciseLoops": [
-      "pb-exercise-squat-loop-v1",
-      "pb-exercise-push-up-loop-v1",
-      "pb-exercise-band-row-loop-v1",
-      "pb-exercise-dead-bug-loop-v1",
-      "pb-exercise-step-up-loop-v1",
-      "pb-exercise-hip-flexor-stretch-loop-v1"
-    ]
-  },
-  "creativeSpec": "docs/PIXEL_BLOOM_ANIMATION_SYSTEM.md"
+  "version": "1.1.0",
+  "status": "legacy-index",
+  "canonicalDatabase": "assets/pixel-bloom/db/asset-db.json",
+  "schema": "assets/pixel-bloom/db/asset-db.schema.json",
+  "creativeSpec": "docs/RAE_AVATAR_ANIMATION_DB.md",
+  "note": "Animation identity, frame counts, FPS, exports, fallbacks, perspectives, and motion-mode behavior now live in the canonical asset database. Do not maintain a second animation inventory here."
 }

@@ -1,0 +1,34 @@
+{
+  "theme": "pixel-bloom",
+  "version": 1,
+  "colors": {
+    "ink": "#2B2D42",
+    "skin": "#B97855",
+    "skinHi": "#D59A78",
+    "hair": "#201915",
+    "green": "#5BA86B",
+    "mint": "#C8F7E1",
+    "blush": "#FFD6E7",
+    "sky": "#B8E0FF",
+    "lav": "#D9C8FF",
+    "peach": "#FFE1B8",
+    "white": "#F8FAFF",
+    "navy": "#243B64",
+    "pink": "#EC4899",
+    "amber": "#F59E0B",
+    "blue": "#3B82F6"
+  },
+  "character": {
+    "name": "Bloom",
+    "adult": true,
+    "identity": "Black woman",
+    "skinTone": "fair/warm brown",
+    "hair": "dark natural curly",
+    "ears": "long soft droopy bunny ears",
+    "proportions": "friendly athletic adult"
+  },
+  "art": {
+    "style": "modern high-fidelity pixel-inspired illustration + clean vector production primitives",
+    "instructionalRule": "movement clarity over spectacle"
+  }
+}

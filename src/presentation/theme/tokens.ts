@@ -1,6 +1,10 @@
 export type ThemeName = 'pixel-bloom' | 'savage-core'
 export type MotionPreference = 'full' | 'reduced' | 'off'
 
+// A profile with no stored theme opens in the tactical HUD (owner call,
+// 2026-09-26). A theme someone already picked is never overridden.
+export const DEFAULT_THEME: ThemeName = 'savage-core'
+
 export type ThemeTokens = {
   colorBackground: string
   colorSurface: string
@@ -23,18 +27,29 @@ export type ThemeTokens = {
   colorFieldSuccess: string
   colorFieldInfo: string
   colorFieldNotice: string
+  // Theme signal color for "done/go" marks (Savage Core field edges,
+  // progress fills). Never carries meaning on its own — text says it too.
+  colorSignal: string
+  // Glow halo for focus/active states; transparent where a theme has none.
+  colorGlow: string
   radiusPanel: string
   radiusControl: string
+  fontBody: string
+  // Numerals (timers, reps, weights, stats) and headings.
+  fontDisplay: string
 }
 
 // Pixel Bloom values are the v0 candidate creative tokens from
 // docs/PIXEL_BLOOM_ASSET_SYSTEM.md §4 (Cloud / Blush / Mint / Sky /
-// Lavender / Peach / Ink / Pink / Purple); colorTextMuted is Ink softened.
+// Lavender / Peach / Ink / Pink / Purple); colorTextMuted is Ink softened
+// (#4f5268: the lighter #5f627a fell under AA on the Sky/Lavender fields).
 // Pink and Purple are one shade darker than the §4 candidates (#ec4899 →
 // #db2777, #8b5cf6 → #7c3aed): the candidates give white text only
 // 3.5:1 / 4.1:1, under AA for button labels, and no on-color fixes that.
-// Savage Core has no delivered token set — still a placeholder pending
-// REQ-20260913-003, kept structurally identical so nothing forks.
+// Savage Core is the tactical HUD from SOURCE_OF_TRUTH_V07.md §13:
+// graphite surfaces, electric cyan primary, hot red accent, volt signal.
+// Owner-directed 2026-09-26 (the "Tactical build"); index.css carries its
+// geometry (chamfers, brackets, grid) under [data-theme='savage-core'].
 export const THEME_TOKENS: Record<ThemeName, ThemeTokens> = {
   'pixel-bloom': {
     colorBackground: '#f8faff',
@@ -45,34 +60,42 @@ export const THEME_TOKENS: Record<ThemeName, ThemeTokens> = {
     colorAccent: '#7c3aed',
     colorOnAccent: '#ffffff',
     colorText: '#2b2d42',
-    colorTextMuted: '#5f627a',
+    colorTextMuted: '#4f5268',
     colorBorder: '#ffd6e7',
     colorFieldPrimary: '#ffd6e7',
     colorFieldCalm: '#b8e0ff',
     colorFieldSuccess: '#c8f7e1',
     colorFieldInfo: '#d9c8ff',
     colorFieldNotice: '#ffe1b8',
+    colorSignal: '#10b981',
+    colorGlow: 'transparent',
     radiusPanel: '18px',
     radiusControl: '999px',
+    fontBody: "'Nunito Variable', ui-rounded, 'SF Pro Rounded', system-ui, sans-serif",
+    fontDisplay: "'Nunito Variable', ui-rounded, 'SF Pro Rounded', system-ui, sans-serif",
   },
   'savage-core': {
-    colorBackground: '#0f0f13',
-    colorSurface: '#1a1a21',
+    colorBackground: '#0a0c0f',
+    colorSurface: '#12161b',
     colorPrimary: '#22d3ee',
-    colorPrimaryShadow: '#0e7f90',
-    colorOnPrimary: '#0f0f13',
-    colorAccent: '#f43f5e',
-    colorOnAccent: '#0f0f13',
-    colorText: '#f4f4f5',
-    colorTextMuted: '#9a9aa6',
-    colorBorder: '#2c2c36',
-    colorFieldPrimary: '#12363c',
-    colorFieldCalm: '#16283a',
-    colorFieldSuccess: '#123a2c',
-    colorFieldInfo: '#2a2440',
-    colorFieldNotice: '#3a2a12',
-    radiusPanel: '10px',
-    radiusControl: '10px',
+    colorPrimaryShadow: '#0e7490',
+    colorOnPrimary: '#05080a',
+    colorAccent: '#ff3d6e',
+    colorOnAccent: '#05080a',
+    colorText: '#e6ebf0',
+    colorTextMuted: '#8d97a3',
+    colorBorder: '#26303a',
+    colorFieldPrimary: '#0c2830',
+    colorFieldCalm: '#0f1d2b',
+    colorFieldSuccess: '#122a18',
+    colorFieldInfo: '#1a1830',
+    colorFieldNotice: '#2e210c',
+    colorSignal: '#a3e635',
+    colorGlow: 'rgba(34, 211, 238, 0.35)',
+    radiusPanel: '3px',
+    radiusControl: '3px',
+    fontBody: "'Inter Variable', system-ui, sans-serif",
+    fontDisplay: "'Chakra Petch', 'Inter Variable', system-ui, sans-serif",
   },
 }
 
@@ -92,8 +115,12 @@ const TOKEN_CSS_VAR: Record<keyof ThemeTokens, string> = {
   colorFieldSuccess: '--color-field-success',
   colorFieldInfo: '--color-field-info',
   colorFieldNotice: '--color-field-notice',
+  colorSignal: '--color-signal',
+  colorGlow: '--color-glow',
   radiusPanel: '--radius-panel',
   radiusControl: '--radius-control',
+  fontBody: '--font-body',
+  fontDisplay: '--font-display',
 }
 
 export function applyThemeTokens(theme: ThemeName): void {

@@ -45,7 +45,7 @@ export function MovementMedia({ name, start, finish }: Props) {
 
   if (effectiveMotion(motion, osPrefersReduced) !== 'full') {
     return (
-      <div className="grid grid-cols-2 gap-2">
+      <div className="movement-media grid grid-cols-2 gap-2">
         <img src={start} alt={`${name} — start position`} className="w-full rounded-panel object-cover" />
         <img src={finish} alt={`${name} — end position`} className="w-full rounded-panel object-cover" />
       </div>
@@ -53,14 +53,16 @@ export function MovementMedia({ name, start, finish }: Props) {
   }
 
   return (
-    <div className="movement-loop relative w-full overflow-hidden rounded-panel" aria-label={`${name} movement`}>
-      <img src={start} alt={`${name} — start position`} className="max-h-[34vh] w-full object-cover" />
-      <img
-        src={finish}
-        alt=""
-        aria-hidden="true"
-        className="movement-loop__finish absolute inset-0 h-full w-full object-cover"
-      />
+    <div className="movement-media">
+      <div className="movement-loop relative w-full overflow-hidden rounded-panel" aria-label={`${name} movement`}>
+        <img src={start} alt={`${name} — start position`} className="max-h-[34vh] w-full object-cover" />
+        <img
+          src={finish}
+          alt=""
+          aria-hidden="true"
+          className="movement-loop__finish absolute inset-0 h-full w-full object-cover"
+        />
+      </div>
     </div>
   )
 }

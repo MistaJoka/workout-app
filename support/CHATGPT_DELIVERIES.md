@@ -156,3 +156,62 @@ See the updated `support/RND_BACKLOG.md`; P0 now focuses on:
 3. Foundation Strength production review;
 4. export/import corruption corpus;
 5. first production Pixel Bloom integration pack.
+
+## DEL-20260920-001 — Content + Creative Production v1
+
+**Status:** DELIVERED / DRAFT CONTENT READY FOR REVIEW  
+**Authoritative changes:** no — staging content and creative production inputs only  
+**Implementation authority:** no — Claude Code remains the implementation owner
+
+Delivered:
+
+- 77 exercise editorial records split across two staging files;
+- 30 draft workouts and 6 multi-week programs;
+- 30 explicit progression/regression/variation/complement relationship edges;
+- draft XP rules, 20 badges, 25 collectibles and 6 Pixel Bloom map zones;
+- UI copy for workout, offline, persistence failure, backup, profile, empty-state and progression surfaces;
+- Pixel Bloom production manifest covering 30 workout covers, 25 P0 exercise-media targets and 10 mascot states;
+- 8 directly usable starter badge SVG symbols;
+- a dedicated Claude integration handoff with mapping, provenance, immutability, offline and promotion boundaries.
+
+Primary entrypoints:
+
+- `content/staging/v1/README.md`
+- `assets/pixel-bloom/manifests/creative-production-v1.json`
+- `support/CLAUDE_HANDOFF_CONTENT_CREATIVE_20260920.md`
+- `support/deliveries/DEL-20260920-001.md`
+
+Nothing in this delivery changes runtime code or silently promotes draft fitness content into approved canonical coaching truth.
+
+## DEL-20260926-001 — Rae production asset database + production pipeline
+
+**Status:** DELIVERED / PRODUCTION SYSTEM READY FOR IMPLEMENTATION  
+**Authoritative changes:** yes — for Rae/Pixel Bloom asset-production process and registry contracts  
+**Implementation authority:** no — Claude Code remains the implementation owner
+
+Delivered:
+
+- `assets/pixel-bloom/db/asset-db.json` — canonical Rae asset/animation registry;
+- `assets/pixel-bloom/db/asset-db.schema.json` — registry validation contract;
+- `docs/RAE_AVATAR_ANIMATION_DB.md` — asset-DB semantics and usage;
+- `docs/RAE_PRODUCTION_ASSET_PIPELINE.md` — production-grade source → animation → export → QA → runtime process;
+- updated Pixel Bloom manifests to point at the canonical DB;
+- updated `docs/CONTEXT_ENGINEERING_INDEX.md` so future agents load the production pipeline before working on Rae assets.
+
+Production decisions locked:
+
+- ChatGPT owns visual generation/reference/keyframe work; Claude Code owns deterministic asset engineering, export, validation, integration and CI;
+- Rae is governed by identity/style locks instead of prompt memory;
+- editable source, deterministic build output and shipped runtime assets are separate layers;
+- full-body animation uses a fixed logical pixel grid and integer scaling;
+- UI motion stays SVG/CSS where appropriate;
+- mascot/exercise motion uses controllable frame/sprite workflows;
+- sprite sheet + JSON metadata is the preferred runtime animation format;
+- animated WebP/GIF are optional preview/fallback outputs rather than the only source of truth;
+- every production animation requires Full/Reduced/Off behavior;
+- exercise animations require form/camera/anatomy review, not only visual approval;
+- asset lifecycle is explicit: planned → generated → cleanup → review → approved → production → deprecated;
+- gold-master qualification order is Rae idle → blink → cheer → one complete bodyweight-squat animation before batch production;
+- CI/Playwright visual regression, offline and WebKit verification are part of production readiness.
+
+This delivery intentionally defines a scalable studio-style pipeline, not an MVP asset folder.
