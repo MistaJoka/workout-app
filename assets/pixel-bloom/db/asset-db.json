@@ -1,34 +1,45 @@
 {
-  "schemaVersion": "1.0.0",
+  "schemaVersion": "1.1.0",
   "theme": "pixel-bloom",
   "creativeOwner": "ChatGPT",
   "implementationOwner": "Claude Code",
+  "characterBible": {
+    "version": "1.0.0",
+    "document": "docs/RAE_CHARACTER_BIBLE_V1.md",
+    "lock": "assets/pixel-bloom/db/rae-character-lock.v1.json",
+    "canonicalReferenceSha256": "e0390ef9d39fe92d2d93544d62cb0568a6e9e2b3cd5e6e8305c333b7f3217beb"
+  },
   "characters": [
     {
       "id": "rae",
       "name": "Rae",
       "status": "canonical",
       "identityLocks": {
-        "subject": "adult Black woman",
+        "subject": "adult Black woman / bunny girl",
         "face": "stylized likeness of Rae; recognizable but never photorealistic",
-        "skinTone": "warm medium-deep brown",
-        "glasses": "large round thin gold wire-frame glasses",
-        "hair": "natural Black hair; short/tapered or curly natural volume depending approved pose; headband/bow allowed",
-        "body": "adult fuller/curvy build with grounded realistic proportions; never exaggerated into caricature",
-        "bunnyEars": "exactly two biological/stylized bunny ears; semi-upright with soft bend near the tips; less floppy than early concepts",
-        "bunnyTail": "small round fluffy tail",
-        "tattoo": "small dark lotus flower on Rae's anatomical left upper chest/shoulder near the collarbone, slightly beneath/overlapped by the left top strap",
-        "defaultAccessory": "R necklace when visible",
-        "defaultOutfit": "pink training top, lavender high-waisted leggings, pastel trainers",
-        "ageRead": "adult woman; never teen-coded"
+        "skinTone": "warm medium-deep brown matching approved Rae v1 reference; do not lighten",
+        "glasses": "thin round gold wire-frame glasses",
+        "hair": "black 4C natural hair; dense tightly coiled texture; approved voluminous natural updo/puff silhouette; never straight, straightened, silky-straight, or generic-wavy",
+        "body": "adult fuller/curvy, strong, athletic build with grounded realistic proportions; never exaggerated into caricature or teen-coded",
+        "bunnyEars": "exactly two ears total; bunny ears only; no human ears; tan outer fur; flesh-pink inner ear; moderately long semi-upright shape with soft natural bend",
+        "bunnyTail": "one small round fluffy brown bunny tail",
+        "tattoo": "exactly one owner-supplied black/gray lotus on anatomical left upper chest/front shoulder directly under left collarbone near shoulder, slightly beneath/overlapped by left top strap; no additional tattoos",
+        "necklace": "thin delicate gold chain with small letter A pendant worn for her husband",
+        "rings": "thin dainty layered rings/bands only; no large rocks, chunky rings, or thick statement rings",
+        "defaultOutfit": "pink fitted Pixel Bloom training top; lavender high-waisted athletic leggings; black-and-white Panda-Dunk-inspired genericized sneakers without protected logos",
+        "ageRead": "adult woman; never teen-coded",
+        "gaze": "direct viewer gaze optional; action-directed or off-axis gaze preferred when natural"
       },
       "styleLocks": {
-        "artStyle": "high-bit 32-bit-era pixel art inspired by premium late-GBA/handheld action-RPG sprite illustration, without copying any franchise character",
-        "pixelLanguage": "intentional visible pixel clusters, selective color-matched outlines, crisp silhouettes, high-detail shading, no photoreal skin texture",
+        "artStyle": "high-bit 32-bit-era pixel art inspired by premium late-GBA/handheld action-RPG sprite illustration, without copying any franchise character or asset",
+        "pixelLanguage": "intentional visible pixel clusters, selective color-matched outlines/selout, crisp silhouettes, high-detail controlled shading, no photoreal skin texture",
         "faceRendering": "simplified pixel-art facial planes and features; likeness comes from silhouette, glasses, smile, face proportions and styling rather than realism",
+        "hairRendering": "4C texture must remain visibly tightly coiled/kinky and black at portrait and sprite scales; secondary animation motion is subtle",
         "lighting": "soft warm ambient light with selective bloom/glow in environment only",
         "uiSeparation": "character/environment art may be pixel art; text, timers, charts and controls stay clean vector/CSS",
-        "antiAlias": "minimal/controlled; preserve visible pixel structure rather than painterly smoothing"
+        "antiAlias": "minimal/controlled; preserve visible pixel structure rather than painterly smoothing",
+        "logicalFullBodyCanvas": "256x256",
+        "defaultRuntimeScale": "512x512 exact 2x nearest-neighbor"
       }
     }
   ],
@@ -37,16 +48,18 @@
       "id": "rae-canonical-reference",
       "characterId": "rae",
       "kind": "reference",
-      "status": "planned",
-      "repoPath": "assets/pixel-bloom/character/rae/reference/pb-rae-canonical-reference-v1.png",
-      "perspective": "front-3q-left",
+      "status": "approved",
+      "repoPath": "assets/pixel-bloom/character/rae/reference/pb-rae-character-bible-v1.png",
+      "perspective": "n-a",
       "format": "png",
-      "width": 2048,
-      "height": 2048,
+      "width": 1536,
+      "height": 1024,
       "transparent": false,
-      "tags": ["rae", "canonical", "high-bit", "identity"],
+      "tags": ["rae", "canonical", "high-bit", "identity", "character-bible", "v1"],
       "sourceAssetId": null,
-      "notes": "Primary visual truth for future Rae generations. Must pass identity-lock review before approval."
+      "sha256": "e0390ef9d39fe92d2d93544d62cb0568a6e9e2b3cd5e6e8305c333b7f3217beb",
+      "sourceFilename": "rae_pixel_bloom_character_bible.png",
+      "notes": "Human-approved visual master for Rae v1. Written locks in docs/RAE_CHARACTER_BIBLE_V1.md override incidental AI-rendered text inside the sheet. Binary must be committed/materialized at repoPath before release validation."
     },
     {
       "id": "rae-avatar-front-3q",
@@ -59,9 +72,9 @@
       "width": 1024,
       "height": 1024,
       "transparent": true,
-      "tags": ["rae", "avatar", "profile", "high-bit"],
+      "tags": ["rae", "avatar", "profile", "high-bit", "v1"],
       "sourceAssetId": "rae-canonical-reference",
-      "notes": "Primary profile/celebration avatar."
+      "notes": "Primary profile/celebration avatar. Must match Rae v1 character bible exactly."
     },
     {
       "id": "rae-portrait-neutral",
@@ -74,9 +87,9 @@
       "width": 512,
       "height": 512,
       "transparent": true,
-      "tags": ["rae", "portrait", "neutral"],
+      "tags": ["rae", "portrait", "neutral", "v1"],
       "sourceAssetId": "rae-canonical-reference",
-      "notes": "Neutral portrait for profile, settings, and small UI callouts."
+      "notes": "Neutral portrait for profile, settings, and small UI callouts. Black 4C hair, two tan/pink bunny ears only, no human ears."
     },
     {
       "id": "rae-expression-happy",
@@ -89,9 +102,9 @@
       "width": 512,
       "height": 512,
       "transparent": true,
-      "tags": ["rae", "expression", "happy"],
+      "tags": ["rae", "expression", "happy", "v1"],
       "sourceAssetId": "rae-canonical-reference",
-      "notes": "Soft smile; not always looking directly at viewer."
+      "notes": "Soft smile; direct camera gaze is optional."
     },
     {
       "id": "rae-expression-focused",
@@ -104,7 +117,7 @@
       "width": 512,
       "height": 512,
       "transparent": true,
-      "tags": ["rae", "expression", "focused"],
+      "tags": ["rae", "expression", "focused", "v1"],
       "sourceAssetId": "rae-canonical-reference",
       "notes": "Eyes follow action direction, not camera."
     },
@@ -119,9 +132,9 @@
       "width": 1024,
       "height": 1024,
       "transparent": true,
-      "tags": ["rae", "idle", "full-body"],
+      "tags": ["rae", "idle", "full-body", "v1"],
       "sourceAssetId": "rae-canonical-reference",
-      "notes": "Default standing pose for idle animation source."
+      "notes": "Default standing pose for idle animation source. Preserve black 4C hair silhouette, tan/flesh-pink ears, brown tail, A pendant, tattoo, and black/white sneakers."
     },
     {
       "id": "rae-pose-squat-start-side",
@@ -134,9 +147,9 @@
       "width": 1024,
       "height": 1024,
       "transparent": true,
-      "tags": ["rae", "exercise", "squat", "start", "instructional"],
+      "tags": ["rae", "exercise", "squat", "start", "instructional", "v1"],
       "sourceAssetId": "rae-canonical-reference",
-      "notes": "Standing squat start pose. Fixed camera and scale shared by all squat frames."
+      "notes": "Standing squat start pose. Fixed camera and scale shared by all squat frames. Natural action gaze; no forced camera gaze."
     },
     {
       "id": "rae-pose-squat-bottom-side",
@@ -149,9 +162,9 @@
       "width": 1024,
       "height": 1024,
       "transparent": true,
-      "tags": ["rae", "exercise", "squat", "bottom", "instructional"],
+      "tags": ["rae", "exercise", "squat", "bottom", "instructional", "v1"],
       "sourceAssetId": "rae-pose-squat-start-side",
-      "notes": "Bottom squat key pose. Must preserve exact outfit, camera, scale and anatomy from start pose."
+      "notes": "Bottom squat key pose. Preserve exact outfit, camera, scale, proportions, identity features, tattoo anchor, jewelry treatment, and footwear from start pose."
     },
     {
       "id": "rae-squat-static-sequence",
@@ -164,7 +177,7 @@
       "width": 1536,
       "height": 512,
       "transparent": true,
-      "tags": ["rae", "exercise", "squat", "sequence", "motion-off"],
+      "tags": ["rae", "exercise", "squat", "sequence", "motion-off", "v1"],
       "sourceAssetId": "rae-pose-squat-start-side",
       "notes": "Three-to-five key-pose strip used for reduced/off motion and documentation."
     }
@@ -188,11 +201,11 @@
         "webpPath": "assets/pixel-bloom/animations/rae/idle-breathe/pb-rae-idle-breathe-v1.webp",
         "gifPath": "assets/pixel-bloom/animations/rae/idle-breathe/pb-rae-idle-breathe-v1.gif"
       },
-      "motionFull": "continuous gentle breathing loop with tiny ear follow-through",
+      "motionFull": "continuous gentle breathing loop with tiny ear and 4C-hair follow-through; jewelry motion is subtle",
       "motionReduced": "one subtle cycle on entrance, then static",
       "motionOff": "show fallback still",
       "exerciseId": null,
-      "notes": "No camera gaze requirement; neutral gaze slightly off-axis is preferred."
+      "notes": "No camera gaze requirement; neutral gaze slightly off-axis is preferred. Preserve all Rae v1 identity locks."
     },
     {
       "id": "rae-blink",
@@ -216,7 +229,7 @@
       "motionReduced": "optional single blink on entrance",
       "motionOff": "static fallback",
       "exerciseId": null,
-      "notes": "Keep glasses fixed; eyelids animate beneath lenses."
+      "notes": "Keep gold glasses fixed; eyelids animate beneath lenses. Preserve 4C hair silhouette and two-bunny-ear-only anatomy."
     },
     {
       "id": "rae-cheer",
@@ -236,11 +249,11 @@
         "webpPath": "assets/pixel-bloom/animations/rae/cheer/pb-rae-cheer-v1.webp",
         "gifPath": "assets/pixel-bloom/animations/rae/cheer/pb-rae-cheer-v1.gif"
       },
-      "motionFull": "short celebratory arm/ear bounce after milestone or workout completion",
+      "motionFull": "short celebratory arm/ear bounce after milestone or workout completion; black 4C hair reacts subtly rather than flowing",
       "motionReduced": "small scale/pose change with no repeated bounce",
       "motionOff": "happy fallback still",
       "exerciseId": null,
-      "notes": "Reward animation; never blocks progression or buttons."
+      "notes": "Reward animation; never blocks progression or buttons. Preserve A pendant and dainty jewelry treatment."
     },
     {
       "id": "rae-bodyweight-squat-side",
@@ -263,8 +276,8 @@
       "motionFull": "controlled continuous squat demonstration with standing dwell and bottom-position dwell",
       "motionReduced": "play one cycle on request; otherwise show sequence strip",
       "motionOff": "show static start/mid/bottom sequence",
-      "exerciseId": "bodyweight-squat",
-      "notes": "Instructional motion takes priority over personality animation. Fixed orthographic side camera. No looking at viewer during the movement."
+      "exerciseId": "fs.bodyweight-squat",
+      "notes": "Instructional motion takes priority over personality animation. Fixed orthographic side camera. No looking at viewer during movement. Preserve all Rae v1 identity locks across every frame."
     }
   ]
 }
