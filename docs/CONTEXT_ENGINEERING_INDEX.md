@@ -39,7 +39,22 @@ Also read:
 - `docs/PIXEL_BLOOM_ASSET_SYSTEM.md`
 - `docs/PIXEL_BLOOM_ANIMATION_SYSTEM.md`
 - `docs/PIXEL_BLOOM_FRONTEND_CONTEXT.md`
+- `docs/RAE_PRODUCTION_ASSET_PIPELINE.md` when producing/integrating Rae art or animation
+- `assets/pixel-bloom/db/asset-db.json`
+- `assets/pixel-bloom/db/asset-db.schema.json`
 - `docs/DEFINITION_OF_DONE.md`
+
+### Rae asset-production change
+Read, in this order:
+1. `docs/RAE_PRODUCTION_ASSET_PIPELINE.md`
+2. `docs/RAE_AVATAR_ANIMATION_DB.md`
+3. `assets/pixel-bloom/db/asset-db.json`
+4. `assets/pixel-bloom/db/asset-db.schema.json`
+5. `docs/PIXEL_BLOOM_ASSET_SYSTEM.md`
+6. `docs/PIXEL_BLOOM_ANIMATION_SYSTEM.md`
+7. exact source/build/runtime asset paths being changed
+
+Do not generate a new Rae identity from memory when an approved canonical source is missing. Request/promote the required source asset instead.
 
 ### PWA/offline/storage/audio/wake-lock change
 Also read:
@@ -87,6 +102,7 @@ This reduces stale-context collisions and makes violations easier to detect.
 - Progression is deterministic and confirmation-gated.
 - Pixel Bloom and Savage Core share one component/domain tree.
 - Motion modes are Full / Reduced / Off.
+- Rae production assets use the canonical asset DB and production pipeline rather than ad hoc filenames or per-screen art handling.
 - No runtime LLM/image generation, camera coaching, microphone coaching or required cloud service.
 
 ## 5. Research-to-truth promotion

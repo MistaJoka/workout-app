@@ -1,0 +1,26 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "Pixel Bloom Animation",
+  "type": "object",
+  "required": [
+    "id",
+    "path",
+    "motionModes"
+  ],
+  "properties": {
+    "id": {
+      "type": "string"
+    },
+    "path": {
+      "type": "string"
+    },
+    "motionModes": {
+      "type": "object",
+      "required": [
+        "full",
+        "reduced",
+        "off"
+      ]
+    }
+  }
+}

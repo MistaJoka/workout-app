@@ -1,0 +1,48 @@
+name: Generate Pixel Bloom Assets
+
+on:
+  push:
+    branches: [master]
+    paths:
+      - 'scripts/assets/generate-pixel-bloom-system.py'
+      - 'scripts/assets/generate-pixel-bloom-library.py'
+      - 'scripts/assets/finalize-pixel-bloom-platform.py'
+      - '.github/workflows/generate-pixel-bloom-assets.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  generate:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          ref: master
+          fetch-depth: 0
+
+      - name: Generate asset platform
+        run: python3 scripts/assets/generate-pixel-bloom-system.py
+
+      - name: Generate individual production library
+        run: python3 scripts/assets/generate-pixel-bloom-library.py
+
+      - name: Finalize semantic asset platform
+        run: python3 scripts/assets/finalize-pixel-bloom-platform.py
+
+      - name: Validate asset platform
+        run: node scripts/assets/validate-assets.mjs
+
+      - name: Commit generated assets
+        run: |
+          if git diff --quiet && [ -z "$(git status --porcelain)" ]; then
+            echo "Asset platform already current."
+            exit 0
+          fi
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add assets/pixel-bloom package.json scripts/assets support/CLAUDE_HANDOFF_ASSET_PLATFORM_20260921.md support/deliveries/DEL-20260921-001.md
+          git commit -m "assets: finalize complete Pixel Bloom production platform"
+          git push origin HEAD:master

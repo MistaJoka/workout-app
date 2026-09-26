@@ -1,0 +1,2152 @@
+{
+  "schemaVersion": 1,
+  "theme": "pixel-bloom",
+  "generatedAt": "2026-09-21",
+  "assets": [
+    {
+      "id": "svg.bloom.master",
+      "path": "assets/pixel-bloom/system/runtime/svg/pb-bloom-master-sheet-v1.svg",
+      "kind": "svg",
+      "role": "character-master",
+      "status": "runtime-ready",
+      "fallbackId": null,
+      "metadata": {
+        "theme": "pixel-bloom",
+        "version": 1,
+        "creator": "OpenAI ChatGPT"
+      }
+    },
+    {
+      "id": "svg.bloom.expressions",
+      "path": "assets/pixel-bloom/system/runtime/svg/pb-bloom-expressions-v1.svg",
+      "kind": "svg",
+      "role": "expression-sheet",
+      "status": "runtime-ready",
+      "fallbackId": null,
+      "metadata": {
+        "theme": "pixel-bloom",
+        "version": 1,
+        "creator": "OpenAI ChatGPT"
+      }
+    },
+    {
+      "id": "svg.bloom.poses",
+      "path": "assets/pixel-bloom/system/runtime/svg/pb-bloom-poses-v1.svg",
+      "kind": "svg",
+      "role": "pose-sheet",
+      "status": "runtime-ready",
+      "fallbackId": null,
+      "metadata": {
+        "theme": "pixel-bloom",
+        "version": 1,
+        "creator": "OpenAI ChatGPT"
+      }
+    },
+    {
+      "id": "svg.ui.kit",
+      "path": "assets/pixel-bloom/system/runtime/svg/pb-ui-kit-v1.svg",
+      "kind": "svg",
+      "role": "ui-kit",
+      "status": "runtime-ready",
+      "fallbackId": null,
+      "metadata": {
+        "theme": "pixel-bloom",
+        "version": 1,
+        "creator": "OpenAI ChatGPT"
+      }
+    },
+    {
+      "id": "svg.workout.covers",
+      "path": "assets/pixel-bloom/system/runtime/svg/pb-workout-covers-v1.svg",
+      "kind": "svg",
+      "role": "workout-cover-sheet",
+      "status": "runtime-ready",
+      "fallbackId": null,
+      "metadata": {
+        "theme": "pixel-bloom",
+        "version": 1,
+        "creator": "OpenAI ChatGPT"
+      }
+    },
+    {
+      "id": "svg.exercise.squat.frames",
+      "path": "assets/pixel-bloom/system/runtime/svg/pb-exercise-squat-frames-v1.svg",
+      "kind": "svg",
+      "role": "exercise-keyframes",
+      "status": "runtime-ready",
+      "fallbackId": null,
+      "metadata": {
+        "theme": "pixel-bloom",
+        "version": 1,
+        "creator": "OpenAI ChatGPT"
+      }
+    },
+    {
+      "id": "svg.world.map",
+      "path": "assets/pixel-bloom/system/runtime/svg/pb-world-map-v1.svg",
+      "kind": "svg",
+      "role": "world-map",
+      "status": "runtime-ready",
+      "fallbackId": null,
+      "metadata": {
+        "theme": "pixel-bloom",
+        "version": 1,
+        "creator": "OpenAI ChatGPT"
+      }
+    },
+    {
+      "id": "svg.collectibles",
+      "path": "assets/pixel-bloom/system/runtime/svg/pb-collectibles-v1.svg",
+      "kind": "svg",
+      "role": "collectible-sheet",
+      "status": "runtime-ready",
+      "fallbackId": null,
+      "metadata": {
+        "theme": "pixel-bloom",
+        "version": 1,
+        "creator": "OpenAI ChatGPT"
+      }
+    },
+    {
+      "id": "svg.states",
+      "path": "assets/pixel-bloom/system/runtime/svg/pb-states-v1.svg",
+      "kind": "svg",
+      "role": "state-sheet",
+      "status": "runtime-ready",
+      "fallbackId": null,
+      "metadata": {
+        "theme": "pixel-bloom",
+        "version": 1,
+        "creator": "OpenAI ChatGPT"
+      }
+    },
+    {
+      "id": "svg.animation.bloom.idle",
+      "path": "assets/pixel-bloom/system/runtime/svg/pb-anim-bloom-idle-v1.svg",
+      "kind": "svg",
+      "role": "animated-svg",
+      "status": "runtime-ready",
+      "fallbackId": null,
+      "metadata": {
+        "theme": "pixel-bloom",
+        "version": 1,
+        "creator": "OpenAI ChatGPT"
+      }
+    },
+    {
+      "id": "svg.animation.bloom.celebrate",
+      "path": "assets/pixel-bloom/system/runtime/svg/pb-anim-bloom-celebrate-v1.svg",
+      "kind": "svg",
+      "role": "animated-svg",
+      "status": "runtime-ready",
+      "fallbackId": null,
+      "metadata": {
+        "theme": "pixel-bloom",
+        "version": 1,
+        "creator": "OpenAI ChatGPT"
+      }
+    },
+    {
+      "id": "svg.animation.exercise.squat",
+      "path": "assets/pixel-bloom/system/runtime/svg/pb-anim-exercise-squat-v1.svg",
+      "kind": "svg",
+      "role": "animated-svg",
+      "status": "runtime-ready",
+      "fallbackId": null,
+      "metadata": {
+        "theme": "pixel-bloom",
+        "version": 1,
+        "creator": "OpenAI ChatGPT"
+      }
+    },
+    {
+      "id": "workout.quick-start-10.cover",
+      "path": "assets/pixel-bloom/system/runtime/svg/workouts/pb-workout-quick-start-10-cover-v1.svg",
+      "kind": "svg",
+      "role": "workout-cover",
+      "status": "runtime-ready",
+      "fallbackId": null,
+      "metadata": {
+        "theme": "pixel-bloom",
+        "version": 1,
+        "creator": "OpenAI ChatGPT",
+        "workoutId": "quick-start-10",
+        "focus": "full-body",
+        "level": "beginner"
+      }
+    },
+    {
+      "id": "workout.full-body-foundation-a.cover",
+      "path": "assets/pixel-bloom/system/runtime/svg/workouts/pb-workout-full-body-foundation-a-cover-v1.svg",
+      "kind": "svg",
+      "role": "workout-cover",
+      "status": "runtime-ready",
+      "fallbackId": null,
+      "metadata": {
+        "theme": "pixel-bloom",
+        "version": 1,
+        "creator": "OpenAI ChatGPT",
+        "workoutId": "full-body-foundation-a",
+        "focus": "full-body",
+        "level": "beginner"
+      }
+    },
+    {
+      "id": "workout.full-body-foundation-b.cover",
+      "path": "assets/pixel-bloom/system/runtime/svg/workouts/pb-workout-full-body-foundation-b-cover-v1.svg",
+      "kind": "svg",
+      "role": "workout-cover",
+      "status": "runtime-ready",
+      "fallbackId": null,
+      "metadata": {
+        "theme": "pixel-bloom",
+        "version": 1,
+        "creator": "OpenAI ChatGPT",
+        "workoutId": "full-body-foundation-b",
+        "focus": "full-body",
+        "level": "beginner"
+      }
+    },
+    {
+      "id": "workout.full-body-foundation-c.cover",
+      "path": "assets/pixel-bloom/system/runtime/svg/workouts/pb-workout-full-body-foundation-c-cover-v1.svg",
+      "kind": "svg",
+      "role": "workout-cover",
+      "status": "runtime-ready",
+      "fallbackId": null,
+      "metadata": {
+        "theme": "pixel-bloom",
+        "version": 1,
+        "creator": "OpenAI ChatGPT",
+        "workoutId": "full-body-foundation-c",
+        "focus": "full-body",
+        "level": "beginner"
+      }
+    },
+    {
+      "id": "workout.lower-body-basics.cover",
+      "path": "assets/pixel-bloom/system/runtime/svg/workouts/pb-workout-lower-body-basics-cover-v1.svg",
+      "kind": "svg",
+      "role": "workout-cover",
+      "status": "runtime-ready",
+      "fallbackId": null,
+      "metadata": {
+        "theme": "pixel-bloom",
+        "version": 1,
+        "creator": "OpenAI ChatGPT",
+        "workoutId": "lower-body-basics",
+        "focus": "lower-body",
+        "level": "beginner"
+      }
+    },
+    {
+      "id": "workout.lower-body-strength.cover",
+      "path": "assets/pixel-bloom/system/runtime/svg/workouts/pb-workout-lower-body-strength-cover-v1.svg",
+      "kind": "svg",
+      "role": "workout-cover",
+      "status": "runtime-ready",
+      "fallbackId": null,
+      "metadata": {
+        "theme": "pixel-bloom",
+        "version": 1,
+        "creator": "OpenAI ChatGPT",
+        "workoutId": "lower-body-strength",
+        "focus": "lower-body",
+        "level": "intermediate"
+      }
+    },
+    {
+      "id": "workout.glute-builder.cover",
+      "path": "assets/pixel-bloom/system/runtime/svg/workouts/pb-workout-glute-builder-cover-v1.svg",
+      "kind": "svg",
+      "role": "workout-cover",
+      "status": "runtime-ready",
+      "fallbackId": null,
+      "metadata": {
+        "theme": "pixel-bloom",
+        "version": 1,
+        "creator": "OpenAI ChatGPT",
+        "workoutId": "glute-builder",
+        "focus": "lower-body",
+        "level": "beginner"
+      }
+    },
+    {
+      "id": "workout.posterior-chain.cover",
+      "path": "assets/pixel-bloom/system/runtime/svg/workouts/pb-workout-posterior-chain-cover-v1.svg",
+      "kind": "svg",
+      "role": "workout-cover",
+      "status": "runtime-ready",
+      "fallbackId": null,
+      "metadata": {
+        "theme": "pixel-bloom",
+        "version": 1,
+        "creator": "OpenAI ChatGPT",
+        "workoutId": "posterior-chain",
+        "focus": "lower-body",
+        "level": "intermediate"
+      }
+    },
+    {
+      "id": "workout.upper-body-basics.cover",
+      "path": "assets/pixel-bloom/system/runtime/svg/workouts/pb-workout-upper-body-basics-cover-v1.svg",
+      "kind": "svg",
+      "role": "workout-cover",
+      "status": "runtime-ready",
+      "fallbackId": null,
+      "metadata": {
+        "theme": "pixel-bloom",
+        "version": 1,
+        "creator": "OpenAI ChatGPT",
+        "workoutId": "upper-body-basics",
+        "focus": "upper-body",
+        "level": "beginner"
+      }
+    },
+    {
+      "id": "workout.upper-push.cover",
+      "path": "assets/pixel-bloom/system/runtime/svg/workouts/pb-workout-upper-push-cover-v1.svg",
+      "kind": "svg",
+      "role": "workout-cover",
+      "status": "runtime-ready",
+      "fallbackId": null,
+      "metadata": {
+        "theme": "pixel-bloom",
+        "version": 1,
+        "creator": "OpenAI ChatGPT",
+        "workoutId": "upper-push",
+        "focus": "upper-body",
+        "level": "intermediate"
+      }
+    },
+    {
+      "id": "workout.upper-pull.cover",
+      "path": "assets/pixel-bloom/system/runtime/svg/workouts/pb-workout-upper-pull-cover-v1.svg",
+      "kind": "svg",
+      "role": "workout-cover",
+      "status": "runtime-ready",
+      "fallbackId": null,
+      "metadata": {
+        "theme": "pixel-bloom",
+        "version": 1,
+        "creator": "OpenAI ChatGPT",
+        "workoutId": "upper-pull",
+        "focus": "upper-body",
+        "level": "intermediate"
+      }
+    },
+    {
+      "id": "workout.dumbbell-only-full-body.cover",
+      "path": "assets/pixel-bloom/system/runtime/svg/workouts/pb-workout-dumbbell-only-full-body-cover-v1.svg",
+      "kind": "svg",
+      "role": "workout-cover",
+      "status": "runtime-ready",
+      "fallbackId": null,
+      "metadata": {
+        "theme": "pixel-bloom",
+        "version": 1,
+        "creator": "OpenAI ChatGPT",
+        "workoutId": "dumbbell-only-full-body",
+        "focus": "full-body",
+        "level": "beginner"
+      }
+    },
+    {
+      "id": "workout.bodyweight-only.cover",
+      "path": "assets/pixel-bloom/system/runtime/svg/workouts/pb-workout-bodyweight-only-cover-v1.svg",
+      "kind": "svg",
+      "role": "workout-cover",
+      "status": "runtime-ready",
+      "fallbackId": null,
+      "metadata": {
+        "theme": "pixel-bloom",
+        "version": 1,
+        "creator": "OpenAI ChatGPT",
+        "workoutId": "bodyweight-only",
+        "focus": "full-body",
+        "level": "beginner"
+      }
+    },
+    {
+      "id": "workout.machine-circuit.cover",
+      "path": "assets/pixel-bloom/system/runtime/svg/workouts/pb-workout-machine-circuit-cover-v1.svg",
+      "kind": "svg",
+      "role": "workout-cover",
+      "status": "runtime-ready",
+      "fallbackId": null,
+      "metadata": {
+        "theme": "pixel-bloom",
+        "version": 1,
+        "creator": "OpenAI ChatGPT",
+        "workoutId": "machine-circuit",
+        "focus": "full-body",
+        "level": "beginner"
+      }
+    },
+    {
+      "id": "workout.core-foundations.cover",
+      "path": "assets/pixel-bloom/system/runtime/svg/workouts/pb-workout-core-foundations-cover-v1.svg",
+      "kind": "svg",
+      "role": "workout-cover",
+      "status": "runtime-ready",
+      "fallbackId": null,
+      "metadata": {
+        "theme": "pixel-bloom",
+        "version": 1,
+        "creator": "OpenAI ChatGPT",
+        "workoutId": "core-foundations",
+        "focus": "core",
+        "level": "beginner"
+      }
+    },
+    {
+      "id": "workout.core-control.cover",
+      "path": "assets/pixel-bloom/system/runtime/svg/workouts/pb-workout-core-control-cover-v1.svg",
+      "kind": "svg",
+      "role": "workout-cover",
+      "status": "runtime-ready",
+      "fallbackId": null,
+      "metadata": {
+        "theme": "pixel-bloom",
+        "version": 1,
+        "creator": "OpenAI ChatGPT",
+        "workoutId": "core-control",
+        "focus": "core",
+        "level": "intermediate"
+      }
+    },
+    {
+      "id": "workout.mobility-reset.cover",
+      "path": "assets/pixel-bloom/system/runtime/svg/workouts/pb-workout-mobility-reset-cover-v1.svg",
+      "kind": "svg",
+      "role": "workout-cover",
+      "status": "runtime-ready",
+      "fallbackId": null,
+      "metadata": {
+        "theme": "pixel-bloom",
+        "version": 1,
+        "creator": "OpenAI ChatGPT",
+        "workoutId": "mobility-reset",
+        "focus": "mobility",
+        "level": "beginner"
+      }
+    },
+    {
+      "id": "workout.hips-and-ankles.cover",
+      "path": "assets/pixel-bloom/system/runtime/svg/workouts/pb-workout-hips-and-ankles-cover-v1.svg",
+      "kind": "svg",
+      "role": "workout-cover",
+      "status": "runtime-ready",
+      "fallbackId": null,
+      "metadata": {
+        "theme": "pixel-bloom",
+        "version": 1,
+        "creator": "OpenAI ChatGPT",
+        "workoutId": "hips-and-ankles",
+        "focus": "mobility",
+        "level": "beginner"
+      }
+    },
+    {
+      "id": "workout.desk-reset.cover",
+      "path": "assets/pixel-bloom/system/runtime/svg/workouts/pb-workout-desk-reset-cover-v1.svg",
+      "kind": "svg",
+      "role": "workout-cover",
+      "status": "runtime-ready",
+      "fallbackId": null,
+      "metadata": {
+        "theme": "pixel-bloom",
+        "version": 1,
+        "creator": "OpenAI ChatGPT",
+        "workoutId": "desk-reset",
+        "focus": "mobility",
+        "level": "beginner"
+      }
+    },
+    {
+      "id": "workout.low-impact-cardio-20.cover",
+      "path": "assets/pixel-bloom/system/runtime/svg/workouts/pb-workout-low-impact-cardio-20-cover-v1.svg",
+      "kind": "svg",
+      "role": "workout-cover",
+      "status": "runtime-ready",
+      "fallbackId": null,
+      "metadata": {
+        "theme": "pixel-bloom",
+        "version": 1,
+        "creator": "OpenAI ChatGPT",
+        "workoutId": "low-impact-cardio-20",
+        "focus": "conditioning",
+        "level": "beginner"
+      }
+    },
+    {
+      "id": "workout.cardio-base-30.cover",
+      "path": "assets/pixel-bloom/system/runtime/svg/workouts/pb-workout-cardio-base-30-cover-v1.svg",
+      "kind": "svg",
+      "role": "workout-cover",
+      "status": "runtime-ready",
+      "fallbackId": null,
+      "metadata": {
+        "theme": "pixel-bloom",
+        "version": 1,
+        "creator": "OpenAI ChatGPT",
+        "workoutId": "cardio-base-30",
+        "focus": "conditioning",
+        "level": "beginner"
+      }
+    },
+    {
+      "id": "workout.conditioning-mix.cover",
+      "path": "assets/pixel-bloom/system/runtime/svg/workouts/pb-workout-conditioning-mix-cover-v1.svg",
+      "kind": "svg",
+      "role": "workout-cover",
+      "status": "runtime-ready",
+      "fallbackId": null,
+      "metadata": {
+        "theme": "pixel-bloom",
+        "version": 1,
+        "creator": "OpenAI ChatGPT",
+        "workoutId": "conditioning-mix",
+        "focus": "conditioning",
+        "level": "intermediate"
+      }
+    },
+    {
+      "id": "workout.gym-first-day.cover",
+      "path": "assets/pixel-bloom/system/runtime/svg/workouts/pb-workout-gym-first-day-cover-v1.svg",
+      "kind": "svg",
+      "role": "workout-cover",
+      "status": "runtime-ready",
+      "fallbackId": null,
+      "metadata": {
+        "theme": "pixel-bloom",
+        "version": 1,
+        "creator": "OpenAI ChatGPT",
+        "workoutId": "gym-first-day",
+        "focus": "full-body",
+        "level": "beginner"
+      }
+    },
+    {
+      "id": "workout.strength-45-a.cover",
+      "path": "assets/pixel-bloom/system/runtime/svg/workouts/pb-workout-strength-45-a-cover-v1.svg",
+      "kind": "svg",
+      "role": "workout-cover",
+      "status": "runtime-ready",
+      "fallbackId": null,
+      "metadata": {
+        "theme": "pixel-bloom",
+        "version": 1,
+        "creator": "OpenAI ChatGPT",
+        "workoutId": "strength-45-a",
+        "focus": "full-body",
+        "level": "intermediate"
+      }
+    },
+    {
+      "id": "workout.strength-45-b.cover",
+      "path": "assets/pixel-bloom/system/runtime/svg/workouts/pb-workout-strength-45-b-cover-v1.svg",
+      "kind": "svg",
+      "role": "workout-cover",
+      "status": "runtime-ready",
+      "fallbackId": null,
+      "metadata": {
+        "theme": "pixel-bloom",
+        "version": 1,
+        "creator": "OpenAI ChatGPT",
+        "workoutId": "strength-45-b",
+        "focus": "full-body",
+        "level": "intermediate"
+      }
+    },
+    {
+      "id": "workout.quick-upper-15.cover",
+      "path": "assets/pixel-bloom/system/runtime/svg/workouts/pb-workout-quick-upper-15-cover-v1.svg",
+      "kind": "svg",
+      "role": "workout-cover",
+      "status": "runtime-ready",
+      "fallbackId": null,
+      "metadata": {
+        "theme": "pixel-bloom",
+        "version": 1,
+        "creator": "OpenAI ChatGPT",
+        "workoutId": "quick-upper-15",
+        "focus": "upper-body",
+        "level": "beginner"
+      }
+    },
+    {
+      "id": "workout.quick-lower-15.cover",
+      "path": "assets/pixel-bloom/system/runtime/svg/workouts/pb-workout-quick-lower-15-cover-v1.svg",
+      "kind": "svg",
+      "role": "workout-cover",
+      "status": "runtime-ready",
+      "fallbackId": null,
+      "metadata": {
+        "theme": "pixel-bloom",
+        "version": 1,
+        "creator": "OpenAI ChatGPT",
+        "workoutId": "quick-lower-15",
+        "focus": "lower-body",
+        "level": "beginner"
+      }
+    },
+    {
+      "id": "workout.recovery-day.cover",
+      "path": "assets/pixel-bloom/system/runtime/svg/workouts/pb-workout-recovery-day-cover-v1.svg",
+      "kind": "svg",
+      "role": "workout-cover",
+      "status": "runtime-ready",
+      "fallbackId": null,
+      "metadata": {
+        "theme": "pixel-bloom",
+        "version": 1,
+        "creator": "OpenAI ChatGPT",
+        "workoutId": "recovery-day",
+        "focus": "recovery",
+        "level": "beginner"
+      }
+    },
+    {
+      "id": "workout.pull-up-path.cover",
+      "path": "assets/pixel-bloom/system/runtime/svg/workouts/pb-workout-pull-up-path-cover-v1.svg",
+      "kind": "svg",
+      "role": "workout-cover",
+      "status": "runtime-ready",
+      "fallbackId": null,
+      "metadata": {
+        "theme": "pixel-bloom",
+        "version": 1,
+        "creator": "OpenAI ChatGPT",
+        "workoutId": "pull-up-path",
+        "focus": "upper-body",
+        "level": "intermediate"
+      }
+    },
+    {
+      "id": "workout.push-up-path.cover",
+      "path": "assets/pixel-bloom/system/runtime/svg/workouts/pb-workout-push-up-path-cover-v1.svg",
+      "kind": "svg",
+      "role": "workout-cover",
+      "status": "runtime-ready",
+      "fallbackId": null,
+      "metadata": {
+        "theme": "pixel-bloom",
+        "version": 1,
+        "creator": "OpenAI ChatGPT",
+        "workoutId": "push-up-path",
+        "focus": "upper-body",
+        "level": "beginner"
+      }
+    },
+    {
+      "id": "exercise.chair-squat.thumbnail",
+      "path": "assets/pixel-bloom/system/runtime/svg/exercises/pb-exercise-chair-squat-thumbnail-v1.svg",
+      "kind": "svg",
+      "role": "exercise-thumbnail",
+      "status": "runtime-ready",
+      "fallbackId": null,
+      "metadata": {
+        "theme": "pixel-bloom",
+        "version": 1,
+        "creator": "OpenAI ChatGPT",
+        "exerciseSlug": "chair-squat",
+        "instructional": false,
+        "formAuthority": "canonical exercise media + written guidance"
+      }
+    },
+    {
+      "id": "exercise.bodyweight-squat.thumbnail",
+      "path": "assets/pixel-bloom/system/runtime/svg/exercises/pb-exercise-bodyweight-squat-thumbnail-v1.svg",
+      "kind": "svg",
+      "role": "exercise-thumbnail",
+      "status": "runtime-ready",
+      "fallbackId": null,
+      "metadata": {
+        "theme": "pixel-bloom",
+        "version": 1,
+        "creator": "OpenAI ChatGPT",
+        "exerciseSlug": "bodyweight-squat",
+        "instructional": false,
+        "formAuthority": "canonical exercise media + written guidance"
+      }
+    },
+    {
+      "id": "exercise.goblet-squat.thumbnail",
+      "path": "assets/pixel-bloom/system/runtime/svg/exercises/pb-exercise-goblet-squat-thumbnail-v1.svg",
+      "kind": "svg",
+      "role": "exercise-thumbnail",
+      "status": "runtime-ready",
+      "fallbackId": null,
+      "metadata": {
+        "theme": "pixel-bloom",
+        "version": 1,
+        "creator": "OpenAI ChatGPT",
+        "exerciseSlug": "goblet-squat",
+        "instructional": false,
+        "formAuthority": "canonical exercise media + written guidance"
+      }
+    },
+    {
+      "id": "exercise.reverse-lunge.thumbnail",
+      "path": "assets/pixel-bloom/system/runtime/svg/exercises/pb-exercise-reverse-lunge-thumbnail-v1.svg",
+      "kind": "svg",
+      "role": "exercise-thumbnail",
+      "status": "runtime-ready",
+      "fallbackId": null,
+      "metadata": {
+        "theme": "pixel-bloom",
+        "version": 1,
+        "creator": "OpenAI ChatGPT",
+        "exerciseSlug": "reverse-lunge",
+        "instructional": false,
+        "formAuthority": "canonical exercise media + written guidance"
+      }
+    },
+    {
+      "id": "exercise.step-up.thumbnail",
+      "path": "assets/pixel-bloom/system/runtime/svg/exercises/pb-exercise-step-up-thumbnail-v1.svg",
+      "kind": "svg",
+      "role": "exercise-thumbnail",
+      "status": "runtime-ready",
+      "fallbackId": null,
+      "metadata": {
+        "theme": "pixel-bloom",
+        "version": 1,
+        "creator": "OpenAI ChatGPT",
+        "exerciseSlug": "step-up",
+        "instructional": false,
+        "formAuthority": "canonical exercise media + written guidance"
+      }
+    },
+    {
+      "id": "exercise.glute-bridge.thumbnail",
+      "path": "assets/pixel-bloom/system/runtime/svg/exercises/pb-exercise-glute-bridge-thumbnail-v1.svg",
+      "kind": "svg",
+      "role": "exercise-thumbnail",
+      "status": "runtime-ready",
+      "fallbackId": null,
+      "metadata": {
+        "theme": "pixel-bloom",
+        "version": 1,
+        "creator": "OpenAI ChatGPT",
+        "exerciseSlug": "glute-bridge",
+        "instructional": false,
+        "formAuthority": "canonical exercise media + written guidance"
+      }
+    },
+    {
+      "id": "exercise.dumbbell-rdl.thumbnail",
+      "path": "assets/pixel-bloom/system/runtime/svg/exercises/pb-exercise-dumbbell-rdl-thumbnail-v1.svg",
+      "kind": "svg",
+      "role": "exercise-thumbnail",
+      "status": "runtime-ready",
+      "fallbackId": null,
+      "metadata": {
+        "theme": "pixel-bloom",
+        "version": 1,
+        "creator": "OpenAI ChatGPT",
+        "exerciseSlug": "dumbbell-rdl",
+        "instructional": false,
+        "formAuthority": "canonical exercise media + written guidance"
+      }
+    },
+    {
+      "id": "exercise.incline-push-up.thumbnail",
+      "path": "assets/pixel-bloom/system/runtime/svg/exercises/pb-exercise-incline-push-up-thumbnail-v1.svg",
+      "kind": "svg",
+      "role": "exercise-thumbnail",
+      "status": "runtime-ready",
+      "fallbackId": null,
+      "metadata": {
+        "theme": "pixel-bloom",
+        "version": 1,
+        "creator": "OpenAI ChatGPT",
+        "exerciseSlug": "incline-push-up",
+        "instructional": false,
+        "formAuthority": "canonical exercise media + written guidance"
+      }
+    },
+    {
+      "id": "exercise.push-up.thumbnail",
+      "path": "assets/pixel-bloom/system/runtime/svg/exercises/pb-exercise-push-up-thumbnail-v1.svg",
+      "kind": "svg",
+      "role": "exercise-thumbnail",
+      "status": "runtime-ready",
+      "fallbackId": null,
+      "metadata": {
+        "theme": "pixel-bloom",
+        "version": 1,
+        "creator": "OpenAI ChatGPT",
+        "exerciseSlug": "push-up",
+        "instructional": false,
+        "formAuthority": "canonical exercise media + written guidance"
+      }
+    },
+    {
+      "id": "exercise.dumbbell-chest-press.thumbnail",
+      "path": "assets/pixel-bloom/system/runtime/svg/exercises/pb-exercise-dumbbell-chest-press-thumbnail-v1.svg",
+      "kind": "svg",
+      "role": "exercise-thumbnail",
+      "status": "runtime-ready",
+      "fallbackId": null,
+      "metadata": {
+        "theme": "pixel-bloom",
+        "version": 1,
+        "creator": "OpenAI ChatGPT",
+        "exerciseSlug": "dumbbell-chest-press",
+        "instructional": false,
+        "formAuthority": "canonical exercise media + written guidance"
+      }
+    },
+    {
+      "id": "exercise.dumbbell-shoulder-press.thumbnail",
+      "path": "assets/pixel-bloom/system/runtime/svg/exercises/pb-exercise-dumbbell-shoulder-press-thumbnail-v1.svg",
+      "kind": "svg",
+      "role": "exercise-thumbnail",
+      "status": "runtime-ready",
+      "fallbackId": null,
+      "metadata": {
+        "theme": "pixel-bloom",
+        "version": 1,
+        "creator": "OpenAI ChatGPT",
+        "exerciseSlug": "dumbbell-shoulder-press",
+        "instructional": false,
+        "formAuthority": "canonical exercise media + written guidance"
+      }
+    },
+    {
+      "id": "exercise.one-arm-dumbbell-row.thumbnail",
+      "path": "assets/pixel-bloom/system/runtime/svg/exercises/pb-exercise-one-arm-dumbbell-row-thumbnail-v1.svg",
+      "kind": "svg",
+      "role": "exercise-thumbnail",
+      "status": "runtime-ready",
+      "fallbackId": null,
+      "metadata": {
+        "theme": "pixel-bloom",
+        "version": 1,
+        "creator": "OpenAI ChatGPT",
+        "exerciseSlug": "one-arm-dumbbell-row",
+        "instructional": false,
+        "formAuthority": "canonical exercise media + written guidance"
+      }
+    },
+    {
+      "id": "exercise.lat-pulldown.thumbnail",
+      "path": "assets/pixel-bloom/system/runtime/svg/exercises/pb-exercise-lat-pulldown-thumbnail-v1.svg",
+      "kind": "svg",
+      "role": "exercise-thumbnail",
+      "status": "runtime-ready",
+      "fallbackId": null,
+      "metadata": {
+        "theme": "pixel-bloom",
+        "version": 1,
+        "creator": "OpenAI ChatGPT",
+        "exerciseSlug": "lat-pulldown",
+        "instructional": false,
+        "formAuthority": "canonical exercise media + written guidance"
+      }
+    },
+    {
+      "id": "exercise.biceps-curl.thumbnail",
+      "path": "assets/pixel-bloom/system/runtime/svg/exercises/pb-exercise-biceps-curl-thumbnail-v1.svg",
+      "kind": "svg",
+      "role": "exercise-thumbnail",
+      "status": "runtime-ready",
+      "fallbackId": null,
+      "metadata": {
+        "theme": "pixel-bloom",
+        "version": 1,
+        "creator": "OpenAI ChatGPT",
+        "exerciseSlug": "biceps-curl",
+        "instructional": false,
+        "formAuthority": "canonical exercise media + written guidance"
+      }
+    },
+    {
+      "id": "exercise.triceps-pushdown.thumbnail",
+      "path": "assets/pixel-bloom/system/runtime/svg/exercises/pb-exercise-triceps-pushdown-thumbnail-v1.svg",
+      "kind": "svg",
+      "role": "exercise-thumbnail",
+      "status": "runtime-ready",
+      "fallbackId": null,
+      "metadata": {
+        "theme": "pixel-bloom",
+        "version": 1,
+        "creator": "OpenAI ChatGPT",
+        "exerciseSlug": "triceps-pushdown",
+        "instructional": false,
+        "formAuthority": "canonical exercise media + written guidance"
+      }
+    },
+    {
+      "id": "exercise.farmer-carry.thumbnail",
+      "path": "assets/pixel-bloom/system/runtime/svg/exercises/pb-exercise-farmer-carry-thumbnail-v1.svg",
+      "kind": "svg",
+      "role": "exercise-thumbnail",
+      "status": "runtime-ready",
+      "fallbackId": null,
+      "metadata": {
+        "theme": "pixel-bloom",
+        "version": 1,
+        "creator": "OpenAI ChatGPT",
+        "exerciseSlug": "farmer-carry",
+        "instructional": false,
+        "formAuthority": "canonical exercise media + written guidance"
+      }
+    },
+    {
+      "id": "exercise.plank.thumbnail",
+      "path": "assets/pixel-bloom/system/runtime/svg/exercises/pb-exercise-plank-thumbnail-v1.svg",
+      "kind": "svg",
+      "role": "exercise-thumbnail",
+      "status": "runtime-ready",
+      "fallbackId": null,
+      "metadata": {
+        "theme": "pixel-bloom",
+        "version": 1,
+        "creator": "OpenAI ChatGPT",
+        "exerciseSlug": "plank",
+        "instructional": false,
+        "formAuthority": "canonical exercise media + written guidance"
+      }
+    },
+    {
+      "id": "exercise.side-plank.thumbnail",
+      "path": "assets/pixel-bloom/system/runtime/svg/exercises/pb-exercise-side-plank-thumbnail-v1.svg",
+      "kind": "svg",
+      "role": "exercise-thumbnail",
+      "status": "runtime-ready",
+      "fallbackId": null,
+      "metadata": {
+        "theme": "pixel-bloom",
+        "version": 1,
+        "creator": "OpenAI ChatGPT",
+        "exerciseSlug": "side-plank",
+        "instructional": false,
+        "formAuthority": "canonical exercise media + written guidance"
+      }
+    },
+    {
+      "id": "exercise.dead-bug.thumbnail",
+      "path": "assets/pixel-bloom/system/runtime/svg/exercises/pb-exercise-dead-bug-thumbnail-v1.svg",
+      "kind": "svg",
+      "role": "exercise-thumbnail",
+      "status": "runtime-ready",
+      "fallbackId": null,
+      "metadata": {
+        "theme": "pixel-bloom",
+        "version": 1,
+        "creator": "OpenAI ChatGPT",
+        "exerciseSlug": "dead-bug",
+        "instructional": false,
+        "formAuthority": "canonical exercise media + written guidance"
+      }
+    },
+    {
+      "id": "exercise.bird-dog.thumbnail",
+      "path": "assets/pixel-bloom/system/runtime/svg/exercises/pb-exercise-bird-dog-thumbnail-v1.svg",
+      "kind": "svg",
+      "role": "exercise-thumbnail",
+      "status": "runtime-ready",
+      "fallbackId": null,
+      "metadata": {
+        "theme": "pixel-bloom",
+        "version": 1,
+        "creator": "OpenAI ChatGPT",
+        "exerciseSlug": "bird-dog",
+        "instructional": false,
+        "formAuthority": "canonical exercise media + written guidance"
+      }
+    },
+    {
+      "id": "exercise.brisk-walk.thumbnail",
+      "path": "assets/pixel-bloom/system/runtime/svg/exercises/pb-exercise-brisk-walk-thumbnail-v1.svg",
+      "kind": "svg",
+      "role": "exercise-thumbnail",
+      "status": "runtime-ready",
+      "fallbackId": null,
+      "metadata": {
+        "theme": "pixel-bloom",
+        "version": 1,
+        "creator": "OpenAI ChatGPT",
+        "exerciseSlug": "brisk-walk",
+        "instructional": false,
+        "formAuthority": "canonical exercise media + written guidance"
+      }
+    },
+    {
+      "id": "exercise.incline-treadmill-walk.thumbnail",
+      "path": "assets/pixel-bloom/system/runtime/svg/exercises/pb-exercise-incline-treadmill-walk-thumbnail-v1.svg",
+      "kind": "svg",
+      "role": "exercise-thumbnail",
+      "status": "runtime-ready",
+      "fallbackId": null,
+      "metadata": {
+        "theme": "pixel-bloom",
+        "version": 1,
+        "creator": "OpenAI ChatGPT",
+        "exerciseSlug": "incline-treadmill-walk",
+        "instructional": false,
+        "formAuthority": "canonical exercise media + written guidance"
+      }
+    },
+    {
+      "id": "exercise.stationary-bike.thumbnail",
+      "path": "assets/pixel-bloom/system/runtime/svg/exercises/pb-exercise-stationary-bike-thumbnail-v1.svg",
+      "kind": "svg",
+      "role": "exercise-thumbnail",
+      "status": "runtime-ready",
+      "fallbackId": null,
+      "metadata": {
+        "theme": "pixel-bloom",
+        "version": 1,
+        "creator": "OpenAI ChatGPT",
+        "exerciseSlug": "stationary-bike",
+        "instructional": false,
+        "formAuthority": "canonical exercise media + written guidance"
+      }
+    },
+    {
+      "id": "exercise.cat-cow.thumbnail",
+      "path": "assets/pixel-bloom/system/runtime/svg/exercises/pb-exercise-cat-cow-thumbnail-v1.svg",
+      "kind": "svg",
+      "role": "exercise-thumbnail",
+      "status": "runtime-ready",
+      "fallbackId": null,
+      "metadata": {
+        "theme": "pixel-bloom",
+        "version": 1,
+        "creator": "OpenAI ChatGPT",
+        "exerciseSlug": "cat-cow",
+        "instructional": false,
+        "formAuthority": "canonical exercise media + written guidance"
+      }
+    },
+    {
+      "id": "exercise.hip-flexor-stretch.thumbnail",
+      "path": "assets/pixel-bloom/system/runtime/svg/exercises/pb-exercise-hip-flexor-stretch-thumbnail-v1.svg",
+      "kind": "svg",
+      "role": "exercise-thumbnail",
+      "status": "runtime-ready",
+      "fallbackId": null,
+      "metadata": {
+        "theme": "pixel-bloom",
+        "version": 1,
+        "creator": "OpenAI ChatGPT",
+        "exerciseSlug": "hip-flexor-stretch",
+        "instructional": false,
+        "formAuthority": "canonical exercise media + written guidance"
+      }
+    },
+    {
+      "id": "character.bloom.state.ready",
+      "path": "assets/pixel-bloom/system/runtime/svg/mascot/pb-bloom-ready-v1.svg",
+      "kind": "svg",
+      "role": "mascot-state",
+      "status": "runtime-ready",
+      "fallbackId": null,
+      "metadata": {
+        "theme": "pixel-bloom",
+        "version": 1,
+        "creator": "OpenAI ChatGPT",
+        "state": "ready"
+      }
+    },
+    {
+      "id": "character.bloom.state.warmup",
+      "path": "assets/pixel-bloom/system/runtime/svg/mascot/pb-bloom-warmup-v1.svg",
+      "kind": "svg",
+      "role": "mascot-state",
+      "status": "runtime-ready",
+      "fallbackId": null,
+      "metadata": {
+        "theme": "pixel-bloom",
+        "version": 1,
+        "creator": "OpenAI ChatGPT",
+        "state": "warmup"
+      }
+    },
+    {
+      "id": "character.bloom.state.lifting",
+      "path": "assets/pixel-bloom/system/runtime/svg/mascot/pb-bloom-lifting-v1.svg",
+      "kind": "svg",
+      "role": "mascot-state",
+      "status": "runtime-ready",
+      "fallbackId": null,
+      "metadata": {
+        "theme": "pixel-bloom",
+        "version": 1,
+        "creator": "OpenAI ChatGPT",
+        "state": "lifting"
+      }
+    },
+    {
+      "id": "character.bloom.state.cardio",
+      "path": "assets/pixel-bloom/system/runtime/svg/mascot/pb-bloom-cardio-v1.svg",
+      "kind": "svg",
+      "role": "mascot-state",
+      "status": "runtime-ready",
+      "fallbackId": null,
+      "metadata": {
+        "theme": "pixel-bloom",
+        "version": 1,
+        "creator": "OpenAI ChatGPT",
+        "state": "cardio"
+      }
+    },
+    {
+      "id": "character.bloom.state.resting",
+      "path": "assets/pixel-bloom/system/runtime/svg/mascot/pb-bloom-resting-v1.svg",
+      "kind": "svg",
+      "role": "mascot-state",
+      "status": "runtime-ready",
+      "fallbackId": null,
+      "metadata": {
+        "theme": "pixel-bloom",
+        "version": 1,
+        "creator": "OpenAI ChatGPT",
+        "state": "resting"
+      }
+    },
+    {
+      "id": "character.bloom.state.celebrate",
+      "path": "assets/pixel-bloom/system/runtime/svg/mascot/pb-bloom-celebrate-v1.svg",
+      "kind": "svg",
+      "role": "mascot-state",
+      "status": "runtime-ready",
+      "fallbackId": null,
+      "metadata": {
+        "theme": "pixel-bloom",
+        "version": 1,
+        "creator": "OpenAI ChatGPT",
+        "state": "celebrate"
+      }
+    },
+    {
+      "id": "character.bloom.state.tired-happy",
+      "path": "assets/pixel-bloom/system/runtime/svg/mascot/pb-bloom-tired-happy-v1.svg",
+      "kind": "svg",
+      "role": "mascot-state",
+      "status": "runtime-ready",
+      "fallbackId": null,
+      "metadata": {
+        "theme": "pixel-bloom",
+        "version": 1,
+        "creator": "OpenAI ChatGPT",
+        "state": "tired-happy"
+      }
+    },
+    {
+      "id": "character.bloom.state.offline",
+      "path": "assets/pixel-bloom/system/runtime/svg/mascot/pb-bloom-offline-v1.svg",
+      "kind": "svg",
+      "role": "mascot-state",
+      "status": "runtime-ready",
+      "fallbackId": null,
+      "metadata": {
+        "theme": "pixel-bloom",
+        "version": 1,
+        "creator": "OpenAI ChatGPT",
+        "state": "offline"
+      }
+    },
+    {
+      "id": "character.bloom.state.recovery",
+      "path": "assets/pixel-bloom/system/runtime/svg/mascot/pb-bloom-recovery-v1.svg",
+      "kind": "svg",
+      "role": "mascot-state",
+      "status": "runtime-ready",
+      "fallbackId": null,
+      "metadata": {
+        "theme": "pixel-bloom",
+        "version": 1,
+        "creator": "OpenAI ChatGPT",
+        "state": "recovery"
+      }
+    },
+    {
+      "id": "character.bloom.state.progression",
+      "path": "assets/pixel-bloom/system/runtime/svg/mascot/pb-bloom-progression-v1.svg",
+      "kind": "svg",
+      "role": "mascot-state",
+      "status": "runtime-ready",
+      "fallbackId": null,
+      "metadata": {
+        "theme": "pixel-bloom",
+        "version": 1,
+        "creator": "OpenAI ChatGPT",
+        "state": "progression"
+      }
+    },
+    {
+      "id": "badge.first-step",
+      "path": "assets/pixel-bloom/system/runtime/svg/badges/pb-badge-first-step-v1.svg",
+      "kind": "svg",
+      "role": "badge",
+      "status": "runtime-ready",
+      "fallbackId": null,
+      "metadata": {
+        "theme": "pixel-bloom",
+        "version": 1,
+        "creator": "OpenAI ChatGPT",
+        "name": "First Step",
+        "description": "Complete your first workout"
+      }
+    },
+    {
+      "id": "badge.three-in-a-row",
+      "path": "assets/pixel-bloom/system/runtime/svg/badges/pb-badge-three-in-a-row-v1.svg",
+      "kind": "svg",
+      "role": "badge",
+      "status": "runtime-ready",
+      "fallbackId": null,
+      "metadata": {
+        "theme": "pixel-bloom",
+        "version": 1,
+        "creator": "OpenAI ChatGPT",
+        "name": "Three in a Row",
+        "description": "Complete three scheduled sessions"
+      }
+    },
+    {
+      "id": "badge.week-one",
+      "path": "assets/pixel-bloom/system/runtime/svg/badges/pb-badge-week-one-v1.svg",
+      "kind": "svg",
+      "role": "badge",
+      "status": "runtime-ready",
+      "fallbackId": null,
+      "metadata": {
+        "theme": "pixel-bloom",
+        "version": 1,
+        "creator": "OpenAI ChatGPT",
+        "name": "Week One",
+        "description": "Complete a full scheduled week"
+      }
+    },
+    {
+      "id": "badge.early-bird",
+      "path": "assets/pixel-bloom/system/runtime/svg/badges/pb-badge-early-bird-v1.svg",
+      "kind": "svg",
+      "role": "badge",
+      "status": "runtime-ready",
+      "fallbackId": null,
+      "metadata": {
+        "theme": "pixel-bloom",
+        "version": 1,
+        "creator": "OpenAI ChatGPT",
+        "name": "Early Bird",
+        "description": "Complete a session before noon"
+      }
+    },
+    {
+      "id": "badge.quick-save",
+      "path": "assets/pixel-bloom/system/runtime/svg/badges/pb-badge-quick-save-v1.svg",
+      "kind": "svg",
+      "role": "badge",
+      "status": "runtime-ready",
+      "fallbackId": null,
+      "metadata": {
+        "theme": "pixel-bloom",
+        "version": 1,
+        "creator": "OpenAI ChatGPT",
+        "name": "Quick Save",
+        "description": "Use a Quick workout instead of skipping"
+      }
+    },
+    {
+      "id": "badge.mobility-moment",
+      "path": "assets/pixel-bloom/system/runtime/svg/badges/pb-badge-mobility-moment-v1.svg",
+      "kind": "svg",
+      "role": "badge",
+      "status": "runtime-ready",
+      "fallbackId": null,
+      "metadata": {
+        "theme": "pixel-bloom",
+        "version": 1,
+        "creator": "OpenAI ChatGPT",
+        "name": "Mobility Moment",
+        "description": "Complete a mobility session"
+      }
+    },
+    {
+      "id": "badge.core-control",
+      "path": "assets/pixel-bloom/system/runtime/svg/badges/pb-badge-core-control-v1.svg",
+      "kind": "svg",
+      "role": "badge",
+      "status": "runtime-ready",
+      "fallbackId": null,
+      "metadata": {
+        "theme": "pixel-bloom",
+        "version": 1,
+        "creator": "OpenAI ChatGPT",
+        "name": "Core Control",
+        "description": "Complete five core sessions"
+      }
+    },
+    {
+      "id": "badge.full-body-five",
+      "path": "assets/pixel-bloom/system/runtime/svg/badges/pb-badge-full-body-five-v1.svg",
+      "kind": "svg",
+      "role": "badge",
+      "status": "runtime-ready",
+      "fallbackId": null,
+      "metadata": {
+        "theme": "pixel-bloom",
+        "version": 1,
+        "creator": "OpenAI ChatGPT",
+        "name": "Full Body Five",
+        "description": "Complete five full-body sessions"
+      }
+    },
+    {
+      "id": "badge.consistency-10",
+      "path": "assets/pixel-bloom/system/runtime/svg/badges/pb-badge-consistency-10-v1.svg",
+      "kind": "svg",
+      "role": "badge",
+      "status": "runtime-ready",
+      "fallbackId": null,
+      "metadata": {
+        "theme": "pixel-bloom",
+        "version": 1,
+        "creator": "OpenAI ChatGPT",
+        "name": "Consistency 10",
+        "description": "Complete ten workouts"
+      }
+    },
+    {
+      "id": "badge.consistency-25",
+      "path": "assets/pixel-bloom/system/runtime/svg/badges/pb-badge-consistency-25-v1.svg",
+      "kind": "svg",
+      "role": "badge",
+      "status": "runtime-ready",
+      "fallbackId": null,
+      "metadata": {
+        "theme": "pixel-bloom",
+        "version": 1,
+        "creator": "OpenAI ChatGPT",
+        "name": "Consistency 25",
+        "description": "Complete twenty-five workouts"
+      }
+    },
+    {
+      "id": "badge.consistency-50",
+      "path": "assets/pixel-bloom/system/runtime/svg/badges/pb-badge-consistency-50-v1.svg",
+      "kind": "svg",
+      "role": "badge",
+      "status": "runtime-ready",
+      "fallbackId": null,
+      "metadata": {
+        "theme": "pixel-bloom",
+        "version": 1,
+        "creator": "OpenAI ChatGPT",
+        "name": "Consistency 50",
+        "description": "Complete fifty workouts"
+      }
+    },
+    {
+      "id": "badge.comeback",
+      "path": "assets/pixel-bloom/system/runtime/svg/badges/pb-badge-comeback-v1.svg",
+      "kind": "svg",
+      "role": "badge",
+      "status": "runtime-ready",
+      "fallbackId": null,
+      "metadata": {
+        "theme": "pixel-bloom",
+        "version": 1,
+        "creator": "OpenAI ChatGPT",
+        "name": "Comeback",
+        "description": "Return after seven or more days away"
+      }
+    },
+    {
+      "id": "badge.offline-hero",
+      "path": "assets/pixel-bloom/system/runtime/svg/badges/pb-badge-offline-hero-v1.svg",
+      "kind": "svg",
+      "role": "badge",
+      "status": "runtime-ready",
+      "fallbackId": null,
+      "metadata": {
+        "theme": "pixel-bloom",
+        "version": 1,
+        "creator": "OpenAI ChatGPT",
+        "name": "Offline Hero",
+        "description": "Complete a cached workout offline"
+      }
+    },
+    {
+      "id": "badge.backup-made",
+      "path": "assets/pixel-bloom/system/runtime/svg/badges/pb-badge-backup-made-v1.svg",
+      "kind": "svg",
+      "role": "badge",
+      "status": "runtime-ready",
+      "fallbackId": null,
+      "metadata": {
+        "theme": "pixel-bloom",
+        "version": 1,
+        "creator": "OpenAI ChatGPT",
+        "name": "Backup Made",
+        "description": "Export a local backup"
+      }
+    },
+    {
+      "id": "badge.custom-builder",
+      "path": "assets/pixel-bloom/system/runtime/svg/badges/pb-badge-custom-builder-v1.svg",
+      "kind": "svg",
+      "role": "badge",
+      "status": "runtime-ready",
+      "fallbackId": null,
+      "metadata": {
+        "theme": "pixel-bloom",
+        "version": 1,
+        "creator": "OpenAI ChatGPT",
+        "name": "Routine Maker",
+        "description": "Create a custom routine"
+      }
+    },
+    {
+      "id": "badge.schedule-set",
+      "path": "assets/pixel-bloom/system/runtime/svg/badges/pb-badge-schedule-set-v1.svg",
+      "kind": "svg",
+      "role": "badge",
+      "status": "runtime-ready",
+      "fallbackId": null,
+      "metadata": {
+        "theme": "pixel-bloom",
+        "version": 1,
+        "creator": "OpenAI ChatGPT",
+        "name": "Week Planner",
+        "description": "Assign a weekly schedule"
+      }
+    },
+    {
+      "id": "badge.first-progression",
+      "path": "assets/pixel-bloom/system/runtime/svg/badges/pb-badge-first-progression-v1.svg",
+      "kind": "svg",
+      "role": "badge",
+      "status": "runtime-ready",
+      "fallbackId": null,
+      "metadata": {
+        "theme": "pixel-bloom",
+        "version": 1,
+        "creator": "OpenAI ChatGPT",
+        "name": "Level Up",
+        "description": "Confirm your first progression candidate"
+      }
+    },
+    {
+      "id": "badge.dumbbell-path",
+      "path": "assets/pixel-bloom/system/runtime/svg/badges/pb-badge-dumbbell-path-v1.svg",
+      "kind": "svg",
+      "role": "badge",
+      "status": "runtime-ready",
+      "fallbackId": null,
+      "metadata": {
+        "theme": "pixel-bloom",
+        "version": 1,
+        "creator": "OpenAI ChatGPT",
+        "name": "Dumbbell Path",
+        "description": "Complete five dumbbell-focused workouts"
+      }
+    },
+    {
+      "id": "badge.cardio-base",
+      "path": "assets/pixel-bloom/system/runtime/svg/badges/pb-badge-cardio-base-v1.svg",
+      "kind": "svg",
+      "role": "badge",
+      "status": "runtime-ready",
+      "fallbackId": null,
+      "metadata": {
+        "theme": "pixel-bloom",
+        "version": 1,
+        "creator": "OpenAI ChatGPT",
+        "name": "Cardio Base",
+        "description": "Complete five conditioning sessions"
+      }
+    },
+    {
+      "id": "badge.recovery-smart",
+      "path": "assets/pixel-bloom/system/runtime/svg/badges/pb-badge-recovery-smart-v1.svg",
+      "kind": "svg",
+      "role": "badge",
+      "status": "runtime-ready",
+      "fallbackId": null,
+      "metadata": {
+        "theme": "pixel-bloom",
+        "version": 1,
+        "creator": "OpenAI ChatGPT",
+        "name": "Recovery Smart",
+        "description": "Complete three recovery sessions"
+      }
+    },
+    {
+      "id": "collectible.mint-dumbbell",
+      "path": "assets/pixel-bloom/system/runtime/svg/collectibles/pb-collectible-mint-dumbbell-v1.svg",
+      "kind": "svg",
+      "role": "collectible",
+      "status": "runtime-ready",
+      "fallbackId": null,
+      "metadata": {
+        "theme": "pixel-bloom",
+        "version": 1,
+        "creator": "OpenAI ChatGPT",
+        "name": "Mint Dumbbell",
+        "rarity": "common"
+      }
+    },
+    {
+      "id": "collectible.blush-bottle",
+      "path": "assets/pixel-bloom/system/runtime/svg/collectibles/pb-collectible-blush-bottle-v1.svg",
+      "kind": "svg",
+      "role": "collectible",
+      "status": "runtime-ready",
+      "fallbackId": null,
+      "metadata": {
+        "theme": "pixel-bloom",
+        "version": 1,
+        "creator": "OpenAI ChatGPT",
+        "name": "Blush Bottle",
+        "rarity": "common"
+      }
+    },
+    {
+      "id": "collectible.sky-towel",
+      "path": "assets/pixel-bloom/system/runtime/svg/collectibles/pb-collectible-sky-towel-v1.svg",
+      "kind": "svg",
+      "role": "collectible",
+      "status": "runtime-ready",
+      "fallbackId": null,
+      "metadata": {
+        "theme": "pixel-bloom",
+        "version": 1,
+        "creator": "OpenAI ChatGPT",
+        "name": "Sky Towel",
+        "rarity": "common"
+      }
+    },
+    {
+      "id": "collectible.lavender-band",
+      "path": "assets/pixel-bloom/system/runtime/svg/collectibles/pb-collectible-lavender-band-v1.svg",
+      "kind": "svg",
+      "role": "collectible",
+      "status": "runtime-ready",
+      "fallbackId": null,
+      "metadata": {
+        "theme": "pixel-bloom",
+        "version": 1,
+        "creator": "OpenAI ChatGPT",
+        "name": "Lavender Band",
+        "rarity": "common"
+      }
+    },
+    {
+      "id": "collectible.peach-kettlebell",
+      "path": "assets/pixel-bloom/system/runtime/svg/collectibles/pb-collectible-peach-kettlebell-v1.svg",
+      "kind": "svg",
+      "role": "collectible",
+      "status": "runtime-ready",
+      "fallbackId": null,
+      "metadata": {
+        "theme": "pixel-bloom",
+        "version": 1,
+        "creator": "OpenAI ChatGPT",
+        "name": "Peach Kettlebell",
+        "rarity": "uncommon"
+      }
+    },
+    {
+      "id": "collectible.bunny-headphones",
+      "path": "assets/pixel-bloom/system/runtime/svg/collectibles/pb-collectible-bunny-headphones-v1.svg",
+      "kind": "svg",
+      "role": "collectible",
+      "status": "runtime-ready",
+      "fallbackId": null,
+      "metadata": {
+        "theme": "pixel-bloom",
+        "version": 1,
+        "creator": "OpenAI ChatGPT",
+        "name": "Bunny Headphones",
+        "rarity": "uncommon"
+      }
+    },
+    {
+      "id": "collectible.cloud-sneakers",
+      "path": "assets/pixel-bloom/system/runtime/svg/collectibles/pb-collectible-cloud-sneakers-v1.svg",
+      "kind": "svg",
+      "role": "collectible",
+      "status": "runtime-ready",
+      "fallbackId": null,
+      "metadata": {
+        "theme": "pixel-bloom",
+        "version": 1,
+        "creator": "OpenAI ChatGPT",
+        "name": "Cloud Sneakers",
+        "rarity": "uncommon"
+      }
+    },
+    {
+      "id": "collectible.pixel-shaker",
+      "path": "assets/pixel-bloom/system/runtime/svg/collectibles/pb-collectible-pixel-shaker-v1.svg",
+      "kind": "svg",
+      "role": "collectible",
+      "status": "runtime-ready",
+      "fallbackId": null,
+      "metadata": {
+        "theme": "pixel-bloom",
+        "version": 1,
+        "creator": "OpenAI ChatGPT",
+        "name": "Pixel Shaker",
+        "rarity": "common"
+      }
+    },
+    {
+      "id": "collectible.star-yoga-mat",
+      "path": "assets/pixel-bloom/system/runtime/svg/collectibles/pb-collectible-star-yoga-mat-v1.svg",
+      "kind": "svg",
+      "role": "collectible",
+      "status": "runtime-ready",
+      "fallbackId": null,
+      "metadata": {
+        "theme": "pixel-bloom",
+        "version": 1,
+        "creator": "OpenAI ChatGPT",
+        "name": "Star Yoga Mat",
+        "rarity": "uncommon"
+      }
+    },
+    {
+      "id": "collectible.tiny-barbell",
+      "path": "assets/pixel-bloom/system/runtime/svg/collectibles/pb-collectible-tiny-barbell-v1.svg",
+      "kind": "svg",
+      "role": "collectible",
+      "status": "runtime-ready",
+      "fallbackId": null,
+      "metadata": {
+        "theme": "pixel-bloom",
+        "version": 1,
+        "creator": "OpenAI ChatGPT",
+        "name": "Tiny Barbell",
+        "rarity": "rare"
+      }
+    },
+    {
+      "id": "collectible.gym-key",
+      "path": "assets/pixel-bloom/system/runtime/svg/collectibles/pb-collectible-gym-key-v1.svg",
+      "kind": "svg",
+      "role": "collectible",
+      "status": "runtime-ready",
+      "fallbackId": null,
+      "metadata": {
+        "theme": "pixel-bloom",
+        "version": 1,
+        "creator": "OpenAI ChatGPT",
+        "name": "Gym Key",
+        "rarity": "rare"
+      }
+    },
+    {
+      "id": "collectible.map-pin",
+      "path": "assets/pixel-bloom/system/runtime/svg/collectibles/pb-collectible-map-pin-v1.svg",
+      "kind": "svg",
+      "role": "collectible",
+      "status": "runtime-ready",
+      "fallbackId": null,
+      "metadata": {
+        "theme": "pixel-bloom",
+        "version": 1,
+        "creator": "OpenAI ChatGPT",
+        "name": "Map Pin",
+        "rarity": "common"
+      }
+    },
+    {
+      "id": "collectible.gold-whistle",
+      "path": "assets/pixel-bloom/system/runtime/svg/collectibles/pb-collectible-gold-whistle-v1.svg",
+      "kind": "svg",
+      "role": "collectible",
+      "status": "runtime-ready",
+      "fallbackId": null,
+      "metadata": {
+        "theme": "pixel-bloom",
+        "version": 1,
+        "creator": "OpenAI ChatGPT",
+        "name": "Gold Whistle",
+        "rarity": "rare"
+      }
+    },
+    {
+      "id": "collectible.mint-medal",
+      "path": "assets/pixel-bloom/system/runtime/svg/collectibles/pb-collectible-mint-medal-v1.svg",
+      "kind": "svg",
+      "role": "collectible",
+      "status": "runtime-ready",
+      "fallbackId": null,
+      "metadata": {
+        "theme": "pixel-bloom",
+        "version": 1,
+        "creator": "OpenAI ChatGPT",
+        "name": "Mint Medal",
+        "rarity": "uncommon"
+      }
+    },
+    {
+      "id": "collectible.moon-badge",
+      "path": "assets/pixel-bloom/system/runtime/svg/collectibles/pb-collectible-moon-badge-v1.svg",
+      "kind": "svg",
+      "role": "collectible",
+      "status": "runtime-ready",
+      "fallbackId": null,
+      "metadata": {
+        "theme": "pixel-bloom",
+        "version": 1,
+        "creator": "OpenAI ChatGPT",
+        "name": "Moon Badge",
+        "rarity": "rare"
+      }
+    },
+    {
+      "id": "collectible.sun-badge",
+      "path": "assets/pixel-bloom/system/runtime/svg/collectibles/pb-collectible-sun-badge-v1.svg",
+      "kind": "svg",
+      "role": "collectible",
+      "status": "runtime-ready",
+      "fallbackId": null,
+      "metadata": {
+        "theme": "pixel-bloom",
+        "version": 1,
+        "creator": "OpenAI ChatGPT",
+        "name": "Sun Badge",
+        "rarity": "rare"
+      }
+    },
+    {
+      "id": "collectible.heart-patch",
+      "path": "assets/pixel-bloom/system/runtime/svg/collectibles/pb-collectible-heart-patch-v1.svg",
+      "kind": "svg",
+      "role": "collectible",
+      "status": "runtime-ready",
+      "fallbackId": null,
+      "metadata": {
+        "theme": "pixel-bloom",
+        "version": 1,
+        "creator": "OpenAI ChatGPT",
+        "name": "Heart Patch",
+        "rarity": "uncommon"
+      }
+    },
+    {
+      "id": "collectible.sparkle-wraps",
+      "path": "assets/pixel-bloom/system/runtime/svg/collectibles/pb-collectible-sparkle-wraps-v1.svg",
+      "kind": "svg",
+      "role": "collectible",
+      "status": "runtime-ready",
+      "fallbackId": null,
+      "metadata": {
+        "theme": "pixel-bloom",
+        "version": 1,
+        "creator": "OpenAI ChatGPT",
+        "name": "Sparkle Wraps",
+        "rarity": "uncommon"
+      }
+    },
+    {
+      "id": "collectible.cloud-cap",
+      "path": "assets/pixel-bloom/system/runtime/svg/collectibles/pb-collectible-cloud-cap-v1.svg",
+      "kind": "svg",
+      "role": "collectible",
+      "status": "runtime-ready",
+      "fallbackId": null,
+      "metadata": {
+        "theme": "pixel-bloom",
+        "version": 1,
+        "creator": "OpenAI ChatGPT",
+        "name": "Cloud Cap",
+        "rarity": "common"
+      }
+    },
+    {
+      "id": "collectible.bloom-charm",
+      "path": "assets/pixel-bloom/system/runtime/svg/collectibles/pb-collectible-bloom-charm-v1.svg",
+      "kind": "svg",
+      "role": "collectible",
+      "status": "runtime-ready",
+      "fallbackId": null,
+      "metadata": {
+        "theme": "pixel-bloom",
+        "version": 1,
+        "creator": "OpenAI ChatGPT",
+        "name": "Bloom Charm",
+        "rarity": "rare"
+      }
+    },
+    {
+      "id": "collectible.trainer-clipboard",
+      "path": "assets/pixel-bloom/system/runtime/svg/collectibles/pb-collectible-trainer-clipboard-v1.svg",
+      "kind": "svg",
+      "role": "collectible",
+      "status": "runtime-ready",
+      "fallbackId": null,
+      "metadata": {
+        "theme": "pixel-bloom",
+        "version": 1,
+        "creator": "OpenAI ChatGPT",
+        "name": "Trainer Clipboard",
+        "rarity": "uncommon"
+      }
+    },
+    {
+      "id": "collectible.pixel-stopwatch",
+      "path": "assets/pixel-bloom/system/runtime/svg/collectibles/pb-collectible-pixel-stopwatch-v1.svg",
+      "kind": "svg",
+      "role": "collectible",
+      "status": "runtime-ready",
+      "fallbackId": null,
+      "metadata": {
+        "theme": "pixel-bloom",
+        "version": 1,
+        "creator": "OpenAI ChatGPT",
+        "name": "Pixel Stopwatch",
+        "rarity": "uncommon"
+      }
+    },
+    {
+      "id": "collectible.garden-token",
+      "path": "assets/pixel-bloom/system/runtime/svg/collectibles/pb-collectible-garden-token-v1.svg",
+      "kind": "svg",
+      "role": "collectible",
+      "status": "runtime-ready",
+      "fallbackId": null,
+      "metadata": {
+        "theme": "pixel-bloom",
+        "version": 1,
+        "creator": "OpenAI ChatGPT",
+        "name": "Garden Token",
+        "rarity": "common"
+      }
+    },
+    {
+      "id": "collectible.rainbow-plate",
+      "path": "assets/pixel-bloom/system/runtime/svg/collectibles/pb-collectible-rainbow-plate-v1.svg",
+      "kind": "svg",
+      "role": "collectible",
+      "status": "runtime-ready",
+      "fallbackId": null,
+      "metadata": {
+        "theme": "pixel-bloom",
+        "version": 1,
+        "creator": "OpenAI ChatGPT",
+        "name": "Rainbow Plate",
+        "rarity": "rare"
+      }
+    },
+    {
+      "id": "collectible.bloom-crown",
+      "path": "assets/pixel-bloom/system/runtime/svg/collectibles/pb-collectible-bloom-crown-v1.svg",
+      "kind": "svg",
+      "role": "collectible",
+      "status": "runtime-ready",
+      "fallbackId": null,
+      "metadata": {
+        "theme": "pixel-bloom",
+        "version": 1,
+        "creator": "OpenAI ChatGPT",
+        "name": "Bloom Crown",
+        "rarity": "epic"
+      }
+    },
+    {
+      "id": "map.zone.welcome-garden",
+      "path": "assets/pixel-bloom/system/runtime/svg/map/pb-map-zone-welcome-garden-v1.svg",
+      "kind": "svg",
+      "role": "map-zone",
+      "status": "runtime-ready",
+      "fallbackId": null,
+      "metadata": {
+        "theme": "pixel-bloom",
+        "version": 1,
+        "creator": "OpenAI ChatGPT",
+        "name": "Welcome Garden",
+        "unlock": "default",
+        "focus": "orientation + first wins"
+      }
+    },
+    {
+      "id": "map.zone.cozy-strength-studio",
+      "path": "assets/pixel-bloom/system/runtime/svg/map/pb-map-zone-cozy-strength-studio-v1.svg",
+      "kind": "svg",
+      "role": "map-zone",
+      "status": "runtime-ready",
+      "fallbackId": null,
+      "metadata": {
+        "theme": "pixel-bloom",
+        "version": 1,
+        "creator": "OpenAI ChatGPT",
+        "name": "Cozy Strength Studio",
+        "unlock": "5 completed workouts",
+        "focus": "strength basics"
+      }
+    },
+    {
+      "id": "map.zone.cardio-boardwalk",
+      "path": "assets/pixel-bloom/system/runtime/svg/map/pb-map-zone-cardio-boardwalk-v1.svg",
+      "kind": "svg",
+      "role": "map-zone",
+      "status": "runtime-ready",
+      "fallbackId": null,
+      "metadata": {
+        "theme": "pixel-bloom",
+        "version": 1,
+        "creator": "OpenAI ChatGPT",
+        "name": "Cardio Boardwalk",
+        "unlock": "3 conditioning sessions",
+        "focus": "cardio consistency"
+      }
+    },
+    {
+      "id": "map.zone.mobility-meadow",
+      "path": "assets/pixel-bloom/system/runtime/svg/map/pb-map-zone-mobility-meadow-v1.svg",
+      "kind": "svg",
+      "role": "map-zone",
+      "status": "runtime-ready",
+      "fallbackId": null,
+      "metadata": {
+        "theme": "pixel-bloom",
+        "version": 1,
+        "creator": "OpenAI ChatGPT",
+        "name": "Mobility Meadow",
+        "unlock": "3 mobility/recovery sessions",
+        "focus": "recovery + mobility"
+      }
+    },
+    {
+      "id": "map.zone.bloom-gym",
+      "path": "assets/pixel-bloom/system/runtime/svg/map/pb-map-zone-bloom-gym-v1.svg",
+      "kind": "svg",
+      "role": "map-zone",
+      "status": "runtime-ready",
+      "fallbackId": null,
+      "metadata": {
+        "theme": "pixel-bloom",
+        "version": 1,
+        "creator": "OpenAI ChatGPT",
+        "name": "Bloom Gym",
+        "unlock": "15 completed workouts",
+        "focus": "mixed training"
+      }
+    },
+    {
+      "id": "map.zone.summit-arcade",
+      "path": "assets/pixel-bloom/system/runtime/svg/map/pb-map-zone-summit-arcade-v1.svg",
+      "kind": "svg",
+      "role": "map-zone",
+      "status": "runtime-ready",
+      "fallbackId": null,
+      "metadata": {
+        "theme": "pixel-bloom",
+        "version": 1,
+        "creator": "OpenAI ChatGPT",
+        "name": "Summit Arcade",
+        "unlock": "30 completed workouts",
+        "focus": "long-term mastery"
+      }
+    },
+    {
+      "id": "ui.icon.home",
+      "path": "assets/pixel-bloom/system/runtime/svg/ui/pb-icon-home-v1.svg",
+      "kind": "svg",
+      "role": "ui-icon",
+      "status": "runtime-ready",
+      "fallbackId": null,
+      "metadata": {
+        "theme": "pixel-bloom",
+        "version": 1,
+        "creator": "OpenAI ChatGPT",
+        "semanticRole": "home"
+      }
+    },
+    {
+      "id": "ui.icon.workout",
+      "path": "assets/pixel-bloom/system/runtime/svg/ui/pb-icon-workout-v1.svg",
+      "kind": "svg",
+      "role": "ui-icon",
+      "status": "runtime-ready",
+      "fallbackId": null,
+      "metadata": {
+        "theme": "pixel-bloom",
+        "version": 1,
+        "creator": "OpenAI ChatGPT",
+        "semanticRole": "workout"
+      }
+    },
+    {
+      "id": "ui.icon.progress",
+      "path": "assets/pixel-bloom/system/runtime/svg/ui/pb-icon-progress-v1.svg",
+      "kind": "svg",
+      "role": "ui-icon",
+      "status": "runtime-ready",
+      "fallbackId": null,
+      "metadata": {
+        "theme": "pixel-bloom",
+        "version": 1,
+        "creator": "OpenAI ChatGPT",
+        "semanticRole": "progress"
+      }
+    },
+    {
+      "id": "ui.icon.achievements",
+      "path": "assets/pixel-bloom/system/runtime/svg/ui/pb-icon-achievements-v1.svg",
+      "kind": "svg",
+      "role": "ui-icon",
+      "status": "runtime-ready",
+      "fallbackId": null,
+      "metadata": {
+        "theme": "pixel-bloom",
+        "version": 1,
+        "creator": "OpenAI ChatGPT",
+        "semanticRole": "achievements"
+      }
+    },
+    {
+      "id": "ui.icon.world",
+      "path": "assets/pixel-bloom/system/runtime/svg/ui/pb-icon-world-v1.svg",
+      "kind": "svg",
+      "role": "ui-icon",
+      "status": "runtime-ready",
+      "fallbackId": null,
+      "metadata": {
+        "theme": "pixel-bloom",
+        "version": 1,
+        "creator": "OpenAI ChatGPT",
+        "semanticRole": "world"
+      }
+    },
+    {
+      "id": "ui.icon.settings",
+      "path": "assets/pixel-bloom/system/runtime/svg/ui/pb-icon-settings-v1.svg",
+      "kind": "svg",
+      "role": "ui-icon",
+      "status": "runtime-ready",
+      "fallbackId": null,
+      "metadata": {
+        "theme": "pixel-bloom",
+        "version": 1,
+        "creator": "OpenAI ChatGPT",
+        "semanticRole": "settings"
+      }
+    },
+    {
+      "id": "character.bloom.blink",
+      "path": "assets/pixel-bloom/system/runtime/svg/motion/pb-anim-bloom-blink-v1.svg",
+      "kind": "svg",
+      "role": "animated-svg",
+      "status": "runtime-ready",
+      "fallbackId": null,
+      "metadata": {
+        "theme": "pixel-bloom",
+        "version": 1,
+        "creator": "OpenAI ChatGPT",
+        "motion": "presentation",
+        "motionModes": {
+          "full": "animated",
+          "reduced": "static",
+          "off": "static"
+        }
+      }
+    },
+    {
+      "id": "character.bloom.rest",
+      "path": "assets/pixel-bloom/system/runtime/svg/motion/pb-anim-bloom-rest-v1.svg",
+      "kind": "svg",
+      "role": "animated-svg",
+      "status": "runtime-ready",
+      "fallbackId": null,
+      "metadata": {
+        "theme": "pixel-bloom",
+        "version": 1,
+        "creator": "OpenAI ChatGPT",
+        "motion": "presentation",
+        "motionModes": {
+          "full": "animated",
+          "reduced": "static",
+          "off": "static"
+        }
+      }
+    },
+    {
+      "id": "ui.button.pop",
+      "path": "assets/pixel-bloom/system/runtime/svg/motion/pb-anim-ui-button-pop-v1.svg",
+      "kind": "svg",
+      "role": "animated-svg",
+      "status": "runtime-ready",
+      "fallbackId": null,
+      "metadata": {
+        "theme": "pixel-bloom",
+        "version": 1,
+        "creator": "OpenAI ChatGPT",
+        "motion": "presentation",
+        "motionModes": {
+          "full": "animated",
+          "reduced": "static",
+          "off": "static"
+        }
+      }
+    },
+    {
+      "id": "ui.progress.pulse",
+      "path": "assets/pixel-bloom/system/runtime/svg/motion/pb-anim-ui-progress-pulse-v1.svg",
+      "kind": "svg",
+      "role": "animated-svg",
+      "status": "runtime-ready",
+      "fallbackId": null,
+      "metadata": {
+        "theme": "pixel-bloom",
+        "version": 1,
+        "creator": "OpenAI ChatGPT",
+        "motion": "presentation",
+        "motionModes": {
+          "full": "animated",
+          "reduced": "static",
+          "off": "static"
+        }
+      }
+    },
+    {
+      "id": "reward.badge.unlock",
+      "path": "assets/pixel-bloom/system/runtime/svg/motion/pb-anim-badge-unlock-v1.svg",
+      "kind": "svg",
+      "role": "animated-svg",
+      "status": "runtime-ready",
+      "fallbackId": null,
+      "metadata": {
+        "theme": "pixel-bloom",
+        "version": 1,
+        "creator": "OpenAI ChatGPT",
+        "motion": "presentation",
+        "motionModes": {
+          "full": "animated",
+          "reduced": "static",
+          "off": "static"
+        }
+      }
+    },
+    {
+      "id": "ui.timer.pulse",
+      "path": "assets/pixel-bloom/system/runtime/svg/motion/pb-anim-timer-pulse-v1.svg",
+      "kind": "svg",
+      "role": "animated-svg",
+      "status": "runtime-ready",
+      "fallbackId": null,
+      "metadata": {
+        "theme": "pixel-bloom",
+        "version": 1,
+        "creator": "OpenAI ChatGPT",
+        "motion": "presentation",
+        "motionModes": {
+          "full": "animated",
+          "reduced": "static",
+          "off": "static"
+        }
+      }
+    }
+  ]
+}

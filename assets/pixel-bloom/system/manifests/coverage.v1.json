@@ -1,0 +1,40 @@
+{
+  "theme": "pixel-bloom",
+  "version": 1,
+  "generatedAt": "2026-09-21",
+  "complete": {
+    "characterMaster": true,
+    "expressions": true,
+    "poses": true,
+    "uiKit": true,
+    "workoutCoverSystem": true,
+    "worldMap": true,
+    "collectibles": true,
+    "stateIllustrations": true,
+    "squatKeyframes": true,
+    "idleAnimation": true,
+    "celebrationAnimation": true,
+    "squatAnimationPreview": true,
+    "schemas": true,
+    "tokens": true,
+    "registry": true,
+    "validation": true,
+    "fullIndividualAssetLibrary": true,
+    "semanticCatalog": true,
+    "sourceRecipes": true,
+    "aiReferenceLayer": true
+  },
+  "guardrail": "Do not create misleading exercise-specific movement art. Existing canonical/public exercise media remains the fallback until a movement-specific Pixel Bloom set is reviewed.",
+  "libraryCounts": {
+    "runtimeAssets": 140,
+    "workoutCovers": 30,
+    "exerciseDiscoveryThumbnails": 25,
+    "mascotStates": 10,
+    "badges": 20,
+    "collectibles": 25,
+    "mapZones": 6,
+    "uiIcons": 6,
+    "additionalPresentationAnimations": 6,
+    "registeredAnimations": 9
+  }
+}
