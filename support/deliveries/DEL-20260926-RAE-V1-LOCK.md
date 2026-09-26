@@ -65,3 +65,7 @@ Before broad asset production:
 4. produce Bodyweight Squat gold-master key poses;
 5. run the image-first acceptance checklist;
 6. only then expand to frames, sprites, animation exports, and the wider asset suite.
+
+## Binary ingest: complete (2026-09-26, Claude Code)
+
+The canonical PNG is committed at `assets/pixel-bloom/character/rae/reference/pb-rae-character-bible-v1.png`. Its SHA-256, byte count and dimensions match exactly. Next gate item 1 is done. See `support/RAE_CANONICAL_BINARY_HANDOFF.md` § Completion.
