@@ -1,11 +1,12 @@
 # Rae Avatar + Animation Asset Database
 
-**Status:** AUTHORITATIVE FOR RAE ASSET IDENTITY, INVENTORY, AND MOTION METADATA  
+**Status:** AUTHORITATIVE FOR RAE ASSET INVENTORY AND MOTION METADATA  
 **Creative owner:** ChatGPT  
 **Implementation owner:** Claude Code  
 **Database source:** `assets/pixel-bloom/db/asset-db.json`  
 **Validation schema:** `assets/pixel-bloom/db/asset-db.schema.json`  
-**Canonical character truth:** `docs/RAE_CHARACTER_BIBLE_V1.md`
+**Primary visual source of truth:** approved Rae v1 character-bible image, SHA-256 `e0390ef9d39fe92d2d93544d62cb0568a6e9e2b3cd5e6e8305c333b7f3217beb`  
+**Supporting character description:** `docs/RAE_CHARACTER_BIBLE_V1.md`
 
 ## Purpose
 
@@ -15,7 +16,11 @@ Claude Code should query or compile this registry. It should not infer asset ide
 
 ## Authority rule
 
-The approved Rae v1 character-bible image and `docs/RAE_CHARACTER_BIBLE_V1.md` are the canonical visual/identity source. If generated text inside the reference artwork conflicts with the written character bible, the written lock wins.
+The **exact approved Rae v1 image is the source of truth for how Rae looks**.
+
+This document and `asset-db.json` are supporting metadata/transcriptions. They must describe and enforce the approved image; they do not get to redesign it. If a supporting document conflicts with the visual depiction in the approved image, fix the document.
+
+Explicit owner corrections/approvals that produced the approved image may clarify visual ambiguity. Incidental AI-rendered labels inside the board are not semantic authority when they contradict the depicted character or owner approval.
 
 ## Why JSON instead of IndexedDB
 
@@ -27,7 +32,7 @@ Use static version-controlled JSON because it is deterministic, inspectable in G
 
 The character ID is always `rae`.
 
-Locked traits:
+The following fields are a written transcription of the approved image, not an alternative design source:
 
 - adult Black woman / bunny girl;
 - warm medium-deep brown complexion matching the approved v1 reference;
@@ -54,7 +59,7 @@ Locked traits:
 
 ### Face rule
 
-Rae should look like Rae through head/face silhouette, glasses, smile/mouth shape, eye placement, complexion, 4C hairstyle, and general facial proportions.
+Rae should look like the approved Rae image through head/face silhouette, glasses, smile/mouth shape, eye placement, complexion, 4C hairstyle, and general facial proportions.
 
 Do **not** solve likeness by increasing realism. Skin pores, photographic gradients, realistic lens rendering, painterly facial detail, or photo-composite treatment are out of style.
 
@@ -100,7 +105,7 @@ Exercise demonstrations use a fixed camera, fixed logical canvas, fixed baseline
 
 ### `characters[]`
 
-Defines immutable identity/style locks and points to the canonical Rae v1 character bible.
+Stores written identity/style locks transcribed from the approved image.
 
 ### `assets[]`
 
@@ -115,9 +120,9 @@ For example, `rae-bodyweight-squat-side` may have source frames, a sprite sheet,
 ## Canonical motion pipeline
 
 ```text
-approved Rae v1 character bible
+approved Rae v1 image
         ↓
-approved key poses
+approved key poses visually matched to image
         ↓
 editable/source frame sequence
         ↓
@@ -152,7 +157,7 @@ planned
   ↓
 generated / frames-ready
   ↓
-review
+review against canonical image
   ├── rejected → regenerate/fix
   ↓
 approved
@@ -166,13 +171,13 @@ Only `approved` assets are eligible for production UI use unless a development s
 
 ### Canonical foundation
 
-1. locked character-bible reference;
-2. isolated canonical front/3/4/side/back source views;
+1. exact locked character-bible image;
+2. isolated canonical front/3/4/side/back source views derived from it;
 3. front 3/4 avatar;
 4. neutral portrait;
 5. expression pack;
 6. idle full-body pose;
-7. palette extraction;
+7. palette extraction from exact reference;
 8. ear/tail/tattoo/jewelry detail references;
 9. small-scale silhouette tests.
 
@@ -203,6 +208,8 @@ Bodyweight squat:
 
 ## Animation quality gate
 
+First question: **does every frame still visually look like the approved Rae image?**
+
 Reject a Rae asset or frame if it changes or violates:
 
 - complexion family;
@@ -230,7 +237,7 @@ Reject exercise interpolation that produces anatomically impossible limb transit
 
 Claude Code may validate the JSON database, generate TypeScript lookup helpers, build sprite players, select reduced/off-motion fallbacks, create asset audits, hash canonical sources, generate deterministic exports, and fail builds on missing approved runtime assets.
 
-Claude Code must not invent an unregistered Rae asset, redraw Rae from text memory, add human ears, change ear/tail colors, move/duplicate the lotus tattoo, replace the `A` pendant, substitute chunky jewelry, straighten Rae's 4C hair, change default footwear treatment, or silently substitute unrelated imagery.
+Claude Code must not invent an unregistered Rae asset, redraw Rae from text memory when the approved reference image is available, add human ears, change ear/tail colors, move/duplicate the lotus tattoo, replace the `A` pendant, substitute chunky jewelry, straighten Rae's 4C hair, change default footwear treatment, or silently substitute unrelated imagery.
 
 ## Recommended lookup API
 
@@ -241,17 +248,18 @@ assetDb.getExerciseAnimation('fs.bodyweight-squat', 'side-left')
 assetDb.getMotionFallback('rae-bodyweight-squat-side', motionPreference)
 ```
 
-The JSON registry remains source-of-truth data; generated TypeScript is disposable build output.
+The JSON registry is the source of truth for **asset IDs, paths, metadata, and lifecycle state**. The approved image is the source of truth for **Rae's appearance**. Generated TypeScript is disposable build output.
 
 ## Next production step
 
-The foundational Rae v1 identity is now approved. Do not redesign the character.
+The foundational Rae v1 appearance is approved. Do not redesign the character.
 
 Next:
 
-1. commit/materialize the approved character-bible raster at its canonical repository path;
-2. extract and lock the palette from that exact image;
-3. isolate clean source turnarounds/details from the approved design;
-4. build the squat gold-master key poses;
-5. produce the first deterministic frame/sprite pipeline;
-6. run the Rae production acceptance checklist before scaling to additional movements.
+1. commit/materialize the exact approved character-bible raster at its canonical repository path;
+2. verify the canonical SHA-256;
+3. extract and lock the palette from that exact image;
+4. isolate clean source turnarounds/details without redesigning Rae;
+5. build the squat gold-master key poses using the image as primary visual reference;
+6. produce the first deterministic frame/sprite pipeline;
+7. run `docs/RAE_PRODUCTION_ACCEPTANCE_CHECKLIST.md` before scaling to additional movements.
