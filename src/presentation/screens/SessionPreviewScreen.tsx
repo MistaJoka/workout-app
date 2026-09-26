@@ -38,7 +38,7 @@ export function SessionPreviewScreen() {
   }
 
   return (
-    <div className="p-4 space-y-4">
+    <div className="p-4 pb-28 space-y-4">
       <h1 className="text-xl font-bold">Session Preview</h1>
       <ul className="space-y-2">
         {plan.exercises.map((exercise) => (
@@ -52,13 +52,15 @@ export function SessionPreviewScreen() {
         ))}
       </ul>
       {error && <p className="text-sm text-accent">{error}</p>}
-      <button
-        className="btn-primary"
-        disabled={starting}
-        onClick={handleStart}
-      >
-        Start Workout
-      </button>
+      <div className="fixed bottom-0 left-0 right-0 border-t-2 border-edge bg-surface p-4">
+        <button
+          className="btn-primary btn-lg w-full"
+          disabled={starting}
+          onClick={handleStart}
+        >
+          Start Workout
+        </button>
+      </div>
     </div>
   )
 }

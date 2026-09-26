@@ -61,7 +61,7 @@ export function SessionCompleteScreen() {
   }
 
   return (
-    <div className="field-success min-h-screen rounded-none p-6 pt-16 text-center space-y-4">
+    <div className="field-success min-h-screen rounded-none p-6 pt-16 pb-28 text-center space-y-4">
       <p className="text-3xl font-extrabold">Workout complete</p>
       {result && (
         <p className="text-ink-muted">
@@ -101,9 +101,11 @@ export function SessionCompleteScreen() {
         </div>
       )}
 
-      <Link to="/" className="btn-primary">
-        Back to Today
-      </Link>
+      <div className="fixed bottom-0 left-0 right-0 border-t-2 border-edge bg-surface p-4">
+        <Link to="/" className="btn-primary btn-lg w-full">
+          Back to Today
+        </Link>
+      </div>
     </div>
   )
 }

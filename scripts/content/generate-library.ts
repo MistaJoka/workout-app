@@ -1,48 +1,37 @@
 // Generates the browsable exercise library from the pinned upstream
-// snapshot. Output is committed (src/domain/content/generated/) because the
-// app build needs it; re-run only when bumping the pinned revision.
+// snapshot, filtered down to the exercises the owner has checked off in the
+// curation checklist. Output is committed (src/domain/content/generated/)
+// because the app build needs it.
 //
 // Usage: npm run generate:library
-import { mkdirSync, writeFileSync } from 'node:fs'
+// Prerequisite: npm run library:review, then check the boxes in
+// content/staging/library-curation-checklist.md.
+import { mkdirSync, readFileSync, writeFileSync } from 'node:fs'
 import { dirname } from 'node:path'
-import { importFreeExerciseDb } from './importFreeExerciseDb'
-import { toLibraryExercise } from './toLibraryExercise'
-import { FREE_EXERCISE_DB_SOURCE } from './fixtures/freeExerciseDbSample'
-import type { UpstreamExerciseRecord } from './upstreamTypes'
+import { buildLibraryCandidates } from './buildLibraryCandidates'
+import { parseCurationChecklist } from './curationChecklist'
 import { validateContentPack } from '../../src/domain/content/schema'
 
-const REV = FREE_EXERCISE_DB_SOURCE.sourceRevision
-const SNAPSHOT_URL = `https://raw.githubusercontent.com/yuhonas/free-exercise-db/${REV}/dist/exercises.json`
 const OUTPUT_PATH = 'src/domain/content/generated/libraryExercises.json'
-
-// Exercises that also ship as curated Foundation Strength content have
-// their photos bundled locally; the library reuses those so they work
-// offline and don't double-download.
-const LOCAL_MEDIA_IDS = [
-  'Bodyweight_Squat',
-  'Incline_Push-Up',
-  'Single_Leg_Glute_Bridge',
-  'Dead_Bug',
-  'Plank',
-  'Bodyweight_Walking_Lunge',
-  'Butt_Lift_Bridge',
-  'Crunches',
-  'Superman',
-]
+const CHECKLIST_PATH = 'content/staging/library-curation-checklist.md'
 
 async function main() {
-  const response = await fetch(SNAPSHOT_URL)
-  if (!response.ok) throw new Error(`Upstream fetch failed: ${response.status}`)
-  const records = (await response.json()) as UpstreamExerciseRecord[]
+  const candidates = await buildLibraryCandidates()
 
-  const candidates = importFreeExerciseDb(records, FREE_EXERCISE_DB_SOURCE)
-  const localMedia = new Map(
-    LOCAL_MEDIA_IDS.map((id) => [id, { start: `/exercise-media/${id}/0.jpg`, finish: `/exercise-media/${id}/1.jpg` }])
-  )
+  const checklist = readFileSync(CHECKLIST_PATH, 'utf8')
+  const curatedIds = parseCurationChecklist(checklist)
+  if (curatedIds.size === 0) {
+    throw new Error(
+      `No checked exercises found in ${CHECKLIST_PATH} — run npm run library:review and get owner sign-off before generating the library.`
+    )
+  }
 
-  // Records with no instructions can't be coached; keep them out of the app.
-  const usable = candidates.filter((c) => c.instructions.length > 0)
-  const exercises = usable.map((c) => toLibraryExercise(c, localMedia))
+  const exercises = candidates.filter((e) => curatedIds.has(e.id))
+
+  const unmatched = [...curatedIds].filter((id) => !candidates.some((e) => e.id === id))
+  if (unmatched.length > 0) {
+    console.warn(`Checklist has ${unmatched.length} checked id(s) not found in the current upstream snapshot:`, unmatched)
+  }
 
   const validation = validateContentPack(
     { id: 'library', version: 1, name: 'library', dependsOn: [], exerciseIds: exercises.map((e) => e.id), templateIds: [] },
@@ -56,9 +45,7 @@ async function main() {
   mkdirSync(dirname(OUTPUT_PATH), { recursive: true })
   writeFileSync(OUTPUT_PATH, JSON.stringify(exercises) + '\n')
 
-  const warned = candidates.filter((c) => c.warnings.length > 0).length
-  console.log(`Wrote ${exercises.length} exercises -> ${OUTPUT_PATH}`)
-  console.log(`Skipped ${candidates.length - usable.length} with no instructions; ${warned} carried review warnings.`)
+  console.log(`Wrote ${exercises.length} exercises -> ${OUTPUT_PATH} (${candidates.length} candidates, ${curatedIds.size} checked)`)
 }
 
 main().catch((error) => {

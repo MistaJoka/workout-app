@@ -9,15 +9,18 @@ import {
   saveCustomTemplate,
 } from '../../infrastructure/db/repositories/customTemplateRepository'
 import { Chip } from './LibraryScreen'
+import { buildEditRows, type EditRow } from './routineBuilderRows'
+import { FilterSheet } from '../components/FilterSheet'
 import { kgToUnit, roundToStep, stepInUnit, unitToKg } from '../units'
 import { useWeightUnit } from '../components/useWeightUnit'
 
-type Row = { exercise: Exercise; sets: number; reps?: number; timeSeconds?: number; restSeconds: number; weightKg?: number }
+type Row = EditRow
 
 function defaultRow(exercise: Exercise): Row {
   const timed = !exercise.prescriptionCapabilities.reps
   const weighted = exercise.prescriptionCapabilities.weight === true
   return {
+    exerciseId: exercise.id,
     exercise,
     sets: 3,
     reps: timed ? undefined : 10,
@@ -48,20 +51,13 @@ export function RoutineBuilderScreen() {
         if (template && !cancelled) {
           const exercises = await getExercises(template.exercises.map((e) => e.exerciseId))
           setName(template.name)
-          setRows(
-            template.exercises
-              .map((te) => {
-                const exercise = exercises.get(te.exerciseId)
-                return exercise ? { exercise, ...te.prescription } : null
-              })
-              .filter((r): r is Row => r !== null)
-          )
+          setRows(buildEditRows(template, exercises))
         }
       }
       const add = params.get('add')
       if (add) {
         const exercise = (await getExercises([add])).get(add)
-        if (exercise && !cancelled) setRows((r) => (r.some((x) => x.exercise.id === add) ? r : [...r, defaultRow(exercise)]))
+        if (exercise && !cancelled) setRows((r) => (r.some((x) => x.exerciseId === add) ? r : [...r, defaultRow(exercise)]))
       }
       if (!cancelled) setLoaded(true)
     }
@@ -95,7 +91,7 @@ export function RoutineBuilderScreen() {
       name: name.trim(),
       packId: 'custom',
       exercises: rows.map<WorkoutTemplateExercise>((row, order) => ({
-        exerciseId: row.exercise.id,
+        exerciseId: row.exerciseId,
         exerciseVersion: 1,
         prescription: {
           sets: row.sets,
@@ -117,7 +113,7 @@ export function RoutineBuilderScreen() {
   if (picking) {
     return (
       <ExercisePicker
-        excludeIds={rows.map((r) => r.exercise.id)}
+        excludeIds={rows.map((r) => r.exerciseId)}
         onPick={(exercise) => {
           setRows((r) => [...r, defaultRow(exercise)])
           setPicking(false)
@@ -151,12 +147,14 @@ export function RoutineBuilderScreen() {
 
       <ul className="space-y-3">
         {rows.map((row, index) => (
-          <li key={row.exercise.id} className="card p-3 space-y-3">
+          <li key={row.exerciseId} className="card p-3 space-y-3">
             <div className="flex items-center gap-2">
-              {row.exercise.mediaManifest.start && (
+              {row.exercise?.mediaManifest.start && (
                 <img src={row.exercise.mediaManifest.start} alt="" className="h-12 w-16 flex-none rounded-panel object-cover" />
               )}
-              <p className="min-w-0 flex-1 truncate font-semibold">{row.exercise.name}</p>
+              <p className="min-w-0 flex-1 truncate font-semibold">
+                {row.exercise ? row.exercise.name : 'Exercise no longer available'}
+              </p>
               <button className="px-2 text-ink-muted" aria-label="Move up" onClick={() => move(index, -1)}>
                 ↑
               </button>
@@ -296,13 +294,8 @@ function ExercisePicker({
   )
 
   return (
-    <div className="p-4 space-y-3">
-      <div className="flex items-center justify-between">
-        <h1 className="text-lg font-bold">Add exercise</h1>
-        <button className="text-sm text-ink-muted" onClick={onClose}>
-          Cancel
-        </button>
-      </div>
+    <div className="p-4 pb-24 space-y-3">
+      <h1 className="text-lg font-bold">Add exercise</h1>
       <input
         type="search"
         autoFocus
@@ -311,20 +304,28 @@ function ExercisePicker({
         onChange={(e) => setQuery(e.target.value)}
         className="input"
       />
-      <div className="flex gap-2 overflow-x-auto pb-1">
-        {MUSCLE_GROUPS.map((g) => (
-          <Chip key={g.id} active={muscle === g.id} onClick={() => setMuscle(muscle === g.id ? undefined : g.id)}>
-            {g.label}
-          </Chip>
-        ))}
-      </div>
-      <div className="flex gap-2 overflow-x-auto pb-1">
-        {EQUIPMENT_OPTIONS.map((o) => (
-          <Chip key={o.id} active={equipment === o.id} onClick={() => setEquipment(equipment === o.id ? undefined : o.id)}>
-            {o.label}
-          </Chip>
-        ))}
-      </div>
+      <FilterSheet activeCount={[muscle, equipment].filter(Boolean).length} triggerBottomClassName="bottom-40">
+        <div className="space-y-2">
+          <p className="text-sm font-semibold text-ink-muted">Muscle</p>
+          <div className="flex gap-2 overflow-x-auto pb-1">
+            {MUSCLE_GROUPS.map((g) => (
+              <Chip key={g.id} active={muscle === g.id} onClick={() => setMuscle(muscle === g.id ? undefined : g.id)}>
+                {g.label}
+              </Chip>
+            ))}
+          </div>
+        </div>
+        <div className="space-y-2">
+          <p className="text-sm font-semibold text-ink-muted">Equipment</p>
+          <div className="flex gap-2 overflow-x-auto pb-1">
+            {EQUIPMENT_OPTIONS.map((o) => (
+              <Chip key={o.id} active={equipment === o.id} onClick={() => setEquipment(equipment === o.id ? undefined : o.id)}>
+                {o.label}
+              </Chip>
+            ))}
+          </div>
+        </div>
+      </FilterSheet>
       {library === null && <p className="text-ink-muted">Loading library…</p>}
       <ul className="space-y-2">
         {results.slice(0, 40).map((exercise) => (
@@ -350,6 +351,15 @@ function ExercisePicker({
           </li>
         ))}
       </ul>
+
+      {/* Fixed bottom Cancel replaces the old top-right text link, which (a)
+          required a top-corner reach and (b) visually overlapped the
+          ProfileSwitcher avatar in that same corner. */}
+      <div className="fixed bottom-16 left-0 right-0 border-t-2 border-edge bg-surface p-4">
+        <button className="btn-secondary w-full" onClick={onClose}>
+          Cancel
+        </button>
+      </div>
     </div>
   )
 }

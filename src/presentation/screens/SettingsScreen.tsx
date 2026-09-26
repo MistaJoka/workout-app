@@ -67,7 +67,7 @@ export function SettingsScreen() {
 
       <section className="space-y-2">
         <p className="font-semibold">Theme</p>
-        <div className="flex gap-2">
+        <div className="flex justify-end gap-2">
           <ThemeButton label="Pixel Bloom" active={theme === 'pixel-bloom'} onClick={() => setTheme('pixel-bloom')} />
           <ThemeButton label="Savage Core" active={theme === 'savage-core'} onClick={() => setTheme('savage-core')} />
         </div>
@@ -75,7 +75,7 @@ export function SettingsScreen() {
 
       <section className="space-y-2">
         <p className="font-semibold">Motion</p>
-        <div className="flex gap-2">
+        <div className="flex justify-end gap-2">
           {(['full', 'reduced', 'off'] as const).map((option) => (
             <ThemeButton key={option} label={option} active={motion === option} onClick={() => setMotion(option)} capitalize />
           ))}
@@ -84,7 +84,7 @@ export function SettingsScreen() {
 
       <section className="space-y-2">
         <p className="font-semibold">Weight unit</p>
-        <div className="flex gap-2">
+        <div className="flex justify-end gap-2">
           <ThemeButton label="lb" active={unit === 'lb'} onClick={() => setUnit('lb')} />
           <ThemeButton label="kg" active={unit === 'kg'} onClick={() => setUnit('kg')} />
         </div>
@@ -92,7 +92,7 @@ export function SettingsScreen() {
 
       <section className="space-y-2">
         <p className="font-semibold">Rest timer</p>
-        <div className="flex gap-2">
+        <div className="flex justify-end gap-2">
           <ThemeButton
             label={`Sound ${feedback.sound ? 'on' : 'off'}`}
             active={feedback.sound}
@@ -108,7 +108,7 @@ export function SettingsScreen() {
 
       <section className="space-y-2">
         <p className="font-semibold">Backup</p>
-        <div className="flex gap-2">
+        <div className="flex justify-end gap-2">
           <button className="btn-secondary" onClick={handleExport}>
             Export data
           </button>

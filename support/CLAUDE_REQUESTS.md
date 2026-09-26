@@ -61,6 +61,18 @@ Use this mailbox when implementation reaches a product/data/spec/asset/test gap 
 **Constraints already known:** one shared component tree, themes control semantic tokens only, exercise content/behavior does not change by theme, must respect `prefers-reduced-motion`.
 **Proposed fallback if unresolved:** ship both themes as minimal, clearly-placeholder token sets (e.g. two contrasting but unpolished palettes) so the theme-switching *architecture* can be built and tested now; explicitly not treating the placeholder visuals as the delivered "first-class" theme design.
 
+## REQ-20260926-001 — Owner curation of the exercise Library allowlist
+
+**Status:** OPEN — mechanism built, awaiting the owner's checked boxes
+**Blocking:** no (the app runs fine on the existing generated library until this is resolved; `npm run generate:library` will refuse to run once a checklist exists but has nothing checked, so this only blocks a *future* regeneration, not current behavior)
+**Implementation context:** `scripts/content/list-library-candidates.ts` (generates `content/staging/library-curation-checklist.md`), `scripts/content/curationChecklist.ts` (parses it), `scripts/content/generate-library.ts` (consumes it, refuses to run on an empty checklist)
+**Need:** a human to open `content/staging/library-curation-checklist.md` and check every exercise that's appropriate to ship, then run `npm run generate:library`.
+**Why it matters:** the app's second real user is 300 lb, 36F, with right ankle pronation and occasional joint achiness, and wants an introductory/caring/supportive experience — not a wall of 871 exercises including barbell/olympic-lifting/plyometric content. `CLAUDE.md` explicitly forbids inventing exercise equivalence edges or safety rules, so deciding which of the ~399 pre-filtered candidates are actually appropriate for her body is a real human judgment, not something to infer from metadata.
+**This is specifically an owner task, not a ChatGPT support-agent task.** Per `CLAUDE.md`'s support-agent boundary, ChatGPT is the R&D/spec/data/asset layer — but this isn't a data-gathering gap, it's a safety judgment about a real person's actual body, so it should not be delegated to any AI, ChatGPT included.
+**Requested output:** decision (checked boxes in the checklist file, committed)
+**Constraints already known:** the pre-filter (`level=beginner`, excludes plyometrics/powerlifting/olympic weightlifting/strongman categories, barbell/e-z-curl-bar equipment, and isolation-mechanic exercises) only narrows what's shown for review (199 of 871 as of 2026-09-26) — loosen it and re-run `npm run library:review` if something outside it should be considered too. Checking a box is the only thing that adds an exercise to the shipped library.
+**Proposed fallback if unresolved:** none — the previously-generated `libraryExercises.json` (871 exercises) keeps shipping until this is resolved; nothing regressed by leaving this open.
+
 ## Template
 
 ```md

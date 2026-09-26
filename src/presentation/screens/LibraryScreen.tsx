@@ -7,6 +7,7 @@ import type { Exercise } from '../../domain/content/types'
 import { foundationStrengthStarterTemplates } from '../../domain/content/fixtures/foundationStrengthStarter'
 import { listCustomTemplates } from '../../infrastructure/db/repositories/customTemplateRepository'
 import type { WorkoutTemplate } from '../../domain/content/types'
+import { FilterSheet } from '../components/FilterSheet'
 
 const PAGE = 40
 
@@ -21,7 +22,7 @@ export function LibraryScreen() {
     listCustomTemplates().then(setCustom)
   }, [])
 
-  // Filtering ~870 rows is deferred so the keystroke paints first and the
+  // Filtering the library is deferred so the keystroke paints first and the
   // list catches up; the input itself stays bound to the live filters.
   const deferredFilters = useDeferredValue(filters)
   const results = useMemo(
@@ -36,8 +37,11 @@ export function LibraryScreen() {
   }
 
   return (
-    <div className="p-4 space-y-4">
-      <div className="flex items-baseline justify-between">
+    <div className="p-4 pb-20 space-y-4">
+      {/* pr-14 keeps this clear of the fixed ProfileSwitcher avatar in the
+          same corner — without it the button text renders half-hidden
+          behind the avatar. */}
+      <div className="flex items-baseline justify-between pr-14">
         <h1 className="text-xl font-bold">Library</h1>
         <Link to="/routines/new" className="btn-primary btn-sm">
           + New routine
@@ -78,27 +82,38 @@ export function LibraryScreen() {
           }}
           className="input"
         />
-        <ChipRow>
-          {MUSCLE_GROUPS.map((g) => (
-            <Chip key={g.id} active={filters.muscle === g.id} onClick={() => toggle('muscle', g.id)}>
-              {g.label}
-            </Chip>
-          ))}
-        </ChipRow>
-        <ChipRow>
-          {EQUIPMENT_OPTIONS.map((o) => (
-            <Chip key={o.id} active={filters.equipment === o.id} onClick={() => toggle('equipment', o.id)}>
-              {o.label}
-            </Chip>
-          ))}
-        </ChipRow>
-        <ChipRow>
-          {(['beginner', 'intermediate', 'expert'] as const).map((l) => (
-            <Chip key={l} active={filters.level === l} onClick={() => toggle('level', l)}>
-              {l[0].toUpperCase() + l.slice(1)}
-            </Chip>
-          ))}
-        </ChipRow>
+        <FilterSheet activeCount={[filters.muscle, filters.equipment, filters.level].filter(Boolean).length}>
+          <div className="space-y-2">
+            <p className="text-sm font-semibold text-ink-muted">Muscle</p>
+            <ChipRow>
+              {MUSCLE_GROUPS.map((g) => (
+                <Chip key={g.id} active={filters.muscle === g.id} onClick={() => toggle('muscle', g.id)}>
+                  {g.label}
+                </Chip>
+              ))}
+            </ChipRow>
+          </div>
+          <div className="space-y-2">
+            <p className="text-sm font-semibold text-ink-muted">Equipment</p>
+            <ChipRow>
+              {EQUIPMENT_OPTIONS.map((o) => (
+                <Chip key={o.id} active={filters.equipment === o.id} onClick={() => toggle('equipment', o.id)}>
+                  {o.label}
+                </Chip>
+              ))}
+            </ChipRow>
+          </div>
+          <div className="space-y-2">
+            <p className="text-sm font-semibold text-ink-muted">Level</p>
+            <ChipRow>
+              {(['beginner', 'intermediate', 'expert'] as const).map((l) => (
+                <Chip key={l} active={filters.level === l} onClick={() => toggle('level', l)}>
+                  {l[0].toUpperCase() + l.slice(1)}
+                </Chip>
+              ))}
+            </ChipRow>
+          </div>
+        </FilterSheet>
 
         {library === null && <p className="text-ink-muted">Loading library…</p>}
         {library && (

@@ -209,6 +209,14 @@ Required distinction:
 
 For important exercise guidance keep provenance, source revision/license and review status inspectable.
 
+### Library curation workflow
+
+The generated library (`src/domain/content/generated/libraryExercises.json`) does not ship the full upstream free-exercise-db set — it ships only what the app's owner has explicitly approved for the real people using the app, per CLAUDE.md's ban on inventing safety/appropriateness rules.
+
+Workflow: `npm run library:review` (`scripts/content/list-library-candidates.ts`) fetches the pinned upstream snapshot and applies a *visibility-only* pre-filter (currently `level=beginner`, excluding plyometrics/powerlifting/olympic-weightlifting/strongman categories, barbell/e-z-curl-bar equipment, and isolation-mechanic exercises — the last a program-structure default, not a claim about any individual's condition) to produce `content/staging/library-curation-checklist.md` — a plain checkbox list, grouped by category/equipment, with every box starting unchecked. The owner checks the exercises they approve. `npm run generate:library` then reads only the checked ids (`scripts/content/curationChecklist.ts`) and refuses to run if nothing is checked, rather than silently falling back to shipping everything. See `support/CLAUDE_REQUESTS.md` REQ-20260926-001 for the open curation pass.
+
+The pre-filter constants exist only to keep the review list manageable; loosening them and re-running `library:review` never changes what ships by itself — only checked boxes do that.
+
 ## 11. Workout player
 
 The Workout Player is the highest-priority interaction surface.

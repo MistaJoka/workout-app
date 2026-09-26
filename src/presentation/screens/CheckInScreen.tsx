@@ -58,7 +58,7 @@ export function CheckInScreen() {
   }
 
   return (
-    <div className="p-4 space-y-6">
+    <div className="p-4 pb-28 space-y-6">
       <div>
         <p className="text-sm text-ink-muted">{template.name}</p>
         <h1 className="text-xl font-bold">How are you feeling?</h1>
@@ -74,13 +74,15 @@ export function CheckInScreen() {
         step={5}
         unit=" min"
       />
-      <button
-        className="btn-primary btn-lg w-full"
-        disabled={busy}
-        onClick={handleContinue}
-      >
-        Continue
-      </button>
+      <div className="fixed bottom-0 left-0 right-0 border-t-2 border-edge bg-surface p-4">
+        <button
+          className="btn-primary btn-lg w-full"
+          disabled={busy}
+          onClick={handleContinue}
+        >
+          Continue
+        </button>
+      </div>
     </div>
   )
 }
@@ -107,7 +109,7 @@ function RangeField({
   unit?: string
 }) {
   return (
-    <label className="block space-y-1">
+    <div className="space-y-1">
       <span className="flex justify-between text-sm">
         <span className="font-semibold">{label}</span>
         <span className="text-ink-muted">
@@ -117,6 +119,7 @@ function RangeField({
       </span>
       <input
         type="range"
+        aria-label={label}
         min={min}
         max={max}
         step={step}
@@ -130,6 +133,27 @@ function RangeField({
           <span>{high}</span>
         </span>
       )}
-    </label>
+      {/* Grouped together on the reachable side rather than at the slider's
+          own extremes, so reaching a low/high value never means a drag to
+          the far edge of the screen. */}
+      <div className="flex justify-end gap-2 pt-1">
+        <button
+          type="button"
+          className="stepper-btn"
+          aria-label={`Decrease ${label}`}
+          onClick={() => onChange(Math.max(min, value - step))}
+        >
+          −
+        </button>
+        <button
+          type="button"
+          className="stepper-btn"
+          aria-label={`Increase ${label}`}
+          onClick={() => onChange(Math.min(max, value + step))}
+        >
+          +
+        </button>
+      </div>
+    </div>
   )
 }

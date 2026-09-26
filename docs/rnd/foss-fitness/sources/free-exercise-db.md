@@ -377,3 +377,5 @@ Build the importer against a deliberately small fixture set covering:
 6. duplicate/variant naming
 
 Once those pass local validation and provenance checks, scale the same pipeline to the full source snapshot.
+
+**Update, 2026-09-26:** the pipeline was scaled to the full snapshot (871 exercises generated), but that full set was never meant to be the shipped library — it's since been hand-curated back down via an owner-reviewed checklist (`npm run library:review` / `content/staging/library-curation-checklist.md`, see `docs/SOURCE_OF_TRUTH_V07.md` §10 and `support/CLAUDE_REQUESTS.md` REQ-20260926-001). The advice above still holds for *review effort*, not raw import volume: importing broadly is fine once the pipeline is trustworthy, but shipping broadly to real users is a separate, human decision.

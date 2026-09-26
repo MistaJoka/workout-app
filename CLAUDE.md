@@ -45,7 +45,7 @@ Always `git fetch origin` before pushing: the ChatGPT support agent commits dire
 - No mandatory account/auth/cloud sync.
 - Multiple **local profiles** may exist on one device (`src/infrastructure/profiles.ts`: one Dexie database per profile, switching reloads the page); they are not authenticated users and their local data must remain isolated.
 - Local persistence uses IndexedDB/Dexie. Schema versions are additive only (`src/infrastructure/db/schema.ts`).
-- Curated starter content (`src/domain/content/fixtures/`) and a broad discovery library (free-exercise-db, Unlicense, pinned revision in `scripts/content/`, imported by script, never hand-edited) coexist, with provenance/review status kept distinct.
+- Curated starter content (`src/domain/content/fixtures/`) and a discovery library (free-exercise-db, Unlicense, pinned revision in `scripts/content/`, imported by script, never hand-edited) coexist, with provenance/review status kept distinct. The discovery library is owner-curated, not the full upstream set: `npm run library:review` generates a pre-filtered candidate checklist (`content/staging/library-curation-checklist.md`), the owner hand-checks which exercises to include (this is a real safety/appropriateness judgment per the "never invent safety rules" rule above, not automatable), and `npm run generate:library` only ships checked exercises. See REQ-20260926-001.
 - User-created local routines (`customTemplates`) and weekly scheduling are supported secondary flows.
 - Weights: kg internally, lb/kg is a display setting (`src/presentation/units.ts`). Never store lb.
 - Starting a workout creates an immutable SessionPlan snapshot.

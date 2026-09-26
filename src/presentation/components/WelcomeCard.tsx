@@ -20,7 +20,7 @@ export function WelcomeCard() {
       <ul className="space-y-1 text-sm text-ink-muted">
         <li>Tap a workout below to start. The one marked "up next" keeps you alternating.</li>
         <li>During a workout, every screen shows the movement and its steps.</li>
-        <li>Build your own routines from 870+ exercises in Library.</li>
+        <li>Build your own routines from the exercises in Library.</li>
       </ul>
       <button
         className="btn-primary"

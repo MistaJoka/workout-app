@@ -32,8 +32,8 @@ function normalize(text: string): string {
 }
 
 // The normalized search text for an exercise, computed once per exercise
-// object: the library is ~870 immutable records and search runs per
-// keystroke, so re-normalizing every haystack each time was the cost.
+// object: library records are immutable and search runs per keystroke, so
+// re-normalizing every haystack each time was the cost.
 const haystacks = new WeakMap<Exercise, string>()
 
 export function searchHaystack(e: Exercise): string {
