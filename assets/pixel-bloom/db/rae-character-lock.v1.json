@@ -1,5 +1,5 @@
 {
-  "schemaVersion": "1.0.0",
+  "schemaVersion": "1.1.0",
   "characterId": "rae",
   "version": "1.0.0",
   "status": "locked",
@@ -9,15 +9,19 @@
     "sourceFilename": "rae_pixel_bloom_character_bible.png",
     "width": 1536,
     "height": 1024,
+    "bytes": 2198087,
     "sha256": "e0390ef9d39fe92d2d93544d62cb0568a6e9e2b3cd5e6e8305c333b7f3217beb"
   },
   "authority": {
-    "characterBible": "docs/RAE_CHARACTER_BIBLE_V1.md",
+    "primary": "canonicalReference visual depiction",
+    "secondary": "explicit project-owner visual corrections and approvals that produced the canonical reference",
+    "supportingDocumentation": "docs/RAE_CHARACTER_BIBLE_V1.md",
     "productionPipeline": "docs/RAE_PRODUCTION_ASSET_PIPELINE.md",
     "assetDb": "assets/pixel-bloom/db/asset-db.json",
-    "rule": "Written canonical locks override incidental AI-rendered labels inside reference artwork."
+    "rule": "The exact approved image is the source of truth for how Rae looks. Supporting documents describe and enforce the image. If a document conflicts with the approved visual depiction, correct the document; do not reinterpret the image from text.",
+    "embeddedTextRule": "Incidental AI-rendered labels inside the image are not semantic authority when they contradict the depicted visual character or explicit owner approval."
   },
-  "identity": {
+  "identityObservedFromApprovedImage": {
     "name": "Rae",
     "characterType": "bunny-girl",
     "ageRead": "adult-woman",
@@ -25,8 +29,7 @@
     "hair": {
       "color": "black",
       "texture": "4C",
-      "silhouette": "voluminous natural 4C updo/puff with tightly coiled texture",
-      "forbidden": ["straight", "straightened", "silky-straight", "generic-wavy"]
+      "silhouette": "voluminous natural 4C updo/puff with tightly coiled texture"
     },
     "ears": {
       "countTotal": 2,
@@ -46,46 +49,29 @@
       "count": 1,
       "design": "project-owner-supplied black-gray lotus",
       "side": "anatomical-left",
-      "placement": "upper chest/front shoulder directly under left collarbone near shoulder, slightly under/overlapped by left top strap",
-      "forbiddenPlacements": ["outside-deltoid", "upper-arm", "center-chest", "right-side"]
+      "placement": "upper chest/front shoulder under left collarbone near shoulder, slightly under/overlapped by left top strap"
     },
     "jewelry": {
       "necklace": "thin gold chain with small A pendant worn for husband",
-      "rings": "thin dainty layered bands only",
-      "forbiddenRings": ["large-rocks", "chunky-rings", "thick-statement-rings"]
+      "rings": "thin dainty layered bands"
     },
     "outfit": {
       "top": "pink fitted Pixel Bloom training top",
       "bottom": "lavender high-waisted athletic leggings",
-      "shoes": "black-and-white Panda-Dunk-inspired genericized sneakers without protected logos"
+      "shoes": "black-and-white Panda-Dunk-inspired genericized sneakers"
     },
     "body": "adult fuller/curvy, strong, athletic, grounded proportions"
   },
-  "style": {
-    "art": "high-bit late-handheld/GBA-era-inspired pixel art without copying franchise assets",
-    "face": "stylized pixel-art likeness, never photoreal",
+  "styleObservedFromApprovedImage": {
+    "art": "high-bit late-handheld/GBA-era-inspired pixel art",
+    "face": "stylized pixel-art likeness, not photoreal",
     "outline": "selective color-matched outlines / selout",
-    "scaling": "integer nearest-neighbor only for canonical pixel masters",
+    "gaze": "direct viewer gaze not required"
+  },
+  "productionTechnicalRules": {
     "fullBodyLogicalCanvas": [256, 256],
     "defaultRuntimeExport": [512, 512],
-    "gaze": "action-directed/off-axis allowed; direct viewer gaze not required"
+    "scaling": "integer nearest-neighbor for canonical pixel masters"
   },
-  "automaticRejectConditions": [
-    "any visible human ear",
-    "ear count other than two",
-    "outer ear not tan",
-    "inner ear not flesh pink",
-    "tail not brown",
-    "hair not black 4C",
-    "straight or straightened hair",
-    "more than one tattoo on Rae",
-    "wrong lotus design",
-    "lotus not under anatomical left collarbone near shoulder",
-    "necklace pendant not A when pendant is visible",
-    "oversized pendant",
-    "chunky or large-rock rings",
-    "default shoes not black-and-white",
-    "photoreal face",
-    "teen/child age read"
-  ]
+  "reviewRule": "A future asset can satisfy every text field and still fail if it does not visually match the approved canonical image."
 }
