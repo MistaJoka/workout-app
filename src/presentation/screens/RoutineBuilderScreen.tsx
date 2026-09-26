@@ -253,7 +253,7 @@ function Stepper({
         >
           −
         </button>
-        <span className="font-semibold tabular-nums">
+        <span className="hud-num font-semibold tabular-nums">
           {value}
           {unit}
         </span>

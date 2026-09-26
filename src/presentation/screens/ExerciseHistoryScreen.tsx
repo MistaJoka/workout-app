@@ -95,7 +95,7 @@ export function ExerciseHistoryScreen() {
 function Stat({ value, label }: { value: string | number; label: string }) {
   return (
     <div className="flex-1 field-info p-3 text-center">
-      <p className="text-xl font-bold">{value}</p>
+      <p className="hud-num text-2xl font-bold">{value}</p>
       <p className="text-xs text-ink-muted">{label}</p>
     </div>
   )

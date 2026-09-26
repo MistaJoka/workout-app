@@ -53,7 +53,7 @@ Always `git fetch origin` before pushing: the ChatGPT support agent commits dire
 - Never invent exercises, equipment, exercise equivalence/substitution edges, or safety rules.
 - Exercise/character/media art is authored externally, reviewed, then consumed as static/runtime assets. Curated photos live in `public/exercise-media/`; library photos are fetched from the pinned upstream revision and cached by the service worker. No runtime image-generation API.
 - No runtime LLM coach, camera pose tracking, microphone coach or required wearable integration.
-- Exactly two first-class themes: `pixel-bloom` and `savage-core`, sharing routes, components, domain logic, exercise data and execution semantics.
+- Exactly two first-class themes: `pixel-bloom` and `savage-core`, sharing routes, components, domain logic, exercise data and execution semantics. Savage Core (tactical HUD) is the default; its geometry lives only in `[data-theme='savage-core']` rules in `src/index.css`. Components tagged `btn-*`/`field-*` via `@apply` do not carry the base `.btn`/`.field` class, so theme selectors must list them (`:is(...)`). E2E runs every journey under both themes (Playwright projects).
 - Motion preference: `full`, `reduced`, `off`. A motion setting (app-level or OS `prefers-reduced-motion`) must never remove information.
 
 ## Architecture rules
