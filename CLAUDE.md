@@ -22,6 +22,19 @@ Focused docs include:
 - `docs/PIXEL_BLOOM_FRONTEND_CONTEXT.md`
 - `docs/rnd/foss-fitness/LICENSE_REGISTER.md` — permissive sources may be adapted; GPL/AGPL are spec-only.
 
+### Mandatory Rae context
+
+Before generating, editing, integrating, exporting, testing, or reviewing **any Rae asset**, load:
+
+1. `assets/pixel-bloom/db/rae-character-lock.v1.json`
+2. `docs/RAE_CHARACTER_BIBLE_V1.md`
+3. `docs/RAE_AI_GENERATION_CONTRACT.md`
+4. `docs/RAE_ASSET_QA_GATE.md`
+5. `docs/RAE_PRODUCTION_ASSET_PIPELINE.md`
+6. `assets/pixel-bloom/db/asset-db.json`
+
+Rae is a locked versioned production character, not a prompt concept. Explicit semantic fields in the lock/bible override ambiguous visual inference. The canonical raster controls visual likeness, proportions, silhouette, palette relationships, and pixel-art treatment where semantics are not explicit. Never use model defaults to invent anatomy, hair, jewelry, tattoo placement, colors, footwear, or accessories.
+
 `docs/SOURCE_OF_TRUTH_V06.md` and old `docs/superpowers/` plans are historical context where v0.7 supersedes them.
 
 The pre-reconciliation prototype remains preserved on branch `legacy-mvp-2026-09-13` at commit `03cc3a4a9190e29cb81c6ff8ed3b688a02a4d07c`.
@@ -105,6 +118,8 @@ ChatGPT + human approval own Pixel Bloom creative source material and visual spe
 Do not regenerate or visually reinterpret a missing approved mascot/world asset merely to fill a slot. Use an explicit temporary placeholder/fallback until the approved asset exists.
 
 Use `docs/PIXEL_BLOOM_FRONTEND_CONTEXT.md` for format/motion/integration rules.
+
+For Rae specifically, the semantic lock and generation contract are mandatory. Never infer Rae from a screenshot alone.
 
 ## Support-agent boundary
 

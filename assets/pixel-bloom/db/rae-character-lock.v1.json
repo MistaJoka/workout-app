@@ -1,0 +1,120 @@
+{
+  "schemaVersion": "1.2.0",
+  "characterId": "rae",
+  "version": "1.0.0",
+  "status": "locked",
+  "approvedAt": "2026-09-26",
+  "canonicalReference": {
+    "repoPath": "assets/pixel-bloom/character/rae/reference/pb-rae-character-bible-v1.png",
+    "sourceFilename": "rae_pixel_bloom_character_bible.png",
+    "width": 1536,
+    "height": 1024,
+    "bytes": 2198087,
+    "sha256": "e0390ef9d39fe92d2d93544d62cb0568a6e9e2b3cd5e6e8305c333b7f3217beb"
+  },
+  "authority": {
+    "semanticPrimary": "this lock JSON",
+    "semanticSecondary": "docs/RAE_CHARACTER_BIBLE_V1.md",
+    "visualPrimary": "canonicalReference raster",
+    "generationContract": "docs/RAE_AI_GENERATION_CONTRACT.md",
+    "qaGate": "docs/RAE_ASSET_QA_GATE.md",
+    "productionPipeline": "docs/RAE_PRODUCTION_ASSET_PIPELINE.md",
+    "assetDb": "assets/pixel-bloom/db/asset-db.json",
+    "conflictRule": "Explicit semantic fields in this lock and the character bible override ambiguous visual inference. The canonical raster controls visual likeness, proportions, silhouette, palette relationships and pixel-art rendering where semantics are not explicitly specified.",
+    "noInferenceRule": "AI must not infer or invent identity details that are explicit here. If a detail is not specified and cannot be safely derived from canonical visual references, preserve the nearest canonical state or mark it unspecified instead of hallucinating.",
+    "embeddedTextRule": "AI-rendered labels inside reference images are not metadata authority."
+  },
+  "identity": {
+    "name": "Rae",
+    "characterType": "adult-bunny-girl",
+    "ageRead": "adult-woman",
+    "role": ["guide", "coach", "mascot", "workout-companion", "progression-character"],
+    "personality": ["kind", "calm", "confident", "supportive", "playful", "determined"],
+    "skinTone": "warm-medium-deep-brown",
+    "hair": {
+      "color": "black",
+      "texture": "4C-natural",
+      "silhouette": "voluminous-natural-updo-puff-with-tight-coils-and-selected-tendrils",
+      "forbidden": ["straight", "straightened", "silky-straight", "loose-wave", "generic-curly", "brown-dominant"]
+    },
+    "ears": {
+      "countTotal": 2,
+      "type": "bunny-only",
+      "humanEars": false,
+      "outerColor": "tan",
+      "innerColor": "soft-flesh-pink",
+      "shape": "moderately-long-semi-upright-soft-natural-bend",
+      "forbidden": ["human-ears", "four-ears", "white-ears", "fully-pink-ears", "extreme-floppy-ears"]
+    },
+    "tail": {
+      "count": 1,
+      "type": "small-round-fluffy-bunny-tail",
+      "color": "brown",
+      "forbidden": ["white-tail", "pink-tail", "oversized-tail", "long-tail"]
+    },
+    "glasses": {
+      "type": "thin-round-wire-frame",
+      "color": "gold"
+    },
+    "tattoo": {
+      "count": 1,
+      "design": "owner-supplied-black-gray-lotus",
+      "side": "anatomical-left",
+      "placement": "under-left-collarbone-near-left-shoulder-front-deltoid-transition-slightly-under-left-top-strap",
+      "forbidden": ["second-tattoo", "outer-upper-arm", "right-side", "center-chest", "alternate-flower"]
+    },
+    "jewelry": {
+      "necklace": {
+        "chain": "thin-delicate-gold",
+        "pendant": "small-letter-A",
+        "meaning": "husband-initial",
+        "forbidden": ["letter-R", "large-medallion", "chunky-chain"]
+      },
+      "rings": {
+        "style": "thin-dainty-layered-stacked-bands",
+        "colorFamily": "fine-gold",
+        "forbidden": ["large-rocks", "large-stones", "chunky-rings", "thick-statement-bands"]
+      }
+    },
+    "body": "adult-fuller-curvy-strong-athletic-grounded-proportions",
+    "outfit": {
+      "top": "pink-fitted-Pixel-Bloom-training-top",
+      "bottom": "lavender-high-waisted-athletic-leggings",
+      "shoes": "black-white-Panda-Dunk-inspired-genericized-low-top-sneakers"
+    },
+    "gaze": "direct-viewer-gaze-optional-action-directed-or-natural-off-axis-preferred"
+  },
+  "style": {
+    "art": "high-bit-late-handheld-GBA-era-inspired-pixel-art",
+    "face": "stylized-pixel-art-likeness-not-photoreal",
+    "pixelLanguage": "intentional-visible-pixel-clusters-crisp-silhouettes-controlled-high-color-shading",
+    "outline": "selective-color-matched-selout",
+    "antiAlias": "minimal-controlled-preserve-visible-pixel-structure",
+    "hairRendering": "black-4C-texture-readable-at-portrait-and-sprite-scale",
+    "uiSeparation": "pixel-character-environment-clean-vector-CSS-interface",
+    "forbidden": ["photorealism", "smooth-digital-paint", "generic-modern-anime", "pixel-filter-over-smooth-art", "heavy-blur", "frame-anatomy-drift"]
+  },
+  "production": {
+    "fullBodyLogicalCanvas": [256, 256],
+    "defaultRuntimeExport": [512, 512],
+    "scaling": "integer-nearest-neighbor",
+    "exerciseCamera": "fixed-per-sequence",
+    "exerciseBaseline": "fixed-per-sequence",
+    "independentFrameRegeneration": false
+  },
+  "automaticRejectConditions": [
+    "visible-human-ear",
+    "ear-count-not-2",
+    "hair-not-black-4C",
+    "tail-not-brown-or-count-not-1",
+    "tattoo-count-not-1",
+    "tattoo-wrong-side-or-location",
+    "pendant-not-small-letter-A",
+    "chunky-or-large-stone-rings",
+    "wrong-default-shoe-colorway",
+    "photoreal-face",
+    "teen-or-child-read",
+    "identity-or-anatomy-drift-between-frames"
+  ],
+  "reviewRule": "Passing text fields is necessary but not sufficient. Production assets must also visually match the approved canonical raster for Rae's likeness, proportions, silhouette, palette relationships and high-bit pixel-art language."
+}

@@ -19,6 +19,22 @@ When two documents conflict, use this order:
 
 **Live code is evidence of implementation, not automatically product authority.** If code contradicts v0.7, stop broadening the contradiction and reconcile it explicitly.
 
+### Rae-specific visual authority exception
+
+For the appearance of the Pixel Bloom character Rae, the **exact approved Rae v1 character-bible image is the primary visual source of truth**.
+
+Canonical target:
+
+`assets/pixel-bloom/character/rae/reference/pb-rae-character-bible-v1.png`
+
+Canonical SHA-256:
+
+`e0390ef9d39fe92d2d93544d62cb0568a6e9e2b3cd5e6e8305c333b7f3217beb`
+
+`docs/RAE_CHARACTER_BIBLE_V1.md`, the character-lock JSON, and `asset-db.json` are supporting descriptions/metadata. If they conflict with how Rae is visually depicted in the approved image, **correct the supporting document**. Do not redesign the image to satisfy stale prose.
+
+Incidental text rendered inside an AI-generated reference board is not semantic product truth when it contradicts the depicted character or explicit project-owner approval.
+
 ## 2. Minimum context by task
 
 ### Any application-code change
@@ -45,16 +61,22 @@ Also read:
 - `docs/DEFINITION_OF_DONE.md`
 
 ### Rae asset-production change
-Read, in this order:
-1. `docs/RAE_PRODUCTION_ASSET_PIPELINE.md`
-2. `docs/RAE_AVATAR_ANIMATION_DB.md`
-3. `assets/pixel-bloom/db/asset-db.json`
-4. `assets/pixel-bloom/db/asset-db.schema.json`
-5. `docs/PIXEL_BLOOM_ASSET_SYSTEM.md`
-6. `docs/PIXEL_BLOOM_ANIMATION_SYSTEM.md`
-7. exact source/build/runtime asset paths being changed
+Read/use, in this order:
+1. **the exact approved Rae v1 image itself**;
+2. `docs/RAE_CHARACTER_BIBLE_V1.md`;
+3. `assets/pixel-bloom/db/rae-character-lock.v1.json`;
+4. `docs/RAE_PRODUCTION_ACCEPTANCE_CHECKLIST.md`;
+5. `docs/RAE_PRODUCTION_ASSET_PIPELINE.md`;
+6. `docs/RAE_AVATAR_ANIMATION_DB.md`;
+7. `assets/pixel-bloom/db/asset-db.json`;
+8. `assets/pixel-bloom/db/asset-db.schema.json`;
+9. `docs/PIXEL_BLOOM_ASSET_SYSTEM.md`;
+10. `docs/PIXEL_BLOOM_ANIMATION_SYSTEM.md`;
+11. exact source/build/runtime asset paths being changed.
 
-Do not generate a new Rae identity from memory when an approved canonical source is missing. Request/promote the required source asset instead.
+The approved image answers **what Rae looks like**. The docs/DB answer how that visual truth is named, versioned, validated, exported, and integrated.
+
+Do not generate a new Rae identity from memory or text alone when the approved canonical image is available. If the canonical binary is missing from a local checkout, restore the exact hashed binary rather than regenerating it.
 
 ### PWA/offline/storage/audio/wake-lock change
 Also read:
@@ -86,6 +108,8 @@ contract
   -> relevant research only when a decision is still open
 ```
 
+For Rae visual work, prepend the exact canonical image before written context.
+
 This reduces stale-context collisions and makes violations easier to detect.
 
 ## 4. Product facts that must remain easy to retrieve
@@ -102,6 +126,7 @@ This reduces stale-context collisions and makes violations easier to detect.
 - Progression is deterministic and confirmation-gated.
 - Pixel Bloom is the only theme (Savage Core retired 2026-09-26); one component/domain tree.
 - Motion modes are Full / Reduced / Off.
+- Rae's appearance is governed by the exact approved v1 image; supporting metadata must match it.
 - Rae production assets use the canonical asset DB and production pipeline rather than ad hoc filenames or per-screen art handling.
 - No runtime LLM/image generation, camera coaching, microphone coaching or required cloud service.
 
@@ -124,7 +149,7 @@ When an implementation decision would require inventing product truth:
 ```text
 implementation reaches ambiguity
         ↓
-check authoritative docs
+check authoritative docs / canonical visual reference
         ↓
 check existing reviewed research
         ↓
