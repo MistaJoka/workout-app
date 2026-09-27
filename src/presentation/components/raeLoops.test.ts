@@ -44,3 +44,12 @@ describe('library moves Rae demonstrates (owner-approved matches)', () => {
     expect(raeLoopForExercise('lib.Stiff-Legged_Dumbbell_Deadlift')?.id).toBe('ex-dumbbell-rdl')
   })
 })
+
+describe('Rae chair moves', () => {
+  it('each of the 7 chair exercises has its own loop', async () => {
+    const { raeChairMoves } = await import('../../domain/content/fixtures/raeChairMoves')
+    for (const move of raeChairMoves) {
+      expect(raeLoopForExercise(move.id)?.id, move.id).toBe(`ex-${move.id.replace('rae.', '')}`)
+    }
+  })
+})

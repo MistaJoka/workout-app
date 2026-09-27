@@ -1,9 +1,10 @@
 import type { Exercise, WorkoutTemplate } from './types'
 import {
-  exerciseById as curatedById,
+  exerciseById as starterById,
   foundationStrengthStarterTemplates,
   templateById as curatedTemplateById,
 } from './fixtures/foundationStrengthStarter'
+import { raeChairMoveById, raeChairMoves } from './fixtures/raeChairMoves'
 import { getCustomTemplate, listCustomTemplates } from '../../infrastructure/db/repositories/customTemplateRepository'
 
 export async function getTemplate(id: string): Promise<WorkoutTemplate | undefined> {
@@ -14,13 +15,22 @@ export async function listAllTemplates(): Promise<{ curated: WorkoutTemplate[]; 
   return { curated: foundationStrengthStarterTemplates, custom: await listCustomTemplates() }
 }
 
+// Bundled exercises resolve synchronously: the starter pack plus Rae's chair
+// moves (which have no library record of their own).
+const curatedById: ReadonlyMap<string, Exercise> = new Map([...starterById, ...raeChairMoveById])
+
 let libraryPromise: Promise<Exercise[]> | null = null
 
 // The full library is loaded on demand so the Today/Workout paths never pay
 // for it; curated exercises resolve synchronously from the bundled pack.
 export function loadLibrary(): Promise<Exercise[]> {
   if (!libraryPromise) {
-    libraryPromise = import('./generated/libraryExercises.json').then((m) => m.default as Exercise[])
+    // Rae's chair moves lead the list so they are searchable and usable in
+    // the routine builder like any library exercise.
+    libraryPromise = import('./generated/libraryExercises.json').then((m) => [
+      ...raeChairMoves,
+      ...(m.default as Exercise[]),
+    ])
   }
   return libraryPromise
 }

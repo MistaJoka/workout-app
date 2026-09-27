@@ -85,6 +85,19 @@ Use this mailbox when implementation reaches a product/data/spec/asset/test gap 
 **Constraints already known:** do not mirror strips to fix direction (the lotus tattoo is on her anatomical left).
 **Proposed fallback if unresolved:** keep the current loops (dead bug plays frames 1-5).
 
+## REQ-20260926-003 — Review the Rae chair-move steps (and a tattoo drift)
+
+**Status:** OPEN
+**Blocking:** no (the moves ship as provenance 'draft')
+**Implementation context:** `src/domain/content/fixtures/raeChairMoves.ts`, strips in `assets/pixel-bloom/character/rae/source/exercise/strips.json` (batch `chair-moves`)
+**Need:**
+1. Review the setup and steps of the 7 chair sit-to-stand moves the owner added on 2026-09-26. Claude Code drafted them to describe the drawings; they are not from a reviewed source. Add cues and common errors if appropriate.
+2. Two pairs are near-duplicates (Hands Clasped / Arms Crossed; Hands on Thighs / Push Off Knees). Should either be merged or redrawn to differ?
+3. Identity drift in these strips: the lotus tattoo is drawn on her shoulder/upper arm, not under her anatomical-left collarbone. Redraw if the owner wants them canon-accurate.
+**Requested output:** reviewed step text (a data change in the fixture) and a decision on the pairs and redraws.
+**Constraints already known:** no invented safety rules; sit-to-stand is a standard beginner movement. The library's "Chair Squat" is a different (machine) exercise.
+**Proposed fallback if unresolved:** ship as draft (current state).
+
 ## Template
 
 ```md

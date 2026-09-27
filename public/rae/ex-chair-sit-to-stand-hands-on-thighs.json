@@ -1,0 +1,33 @@
+{
+  "id": "ex-chair-sit-to-stand-hands-on-thighs",
+  "source": "chair-sit-to-stand-hands-on-thighs-strip-v1.png",
+  "frameWidth": 164,
+  "frameHeight": 264,
+  "frames": 6,
+  "timeline": [
+    {
+      "frame": 0,
+      "ms": 375
+    },
+    {
+      "frame": 1,
+      "ms": 125
+    },
+    {
+      "frame": 2,
+      "ms": 125
+    },
+    {
+      "frame": 3,
+      "ms": 375
+    },
+    {
+      "frame": 4,
+      "ms": 125
+    },
+    {
+      "frame": 5,
+      "ms": 125
+    }
+  ]
+}

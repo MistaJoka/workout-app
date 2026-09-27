@@ -346,5 +346,103 @@
       "lib.Bottoms_Up"
     ],
     "featured": false
+  },
+  {
+    "id": "ex-chair-sit-to-stand-arms-forward",
+    "name": "Chair Sit-to-Stand, Arms Forward",
+    "width": 192,
+    "height": 264,
+    "stills": [
+      0,
+      3
+    ],
+    "exerciseIds": [
+      "rae.chair-sit-to-stand-arms-forward"
+    ],
+    "featured": true
+  },
+  {
+    "id": "ex-chair-sit-to-stand-hands-on-thighs",
+    "name": "Chair Sit-to-Stand, Hands on Thighs",
+    "width": 164,
+    "height": 264,
+    "stills": [
+      0,
+      3
+    ],
+    "exerciseIds": [
+      "rae.chair-sit-to-stand-hands-on-thighs"
+    ],
+    "featured": true
+  },
+  {
+    "id": "ex-chair-sit-to-stand-overhead-reach",
+    "name": "Chair Sit-to-Stand with Overhead Reach",
+    "width": 166,
+    "height": 264,
+    "stills": [
+      0,
+      4
+    ],
+    "exerciseIds": [
+      "rae.chair-sit-to-stand-overhead-reach"
+    ],
+    "featured": true
+  },
+  {
+    "id": "ex-chair-sit-to-stand-hands-clasped",
+    "name": "Chair Sit-to-Stand, Hands Clasped",
+    "width": 152,
+    "height": 264,
+    "stills": [
+      0,
+      3
+    ],
+    "exerciseIds": [
+      "rae.chair-sit-to-stand-hands-clasped"
+    ],
+    "featured": true
+  },
+  {
+    "id": "ex-chair-sit-to-stand-arms-crossed",
+    "name": "Chair Sit-to-Stand, Arms Crossed",
+    "width": 134,
+    "height": 264,
+    "stills": [
+      0,
+      3
+    ],
+    "exerciseIds": [
+      "rae.chair-sit-to-stand-arms-crossed"
+    ],
+    "featured": true
+  },
+  {
+    "id": "ex-chair-sit-to-stand-push-off-knees",
+    "name": "Chair Sit-to-Stand, Push Off Knees",
+    "width": 162,
+    "height": 264,
+    "stills": [
+      0,
+      3
+    ],
+    "exerciseIds": [
+      "rae.chair-sit-to-stand-push-off-knees"
+    ],
+    "featured": true
+  },
+  {
+    "id": "ex-chair-squat-tap",
+    "name": "Chair Squat Tap",
+    "width": 159,
+    "height": 264,
+    "stills": [
+      0,
+      3
+    ],
+    "exerciseIds": [
+      "rae.chair-squat-tap"
+    ],
+    "featured": true
   }
 ]

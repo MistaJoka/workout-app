@@ -489,5 +489,145 @@
       "lib.Bottoms_Up"
     ],
     "lean": true
+  },
+  {
+    "id": "chair-sit-to-stand-arms-forward",
+    "name": "Chair Sit-to-Stand, Arms Forward",
+    "source": "library/chair-sit-to-stand-arms-forward-strip-v1.png",
+    "sha256": "3b7c7befbd58e2986ac7c59a87f2d51e675fd62244308214ae80940472843fb8",
+    "downloadedAs": "ChatGPT Image Sep 26, 2026, 10_36_56 PM-1.png",
+    "batch": "chair-moves",
+    "frames": 6,
+    "anchor": "grid",
+    "order": "0,1,2,3,4,5",
+    "hold": "0:3,3:3",
+    "fps": 8,
+    "stills": [
+      0,
+      3
+    ],
+    "exerciseIds": [
+      "rae.chair-sit-to-stand-arms-forward"
+    ]
+  },
+  {
+    "id": "chair-sit-to-stand-hands-on-thighs",
+    "name": "Chair Sit-to-Stand, Hands on Thighs",
+    "source": "library/chair-sit-to-stand-hands-on-thighs-strip-v1.png",
+    "sha256": "26d1737aff8f76349a6147b7c6b7ace1d5dcbcda42d27dda65727f28726b2a8f",
+    "downloadedAs": "ChatGPT Image Sep 26, 2026, 10_36_58 PM-2.png",
+    "batch": "chair-moves",
+    "frames": 6,
+    "anchor": "grid",
+    "order": "0,1,2,3,4,5",
+    "hold": "0:3,3:3",
+    "fps": 8,
+    "stills": [
+      0,
+      3
+    ],
+    "exerciseIds": [
+      "rae.chair-sit-to-stand-hands-on-thighs"
+    ]
+  },
+  {
+    "id": "chair-sit-to-stand-overhead-reach",
+    "name": "Chair Sit-to-Stand with Overhead Reach",
+    "source": "library/chair-sit-to-stand-overhead-reach-strip-v1.png",
+    "sha256": "40b8e1e89c18234cb44e70babae5cf2dbcca45b46143aa90296db6d5df96fd5f",
+    "downloadedAs": "ChatGPT Image Sep 26, 2026, 10_37_01 PM-3.png",
+    "batch": "chair-moves",
+    "frames": 7,
+    "anchor": "grid",
+    "order": "0,1,2,3,4,5,6",
+    "hold": "0:3,4:3",
+    "fps": 8,
+    "stills": [
+      0,
+      4
+    ],
+    "exerciseIds": [
+      "rae.chair-sit-to-stand-overhead-reach"
+    ]
+  },
+  {
+    "id": "chair-sit-to-stand-hands-clasped",
+    "name": "Chair Sit-to-Stand, Hands Clasped",
+    "source": "library/chair-sit-to-stand-hands-clasped-strip-v1.png",
+    "sha256": "2076fa0088848eac0f33cc81ea4ba8c3e93287436d927a8cac4a1e24ccba2c49",
+    "downloadedAs": "ChatGPT Image Sep 26, 2026, 10_37_02 PM-4.png",
+    "batch": "chair-moves",
+    "frames": 6,
+    "anchor": "grid",
+    "order": "0,1,2,3,4,5",
+    "hold": "0:3,3:3",
+    "fps": 8,
+    "stills": [
+      0,
+      3
+    ],
+    "exerciseIds": [
+      "rae.chair-sit-to-stand-hands-clasped"
+    ]
+  },
+  {
+    "id": "chair-sit-to-stand-arms-crossed",
+    "name": "Chair Sit-to-Stand, Arms Crossed",
+    "source": "library/chair-sit-to-stand-arms-crossed-strip-v1.png",
+    "sha256": "595c4077881b7c5905a5de0894fbedefc742b14350379ae65856f07eb5df98e3",
+    "downloadedAs": "ChatGPT Image Sep 26, 2026, 10_37_04 PM-5.png",
+    "batch": "chair-moves",
+    "frames": 6,
+    "anchor": "grid",
+    "order": "0,1,2,3,4,5",
+    "hold": "0:3,3:3",
+    "fps": 8,
+    "stills": [
+      0,
+      3
+    ],
+    "exerciseIds": [
+      "rae.chair-sit-to-stand-arms-crossed"
+    ]
+  },
+  {
+    "id": "chair-sit-to-stand-push-off-knees",
+    "name": "Chair Sit-to-Stand, Push Off Knees",
+    "source": "library/chair-sit-to-stand-push-off-knees-strip-v1.png",
+    "sha256": "ed00d307ad24ece7ebf93657b346683b410eb2937f87ceaadae17b6009d55eea",
+    "downloadedAs": "ChatGPT Image Sep 26, 2026, 10_37_05 PM-6.png",
+    "batch": "chair-moves",
+    "frames": 6,
+    "anchor": "grid",
+    "order": "0,1,2,3,4,5",
+    "hold": "0:3,3:3",
+    "fps": 8,
+    "stills": [
+      0,
+      3
+    ],
+    "exerciseIds": [
+      "rae.chair-sit-to-stand-push-off-knees"
+    ]
+  },
+  {
+    "id": "chair-squat-tap",
+    "name": "Chair Squat Tap",
+    "source": "library/chair-squat-tap-strip-v1.png",
+    "sha256": "737fd344fc7cbc0e045ab5a892b5bcaae851873fe96c1e203f1e2aab5a065380",
+    "downloadedAs": "ChatGPT Image Sep 26, 2026, 10_37_06 PM-7.png",
+    "batch": "chair-moves",
+    "frames": 6,
+    "anchor": "grid",
+    "order": "0,1,2,3,4,5",
+    "hold": "0:3,3:3",
+    "fps": 8,
+    "stills": [
+      0,
+      3
+    ],
+    "exerciseIds": [
+      "rae.chair-squat-tap"
+    ]
   }
 ]

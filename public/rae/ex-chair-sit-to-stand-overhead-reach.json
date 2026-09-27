@@ -1,0 +1,37 @@
+{
+  "id": "ex-chair-sit-to-stand-overhead-reach",
+  "source": "chair-sit-to-stand-overhead-reach-strip-v1.png",
+  "frameWidth": 166,
+  "frameHeight": 264,
+  "frames": 7,
+  "timeline": [
+    {
+      "frame": 0,
+      "ms": 375
+    },
+    {
+      "frame": 1,
+      "ms": 125
+    },
+    {
+      "frame": 2,
+      "ms": 125
+    },
+    {
+      "frame": 3,
+      "ms": 125
+    },
+    {
+      "frame": 4,
+      "ms": 375
+    },
+    {
+      "frame": 5,
+      "ms": 125
+    },
+    {
+      "frame": 6,
+      "ms": 125
+    }
+  ]
+}
