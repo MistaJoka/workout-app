@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest'
-import { filterForReview, parseCurationChecklist, renderChecklistMarkdown } from './curationChecklist'
+import { filterForReview, isHomeFriendly, parseCurationChecklist, renderChecklistMarkdown } from './curationChecklist'
 import type { Exercise } from '../../src/domain/content/types'
 
 function exercise(overrides: { taxonomy?: Partial<Exercise['taxonomy']> } & Partial<Omit<Exercise, 'taxonomy'>> = {}): Exercise {
@@ -87,5 +87,52 @@ describe('parseCurationChecklist', () => {
   it('returns an empty set for a checklist with nothing checked', () => {
     const md = '- [ ] lib.a — Bodyweight Squat (beginner)'
     expect(parseCurationChecklist(md)).toEqual(new Set())
+  })
+})
+
+describe('isHomeFriendly (owner rule, 2026-09-26)', () => {
+  const t = (taxonomy: Partial<Exercise['taxonomy']>, id = 'lib.x') => exercise({ id, taxonomy })
+
+  it('keeps bodyweight, no-equipment, bands, foam roller and exercise ball work below expert', () => {
+    for (const equipment of ['bodyweight', 'none', 'bands', 'foam roll', 'exercise ball']) {
+      expect(isHomeFriendly(t({ equipment: [equipment], level: 'intermediate' }))).toBe(true)
+    }
+  })
+
+  it('keeps light weights only at beginner level', () => {
+    for (const equipment of ['dumbbell', 'kettlebells', 'medicine ball']) {
+      expect(isHomeFriendly(t({ equipment: [equipment], level: 'beginner' }))).toBe(true)
+      expect(isHomeFriendly(t({ equipment: [equipment], level: 'intermediate' }))).toBe(false)
+    }
+  })
+
+  it('drops heavy and gym equipment', () => {
+    for (const equipment of ['barbell', 'e-z curl bar', 'cable', 'machine']) {
+      expect(isHomeFriendly(t({ equipment: [equipment], level: 'beginner' }))).toBe(false)
+    }
+  })
+
+  it('drops expert level, heavy-lifting categories and jump training', () => {
+    expect(isHomeFriendly(t({ level: 'expert' }))).toBe(false)
+    for (const category of ['powerlifting', 'olympic weightlifting', 'strongman', 'plyometrics']) {
+      expect(isHomeFriendly(t({ category }))).toBe(false)
+    }
+  })
+
+  it('keeps "other" equipment only for stretches (chair, wall, floor)', () => {
+    expect(isHomeFriendly(t({ equipment: ['other'], category: 'stretching' }))).toBe(true)
+    expect(isHomeFriendly(t({ equipment: ['other'], category: 'strength' }))).toBe(false)
+  })
+
+  it('always keeps anything Rae already demonstrates', () => {
+    const barbell = t({ equipment: ['barbell'], level: 'intermediate' }, 'lib.Rae_Does_This')
+    expect(isHomeFriendly(barbell, new Set(['lib.Rae_Does_This']))).toBe(true)
+  })
+
+  it('pre-checks the rule in the rendered checklist, which the parser then reads back', () => {
+    const keep = t({ equipment: ['bodyweight'] }, 'lib.Keep_Me')
+    const drop = t({ equipment: ['barbell'] }, 'lib.Drop_Me')
+    const md = renderChecklistMarkdown([keep, drop], { totalCount: 2, preChecked: (e) => isHomeFriendly(e) })
+    expect([...parseCurationChecklist(md)]).toEqual(['lib.Keep_Me'])
   })
 })

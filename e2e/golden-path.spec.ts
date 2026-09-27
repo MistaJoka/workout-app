@@ -129,8 +129,8 @@ test.describe('library and routines', () => {
     await page.goto('/#/routines/new')
     await page.getByPlaceholder('Routine name').fill('Push Day')
     await page.getByRole('button', { name: '+ Add exercise' }).click()
-    await page.getByPlaceholder('Search exercises').fill('barbell bench press')
-    await page.getByRole('button', { name: /Barbell Bench Press - Medium Grip/ }).click()
+    await page.getByPlaceholder('Search exercises').fill('dumbbell bench press')
+    await page.getByRole('button', { name: /^Dumbbell Bench Press(?! with)/ }).click()
 
     await expect(page.getByText('Weight (lb)')).toBeVisible()
     await page.getByRole('button', { name: 'Increase Weight (lb)' }).click()

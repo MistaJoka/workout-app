@@ -18,13 +18,14 @@ export const MUSCLE_GROUPS: { id: string; label: string; muscles: string[] }[] =
 ]
 
 export const EQUIPMENT_OPTIONS: { id: string; label: string }[] = [
+  // Home-friendly equipment only: the library no longer ships barbell,
+  // cable or machine work (owner rule, scripts/content/curationChecklist.ts).
   { id: 'bodyweight', label: 'No equipment' },
   { id: 'dumbbell', label: 'Dumbbells' },
-  { id: 'barbell', label: 'Barbell' },
   { id: 'kettlebells', label: 'Kettlebell' },
   { id: 'bands', label: 'Bands' },
-  { id: 'cable', label: 'Cable' },
-  { id: 'machine', label: 'Machine' },
+  { id: 'exercise ball', label: 'Exercise ball' },
+  { id: 'foam roll', label: 'Foam roller' },
 ]
 
 function normalize(text: string): string {

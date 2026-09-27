@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest'
-import { createSessionPlanFromTemplate } from './createSessionPlan'
+import { readableId, createSessionPlanFromTemplate } from './createSessionPlan'
 import { computeReproducibilityHash } from './reproducibilityHash'
 import type { Exercise, WorkoutTemplate } from '../content/types'
 
@@ -202,5 +202,12 @@ describe('createSessionPlanFromTemplate', () => {
       rules: customRules,
     })
     expect(plan.adaptations.every((a) => a.reasonCode === 'SESSION_COMPRESSED')).toBe(true)
+  })
+})
+
+describe('readableId', () => {
+  it('turns a removed library id into a readable name', () => {
+    expect(readableId('lib.Barbell_Squat')).toBe('Barbell Squat')
+    expect(readableId('lib.Close-Grip_Barbell_Bench_Press')).toBe('Close Grip Barbell Bench Press')
   })
 })

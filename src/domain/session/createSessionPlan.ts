@@ -20,6 +20,13 @@ export type CreateSessionPlanParams = {
   weightOverridesByExerciseId?: Map<string, number>
 }
 
+// A routine can outlive an exercise (the library was cut to home-friendly
+// moves on 2026-09-26): its plan still runs, under a readable name made
+// from the id ("lib.Barbell_Squat" -> "Barbell Squat") instead of the raw id.
+export function readableId(exerciseId: string): string {
+  return exerciseId.replace(/^[a-z]+\./, '').replace(/[_-]+/g, ' ').trim()
+}
+
 export function createSessionPlanFromTemplate(params: CreateSessionPlanParams): SessionPlan {
   const {
     id,
@@ -44,7 +51,7 @@ export function createSessionPlanFromTemplate(params: CreateSessionPlanParams): 
     return {
       exerciseId: templateExercise.exerciseId,
       exerciseVersion: templateExercise.exerciseVersion,
-      name: exerciseById.get(templateExercise.exerciseId)?.name ?? templateExercise.exerciseId,
+      name: exerciseById.get(templateExercise.exerciseId)?.name ?? readableId(templateExercise.exerciseId),
       sets: templateExercise.prescription.sets,
       reps,
       authoredReps,
