@@ -111,6 +111,15 @@ def main() -> None:
         c[y:y + f.shape[0], x:x + f.shape[1]] = f
         aligned.append(c)
 
+    # Centre the canvas on the first frame's body (its opaque-pixel centroid),
+    # not on the union of all frames: reaching arms would otherwise push her
+    # standing body off-centre wherever the loop is shown.
+    cx = int(round(np.where(aligned[0][..., 3] > 0)[1].mean()))
+    half = max(cx, canvas_w - cx)
+    pad_left = half - cx
+    canvas_w = 2 * half
+    aligned = [np.pad(c, ((0, 0), (pad_left, canvas_w - c.shape[1] - pad_left), (0, 0))) for c in aligned]
+
     scale = SPRITE_HEIGHT / canvas_h
     size = (max(1, round(canvas_w * scale)), SPRITE_HEIGHT)
     small = []

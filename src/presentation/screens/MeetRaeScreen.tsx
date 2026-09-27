@@ -47,7 +47,7 @@ export function MeetRaeScreen() {
 
       <section className="field-info space-y-2 p-4 text-center">
         <p className="font-bold">Squat</p>
-        <RaeExerciseLoop id="ex-squat" name="squat" width={156} height={264} stills={[0, 2]} animate={animate} />
+        <RaeExerciseLoop id="ex-squat" name="squat" width={204} height={264} stills={[0, 2]} animate={animate} />
       </section>
     </div>
   )

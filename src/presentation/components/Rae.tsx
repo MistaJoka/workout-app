@@ -77,12 +77,28 @@ type LoopProps = {
 
 export function RaeExerciseLoop({ id, name, width, height, stills, animate }: LoopProps) {
   if (animate) {
-    return <img src={`/rae/${id}.webp`} alt={`Rae doing a ${name}`} width={width} height={height} className="mx-auto" />
+    return (
+      <img
+        src={`/rae/${id}.webp`}
+        alt={`Rae doing a ${name}`}
+        width={width}
+        height={height}
+        className="mx-auto h-auto max-w-full"
+      />
+    )
   }
   return (
     <div className="flex justify-center gap-3">
       {stills.map((frame) => (
-        <img key={frame} src={`/rae/${id}-${frame}.png`} alt={`${name}, frame ${frame + 1}`} width={width} height={height} />
+        <img
+          key={frame}
+          src={`/rae/${id}-${frame}.png`}
+          alt={`${name}, frame ${frame + 1}`}
+          width={width}
+          height={height}
+          className="h-auto min-w-0 flex-1"
+          style={{ maxWidth: width }}
+        />
       ))}
     </div>
   )
