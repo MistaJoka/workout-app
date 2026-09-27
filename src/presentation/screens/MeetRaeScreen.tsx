@@ -3,7 +3,7 @@ import { BackButton } from '../components/BackButton'
 import { RAE_EXPRESSIONS, RaeExerciseLoop, RaeFace, RaeFigure, type RaeExpression } from '../components/Rae'
 import { effectiveMotion, usePrefersReducedMotion } from '../components/MovementMedia'
 import { useTheme } from '../theme/ThemeContext'
-import RAE_LOOPS from '../components/raeLoops.generated.json'
+import { RAE_LOOPS } from '../components/raeLoops'
 
 export function MeetRaeScreen() {
   const [expression, setExpression] = useState<RaeExpression>('happy')

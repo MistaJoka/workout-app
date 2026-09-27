@@ -197,6 +197,7 @@ export function WorkoutPlayerScreen() {
       {exerciseContent && (
         <MovementMedia
           name={exerciseContent.name}
+          exerciseId={exerciseContent.id}
           start={exerciseContent.mediaManifest.start}
           finish={exerciseContent.mediaManifest.finish}
         />

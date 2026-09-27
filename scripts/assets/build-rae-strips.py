@@ -30,6 +30,8 @@ for strip in json.loads((SRC / 'strips.json').read_text()):
         'width': meta['frameWidth'],
         'height': meta['frameHeight'],
         'stills': strip['stills'],
+        # Exercises whose photos this loop replaces (owner-approved mapping).
+        'exerciseIds': strip.get('exerciseIds', []),
     })
 text = json.dumps(loops, indent=2) + '\n'
 (ROOT / 'public/rae/loops.json').write_text(text)

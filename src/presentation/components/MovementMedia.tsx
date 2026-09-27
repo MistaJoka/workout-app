@@ -1,9 +1,13 @@
 import { useEffect, useState } from 'react'
 import { useTheme } from '../theme/ThemeContext'
 import type { MotionPreference } from '../theme/tokens'
+import { RaeExerciseLoop } from './Rae'
+import { raeLoopForExercise } from './raeLoops'
 
 type Props = {
   name: string
+  // When Rae demonstrates this exercise, her drawn loop replaces the photos.
+  exerciseId?: string
   start?: string
   finish?: string
 }
@@ -37,9 +41,26 @@ export function usePrefersReducedMotion(): boolean {
 // motion 'full' (and no OS reduce-motion) the frames alternate; otherwise
 // both frames sit side by side so the movement is still fully visible
 // without animation (§11: motion preference must not remove information).
-export function MovementMedia({ name, start, finish }: Props) {
+export function MovementMedia({ name, exerciseId, start, finish }: Props) {
   const { motion } = useTheme()
   const osPrefersReduced = usePrefersReducedMotion()
+  const rae = raeLoopForExercise(exerciseId)
+
+  if (rae) {
+    return (
+      <div className="field-info rounded-panel p-3" aria-label={`${name} movement`}>
+        <RaeExerciseLoop
+          id={rae.id}
+          name={name.toLowerCase()}
+          width={rae.width}
+          height={rae.height}
+          stills={rae.stills}
+          animate={effectiveMotion(motion, osPrefersReduced) === 'full'}
+          imgClassName="max-h-[30vh] w-auto"
+        />
+      </div>
+    )
+  }
 
   if (!start || !finish) return null
 

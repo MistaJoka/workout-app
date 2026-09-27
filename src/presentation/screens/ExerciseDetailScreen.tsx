@@ -40,7 +40,7 @@ export function ExerciseDetailScreen() {
       <h1 className="text-2xl font-bold">{exercise.name}</h1>
       <p className="text-sm capitalize text-ink-muted">{meta.join(', ')}</p>
 
-      <MovementMedia name={exercise.name} start={exercise.mediaManifest.start} finish={exercise.mediaManifest.finish} />
+      <MovementMedia name={exercise.name} exerciseId={exercise.id} start={exercise.mediaManifest.start} finish={exercise.mediaManifest.finish} />
 
       <ol className="space-y-1.5 text-sm leading-snug">
         {[exercise.setup, ...exercise.executionPhases].filter(Boolean).map((step, i) => (
