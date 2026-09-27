@@ -1,0 +1,66 @@
+[
+  {
+    "n": 1,
+    "exerciseId": "lib.Cable_Lying_Triceps_Extension",
+    "slug": "cable-lying-triceps-extension",
+    "name": "Cable Lying Triceps Extension",
+    "frames": 4,
+    "view": "Side view"
+  },
+  {
+    "n": 2,
+    "exerciseId": "lib.Cable_One_Arm_Tricep_Extension",
+    "slug": "cable-one-arm-tricep-extension",
+    "name": "Cable One Arm Tricep Extension",
+    "frames": 4,
+    "view": "Side view"
+  },
+  {
+    "n": 3,
+    "exerciseId": "lib.Cable_Preacher_Curl",
+    "slug": "cable-preacher-curl",
+    "name": "Cable Preacher Curl",
+    "frames": 4,
+    "view": "Side view"
+  },
+  {
+    "n": 4,
+    "exerciseId": "lib.Cable_Rear_Delt_Fly",
+    "slug": "cable-rear-delt-fly",
+    "name": "Cable Rear Delt Fly",
+    "frames": 4,
+    "view": "Front view"
+  },
+  {
+    "n": 5,
+    "exerciseId": "lib.Cable_Reverse_Crunch",
+    "slug": "cable-reverse-crunch",
+    "name": "Cable Reverse Crunch",
+    "frames": 4,
+    "view": "Side view"
+  },
+  {
+    "n": 6,
+    "exerciseId": "lib.Cable_Rope_Overhead_Triceps_Extension",
+    "slug": "cable-rope-overhead-triceps-extension",
+    "name": "Cable Rope Overhead Triceps Extension",
+    "frames": 4,
+    "view": "Side view"
+  },
+  {
+    "n": 7,
+    "exerciseId": "lib.Cable_Rope_Rear-Delt_Rows",
+    "slug": "cable-rope-rear-delt-rows",
+    "name": "Cable Rope Rear-Delt Rows",
+    "frames": 4,
+    "view": "Side view"
+  },
+  {
+    "n": 8,
+    "exerciseId": "lib.Cable_Russian_Twists",
+    "slug": "cable-russian-twists",
+    "name": "Cable Russian Twists",
+    "frames": 4,
+    "view": "Side view"
+  }
+]

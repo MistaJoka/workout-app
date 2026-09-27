@@ -1,0 +1,66 @@
+[
+  {
+    "n": 1,
+    "exerciseId": "lib.Weighted_Squat",
+    "slug": "weighted-squat",
+    "name": "Weighted Squat",
+    "frames": 4,
+    "view": "Side view"
+  },
+  {
+    "n": 2,
+    "exerciseId": "lib.Yoke_Walk",
+    "slug": "yoke-walk",
+    "name": "Yoke Walk",
+    "frames": 4,
+    "view": "Side view"
+  },
+  {
+    "n": 3,
+    "exerciseId": "lib.Atlas_Stones",
+    "slug": "atlas-stones",
+    "name": "Atlas Stones",
+    "frames": 4,
+    "view": "Side view"
+  },
+  {
+    "n": 4,
+    "exerciseId": "lib.Behind_Head_Chest_Stretch",
+    "slug": "behind-head-chest-stretch",
+    "name": "Behind Head Chest Stretch",
+    "frames": 3,
+    "view": "Side view"
+  },
+  {
+    "n": 5,
+    "exerciseId": "lib.Circus_Bell",
+    "slug": "circus-bell",
+    "name": "Circus Bell",
+    "frames": 4,
+    "view": "Side view"
+  },
+  {
+    "n": 6,
+    "exerciseId": "lib.Lying_Bent_Leg_Groin",
+    "slug": "lying-bent-leg-groin",
+    "name": "Lying Bent Leg Groin",
+    "frames": 3,
+    "view": "Side view"
+  },
+  {
+    "n": 7,
+    "exerciseId": "lib.Lying_Hamstring",
+    "slug": "lying-hamstring",
+    "name": "Lying Hamstring",
+    "frames": 3,
+    "view": "Side view"
+  },
+  {
+    "n": 8,
+    "exerciseId": "lib.Mixed_Grip_Chin",
+    "slug": "mixed-grip-chin",
+    "name": "Mixed Grip Chin",
+    "frames": 4,
+    "view": "Side view"
+  }
+]

@@ -6,3 +6,8 @@ dist
 .claude/
 test-results/
 playwright-report/
+
+# Rae library strips: large ChatGPT sources, kept on disk (hash in strips.json)
+assets/pixel-bloom/character/rae/source/exercise/library/
+content/rae-prompts/qa/
+scripts/assets/__pycache__/

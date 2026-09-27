@@ -1,0 +1,66 @@
+[
+  {
+    "n": 1,
+    "exerciseId": "lib.Seated_Side_Lateral_Raise",
+    "slug": "seated-side-lateral-raise",
+    "name": "Seated Side Lateral Raise",
+    "frames": 4,
+    "view": "Front view"
+  },
+  {
+    "n": 2,
+    "exerciseId": "lib.Seated_Triceps_Press",
+    "slug": "seated-triceps-press",
+    "name": "Seated Triceps Press",
+    "frames": 4,
+    "view": "Side view"
+  },
+  {
+    "n": 3,
+    "exerciseId": "lib.Side_Lateral_Raise",
+    "slug": "side-lateral-raise",
+    "name": "Side Lateral Raise",
+    "frames": 4,
+    "view": "Front view"
+  },
+  {
+    "n": 4,
+    "exerciseId": "lib.Side_Laterals_to_Front_Raise",
+    "slug": "side-laterals-to-front-raise",
+    "name": "Side Laterals to Front Raise",
+    "frames": 4,
+    "view": "Front view"
+  },
+  {
+    "n": 5,
+    "exerciseId": "lib.Single_Dumbbell_Raise",
+    "slug": "single-dumbbell-raise",
+    "name": "Single Dumbbell Raise",
+    "frames": 4,
+    "view": "Side view"
+  },
+  {
+    "n": 6,
+    "exerciseId": "lib.Spell_Caster",
+    "slug": "spell-caster",
+    "name": "Spell Caster",
+    "frames": 4,
+    "view": "Side view"
+  },
+  {
+    "n": 7,
+    "exerciseId": "lib.Split_Squat_with_Dumbbells",
+    "slug": "split-squat-with-dumbbells",
+    "name": "Split Squat with Dumbbells",
+    "frames": 4,
+    "view": "Side view"
+  },
+  {
+    "n": 8,
+    "exerciseId": "lib.Standing_Alternating_Dumbbell_Press",
+    "slug": "standing-alternating-dumbbell-press",
+    "name": "Standing Alternating Dumbbell Press",
+    "frames": 4,
+    "view": "Side view"
+  }
+]

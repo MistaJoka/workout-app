@@ -1,0 +1,66 @@
+[
+  {
+    "n": 1,
+    "exerciseId": "lib.Heavy_Bag_Thrust",
+    "slug": "heavy-bag-thrust",
+    "name": "Heavy Bag Thrust",
+    "frames": 4,
+    "view": "Side view"
+  },
+  {
+    "n": 2,
+    "exerciseId": "lib.Hurdle_Hops",
+    "slug": "hurdle-hops",
+    "name": "Hurdle Hops",
+    "frames": 4,
+    "view": "Side view"
+  },
+  {
+    "n": 3,
+    "exerciseId": "lib.Hyperextensions_Back_Extensions",
+    "slug": "hyperextensions-back-extensions",
+    "name": "Hyperextensions (Back Extensions)",
+    "frames": 4,
+    "view": "Side view"
+  },
+  {
+    "n": 4,
+    "exerciseId": "lib.Incline_Push-Up_Depth_Jump",
+    "slug": "incline-push-up-depth-jump",
+    "name": "Incline Push-Up Depth Jump",
+    "frames": 4,
+    "view": "Side view"
+  },
+  {
+    "n": 5,
+    "exerciseId": "lib.Inverted_Row_with_Straps",
+    "slug": "inverted-row-with-straps",
+    "name": "Inverted Row with Straps",
+    "frames": 4,
+    "view": "Side view"
+  },
+  {
+    "n": 6,
+    "exerciseId": "lib.Knee_Hip_Raise_On_Parallel_Bars",
+    "slug": "knee-hip-raise-on-parallel-bars",
+    "name": "Knee/Hip Raise On Parallel Bars",
+    "frames": 4,
+    "view": "Side view"
+  },
+  {
+    "n": 7,
+    "exerciseId": "lib.Lateral_Box_Jump",
+    "slug": "lateral-box-jump",
+    "name": "Lateral Box Jump",
+    "frames": 4,
+    "view": "Front view"
+  },
+  {
+    "n": 8,
+    "exerciseId": "lib.Lateral_Cone_Hops",
+    "slug": "lateral-cone-hops",
+    "name": "Lateral Cone Hops",
+    "frames": 4,
+    "view": "Front view"
+  }
+]

@@ -1,0 +1,66 @@
+[
+  {
+    "n": 1,
+    "exerciseId": "lib.Dips_-_Triceps_Version",
+    "slug": "dips-triceps-version",
+    "name": "Dips - Triceps Version",
+    "frames": 4,
+    "view": "Side view"
+  },
+  {
+    "n": 2,
+    "exerciseId": "lib.Double_Leg_Butt_Kick",
+    "slug": "double-leg-butt-kick",
+    "name": "Double Leg Butt Kick",
+    "frames": 4,
+    "view": "Side view"
+  },
+  {
+    "n": 3,
+    "exerciseId": "lib.Elbow_to_Knee",
+    "slug": "elbow-to-knee",
+    "name": "Elbow to Knee",
+    "frames": 4,
+    "view": "Side view"
+  },
+  {
+    "n": 4,
+    "exerciseId": "lib.Fast_Skipping",
+    "slug": "fast-skipping",
+    "name": "Fast Skipping",
+    "frames": 4,
+    "view": "Side view"
+  },
+  {
+    "n": 5,
+    "exerciseId": "lib.Flat_Bench_Leg_Pull-In",
+    "slug": "flat-bench-leg-pull-in",
+    "name": "Flat Bench Leg Pull-In",
+    "frames": 4,
+    "view": "Side view"
+  },
+  {
+    "n": 6,
+    "exerciseId": "lib.Flat_Bench_Lying_Leg_Raise",
+    "slug": "flat-bench-lying-leg-raise",
+    "name": "Flat Bench Lying Leg Raise",
+    "frames": 4,
+    "view": "Side view"
+  },
+  {
+    "n": 7,
+    "exerciseId": "lib.Flutter_Kicks",
+    "slug": "flutter-kicks",
+    "name": "Flutter Kicks",
+    "frames": 4,
+    "view": "Side view"
+  },
+  {
+    "n": 8,
+    "exerciseId": "lib.Front_Leg_Raises",
+    "slug": "front-leg-raises",
+    "name": "Front Leg Raises",
+    "frames": 3,
+    "view": "Side view"
+  }
+]

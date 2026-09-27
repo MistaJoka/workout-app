@@ -1,0 +1,66 @@
+[
+  {
+    "n": 1,
+    "exerciseId": "lib.Incline_Cable_Chest_Press",
+    "slug": "incline-cable-chest-press",
+    "name": "Incline Cable Chest Press",
+    "frames": 4,
+    "view": "Side view"
+  },
+  {
+    "n": 2,
+    "exerciseId": "lib.Kneeling_Cable_Crunch_With_Alternating_Oblique_Twists",
+    "slug": "kneeling-cable-crunch-with-alternating-oblique-twists",
+    "name": "Kneeling Cable Crunch With Alternating Oblique Twists",
+    "frames": 4,
+    "view": "Side view"
+  },
+  {
+    "n": 3,
+    "exerciseId": "lib.Kneeling_High_Pulley_Row",
+    "slug": "kneeling-high-pulley-row",
+    "name": "Kneeling High Pulley Row",
+    "frames": 4,
+    "view": "Side view"
+  },
+  {
+    "n": 4,
+    "exerciseId": "lib.Kneeling_Single-Arm_High_Pulley_Row",
+    "slug": "kneeling-single-arm-high-pulley-row",
+    "name": "Kneeling Single-Arm High Pulley Row",
+    "frames": 4,
+    "view": "Side view"
+  },
+  {
+    "n": 5,
+    "exerciseId": "lib.Low_Cable_Crossover",
+    "slug": "low-cable-crossover",
+    "name": "Low Cable Crossover",
+    "frames": 4,
+    "view": "Side view"
+  },
+  {
+    "n": 6,
+    "exerciseId": "lib.Low_Cable_Triceps_Extension",
+    "slug": "low-cable-triceps-extension",
+    "name": "Low Cable Triceps Extension",
+    "frames": 4,
+    "view": "Side view"
+  },
+  {
+    "n": 7,
+    "exerciseId": "lib.Low_Pulley_Row_To_Neck",
+    "slug": "low-pulley-row-to-neck",
+    "name": "Low Pulley Row To Neck",
+    "frames": 4,
+    "view": "Side view"
+  },
+  {
+    "n": 8,
+    "exerciseId": "lib.Lying_Close-Grip_Bar_Curl_On_High_Pulley",
+    "slug": "lying-close-grip-bar-curl-on-high-pulley",
+    "name": "Lying Close-Grip Bar Curl On High Pulley",
+    "frames": 4,
+    "view": "Side view"
+  }
+]

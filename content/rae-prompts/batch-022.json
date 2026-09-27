@@ -1,0 +1,66 @@
+[
+  {
+    "n": 1,
+    "exerciseId": "lib.Floor_Glute-Ham_Raise",
+    "slug": "floor-glute-ham-raise",
+    "name": "Floor Glute-Ham Raise",
+    "frames": 4,
+    "view": "Side view"
+  },
+  {
+    "n": 2,
+    "exerciseId": "lib.Frog_Hops",
+    "slug": "frog-hops",
+    "name": "Frog Hops",
+    "frames": 3,
+    "view": "Side view"
+  },
+  {
+    "n": 3,
+    "exerciseId": "lib.Groin_and_Back_Stretch",
+    "slug": "groin-and-back-stretch",
+    "name": "Groin and Back Stretch",
+    "frames": 3,
+    "view": "Side view"
+  },
+  {
+    "n": 4,
+    "exerciseId": "lib.Iron_Crosses_stretch",
+    "slug": "iron-crosses-stretch",
+    "name": "Iron Crosses (stretch)",
+    "frames": 3,
+    "view": "Side view"
+  },
+  {
+    "n": 5,
+    "exerciseId": "lib.Pelvic_Tilt_Into_Bridge",
+    "slug": "pelvic-tilt-into-bridge",
+    "name": "Pelvic Tilt Into Bridge",
+    "frames": 3,
+    "view": "Side view"
+  },
+  {
+    "n": 6,
+    "exerciseId": "lib.Windmills",
+    "slug": "windmills",
+    "name": "Windmills",
+    "frames": 3,
+    "view": "Front view"
+  },
+  {
+    "n": 7,
+    "exerciseId": "lib.Worlds_Greatest_Stretch",
+    "slug": "worlds-greatest-stretch",
+    "name": "World's Greatest Stretch",
+    "frames": 3,
+    "view": "Side view"
+  },
+  {
+    "n": 8,
+    "exerciseId": "lib.Seated_Hamstring",
+    "slug": "seated-hamstring",
+    "name": "Seated Hamstring",
+    "frames": 3,
+    "view": "Side view"
+  }
+]

@@ -1,0 +1,66 @@
+[
+  {
+    "n": 1,
+    "exerciseId": "lib.EZ-Bar_Curl",
+    "slug": "ez-bar-curl",
+    "name": "EZ-Bar Curl",
+    "frames": 4,
+    "view": "Side view"
+  },
+  {
+    "n": 2,
+    "exerciseId": "lib.EZ-Bar_Skullcrusher",
+    "slug": "ez-bar-skullcrusher",
+    "name": "EZ-Bar Skullcrusher",
+    "frames": 4,
+    "view": "Side view"
+  },
+  {
+    "n": 3,
+    "exerciseId": "lib.Spider_Curl",
+    "slug": "spider-curl",
+    "name": "Spider Curl",
+    "frames": 4,
+    "view": "Side view"
+  },
+  {
+    "n": 4,
+    "exerciseId": "lib.Bodyweight_Flyes",
+    "slug": "bodyweight-flyes",
+    "name": "Bodyweight Flyes",
+    "frames": 4,
+    "view": "Front view"
+  },
+  {
+    "n": 5,
+    "exerciseId": "lib.Lying_Close-Grip_Barbell_Triceps_Press_To_Chin",
+    "slug": "lying-close-grip-barbell-triceps-press-to-chin",
+    "name": "Lying Close-Grip Barbell Triceps Press To Chin",
+    "frames": 4,
+    "view": "Side view"
+  },
+  {
+    "n": 6,
+    "exerciseId": "lib.Lying_Triceps_Press",
+    "slug": "lying-triceps-press",
+    "name": "Lying Triceps Press",
+    "frames": 4,
+    "view": "Side view"
+  },
+  {
+    "n": 7,
+    "exerciseId": "lib.Reverse_Barbell_Preacher_Curls",
+    "slug": "reverse-barbell-preacher-curls",
+    "name": "Reverse Barbell Preacher Curls",
+    "frames": 4,
+    "view": "Side view"
+  },
+  {
+    "n": 8,
+    "exerciseId": "lib.Anti-Gravity_Press",
+    "slug": "anti-gravity-press",
+    "name": "Anti-Gravity Press",
+    "frames": 4,
+    "view": "Side view"
+  }
+]

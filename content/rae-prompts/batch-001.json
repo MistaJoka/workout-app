@@ -1,0 +1,66 @@
+[
+  {
+    "n": 1,
+    "exerciseId": "lib.3_4_Sit-Up",
+    "slug": "3-4-sit-up",
+    "name": "3/4 Sit-Up",
+    "frames": 4,
+    "view": "Side view"
+  },
+  {
+    "n": 2,
+    "exerciseId": "lib.90_90_Hamstring",
+    "slug": "90-90-hamstring",
+    "name": "90/90 Hamstring",
+    "frames": 3,
+    "view": "Side view"
+  },
+  {
+    "n": 3,
+    "exerciseId": "lib.Air_Bike",
+    "slug": "air-bike",
+    "name": "Air Bike",
+    "frames": 4,
+    "view": "Side view"
+  },
+  {
+    "n": 4,
+    "exerciseId": "lib.Alternate_Heel_Touchers",
+    "slug": "alternate-heel-touchers",
+    "name": "Alternate Heel Touchers",
+    "frames": 4,
+    "view": "Side view"
+  },
+  {
+    "n": 5,
+    "exerciseId": "lib.Bench_Dips",
+    "slug": "bench-dips",
+    "name": "Bench Dips",
+    "frames": 4,
+    "view": "Side view"
+  },
+  {
+    "n": 6,
+    "exerciseId": "lib.Bent-Knee_Hip_Raise",
+    "slug": "bent-knee-hip-raise",
+    "name": "Bent-Knee Hip Raise",
+    "frames": 4,
+    "view": "Side view"
+  },
+  {
+    "n": 7,
+    "exerciseId": "lib.Body_Tricep_Press",
+    "slug": "body-tricep-press",
+    "name": "Body Tricep Press",
+    "frames": 4,
+    "view": "Side view"
+  },
+  {
+    "n": 8,
+    "exerciseId": "lib.Bottoms_Up",
+    "slug": "bottoms-up",
+    "name": "Bottoms Up",
+    "frames": 4,
+    "view": "Side view"
+  }
+]

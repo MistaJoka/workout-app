@@ -1,0 +1,66 @@
+[
+  {
+    "n": 1,
+    "exerciseId": "lib.Palms-Up_Barbell_Wrist_Curl_Over_A_Bench",
+    "slug": "palms-up-barbell-wrist-curl-over-a-bench",
+    "name": "Palms-Up Barbell Wrist Curl Over A Bench",
+    "frames": 4,
+    "view": "Side view"
+  },
+  {
+    "n": 2,
+    "exerciseId": "lib.Preacher_Curl",
+    "slug": "preacher-curl",
+    "name": "Preacher Curl",
+    "frames": 4,
+    "view": "Side view"
+  },
+  {
+    "n": 3,
+    "exerciseId": "lib.Reverse_Barbell_Curl",
+    "slug": "reverse-barbell-curl",
+    "name": "Reverse Barbell Curl",
+    "frames": 4,
+    "view": "Side view"
+  },
+  {
+    "n": 4,
+    "exerciseId": "lib.Rocking_Standing_Calf_Raise",
+    "slug": "rocking-standing-calf-raise",
+    "name": "Rocking Standing Calf Raise",
+    "frames": 4,
+    "view": "Side view"
+  },
+  {
+    "n": 5,
+    "exerciseId": "lib.Seated_Barbell_Twist",
+    "slug": "seated-barbell-twist",
+    "name": "Seated Barbell Twist",
+    "frames": 4,
+    "view": "Side view"
+  },
+  {
+    "n": 6,
+    "exerciseId": "lib.Seated_Palm-Up_Barbell_Wrist_Curl",
+    "slug": "seated-palm-up-barbell-wrist-curl",
+    "name": "Seated Palm-Up Barbell Wrist Curl",
+    "frames": 4,
+    "view": "Side view"
+  },
+  {
+    "n": 7,
+    "exerciseId": "lib.Seated_Palms-Down_Barbell_Wrist_Curl",
+    "slug": "seated-palms-down-barbell-wrist-curl",
+    "name": "Seated Palms-Down Barbell Wrist Curl",
+    "frames": 4,
+    "view": "Side view"
+  },
+  {
+    "n": 8,
+    "exerciseId": "lib.Smith_Incline_Shoulder_Raise",
+    "slug": "smith-incline-shoulder-raise",
+    "name": "Smith Incline Shoulder Raise",
+    "frames": 4,
+    "view": "Side view"
+  }
+]

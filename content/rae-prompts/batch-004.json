@@ -1,0 +1,66 @@
+[
+  {
+    "n": 1,
+    "exerciseId": "lib.Glute_Kickback",
+    "slug": "glute-kickback",
+    "name": "Glute Kickback",
+    "frames": 4,
+    "view": "Side view"
+  },
+  {
+    "n": 2,
+    "exerciseId": "lib.Hip_Circles_prone",
+    "slug": "hip-circles-prone",
+    "name": "Hip Circles (prone)",
+    "frames": 3,
+    "view": "Side view"
+  },
+  {
+    "n": 3,
+    "exerciseId": "lib.Inchworm",
+    "slug": "inchworm",
+    "name": "Inchworm",
+    "frames": 3,
+    "view": "Side view"
+  },
+  {
+    "n": 4,
+    "exerciseId": "lib.Incline_Push-Up_Close-Grip",
+    "slug": "incline-push-up-close-grip",
+    "name": "Incline Push-Up Close-Grip",
+    "frames": 4,
+    "view": "Side view"
+  },
+  {
+    "n": 5,
+    "exerciseId": "lib.Incline_Push-Up_Medium",
+    "slug": "incline-push-up-medium",
+    "name": "Incline Push-Up Medium",
+    "frames": 4,
+    "view": "Side view"
+  },
+  {
+    "n": 6,
+    "exerciseId": "lib.Incline_Push-Up_Reverse_Grip",
+    "slug": "incline-push-up-reverse-grip",
+    "name": "Incline Push-Up Reverse Grip",
+    "frames": 4,
+    "view": "Side view"
+  },
+  {
+    "n": 7,
+    "exerciseId": "lib.Incline_Push-Up_Wide",
+    "slug": "incline-push-up-wide",
+    "name": "Incline Push-Up Wide",
+    "frames": 4,
+    "view": "Side view"
+  },
+  {
+    "n": 8,
+    "exerciseId": "lib.Isometric_Chest_Squeezes",
+    "slug": "isometric-chest-squeezes",
+    "name": "Isometric Chest Squeezes",
+    "frames": 3,
+    "view": "Side view"
+  }
+]

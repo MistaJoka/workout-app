@@ -1,0 +1,66 @@
+[
+  {
+    "n": 1,
+    "exerciseId": "lib.Chest_Stretch_on_Stability_Ball",
+    "slug": "chest-stretch-on-stability-ball",
+    "name": "Chest Stretch on Stability Ball",
+    "frames": 3,
+    "view": "Side view"
+  },
+  {
+    "n": 2,
+    "exerciseId": "lib.Exercise_Ball_Crunch",
+    "slug": "exercise-ball-crunch",
+    "name": "Exercise Ball Crunch",
+    "frames": 4,
+    "view": "Side view"
+  },
+  {
+    "n": 3,
+    "exerciseId": "lib.Exercise_Ball_Pull-In",
+    "slug": "exercise-ball-pull-in",
+    "name": "Exercise Ball Pull-In",
+    "frames": 4,
+    "view": "Side view"
+  },
+  {
+    "n": 4,
+    "exerciseId": "lib.Hug_A_Ball",
+    "slug": "hug-a-ball",
+    "name": "Hug A Ball",
+    "frames": 3,
+    "view": "Side view"
+  },
+  {
+    "n": 5,
+    "exerciseId": "lib.Physioball_Hip_Bridge",
+    "slug": "physioball-hip-bridge",
+    "name": "Physioball Hip Bridge",
+    "frames": 4,
+    "view": "Side view"
+  },
+  {
+    "n": 6,
+    "exerciseId": "lib.Pyramid",
+    "slug": "pyramid",
+    "name": "Pyramid",
+    "frames": 3,
+    "view": "Side view"
+  },
+  {
+    "n": 7,
+    "exerciseId": "lib.Torso_Rotation",
+    "slug": "torso-rotation",
+    "name": "Torso Rotation",
+    "frames": 3,
+    "view": "Side view"
+  },
+  {
+    "n": 8,
+    "exerciseId": "lib.Downward_Facing_Balance",
+    "slug": "downward-facing-balance",
+    "name": "Downward Facing Balance",
+    "frames": 3,
+    "view": "Side view"
+  }
+]

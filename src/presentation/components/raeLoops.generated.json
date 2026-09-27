@@ -9,8 +9,10 @@
       2
     ],
     "exerciseIds": [
-      "fs.bodyweight-squat"
-    ]
+      "fs.bodyweight-squat",
+      "lib.Bodyweight_Squat"
+    ],
+    "featured": true
   },
   {
     "id": "ex-incline-push-up",
@@ -22,8 +24,10 @@
       3
     ],
     "exerciseIds": [
-      "fs.incline-push-up"
-    ]
+      "fs.incline-push-up",
+      "lib.Incline_Push-Up"
+    ],
+    "featured": true
   },
   {
     "id": "ex-single-leg-glute-bridge",
@@ -35,8 +39,10 @@
       3
     ],
     "exerciseIds": [
-      "fs.single-leg-glute-bridge"
-    ]
+      "fs.single-leg-glute-bridge",
+      "lib.Single_Leg_Glute_Bridge"
+    ],
+    "featured": true
   },
   {
     "id": "ex-dead-bug",
@@ -48,8 +54,10 @@
       2
     ],
     "exerciseIds": [
-      "fs.dead-bug"
-    ]
+      "fs.dead-bug",
+      "lib.Dead_Bug"
+    ],
+    "featured": true
   },
   {
     "id": "ex-plank",
@@ -60,8 +68,10 @@
       0
     ],
     "exerciseIds": [
-      "fs.plank"
-    ]
+      "fs.plank",
+      "lib.Plank"
+    ],
+    "featured": true
   },
   {
     "id": "ex-walking-lunge",
@@ -73,8 +83,10 @@
       3
     ],
     "exerciseIds": [
-      "fs.walking-lunge"
-    ]
+      "fs.walking-lunge",
+      "lib.Bodyweight_Walking_Lunge"
+    ],
+    "featured": true
   },
   {
     "id": "ex-glute-bridge",
@@ -86,8 +98,10 @@
       3
     ],
     "exerciseIds": [
-      "fs.glute-bridge"
-    ]
+      "fs.glute-bridge",
+      "lib.Butt_Lift_Bridge"
+    ],
+    "featured": true
   },
   {
     "id": "ex-crunches",
@@ -99,8 +113,10 @@
       2
     ],
     "exerciseIds": [
-      "fs.crunches"
-    ]
+      "fs.crunches",
+      "lib.Crunches"
+    ],
+    "featured": true
   },
   {
     "id": "ex-superman",
@@ -112,8 +128,10 @@
       2
     ],
     "exerciseIds": [
-      "fs.superman"
-    ]
+      "fs.superman",
+      "lib.Superman"
+    ],
+    "featured": true
   },
   {
     "id": "ex-bird-dog",
@@ -124,7 +142,8 @@
       0,
       2
     ],
-    "exerciseIds": []
+    "exerciseIds": [],
+    "featured": true
   },
   {
     "id": "ex-cat-cow",
@@ -135,7 +154,8 @@
       1,
       3
     ],
-    "exerciseIds": []
+    "exerciseIds": [],
+    "featured": true
   },
   {
     "id": "ex-side-plank",
@@ -145,7 +165,8 @@
     "stills": [
       0
     ],
-    "exerciseIds": []
+    "exerciseIds": [],
+    "featured": true
   },
   {
     "id": "ex-step-up",
@@ -156,7 +177,8 @@
       0,
       3
     ],
-    "exerciseIds": []
+    "exerciseIds": [],
+    "featured": true
   },
   {
     "id": "ex-dumbbell-rdl",
@@ -169,7 +191,8 @@
     ],
     "exerciseIds": [
       "lib.Stiff-Legged_Dumbbell_Deadlift"
-    ]
+    ],
+    "featured": true
   },
   {
     "id": "ex-seated-dumbbell-press",
@@ -182,7 +205,8 @@
     ],
     "exerciseIds": [
       "lib.Seated_Dumbbell_Press"
-    ]
+    ],
+    "featured": true
   },
   {
     "id": "ex-dumbbell-row",
@@ -195,7 +219,8 @@
     ],
     "exerciseIds": [
       "lib.One-Arm_Dumbbell_Row"
-    ]
+    ],
+    "featured": true
   },
   {
     "id": "ex-split-squat",
@@ -208,6 +233,7 @@
     ],
     "exerciseIds": [
       "lib.Split_Squats"
-    ]
+    ],
+    "featured": true
   }
 ]

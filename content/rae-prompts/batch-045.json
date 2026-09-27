@@ -1,0 +1,66 @@
+[
+  {
+    "n": 1,
+    "exerciseId": "lib.Double_Kettlebell_Windmill",
+    "slug": "double-kettlebell-windmill",
+    "name": "Double Kettlebell Windmill",
+    "frames": 4,
+    "view": "Front view"
+  },
+  {
+    "n": 2,
+    "exerciseId": "lib.Front_Squats_With_Two_Kettlebells",
+    "slug": "front-squats-with-two-kettlebells",
+    "name": "Front Squats With Two Kettlebells",
+    "frames": 4,
+    "view": "Side view"
+  },
+  {
+    "n": 3,
+    "exerciseId": "lib.Kettlebell_Arnold_Press",
+    "slug": "kettlebell-arnold-press",
+    "name": "Kettlebell Arnold Press",
+    "frames": 4,
+    "view": "Side view"
+  },
+  {
+    "n": 4,
+    "exerciseId": "lib.Kettlebell_Dead_Clean",
+    "slug": "kettlebell-dead-clean",
+    "name": "Kettlebell Dead Clean",
+    "frames": 4,
+    "view": "Side view"
+  },
+  {
+    "n": 5,
+    "exerciseId": "lib.Kettlebell_Figure_8",
+    "slug": "kettlebell-figure-8",
+    "name": "Kettlebell Figure 8",
+    "frames": 4,
+    "view": "Side view"
+  },
+  {
+    "n": 6,
+    "exerciseId": "lib.Kettlebell_Halo_With_Overhead_Extension",
+    "slug": "kettlebell-halo-with-overhead-extension",
+    "name": "Kettlebell Halo with Overhead Extension",
+    "frames": 4,
+    "view": "Side view"
+  },
+  {
+    "n": 7,
+    "exerciseId": "lib.Kettlebell_Hang_Clean",
+    "slug": "kettlebell-hang-clean",
+    "name": "Kettlebell Hang Clean",
+    "frames": 4,
+    "view": "Side view"
+  },
+  {
+    "n": 8,
+    "exerciseId": "lib.Kettlebell_One-Legged_Deadlift",
+    "slug": "kettlebell-one-legged-deadlift",
+    "name": "Kettlebell One-Legged Deadlift",
+    "frames": 4,
+    "view": "Side view"
+  }
+]

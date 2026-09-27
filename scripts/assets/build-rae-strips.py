@@ -18,6 +18,8 @@ for strip in json.loads((SRC / 'strips.json').read_text()):
         str(SRC / strip['source']), f"ex-{strip['id']}",
         '--frames', str(strip['frames']), '--anchor', strip['anchor'],
         '--order', strip['order'], '--hold', strip['hold'], '--fps', str(strip['fps']),
+        # Library-scale strips publish only the loop and its review stills.
+        *(['--stills', ','.join(map(str, strip['stills'])), '--lossy'] if strip.get('lean') else []),
     ], check=True)
 
 # Loop index for the app (Meet Rae) and the service worker's precache.
@@ -32,6 +34,9 @@ for strip in json.loads((SRC / 'strips.json').read_text()):
         'stills': strip['stills'],
         # Exercises whose photos this loop replaces (owner-approved mapping).
         'exerciseIds': strip.get('exerciseIds', []),
+        # Featured loops are precached and listed on Meet Rae; the rest are
+        # cached on first view (there are hundreds).
+        'featured': not strip.get('lean', False),
     })
 text = json.dumps(loops, indent=2) + '\n'
 (ROOT / 'public/rae/loops.json').write_text(text)

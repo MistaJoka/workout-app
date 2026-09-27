@@ -20,6 +20,9 @@
     "assets:validate": "node scripts/assets/validate-assets.mjs",
     "assets:library": "python3 scripts/assets/generate-pixel-bloom-library.py",
     "assets:finalize": "python3 scripts/assets/finalize-pixel-bloom-platform.py",
+    "rae:prompts": "python3 scripts/assets/rae-prompts.py",
+    "rae:intake": "python3 scripts/assets/rae-intake.py",
+    "rae:build": "python3 scripts/assets/build-rae-strips.py",
     "routine:generate": "node scripts/content/generate-routine-intelligence.mjs",
     "routine:validate": "node scripts/content/validate-routine-intelligence.mjs"
   },

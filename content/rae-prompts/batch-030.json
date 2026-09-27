@@ -1,0 +1,66 @@
+[
+  {
+    "n": 1,
+    "exerciseId": "lib.Dumbbell_Bench_Press",
+    "slug": "dumbbell-bench-press",
+    "name": "Dumbbell Bench Press",
+    "frames": 4,
+    "view": "Side view"
+  },
+  {
+    "n": 2,
+    "exerciseId": "lib.Dumbbell_Bench_Press_with_Neutral_Grip",
+    "slug": "dumbbell-bench-press-with-neutral-grip",
+    "name": "Dumbbell Bench Press with Neutral Grip",
+    "frames": 4,
+    "view": "Side view"
+  },
+  {
+    "n": 3,
+    "exerciseId": "lib.Dumbbell_Bicep_Curl",
+    "slug": "dumbbell-bicep-curl",
+    "name": "Dumbbell Bicep Curl",
+    "frames": 4,
+    "view": "Side view"
+  },
+  {
+    "n": 4,
+    "exerciseId": "lib.Dumbbell_Flyes",
+    "slug": "dumbbell-flyes",
+    "name": "Dumbbell Flyes",
+    "frames": 4,
+    "view": "Front view"
+  },
+  {
+    "n": 5,
+    "exerciseId": "lib.Dumbbell_Incline_Row",
+    "slug": "dumbbell-incline-row",
+    "name": "Dumbbell Incline Row",
+    "frames": 4,
+    "view": "Side view"
+  },
+  {
+    "n": 6,
+    "exerciseId": "lib.Dumbbell_Incline_Shoulder_Raise",
+    "slug": "dumbbell-incline-shoulder-raise",
+    "name": "Dumbbell Incline Shoulder Raise",
+    "frames": 4,
+    "view": "Side view"
+  },
+  {
+    "n": 7,
+    "exerciseId": "lib.Dumbbell_Lunges",
+    "slug": "dumbbell-lunges",
+    "name": "Dumbbell Lunges",
+    "frames": 4,
+    "view": "Side view"
+  },
+  {
+    "n": 8,
+    "exerciseId": "lib.Dumbbell_Raise",
+    "slug": "dumbbell-raise",
+    "name": "Dumbbell Raise",
+    "frames": 4,
+    "view": "Side view"
+  }
+]

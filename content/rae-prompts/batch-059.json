@@ -1,0 +1,66 @@
+[
+  {
+    "n": 1,
+    "exerciseId": "lib.Standing_Cable_Lift",
+    "slug": "standing-cable-lift",
+    "name": "Standing Cable Lift",
+    "frames": 4,
+    "view": "Side view"
+  },
+  {
+    "n": 2,
+    "exerciseId": "lib.Standing_Cable_Wood_Chop",
+    "slug": "standing-cable-wood-chop",
+    "name": "Standing Cable Wood Chop",
+    "frames": 4,
+    "view": "Side view"
+  },
+  {
+    "n": 3,
+    "exerciseId": "lib.Standing_Low-Pulley_Deltoid_Raise",
+    "slug": "standing-low-pulley-deltoid-raise",
+    "name": "Standing Low-Pulley Deltoid Raise",
+    "frames": 4,
+    "view": "Side view"
+  },
+  {
+    "n": 4,
+    "exerciseId": "lib.Standing_Rope_Crunch",
+    "slug": "standing-rope-crunch",
+    "name": "Standing Rope Crunch",
+    "frames": 4,
+    "view": "Side view"
+  },
+  {
+    "n": 5,
+    "exerciseId": "lib.Straight-Arm_Pulldown",
+    "slug": "straight-arm-pulldown",
+    "name": "Straight-Arm Pulldown",
+    "frames": 4,
+    "view": "Side view"
+  },
+  {
+    "n": 6,
+    "exerciseId": "lib.Triceps_Overhead_Extension_with_Rope",
+    "slug": "triceps-overhead-extension-with-rope",
+    "name": "Triceps Overhead Extension with Rope",
+    "frames": 4,
+    "view": "Side view"
+  },
+  {
+    "n": 7,
+    "exerciseId": "lib.Triceps_Pushdown",
+    "slug": "triceps-pushdown",
+    "name": "Triceps Pushdown",
+    "frames": 4,
+    "view": "Side view"
+  },
+  {
+    "n": 8,
+    "exerciseId": "lib.Triceps_Pushdown_-_Rope_Attachment",
+    "slug": "triceps-pushdown-rope-attachment",
+    "name": "Triceps Pushdown - Rope Attachment",
+    "frames": 4,
+    "view": "Side view"
+  }
+]

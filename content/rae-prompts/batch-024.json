@@ -1,0 +1,66 @@
+[
+  {
+    "n": 1,
+    "exerciseId": "lib.Cross_Over_-_With_Bands",
+    "slug": "cross-over-with-bands",
+    "name": "Cross Over - With Bands",
+    "frames": 4,
+    "view": "Side view"
+  },
+  {
+    "n": 2,
+    "exerciseId": "lib.External_Rotation_with_Band",
+    "slug": "external-rotation-with-band",
+    "name": "External Rotation with Band",
+    "frames": 4,
+    "view": "Side view"
+  },
+  {
+    "n": 3,
+    "exerciseId": "lib.Hip_Extension_with_Bands",
+    "slug": "hip-extension-with-bands",
+    "name": "Hip Extension with Bands",
+    "frames": 4,
+    "view": "Side view"
+  },
+  {
+    "n": 4,
+    "exerciseId": "lib.Hip_Flexion_with_Band",
+    "slug": "hip-flexion-with-band",
+    "name": "Hip Flexion with Band",
+    "frames": 4,
+    "view": "Side view"
+  },
+  {
+    "n": 5,
+    "exerciseId": "lib.Hip_Lift_with_Band",
+    "slug": "hip-lift-with-band",
+    "name": "Hip Lift with Band",
+    "frames": 4,
+    "view": "Side view"
+  },
+  {
+    "n": 6,
+    "exerciseId": "lib.Internal_Rotation_with_Band",
+    "slug": "internal-rotation-with-band",
+    "name": "Internal Rotation with Band",
+    "frames": 4,
+    "view": "Side view"
+  },
+  {
+    "n": 7,
+    "exerciseId": "lib.Lateral_Raise_-_With_Bands",
+    "slug": "lateral-raise-with-bands",
+    "name": "Lateral Raise - With Bands",
+    "frames": 4,
+    "view": "Front view"
+  },
+  {
+    "n": 8,
+    "exerciseId": "lib.Monster_Walk",
+    "slug": "monster-walk",
+    "name": "Monster Walk",
+    "frames": 4,
+    "view": "Side view"
+  }
+]

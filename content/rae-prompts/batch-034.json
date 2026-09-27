@@ -1,0 +1,66 @@
+[
+  {
+    "n": 1,
+    "exerciseId": "lib.One_Arm_Supinated_Dumbbell_Triceps_Extension",
+    "slug": "one-arm-supinated-dumbbell-triceps-extension",
+    "name": "One Arm Supinated Dumbbell Triceps Extension",
+    "frames": 4,
+    "view": "Side view"
+  },
+  {
+    "n": 2,
+    "exerciseId": "lib.One-Arm_Flat_Bench_Dumbbell_Flye",
+    "slug": "one-arm-flat-bench-dumbbell-flye",
+    "name": "One-Arm Flat Bench Dumbbell Flye",
+    "frames": 4,
+    "view": "Front view"
+  },
+  {
+    "n": 3,
+    "exerciseId": "lib.One-Arm_Incline_Lateral_Raise",
+    "slug": "one-arm-incline-lateral-raise",
+    "name": "One-Arm Incline Lateral Raise",
+    "frames": 4,
+    "view": "Front view"
+  },
+  {
+    "n": 4,
+    "exerciseId": "lib.One-Arm_Side_Laterals",
+    "slug": "one-arm-side-laterals",
+    "name": "One-Arm Side Laterals",
+    "frames": 4,
+    "view": "Front view"
+  },
+  {
+    "n": 5,
+    "exerciseId": "lib.Palms-Down_Dumbbell_Wrist_Curl_Over_A_Bench",
+    "slug": "palms-down-dumbbell-wrist-curl-over-a-bench",
+    "name": "Palms-Down Dumbbell Wrist Curl Over A Bench",
+    "frames": 4,
+    "view": "Side view"
+  },
+  {
+    "n": 6,
+    "exerciseId": "lib.Palms-Up_Dumbbell_Wrist_Curl_Over_A_Bench",
+    "slug": "palms-up-dumbbell-wrist-curl-over-a-bench",
+    "name": "Palms-Up Dumbbell Wrist Curl Over A Bench",
+    "frames": 4,
+    "view": "Side view"
+  },
+  {
+    "n": 7,
+    "exerciseId": "lib.Plie_Dumbbell_Squat",
+    "slug": "plie-dumbbell-squat",
+    "name": "Plie Dumbbell Squat",
+    "frames": 4,
+    "view": "Side view"
+  },
+  {
+    "n": 8,
+    "exerciseId": "lib.Power_Partials",
+    "slug": "power-partials",
+    "name": "Power Partials",
+    "frames": 4,
+    "view": "Side view"
+  }
+]

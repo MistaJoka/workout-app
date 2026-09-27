@@ -1,0 +1,18 @@
+[
+  {
+    "n": 1,
+    "exerciseId": "lib.One_Arm_Chin-Up",
+    "slug": "one-arm-chin-up",
+    "name": "One Arm Chin-Up",
+    "frames": 4,
+    "view": "Side view"
+  },
+  {
+    "n": 2,
+    "exerciseId": "lib.Overhead_Lat",
+    "slug": "overhead-lat",
+    "name": "Overhead Lat",
+    "frames": 3,
+    "view": "Side view"
+  }
+]

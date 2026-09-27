@@ -1,0 +1,66 @@
+[
+  {
+    "n": 1,
+    "exerciseId": "lib.Snatch_Pull",
+    "slug": "snatch-pull",
+    "name": "Snatch Pull",
+    "frames": 4,
+    "view": "Side view"
+  },
+  {
+    "n": 2,
+    "exerciseId": "lib.Snatch_Shrug",
+    "slug": "snatch-shrug",
+    "name": "Snatch Shrug",
+    "frames": 4,
+    "view": "Front view"
+  },
+  {
+    "n": 3,
+    "exerciseId": "lib.Speed_Box_Squat",
+    "slug": "speed-box-squat",
+    "name": "Speed Box Squat",
+    "frames": 4,
+    "view": "Side view"
+  },
+  {
+    "n": 4,
+    "exerciseId": "lib.Split_Clean",
+    "slug": "split-clean",
+    "name": "Split Clean",
+    "frames": 4,
+    "view": "Side view"
+  },
+  {
+    "n": 5,
+    "exerciseId": "lib.Split_Jerk",
+    "slug": "split-jerk",
+    "name": "Split Jerk",
+    "frames": 4,
+    "view": "Side view"
+  },
+  {
+    "n": 6,
+    "exerciseId": "lib.Squat_with_Bands",
+    "slug": "squat-with-bands",
+    "name": "Squat with Bands",
+    "frames": 4,
+    "view": "Side view"
+  },
+  {
+    "n": 7,
+    "exerciseId": "lib.Squat_with_Chains",
+    "slug": "squat-with-chains",
+    "name": "Squat with Chains",
+    "frames": 4,
+    "view": "Side view"
+  },
+  {
+    "n": 8,
+    "exerciseId": "lib.Squat_with_Plate_Movers",
+    "slug": "squat-with-plate-movers",
+    "name": "Squat with Plate Movers",
+    "frames": 4,
+    "view": "Side view"
+  }
+]

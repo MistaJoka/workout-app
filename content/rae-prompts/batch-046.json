@@ -1,0 +1,66 @@
+[
+  {
+    "n": 1,
+    "exerciseId": "lib.Kettlebell_Pass_Between_The_Legs",
+    "slug": "kettlebell-pass-between-the-legs",
+    "name": "Kettlebell Pass Between The Legs",
+    "frames": 4,
+    "view": "Side view"
+  },
+  {
+    "n": 2,
+    "exerciseId": "lib.Kettlebell_Seated_Press",
+    "slug": "kettlebell-seated-press",
+    "name": "Kettlebell Seated Press",
+    "frames": 4,
+    "view": "Side view"
+  },
+  {
+    "n": 3,
+    "exerciseId": "lib.Kettlebell_Seesaw_Press",
+    "slug": "kettlebell-seesaw-press",
+    "name": "Kettlebell Seesaw Press",
+    "frames": 4,
+    "view": "Side view"
+  },
+  {
+    "n": 4,
+    "exerciseId": "lib.Kettlebell_Sumo_High_Pull",
+    "slug": "kettlebell-sumo-high-pull",
+    "name": "Kettlebell Sumo High Pull",
+    "frames": 4,
+    "view": "Side view"
+  },
+  {
+    "n": 5,
+    "exerciseId": "lib.Kettlebell_Thruster",
+    "slug": "kettlebell-thruster",
+    "name": "Kettlebell Thruster",
+    "frames": 4,
+    "view": "Side view"
+  },
+  {
+    "n": 6,
+    "exerciseId": "lib.Kettlebell_Turkish_Get-Up_Lunge_style",
+    "slug": "kettlebell-turkish-get-up-lunge-style",
+    "name": "Kettlebell Turkish Get-Up (Lunge style)",
+    "frames": 4,
+    "view": "Side view"
+  },
+  {
+    "n": 7,
+    "exerciseId": "lib.Kettlebell_Turkish_Get-Up_Squat_style",
+    "slug": "kettlebell-turkish-get-up-squat-style",
+    "name": "Kettlebell Turkish Get-Up (Squat style)",
+    "frames": 4,
+    "view": "Side view"
+  },
+  {
+    "n": 8,
+    "exerciseId": "lib.Kettlebell_Windmill",
+    "slug": "kettlebell-windmill",
+    "name": "Kettlebell Windmill",
+    "frames": 4,
+    "view": "Front view"
+  }
+]

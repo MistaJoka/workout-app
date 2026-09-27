@@ -1,0 +1,66 @@
+[
+  {
+    "n": 1,
+    "exerciseId": "lib.Rack_Delivery",
+    "slug": "rack-delivery",
+    "name": "Rack Delivery",
+    "frames": 4,
+    "view": "Side view"
+  },
+  {
+    "n": 2,
+    "exerciseId": "lib.Rack_Pull_with_Bands",
+    "slug": "rack-pull-with-bands",
+    "name": "Rack Pull with Bands",
+    "frames": 4,
+    "view": "Side view"
+  },
+  {
+    "n": 3,
+    "exerciseId": "lib.Rack_Pulls",
+    "slug": "rack-pulls",
+    "name": "Rack Pulls",
+    "frames": 4,
+    "view": "Side view"
+  },
+  {
+    "n": 4,
+    "exerciseId": "lib.Reverse_Band_Bench_Press",
+    "slug": "reverse-band-bench-press",
+    "name": "Reverse Band Bench Press",
+    "frames": 4,
+    "view": "Side view"
+  },
+  {
+    "n": 5,
+    "exerciseId": "lib.Reverse_Band_Box_Squat",
+    "slug": "reverse-band-box-squat",
+    "name": "Reverse Band Box Squat",
+    "frames": 4,
+    "view": "Side view"
+  },
+  {
+    "n": 6,
+    "exerciseId": "lib.Reverse_Grip_Bent-Over_Rows",
+    "slug": "reverse-grip-bent-over-rows",
+    "name": "Reverse Grip Bent-Over Rows",
+    "frames": 4,
+    "view": "Side view"
+  },
+  {
+    "n": 7,
+    "exerciseId": "lib.Reverse_Triceps_Bench_Press",
+    "slug": "reverse-triceps-bench-press",
+    "name": "Reverse Triceps Bench Press",
+    "frames": 4,
+    "view": "Side view"
+  },
+  {
+    "n": 8,
+    "exerciseId": "lib.Romanian_Deadlift",
+    "slug": "romanian-deadlift",
+    "name": "Romanian Deadlift",
+    "frames": 4,
+    "view": "Side view"
+  }
+]

@@ -1,0 +1,66 @@
+[
+  {
+    "n": 1,
+    "exerciseId": "lib.One-Arm_Kettlebell_Push_Press",
+    "slug": "one-arm-kettlebell-push-press",
+    "name": "One-Arm Kettlebell Push Press",
+    "frames": 4,
+    "view": "Side view"
+  },
+  {
+    "n": 2,
+    "exerciseId": "lib.One-Arm_Kettlebell_Row",
+    "slug": "one-arm-kettlebell-row",
+    "name": "One-Arm Kettlebell Row",
+    "frames": 4,
+    "view": "Side view"
+  },
+  {
+    "n": 3,
+    "exerciseId": "lib.One-Arm_Kettlebell_Split_Jerk",
+    "slug": "one-arm-kettlebell-split-jerk",
+    "name": "One-Arm Kettlebell Split Jerk",
+    "frames": 4,
+    "view": "Side view"
+  },
+  {
+    "n": 4,
+    "exerciseId": "lib.One-Arm_Open_Palm_Kettlebell_Clean",
+    "slug": "one-arm-open-palm-kettlebell-clean",
+    "name": "One-Arm Open Palm Kettlebell Clean",
+    "frames": 4,
+    "view": "Side view"
+  },
+  {
+    "n": 5,
+    "exerciseId": "lib.Two-Arm_Kettlebell_Clean",
+    "slug": "two-arm-kettlebell-clean",
+    "name": "Two-Arm Kettlebell Clean",
+    "frames": 4,
+    "view": "Side view"
+  },
+  {
+    "n": 6,
+    "exerciseId": "lib.Two-Arm_Kettlebell_Jerk",
+    "slug": "two-arm-kettlebell-jerk",
+    "name": "Two-Arm Kettlebell Jerk",
+    "frames": 4,
+    "view": "Side view"
+  },
+  {
+    "n": 7,
+    "exerciseId": "lib.Two-Arm_Kettlebell_Military_Press",
+    "slug": "two-arm-kettlebell-military-press",
+    "name": "Two-Arm Kettlebell Military Press",
+    "frames": 4,
+    "view": "Side view"
+  },
+  {
+    "n": 8,
+    "exerciseId": "lib.Two-Arm_Kettlebell_Row",
+    "slug": "two-arm-kettlebell-row",
+    "name": "Two-Arm Kettlebell Row",
+    "frames": 4,
+    "view": "Side view"
+  }
+]

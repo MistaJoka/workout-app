@@ -1,0 +1,66 @@
+[
+  {
+    "n": 1,
+    "exerciseId": "lib.Butt-Ups",
+    "slug": "butt-ups",
+    "name": "Butt-Ups",
+    "frames": 4,
+    "view": "Side view"
+  },
+  {
+    "n": 2,
+    "exerciseId": "lib.Chin-Up",
+    "slug": "chin-up",
+    "name": "Chin-Up",
+    "frames": 4,
+    "view": "Side view"
+  },
+  {
+    "n": 3,
+    "exerciseId": "lib.Cocoons",
+    "slug": "cocoons",
+    "name": "Cocoons",
+    "frames": 4,
+    "view": "Side view"
+  },
+  {
+    "n": 4,
+    "exerciseId": "lib.Cross-Body_Crunch",
+    "slug": "cross-body-crunch",
+    "name": "Cross-Body Crunch",
+    "frames": 4,
+    "view": "Side view"
+  },
+  {
+    "n": 5,
+    "exerciseId": "lib.Crunch_-_Hands_Overhead",
+    "slug": "crunch-hands-overhead",
+    "name": "Crunch - Hands Overhead",
+    "frames": 4,
+    "view": "Side view"
+  },
+  {
+    "n": 6,
+    "exerciseId": "lib.Crunch_-_Legs_On_Exercise_Ball",
+    "slug": "crunch-legs-on-exercise-ball",
+    "name": "Crunch - Legs On Exercise Ball",
+    "frames": 4,
+    "view": "Side view"
+  },
+  {
+    "n": 7,
+    "exerciseId": "lib.Decline_Oblique_Crunch",
+    "slug": "decline-oblique-crunch",
+    "name": "Decline Oblique Crunch",
+    "frames": 4,
+    "view": "Side view"
+  },
+  {
+    "n": 8,
+    "exerciseId": "lib.Decline_Reverse_Crunch",
+    "slug": "decline-reverse-crunch",
+    "name": "Decline Reverse Crunch",
+    "frames": 4,
+    "view": "Side view"
+  }
+]

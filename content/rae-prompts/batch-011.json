@@ -1,0 +1,66 @@
+[
+  {
+    "n": 1,
+    "exerciseId": "lib.Decline_Crunch",
+    "slug": "decline-crunch",
+    "name": "Decline Crunch",
+    "frames": 4,
+    "view": "Side view"
+  },
+  {
+    "n": 2,
+    "exerciseId": "lib.Freehand_Jump_Squat",
+    "slug": "freehand-jump-squat",
+    "name": "Freehand Jump Squat",
+    "frames": 4,
+    "view": "Side view"
+  },
+  {
+    "n": 3,
+    "exerciseId": "lib.Frog_Sit-Ups",
+    "slug": "frog-sit-ups",
+    "name": "Frog Sit-Ups",
+    "frames": 4,
+    "view": "Side view"
+  },
+  {
+    "n": 4,
+    "exerciseId": "lib.Gorilla_Chin_Crunch",
+    "slug": "gorilla-chin-crunch",
+    "name": "Gorilla Chin/Crunch",
+    "frames": 4,
+    "view": "Side view"
+  },
+  {
+    "n": 5,
+    "exerciseId": "lib.Groiners",
+    "slug": "groiners",
+    "name": "Groiners",
+    "frames": 3,
+    "view": "Side view"
+  },
+  {
+    "n": 6,
+    "exerciseId": "lib.Hyperextensions_With_No_Hyperextension_Bench",
+    "slug": "hyperextensions-with-no-hyperextension-bench",
+    "name": "Hyperextensions With No Hyperextension Bench",
+    "frames": 4,
+    "view": "Side view"
+  },
+  {
+    "n": 7,
+    "exerciseId": "lib.Natural_Glute_Ham_Raise",
+    "slug": "natural-glute-ham-raise",
+    "name": "Natural Glute Ham Raise",
+    "frames": 4,
+    "view": "Side view"
+  },
+  {
+    "n": 8,
+    "exerciseId": "lib.Push-Ups_-_Close_Triceps_Position",
+    "slug": "push-ups-close-triceps-position",
+    "name": "Push-Ups - Close Triceps Position",
+    "frames": 4,
+    "view": "Side view"
+  }
+]

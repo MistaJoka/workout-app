@@ -15,7 +15,8 @@
     ],
     "batch": "curated",
     "exerciseIds": [
-      "fs.bodyweight-squat"
+      "fs.bodyweight-squat",
+      "lib.Bodyweight_Squat"
     ]
   },
   {
@@ -34,7 +35,8 @@
     ],
     "batch": "curated",
     "exerciseIds": [
-      "fs.incline-push-up"
+      "fs.incline-push-up",
+      "lib.Incline_Push-Up"
     ]
   },
   {
@@ -53,7 +55,8 @@
     ],
     "batch": "curated",
     "exerciseIds": [
-      "fs.single-leg-glute-bridge"
+      "fs.single-leg-glute-bridge",
+      "lib.Single_Leg_Glute_Bridge"
     ]
   },
   {
@@ -73,7 +76,8 @@
     ],
     "batch": "curated",
     "exerciseIds": [
-      "fs.dead-bug"
+      "fs.dead-bug",
+      "lib.Dead_Bug"
     ]
   },
   {
@@ -91,7 +95,8 @@
     ],
     "batch": "curated",
     "exerciseIds": [
-      "fs.plank"
+      "fs.plank",
+      "lib.Plank"
     ]
   },
   {
@@ -110,7 +115,8 @@
     ],
     "batch": "curated",
     "exerciseIds": [
-      "fs.walking-lunge"
+      "fs.walking-lunge",
+      "lib.Bodyweight_Walking_Lunge"
     ]
   },
   {
@@ -129,7 +135,8 @@
     ],
     "batch": "curated",
     "exerciseIds": [
-      "fs.glute-bridge"
+      "fs.glute-bridge",
+      "lib.Butt_Lift_Bridge"
     ]
   },
   {
@@ -148,7 +155,8 @@
     ],
     "batch": "curated",
     "exerciseIds": [
-      "fs.crunches"
+      "fs.crunches",
+      "lib.Crunches"
     ]
   },
   {
@@ -167,7 +175,8 @@
     ],
     "batch": "curated",
     "exerciseIds": [
-      "fs.superman"
+      "fs.superman",
+      "lib.Superman"
     ]
   },
   {

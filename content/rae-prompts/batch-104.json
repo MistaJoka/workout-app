@@ -1,0 +1,66 @@
+[
+  {
+    "n": 1,
+    "exerciseId": "lib.Muscle_Up",
+    "slug": "muscle-up",
+    "name": "Muscle Up",
+    "frames": 4,
+    "view": "Side view"
+  },
+  {
+    "n": 2,
+    "exerciseId": "lib.Neck-SMR",
+    "slug": "neck-smr",
+    "name": "Neck-SMR",
+    "frames": 3,
+    "view": "Side view"
+  },
+  {
+    "n": 3,
+    "exerciseId": "lib.Peroneals_Stretch",
+    "slug": "peroneals-stretch",
+    "name": "Peroneals Stretch",
+    "frames": 3,
+    "view": "Side view"
+  },
+  {
+    "n": 4,
+    "exerciseId": "lib.Plate_Pinch",
+    "slug": "plate-pinch",
+    "name": "Plate Pinch",
+    "frames": 3,
+    "view": "Side view"
+  },
+  {
+    "n": 5,
+    "exerciseId": "lib.Plate_Twist",
+    "slug": "plate-twist",
+    "name": "Plate Twist",
+    "frames": 4,
+    "view": "Side view"
+  },
+  {
+    "n": 6,
+    "exerciseId": "lib.Posterior_Tibialis_Stretch",
+    "slug": "posterior-tibialis-stretch",
+    "name": "Posterior Tibialis Stretch",
+    "frames": 3,
+    "view": "Side view"
+  },
+  {
+    "n": 7,
+    "exerciseId": "lib.Power_Stairs",
+    "slug": "power-stairs",
+    "name": "Power Stairs",
+    "frames": 4,
+    "view": "Side view"
+  },
+  {
+    "n": 8,
+    "exerciseId": "lib.Quad_Stretch",
+    "slug": "quad-stretch",
+    "name": "Quad Stretch",
+    "frames": 3,
+    "view": "Side view"
+  }
+]

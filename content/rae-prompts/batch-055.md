@@ -1,0 +1,45 @@
+# Rae batch 055 of 108
+
+Paste everything below the line into the Rae chat, then download all images at once.
+
+---
+
+Using the approved Rae v1 character bible exactly (same face, black 4C hair, two bunny ears, glasses, lotus tattoo on her anatomical left, A necklace, pink top, lavender leggings, white socks, black-and-white sneakers, same palette and pixel style as the exercise strips you already made), draw **8 separate images, one per exercise below, in this exact order**. Each image is one exercise animation strip:
+- One row of frames, evenly spaced left to right, on flat #FF00FF magenta. No text, labels, borders, floor, mat or shadows.
+- Same scale, same camera, same floor line in every frame. Whatever touches the floor (feet, hands, back) stays in the exact same spot in every frame.
+- Use the view named for each exercise. "Side view" means true side profile facing screen-left.
+- Correct, clean form that matches the steps. This teaches the movement.
+- Equipment is drawn identically in every frame.
+
+
+**1. Cable Seated Crunch** (Side view, 4 frames; equipment: a simple cable tower with a handle)
+Frames: 1) start position, 2) halfway, 3) end of the movement (peak), 4) halfway back.
+Steps: Seat on a flat bench with your back facing a high pulley. Grasp the cable rope attachment with both hands (with the palms of the hands facing each other) and place your hands securely over both shoulders. Tip: Allow the weight to hyperextend the lower back slightly. This will be your starting position. With the hips stationary, flex the waist so the elbows travel toward the hips. Breathe out as you perform this step. As you inhale, go back to the initial position slowly. Repeat for the recommended amount of repetitions.
+
+**2. Cable Seated Lateral Raise** (Front view, 4 frames; equipment: a simple cable tower with a handle)
+Frames: 1) start position, 2) halfway, 3) end of the movement (peak), 4) halfway back.
+Steps: Stand in the middle of two low pulleys that are opposite to each other and place a flat bench right behind you (in perpendicular fashion to you; the narrow edge of the bench should be the one behind you). Select the weight to be used on each pulley. Now sit at the edge of the flat bench behind you with your feet placed in front of your knees. Bend forward while keeping your back flat and rest your torso on the thighs. Have someone give you the single handles attached to the pulleys. Grasp the left pulley with the right hand and the right pulley with the left after you select your weight. The pulleys should run under your knees and your arms will be extended with palms facing each other and a slight bend at the elbows. This will be the starting position. While keeping the arms stationary, raise the upper arms to the sides until they are parallel to the floor and at shoulder height. Exhale during the execution of this movement and hold the contraction for a second. Slowly lower your arms to the starting position as you inhale. Repeat for the recommended amount of repetitions. Tip: Maintain upper arms perpendicular to torso and a fixed elbow position (10 degree to 30 degree angle) throughout exercise.
+
+**3. Cable Shoulder Press** (Side view, 4 frames; equipment: a simple cable tower with a handle)
+Frames: 1) start position, 2) halfway, 3) end of the movement (peak), 4) halfway back.
+Steps: Move the cables to the bottom of the towers and select an appropriate weight. Stand directly in between the uprights. Grasp the cables and hold them at shoulder height, palms facing forward. This will be your starting position. Keeping your head and chest up, extend through the elbow to press the handles directly over head. After pausing at the top, return to the starting position and repeat.
+
+**4. Cable Shrugs** (Front view, 4 frames; equipment: a simple cable tower with a handle)
+Frames: 1) start position, 2) halfway, 3) end of the movement (peak), 4) halfway back.
+Steps: Grasp a cable bar attachment that is attached to a low pulley with a shoulder width or slightly wider overhand (palms facing down) grip. Stand erect close to the pulley with your arms extended in front of you holding the bar. This will be your starting position. Lift the bar by elevating the shoulders as high as possible as you exhale. Hold the contraction at the top for a second. Tip: The arms should remain extended at all times. Refrain from using the biceps to help lift the bar. Only the shoulders should be moving up and down. Lower the bar back to the original position. Repeat for the recommended amount of repetitions.
+
+**5. Cable Wrist Curl** (Side view, 4 frames; equipment: a simple cable tower with a handle)
+Frames: 1) start position, 2) halfway, 3) end of the movement (peak), 4) halfway back.
+Steps: Start out by placing a flat bench in front of a low pulley cable that has a straight bar attachment. Use your arms to grab the cable bar with a narrow to shoulder width supinated grip (palms up) and bring them up so that your forearms are resting against the top of your thighs. Your wrists should be hanging just beyond your knees. Start out by curling your wrist upwards and exhaling. Keep the contraction for a second. Slowly lower your wrists back down to the starting position while inhaling. Your forearms should be stationary as your wrist is the only movement needed to perform this exercise. Repeat for the recommended amount of repetitions.
+
+**6. Close-Grip Front Lat Pulldown** (Side view, 4 frames; equipment: a simple cable tower with a handle)
+Frames: 1) start position, 2) halfway, 3) end of the movement (peak), 4) halfway back.
+Steps: Sit down on a pull-down machine with a wide bar attached to the top pulley. Make sure that you adjust the knee pad of the machine to fit your height. These pads will prevent your body from being raised by the resistance attached to the bar. Grab the bar with the palms facing forward using the prescribed grip. Note on grips: For a wide grip, your hands need to be spaced out at a distance wider than your shoulder width. For a medium grip, your hands need to be spaced out at a distance equal to your shoulder width and for a close grip at a distance smaller than your shoulder width. As you have both arms extended in front of you - while holding the bar at the chosen grip width - bring your torso back around 30 degrees or so while creating a curvature on your lower back and sticking your chest out. This is your starting position. As you breathe out, bring the bar down until it touches your upper chest by drawing the shoulders and the upper arms down and back. Tip: Concentrate on squeezing the back muscles once you reach the full contracted position. The upper torso should remain stationary (only the arms should move). The forearms should do no other work except for holding the bar; therefore do not try to pull the bar down using the forearms. After a second in the contracted position, while squeezing your shoulder blades together, slowly raise the bar back to the starting position when your arms are fully extended and the lats are fully stretched. Inhale during this portion of the movement. 6. Repeat this motion for the prescribed amount of repetitions.
+
+**7. External Rotation with Cable** (Side view, 4 frames; equipment: a simple cable tower with a handle)
+Frames: 1) start position, 2) halfway, 3) end of the movement (peak), 4) halfway back.
+Steps: Adjust the cable to the same height as your elbow. Stand with your left side to the band a couple of feet away. Grasp the handle with your right hand, and keep your elbow pressed firmly to your side. We recommend you hold a pad or foam roll in place with your elbow to keep it firmly in position. With your upper arm in position, your elbow should be flexed to 90 degrees with your hand reaching across the front of your torso. This will be your starting position. Execute the movement by rotating your arm in a backhand motion, keeping your elbow in place.
+
+**8. Front Cable Raise** (Side view, 4 frames; equipment: a simple cable tower with a handle)
+Frames: 1) start position, 2) halfway, 3) end of the movement (peak), 4) halfway back.
+Steps: Select the weight on a low pulley machine and grasp the single hand cable attachment that is attached to the low pulley with your left hand. Face away from the pulley and put your arm straight down with the hand cable attachment in front of your thighs at arms' length with the palms of the hand facing your thighs. This will be your starting position. While maintaining the torso stationary (no swinging), lift the left arm to the front with a slight bend on the elbow and the palms of the hand always faces down. Continue to go up until you arm is slightly above parallel to the floor. Exhale as you execute this portion of the movement and pause for a second at the top. Now as you inhale lower the arm back down slowly to the starting position. Once all of the recommended amount of repetitions have been performed for this arm, switch arms and perform the exercise with the right one.

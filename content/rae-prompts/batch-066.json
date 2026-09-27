@@ -1,0 +1,66 @@
+[
+  {
+    "n": 1,
+    "exerciseId": "lib.Seated_Calf_Raise",
+    "slug": "seated-calf-raise",
+    "name": "Seated Calf Raise",
+    "frames": 4,
+    "view": "Side view"
+  },
+  {
+    "n": 2,
+    "exerciseId": "lib.Seated_Leg_Curl",
+    "slug": "seated-leg-curl",
+    "name": "Seated Leg Curl",
+    "frames": 4,
+    "view": "Side view"
+  },
+  {
+    "n": 3,
+    "exerciseId": "lib.Single-Leg_Leg_Extension",
+    "slug": "single-leg-leg-extension",
+    "name": "Single-Leg Leg Extension",
+    "frames": 4,
+    "view": "Side view"
+  },
+  {
+    "n": 4,
+    "exerciseId": "lib.Smith_Machine_Behind_the_Back_Shrug",
+    "slug": "smith-machine-behind-the-back-shrug",
+    "name": "Smith Machine Behind the Back Shrug",
+    "frames": 4,
+    "view": "Front view"
+  },
+  {
+    "n": 5,
+    "exerciseId": "lib.Smith_Machine_Bench_Press",
+    "slug": "smith-machine-bench-press",
+    "name": "Smith Machine Bench Press",
+    "frames": 4,
+    "view": "Side view"
+  },
+  {
+    "n": 6,
+    "exerciseId": "lib.Smith_Machine_Bent_Over_Row",
+    "slug": "smith-machine-bent-over-row",
+    "name": "Smith Machine Bent Over Row",
+    "frames": 4,
+    "view": "Side view"
+  },
+  {
+    "n": 7,
+    "exerciseId": "lib.Smith_Machine_Calf_Raise",
+    "slug": "smith-machine-calf-raise",
+    "name": "Smith Machine Calf Raise",
+    "frames": 4,
+    "view": "Side view"
+  },
+  {
+    "n": 8,
+    "exerciseId": "lib.Smith_Machine_Close-Grip_Bench_Press",
+    "slug": "smith-machine-close-grip-bench-press",
+    "name": "Smith Machine Close-Grip Bench Press",
+    "frames": 4,
+    "view": "Side view"
+  }
+]

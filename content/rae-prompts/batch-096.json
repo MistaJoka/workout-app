@@ -1,0 +1,66 @@
+[
+  {
+    "n": 1,
+    "exerciseId": "lib.On-Your-Back_Quad_Stretch",
+    "slug": "on-your-back-quad-stretch",
+    "name": "On-Your-Back Quad Stretch",
+    "frames": 3,
+    "view": "Side view"
+  },
+  {
+    "n": 2,
+    "exerciseId": "lib.One_Handed_Hang",
+    "slug": "one-handed-hang",
+    "name": "One Handed Hang",
+    "frames": 3,
+    "view": "Side view"
+  },
+  {
+    "n": 3,
+    "exerciseId": "lib.Otis-Up",
+    "slug": "otis-up",
+    "name": "Otis-Up",
+    "frames": 4,
+    "view": "Side view"
+  },
+  {
+    "n": 4,
+    "exerciseId": "lib.Parallel_Bar_Dip",
+    "slug": "parallel-bar-dip",
+    "name": "Parallel Bar Dip",
+    "frames": 4,
+    "view": "Side view"
+  },
+  {
+    "n": 5,
+    "exerciseId": "lib.Platform_Hamstring_Slides",
+    "slug": "platform-hamstring-slides",
+    "name": "Platform Hamstring Slides",
+    "frames": 4,
+    "view": "Side view"
+  },
+  {
+    "n": 6,
+    "exerciseId": "lib.Prowler_Sprint",
+    "slug": "prowler-sprint",
+    "name": "Prowler Sprint",
+    "frames": 4,
+    "view": "Side view"
+  },
+  {
+    "n": 7,
+    "exerciseId": "lib.Quick_Leap",
+    "slug": "quick-leap",
+    "name": "Quick Leap",
+    "frames": 4,
+    "view": "Side view"
+  },
+  {
+    "n": 8,
+    "exerciseId": "lib.Reverse_Plate_Curls",
+    "slug": "reverse-plate-curls",
+    "name": "Reverse Plate Curls",
+    "frames": 4,
+    "view": "Side view"
+  }
+]

@@ -1,0 +1,66 @@
+[
+  {
+    "n": 1,
+    "exerciseId": "lib.Isometric_Neck_Exercise_-_Front_And_Back",
+    "slug": "isometric-neck-exercise-front-and-back",
+    "name": "Isometric Neck Exercise - Front And Back",
+    "frames": 3,
+    "view": "Side view"
+  },
+  {
+    "n": 2,
+    "exerciseId": "lib.Isometric_Neck_Exercise_-_Sides",
+    "slug": "isometric-neck-exercise-sides",
+    "name": "Isometric Neck Exercise - Sides",
+    "frames": 3,
+    "view": "Side view"
+  },
+  {
+    "n": 3,
+    "exerciseId": "lib.Isometric_Wipers",
+    "slug": "isometric-wipers",
+    "name": "Isometric Wipers",
+    "frames": 4,
+    "view": "Side view"
+  },
+  {
+    "n": 4,
+    "exerciseId": "lib.Jackknife_Sit-Up",
+    "slug": "jackknife-sit-up",
+    "name": "Jackknife Sit-Up",
+    "frames": 4,
+    "view": "Front view"
+  },
+  {
+    "n": 5,
+    "exerciseId": "lib.Janda_Sit-Up",
+    "slug": "janda-sit-up",
+    "name": "Janda Sit-Up",
+    "frames": 4,
+    "view": "Side view"
+  },
+  {
+    "n": 6,
+    "exerciseId": "lib.Knee_Circles",
+    "slug": "knee-circles",
+    "name": "Knee Circles",
+    "frames": 3,
+    "view": "Side view"
+  },
+  {
+    "n": 7,
+    "exerciseId": "lib.Knee_Tuck_Jump",
+    "slug": "knee-tuck-jump",
+    "name": "Knee Tuck Jump",
+    "frames": 4,
+    "view": "Side view"
+  },
+  {
+    "n": 8,
+    "exerciseId": "lib.Lateral_Bound",
+    "slug": "lateral-bound",
+    "name": "Lateral Bound",
+    "frames": 4,
+    "view": "Front view"
+  }
+]

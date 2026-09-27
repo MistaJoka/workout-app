@@ -1,0 +1,66 @@
+[
+  {
+    "n": 1,
+    "exerciseId": "lib.Dumbbell_One-Arm_Triceps_Extension",
+    "slug": "dumbbell-one-arm-triceps-extension",
+    "name": "Dumbbell One-Arm Triceps Extension",
+    "frames": 4,
+    "view": "Side view"
+  },
+  {
+    "n": 2,
+    "exerciseId": "lib.Dumbbell_One-Arm_Upright_Row",
+    "slug": "dumbbell-one-arm-upright-row",
+    "name": "Dumbbell One-Arm Upright Row",
+    "frames": 4,
+    "view": "Side view"
+  },
+  {
+    "n": 3,
+    "exerciseId": "lib.Dumbbell_Prone_Incline_Curl",
+    "slug": "dumbbell-prone-incline-curl",
+    "name": "Dumbbell Prone Incline Curl",
+    "frames": 4,
+    "view": "Side view"
+  },
+  {
+    "n": 4,
+    "exerciseId": "lib.Dumbbell_Rear_Lunge",
+    "slug": "dumbbell-rear-lunge",
+    "name": "Dumbbell Rear Lunge",
+    "frames": 4,
+    "view": "Side view"
+  },
+  {
+    "n": 5,
+    "exerciseId": "lib.Dumbbell_Seated_Box_Jump",
+    "slug": "dumbbell-seated-box-jump",
+    "name": "Dumbbell Seated Box Jump",
+    "frames": 4,
+    "view": "Side view"
+  },
+  {
+    "n": 6,
+    "exerciseId": "lib.Dumbbell_Shoulder_Press",
+    "slug": "dumbbell-shoulder-press",
+    "name": "Dumbbell Shoulder Press",
+    "frames": 4,
+    "view": "Side view"
+  },
+  {
+    "n": 7,
+    "exerciseId": "lib.Dumbbell_Squat_To_A_Bench",
+    "slug": "dumbbell-squat-to-a-bench",
+    "name": "Dumbbell Squat To A Bench",
+    "frames": 4,
+    "view": "Side view"
+  },
+  {
+    "n": 8,
+    "exerciseId": "lib.Dumbbell_Step_Ups",
+    "slug": "dumbbell-step-ups",
+    "name": "Dumbbell Step Ups",
+    "frames": 4,
+    "view": "Side view"
+  }
+]

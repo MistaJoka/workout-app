@@ -1,0 +1,66 @@
+[
+  {
+    "n": 1,
+    "exerciseId": "lib.Romanian_Deadlift_from_Deficit",
+    "slug": "romanian-deadlift-from-deficit",
+    "name": "Romanian Deadlift from Deficit",
+    "frames": 4,
+    "view": "Side view"
+  },
+  {
+    "n": 2,
+    "exerciseId": "lib.Seated_Barbell_Military_Press",
+    "slug": "seated-barbell-military-press",
+    "name": "Seated Barbell Military Press",
+    "frames": 4,
+    "view": "Side view"
+  },
+  {
+    "n": 3,
+    "exerciseId": "lib.Seated_Close-Grip_Concentration_Barbell_Curl",
+    "slug": "seated-close-grip-concentration-barbell-curl",
+    "name": "Seated Close-Grip Concentration Barbell Curl",
+    "frames": 4,
+    "view": "Side view"
+  },
+  {
+    "n": 4,
+    "exerciseId": "lib.Seated_Good_Mornings",
+    "slug": "seated-good-mornings",
+    "name": "Seated Good Mornings",
+    "frames": 4,
+    "view": "Side view"
+  },
+  {
+    "n": 5,
+    "exerciseId": "lib.Single-Arm_Linear_Jammer",
+    "slug": "single-arm-linear-jammer",
+    "name": "Single-Arm Linear Jammer",
+    "frames": 4,
+    "view": "Side view"
+  },
+  {
+    "n": 6,
+    "exerciseId": "lib.Snatch",
+    "slug": "snatch",
+    "name": "Snatch",
+    "frames": 4,
+    "view": "Side view"
+  },
+  {
+    "n": 7,
+    "exerciseId": "lib.Snatch_Balance",
+    "slug": "snatch-balance",
+    "name": "Snatch Balance",
+    "frames": 4,
+    "view": "Side view"
+  },
+  {
+    "n": 8,
+    "exerciseId": "lib.Snatch_Deadlift",
+    "slug": "snatch-deadlift",
+    "name": "Snatch Deadlift",
+    "frames": 4,
+    "view": "Side view"
+  }
+]

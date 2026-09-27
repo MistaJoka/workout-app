@@ -1,0 +1,66 @@
+[
+  {
+    "n": 1,
+    "exerciseId": "lib.Upright_Cable_Row",
+    "slug": "upright-cable-row",
+    "name": "Upright Cable Row",
+    "frames": 4,
+    "view": "Side view"
+  },
+  {
+    "n": 2,
+    "exerciseId": "lib.V-Bar_Pulldown",
+    "slug": "v-bar-pulldown",
+    "name": "V-Bar Pulldown",
+    "frames": 4,
+    "view": "Side view"
+  },
+  {
+    "n": 3,
+    "exerciseId": "lib.Wide-Grip_Pulldown_Behind_The_Neck",
+    "slug": "wide-grip-pulldown-behind-the-neck",
+    "name": "Wide-Grip Pulldown Behind The Neck",
+    "frames": 4,
+    "view": "Side view"
+  },
+  {
+    "n": 4,
+    "exerciseId": "lib.Bicycling_Stationary",
+    "slug": "bicycling-stationary",
+    "name": "Bicycling, Stationary",
+    "frames": 4,
+    "view": "Side view"
+  },
+  {
+    "n": 5,
+    "exerciseId": "lib.Butterfly",
+    "slug": "butterfly",
+    "name": "Butterfly",
+    "frames": 4,
+    "view": "Front view"
+  },
+  {
+    "n": 6,
+    "exerciseId": "lib.Calf_Press",
+    "slug": "calf-press",
+    "name": "Calf Press",
+    "frames": 4,
+    "view": "Side view"
+  },
+  {
+    "n": 7,
+    "exerciseId": "lib.Calf_Press_On_The_Leg_Press_Machine",
+    "slug": "calf-press-on-the-leg-press-machine",
+    "name": "Calf Press On The Leg Press Machine",
+    "frames": 4,
+    "view": "Side view"
+  },
+  {
+    "n": 8,
+    "exerciseId": "lib.Calf-Machine_Shoulder_Shrug",
+    "slug": "calf-machine-shoulder-shrug",
+    "name": "Calf-Machine Shoulder Shrug",
+    "frames": 4,
+    "view": "Front view"
+  }
+]

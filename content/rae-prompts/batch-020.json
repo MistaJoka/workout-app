@@ -1,0 +1,66 @@
+[
+  {
+    "n": 1,
+    "exerciseId": "lib.Spinal_Stretch",
+    "slug": "spinal-stretch",
+    "name": "Spinal Stretch",
+    "frames": 3,
+    "view": "Side view"
+  },
+  {
+    "n": 2,
+    "exerciseId": "lib.Standing_Gastrocnemius_Calf_Stretch",
+    "slug": "standing-gastrocnemius-calf-stretch",
+    "name": "Standing Gastrocnemius Calf Stretch",
+    "frames": 3,
+    "view": "Side view"
+  },
+  {
+    "n": 3,
+    "exerciseId": "lib.Standing_Hip_Flexors",
+    "slug": "standing-hip-flexors",
+    "name": "Standing Hip Flexors",
+    "frames": 3,
+    "view": "Side view"
+  },
+  {
+    "n": 4,
+    "exerciseId": "lib.Standing_Lateral_Stretch",
+    "slug": "standing-lateral-stretch",
+    "name": "Standing Lateral Stretch",
+    "frames": 3,
+    "view": "Front view"
+  },
+  {
+    "n": 5,
+    "exerciseId": "lib.Standing_Pelvic_Tilt",
+    "slug": "standing-pelvic-tilt",
+    "name": "Standing Pelvic Tilt",
+    "frames": 3,
+    "view": "Side view"
+  },
+  {
+    "n": 6,
+    "exerciseId": "lib.Standing_Soleus_And_Achilles_Stretch",
+    "slug": "standing-soleus-and-achilles-stretch",
+    "name": "Standing Soleus And Achilles Stretch",
+    "frames": 3,
+    "view": "Side view"
+  },
+  {
+    "n": 7,
+    "exerciseId": "lib.Standing_Toe_Touches",
+    "slug": "standing-toe-touches",
+    "name": "Standing Toe Touches",
+    "frames": 3,
+    "view": "Side view"
+  },
+  {
+    "n": 8,
+    "exerciseId": "lib.The_Straddle",
+    "slug": "the-straddle",
+    "name": "The Straddle",
+    "frames": 3,
+    "view": "Side view"
+  }
+]

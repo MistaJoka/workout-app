@@ -1,0 +1,45 @@
+# Rae batch 066 of 108
+
+Paste everything below the line into the Rae chat, then download all images at once.
+
+---
+
+Using the approved Rae v1 character bible exactly (same face, black 4C hair, two bunny ears, glasses, lotus tattoo on her anatomical left, A necklace, pink top, lavender leggings, white socks, black-and-white sneakers, same palette and pixel style as the exercise strips you already made), draw **8 separate images, one per exercise below, in this exact order**. Each image is one exercise animation strip:
+- One row of frames, evenly spaced left to right, on flat #FF00FF magenta. No text, labels, borders, floor, mat or shadows.
+- Same scale, same camera, same floor line in every frame. Whatever touches the floor (feet, hands, back) stays in the exact same spot in every frame.
+- Use the view named for each exercise. "Side view" means true side profile facing screen-left.
+- Correct, clean form that matches the steps. This teaches the movement.
+- Equipment is drawn identically in every frame.
+
+
+**1. Seated Calf Raise** (Side view, 4 frames; equipment: the exercise machine the steps describe, drawn simply)
+Frames: 1) start position, 2) halfway, 3) end of the movement (peak), 4) halfway back.
+Steps: Sit on the machine and place your toes on the lower portion of the platform provided with the heels extending off. Choose the toe positioning of your choice (forward, in, or out) as per the beginning of this chapter. Place your lower thighs under the lever pad, which will need to be adjusted according to the height of your thighs. Now place your hands on top of the lever pad in order to prevent it from slipping forward. Lift the lever slightly by pushing your heels up and release the safety bar. This will be your starting position. Slowly lower your heels by bending at the ankles until the calves are fully stretched. Inhale as you perform this movement. Raise the heels by extending the ankles as high as possible as you contract the calves and breathe out. Hold the top contraction for a second. Repeat for the recommended amount of repetitions.
+
+**2. Seated Leg Curl** (Side view, 4 frames; equipment: the exercise machine the steps describe, drawn simply)
+Frames: 1) start position, 2) halfway, 3) end of the movement (peak), 4) halfway back.
+Steps: Adjust the machine lever to fit your height and sit on the machine with your back against the back support pad. Place the back of lower leg on top of padded lever (just a few inches under the calves) and secure the lap pad against your thighs, just above the knees. Then grasp the side handles on the machine as you point your toes straight (or you can also use any of the other two stances) and ensure that the legs are fully straight right in front of you. This will be your starting position. As you exhale, pull the machine lever as far as possible to the back of your thighs by flexing at the knees. Keep your torso stationary at all times. Hold the contracted position for a second. Slowly return to the starting position as you breathe in. Repeat for the recommended amount of repetitions.
+
+**3. Single-Leg Leg Extension** (Side view, 4 frames; equipment: the exercise machine the steps describe, drawn simply)
+Frames: 1) start position, 2) halfway, 3) end of the movement (peak), 4) halfway back.
+Steps: Seat yourself in the machine and adjust it so that you are positioned properly. The pad should be against the lower part of the shin but not in contact with the ankle. Adjust the seat so that the pivot point is in line with your knee. Select a weight appropriate for your abilities. Maintaining good posture, fully extend one leg, pausing at the top of the motion. Return to the starting position without letting the weight stop, keeping tension on the muscle. Repeat for the desired number of repetitions.
+
+**4. Smith Machine Behind the Back Shrug** (Front view, 4 frames; equipment: the exercise machine the steps describe, drawn simply)
+Frames: 1) start position, 2) halfway, 3) end of the movement (peak), 4) halfway back.
+Steps: With the bar at thigh level, load an appropriate weight. Stand with the bar behind you, taking a shoulder-width, pronated grip on the bar and unhook the weight. You should be standing up straight with your head and chest up and your arms extended. This will be your starting position. Initiate the movement by shrugging your shoulders straight up. Do not flex the arms or wrist during the movement. After a brief pause return the weight to the starting position. Repeat for the desired number of repetitions before engaging the hooks to rack the weight.
+
+**5. Smith Machine Bench Press** (Side view, 4 frames; equipment: the exercise machine the steps describe, drawn simply)
+Frames: 1) start position, 2) halfway, 3) end of the movement (peak), 4) halfway back.
+Steps: Place a flat bench underneath the smith machine. Now place the barbell at a height that you can reach when lying down and your arms are almost fully extended. Once the weight you need is selected, lie down on the flat bench. Using a pronated grip that is wider than shoulder width, unlock the bar from the rack and hold it straight over you with your arms locked. This will be your starting position. As you breathe in, come down slowly until you feel the bar on your middle chest. After a second pause, bring the bar back to the starting position as you breathe out and push the bar using your chest muscles. Lock your arms in the contracted position, hold for a second and then start coming down slowly again. Tip: It should take at least twice as long to go down than to come up. Repeat the movement for the prescribed amount of repetitions. When you are done, lock the bar back in the rack.
+
+**6. Smith Machine Bent Over Row** (Side view, 4 frames; equipment: the exercise machine the steps describe, drawn simply)
+Frames: 1) start position, 2) halfway, 3) end of the movement (peak), 4) halfway back.
+Steps: Set the barbell attached to the smith machine to a height that is about 2 inches below your knees. Bend your knees slightly and bring your torso forward, by bending at the waist, while keeping the back straight until it is almost parallel to the floor. Tip: Make sure that you keep the head up. Now grasp the barbell using an overhand (pronated) grip and unlock it from the smith machine rack. Then let it hang directly in front of you as your arms hang extended perpendicular to the floor and your torso. This is your starting position. While keeping the torso stationary, lift the barbell as you breathe out, keeping the elbows close to the body and not doing any force with the forearm other than holding the weights. On the top contracted position, squeeze the back muscles and hold for a second. Slowly lower the weight again to the starting position as you inhale. Repeat for the recommended amount of repetitions.
+
+**7. Smith Machine Calf Raise** (Side view, 4 frames; equipment: the exercise machine the steps describe, drawn simply)
+Frames: 1) start position, 2) halfway, 3) end of the movement (peak), 4) halfway back.
+Steps: Place a block or weight plate below the bar on the Smith machine. Set the bar to a position that best matches your height. Once the correct height is chosen and the bar is loaded, step onto the plates with the balls of your feet and place the bar on the back of your shoulders. Take the bar with both hands facing forward. Rotate the bar to unrack it. This will be your starting position. Raise your heels as high as possible by pushing off of the balls of your feet, flexing your calf at the top of the contraction. Your knees should remain extended. Hold the contracted position for a second before you start to go back down. Return slowly to the starting position as you breathe in while lowering your heels. Repeat for the recommended amount of repetitions.
+
+**8. Smith Machine Close-Grip Bench Press** (Side view, 4 frames; equipment: the exercise machine the steps describe, drawn simply)
+Frames: 1) start position, 2) halfway, 3) end of the movement (peak), 4) halfway back.
+Steps: Place a flat bench underneath the smith machine. Place the barbell at a height that you can reach when lying down and your arms are almost fully extended. Once the weight you need is selected, lie down on the flat bench. Using a close and pronated grip (palms facing forward) that is around shoulder width, unlock the bar from the rack and hold it straight over you with your arms locked. This will be your starting position. As you breathe in, come down slowly until you feel the bar on your middle chest. Tip: Make sure that as opposed to a regular bench press, you keep the elbows close to the torso at all times in order to maximize triceps involvement. After a second pause, bring the bar back to the starting position as you breathe out and push the bar using your triceps muscles. Lock your arms in the contracted position, hold for a second and then start coming down slowly again. Tip: It should take at least twice as long to go down than to come up. Repeat the movement for the prescribed amount of repetitions. When you are done, lock the bar back in the rack.

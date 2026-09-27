@@ -1,0 +1,66 @@
+[
+  {
+    "n": 1,
+    "exerciseId": "lib.Leg-Over_Floor_Press",
+    "slug": "leg-over-floor-press",
+    "name": "Leg-Over Floor Press",
+    "frames": 4,
+    "view": "Side view"
+  },
+  {
+    "n": 2,
+    "exerciseId": "lib.Lunge_Pass_Through",
+    "slug": "lunge-pass-through",
+    "name": "Lunge Pass Through",
+    "frames": 4,
+    "view": "Side view"
+  },
+  {
+    "n": 3,
+    "exerciseId": "lib.One-Arm_Kettlebell_Clean",
+    "slug": "one-arm-kettlebell-clean",
+    "name": "One-Arm Kettlebell Clean",
+    "frames": 4,
+    "view": "Side view"
+  },
+  {
+    "n": 4,
+    "exerciseId": "lib.One-Arm_Kettlebell_Clean_and_Jerk",
+    "slug": "one-arm-kettlebell-clean-and-jerk",
+    "name": "One-Arm Kettlebell Clean and Jerk",
+    "frames": 4,
+    "view": "Side view"
+  },
+  {
+    "n": 5,
+    "exerciseId": "lib.One-Arm_Kettlebell_Floor_Press",
+    "slug": "one-arm-kettlebell-floor-press",
+    "name": "One-Arm Kettlebell Floor Press",
+    "frames": 4,
+    "view": "Side view"
+  },
+  {
+    "n": 6,
+    "exerciseId": "lib.One-Arm_Kettlebell_Jerk",
+    "slug": "one-arm-kettlebell-jerk",
+    "name": "One-Arm Kettlebell Jerk",
+    "frames": 4,
+    "view": "Side view"
+  },
+  {
+    "n": 7,
+    "exerciseId": "lib.One-Arm_Kettlebell_Military_Press_To_The_Side",
+    "slug": "one-arm-kettlebell-military-press-to-the-side",
+    "name": "One-Arm Kettlebell Military Press To The Side",
+    "frames": 4,
+    "view": "Side view"
+  },
+  {
+    "n": 8,
+    "exerciseId": "lib.One-Arm_Kettlebell_Para_Press",
+    "slug": "one-arm-kettlebell-para-press",
+    "name": "One-Arm Kettlebell Para Press",
+    "frames": 4,
+    "view": "Side view"
+  }
+]

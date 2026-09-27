@@ -1,0 +1,66 @@
+[
+  {
+    "n": 1,
+    "exerciseId": "lib.Incline_Dumbbell_Flyes_-_With_A_Twist",
+    "slug": "incline-dumbbell-flyes-with-a-twist",
+    "name": "Incline Dumbbell Flyes - With A Twist",
+    "frames": 4,
+    "view": "Front view"
+  },
+  {
+    "n": 2,
+    "exerciseId": "lib.Incline_Dumbbell_Press",
+    "slug": "incline-dumbbell-press",
+    "name": "Incline Dumbbell Press",
+    "frames": 4,
+    "view": "Side view"
+  },
+  {
+    "n": 3,
+    "exerciseId": "lib.Incline_Hammer_Curls",
+    "slug": "incline-hammer-curls",
+    "name": "Incline Hammer Curls",
+    "frames": 4,
+    "view": "Side view"
+  },
+  {
+    "n": 4,
+    "exerciseId": "lib.Incline_Inner_Biceps_Curl",
+    "slug": "incline-inner-biceps-curl",
+    "name": "Incline Inner Biceps Curl",
+    "frames": 4,
+    "view": "Side view"
+  },
+  {
+    "n": 5,
+    "exerciseId": "lib.Lying_Supine_Dumbbell_Curl",
+    "slug": "lying-supine-dumbbell-curl",
+    "name": "Lying Supine Dumbbell Curl",
+    "frames": 4,
+    "view": "Side view"
+  },
+  {
+    "n": 6,
+    "exerciseId": "lib.One_Arm_Dumbbell_Bench_Press",
+    "slug": "one-arm-dumbbell-bench-press",
+    "name": "One Arm Dumbbell Bench Press",
+    "frames": 4,
+    "view": "Side view"
+  },
+  {
+    "n": 7,
+    "exerciseId": "lib.One_Arm_Dumbbell_Preacher_Curl",
+    "slug": "one-arm-dumbbell-preacher-curl",
+    "name": "One Arm Dumbbell Preacher Curl",
+    "frames": 4,
+    "view": "Side view"
+  },
+  {
+    "n": 8,
+    "exerciseId": "lib.One_Arm_Pronated_Dumbbell_Triceps_Extension",
+    "slug": "one-arm-pronated-dumbbell-triceps-extension",
+    "name": "One Arm Pronated Dumbbell Triceps Extension",
+    "frames": 4,
+    "view": "Side view"
+  }
+]

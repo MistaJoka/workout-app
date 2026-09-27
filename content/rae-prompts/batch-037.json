@@ -1,0 +1,66 @@
+[
+  {
+    "n": 1,
+    "exerciseId": "lib.Standing_Bent-Over_One-Arm_Dumbbell_Triceps_Extension",
+    "slug": "standing-bent-over-one-arm-dumbbell-triceps-extension",
+    "name": "Standing Bent-Over One-Arm Dumbbell Triceps Extension",
+    "frames": 4,
+    "view": "Side view"
+  },
+  {
+    "n": 2,
+    "exerciseId": "lib.Standing_Bent-Over_Two-Arm_Dumbbell_Triceps_Extension",
+    "slug": "standing-bent-over-two-arm-dumbbell-triceps-extension",
+    "name": "Standing Bent-Over Two-Arm Dumbbell Triceps Extension",
+    "frames": 4,
+    "view": "Side view"
+  },
+  {
+    "n": 3,
+    "exerciseId": "lib.Standing_Concentration_Curl",
+    "slug": "standing-concentration-curl",
+    "name": "Standing Concentration Curl",
+    "frames": 4,
+    "view": "Side view"
+  },
+  {
+    "n": 4,
+    "exerciseId": "lib.Standing_Dumbbell_Press",
+    "slug": "standing-dumbbell-press",
+    "name": "Standing Dumbbell Press",
+    "frames": 4,
+    "view": "Side view"
+  },
+  {
+    "n": 5,
+    "exerciseId": "lib.Standing_Dumbbell_Triceps_Extension",
+    "slug": "standing-dumbbell-triceps-extension",
+    "name": "Standing Dumbbell Triceps Extension",
+    "frames": 4,
+    "view": "Side view"
+  },
+  {
+    "n": 6,
+    "exerciseId": "lib.Standing_Dumbbell_Upright_Row",
+    "slug": "standing-dumbbell-upright-row",
+    "name": "Standing Dumbbell Upright Row",
+    "frames": 4,
+    "view": "Side view"
+  },
+  {
+    "n": 7,
+    "exerciseId": "lib.Standing_One-Arm_Dumbbell_Curl_Over_Incline_Bench",
+    "slug": "standing-one-arm-dumbbell-curl-over-incline-bench",
+    "name": "Standing One-Arm Dumbbell Curl Over Incline Bench",
+    "frames": 4,
+    "view": "Side view"
+  },
+  {
+    "n": 8,
+    "exerciseId": "lib.Standing_One-Arm_Dumbbell_Triceps_Extension",
+    "slug": "standing-one-arm-dumbbell-triceps-extension",
+    "name": "Standing One-Arm Dumbbell Triceps Extension",
+    "frames": 4,
+    "view": "Side view"
+  }
+]

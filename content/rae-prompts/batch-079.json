@@ -1,0 +1,66 @@
+[
+  {
+    "n": 1,
+    "exerciseId": "lib.Barbell_Guillotine_Bench_Press",
+    "slug": "barbell-guillotine-bench-press",
+    "name": "Barbell Guillotine Bench Press",
+    "frames": 4,
+    "view": "Side view"
+  },
+  {
+    "n": 2,
+    "exerciseId": "lib.Barbell_Hack_Squat",
+    "slug": "barbell-hack-squat",
+    "name": "Barbell Hack Squat",
+    "frames": 4,
+    "view": "Side view"
+  },
+  {
+    "n": 3,
+    "exerciseId": "lib.Barbell_Hip_Thrust",
+    "slug": "barbell-hip-thrust",
+    "name": "Barbell Hip Thrust",
+    "frames": 4,
+    "view": "Side view"
+  },
+  {
+    "n": 4,
+    "exerciseId": "lib.Barbell_Lunge",
+    "slug": "barbell-lunge",
+    "name": "Barbell Lunge",
+    "frames": 4,
+    "view": "Side view"
+  },
+  {
+    "n": 5,
+    "exerciseId": "lib.Barbell_Rollout_from_Bench",
+    "slug": "barbell-rollout-from-bench",
+    "name": "Barbell Rollout from Bench",
+    "frames": 4,
+    "view": "Side view"
+  },
+  {
+    "n": 6,
+    "exerciseId": "lib.Barbell_Shoulder_Press",
+    "slug": "barbell-shoulder-press",
+    "name": "Barbell Shoulder Press",
+    "frames": 4,
+    "view": "Side view"
+  },
+  {
+    "n": 7,
+    "exerciseId": "lib.Barbell_Step_Ups",
+    "slug": "barbell-step-ups",
+    "name": "Barbell Step Ups",
+    "frames": 4,
+    "view": "Side view"
+  },
+  {
+    "n": 8,
+    "exerciseId": "lib.Bench_Press_-_Powerlifting",
+    "slug": "bench-press-powerlifting",
+    "name": "Bench Press - Powerlifting",
+    "frames": 4,
+    "view": "Side view"
+  }
+]

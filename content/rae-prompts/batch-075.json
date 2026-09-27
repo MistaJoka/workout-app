@@ -1,0 +1,66 @@
+[
+  {
+    "n": 1,
+    "exerciseId": "lib.Finger_Curls",
+    "slug": "finger-curls",
+    "name": "Finger Curls",
+    "frames": 4,
+    "view": "Side view"
+  },
+  {
+    "n": 2,
+    "exerciseId": "lib.Front_Raise_And_Pullover",
+    "slug": "front-raise-and-pullover",
+    "name": "Front Raise And Pullover",
+    "frames": 4,
+    "view": "Side view"
+  },
+  {
+    "n": 3,
+    "exerciseId": "lib.Incline_Bench_Pull",
+    "slug": "incline-bench-pull",
+    "name": "Incline Bench Pull",
+    "frames": 4,
+    "view": "Side view"
+  },
+  {
+    "n": 4,
+    "exerciseId": "lib.JM_Press",
+    "slug": "jm-press",
+    "name": "JM Press",
+    "frames": 4,
+    "view": "Side view"
+  },
+  {
+    "n": 5,
+    "exerciseId": "lib.Landmine_180s",
+    "slug": "landmine-180s",
+    "name": "Landmine 180's",
+    "frames": 4,
+    "view": "Side view"
+  },
+  {
+    "n": 6,
+    "exerciseId": "lib.Lying_Cambered_Barbell_Row",
+    "slug": "lying-cambered-barbell-row",
+    "name": "Lying Cambered Barbell Row",
+    "frames": 4,
+    "view": "Side view"
+  },
+  {
+    "n": 7,
+    "exerciseId": "lib.One-Arm_Long_Bar_Row",
+    "slug": "one-arm-long-bar-row",
+    "name": "One-Arm Long Bar Row",
+    "frames": 4,
+    "view": "Side view"
+  },
+  {
+    "n": 8,
+    "exerciseId": "lib.Palms-Down_Wrist_Curl_Over_A_Bench",
+    "slug": "palms-down-wrist-curl-over-a-bench",
+    "name": "Palms-Down Wrist Curl Over A Bench",
+    "frames": 4,
+    "view": "Side view"
+  }
+]

@@ -1,0 +1,66 @@
+[
+  {
+    "n": 1,
+    "exerciseId": "lib.Decline_Close-Grip_Bench_To_Skull_Crusher",
+    "slug": "decline-close-grip-bench-to-skull-crusher",
+    "name": "Decline Close-Grip Bench To Skull Crusher",
+    "frames": 4,
+    "view": "Side view"
+  },
+  {
+    "n": 2,
+    "exerciseId": "lib.Deficit_Deadlift",
+    "slug": "deficit-deadlift",
+    "name": "Deficit Deadlift",
+    "frames": 4,
+    "view": "Side view"
+  },
+  {
+    "n": 3,
+    "exerciseId": "lib.Drag_Curl",
+    "slug": "drag-curl",
+    "name": "Drag Curl",
+    "frames": 4,
+    "view": "Side view"
+  },
+  {
+    "n": 4,
+    "exerciseId": "lib.Elevated_Back_Lunge",
+    "slug": "elevated-back-lunge",
+    "name": "Elevated Back Lunge",
+    "frames": 4,
+    "view": "Side view"
+  },
+  {
+    "n": 5,
+    "exerciseId": "lib.Floor_Press",
+    "slug": "floor-press",
+    "name": "Floor Press",
+    "frames": 4,
+    "view": "Side view"
+  },
+  {
+    "n": 6,
+    "exerciseId": "lib.Floor_Press_with_Chains",
+    "slug": "floor-press-with-chains",
+    "name": "Floor Press with Chains",
+    "frames": 4,
+    "view": "Side view"
+  },
+  {
+    "n": 7,
+    "exerciseId": "lib.Frankenstein_Squat",
+    "slug": "frankenstein-squat",
+    "name": "Frankenstein Squat",
+    "frames": 4,
+    "view": "Side view"
+  },
+  {
+    "n": 8,
+    "exerciseId": "lib.Front_Squat_Clean_Grip",
+    "slug": "front-squat-clean-grip",
+    "name": "Front Squat (Clean Grip)",
+    "frames": 4,
+    "view": "Side view"
+  }
+]

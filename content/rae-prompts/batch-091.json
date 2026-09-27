@@ -1,0 +1,66 @@
+[
+  {
+    "n": 1,
+    "exerciseId": "lib.Kneeling_Jump_Squat",
+    "slug": "kneeling-jump-squat",
+    "name": "Kneeling Jump Squat",
+    "frames": 4,
+    "view": "Side view"
+  },
+  {
+    "n": 2,
+    "exerciseId": "lib.One_Leg_Barbell_Squat",
+    "slug": "one-leg-barbell-squat",
+    "name": "One Leg Barbell Squat",
+    "frames": 4,
+    "view": "Side view"
+  },
+  {
+    "n": 3,
+    "exerciseId": "lib.One-Arm_Side_Deadlift",
+    "slug": "one-arm-side-deadlift",
+    "name": "One-Arm Side Deadlift",
+    "frames": 4,
+    "view": "Side view"
+  },
+  {
+    "n": 4,
+    "exerciseId": "lib.Overhead_Squat",
+    "slug": "overhead-squat",
+    "name": "Overhead Squat",
+    "frames": 4,
+    "view": "Side view"
+  },
+  {
+    "n": 5,
+    "exerciseId": "lib.Power_Jerk",
+    "slug": "power-jerk",
+    "name": "Power Jerk",
+    "frames": 4,
+    "view": "Side view"
+  },
+  {
+    "n": 6,
+    "exerciseId": "lib.Power_Snatch",
+    "slug": "power-snatch",
+    "name": "Power Snatch",
+    "frames": 4,
+    "view": "Side view"
+  },
+  {
+    "n": 7,
+    "exerciseId": "lib.Press_Sit-Up",
+    "slug": "press-sit-up",
+    "name": "Press Sit-Up",
+    "frames": 4,
+    "view": "Side view"
+  },
+  {
+    "n": 8,
+    "exerciseId": "lib.Reverse_Band_Deadlift",
+    "slug": "reverse-band-deadlift",
+    "name": "Reverse Band Deadlift",
+    "frames": 4,
+    "view": "Side view"
+  }
+]

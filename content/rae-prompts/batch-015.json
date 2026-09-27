@@ -1,0 +1,66 @@
+[
+  {
+    "n": 1,
+    "exerciseId": "lib.Dancers_Stretch",
+    "slug": "dancers-stretch",
+    "name": "Dancer's Stretch",
+    "frames": 3,
+    "view": "Side view"
+  },
+  {
+    "n": 2,
+    "exerciseId": "lib.Decline_Push-Up",
+    "slug": "decline-push-up",
+    "name": "Decline Push-Up",
+    "frames": 4,
+    "view": "Side view"
+  },
+  {
+    "n": 3,
+    "exerciseId": "lib.Dynamic_Back_Stretch",
+    "slug": "dynamic-back-stretch",
+    "name": "Dynamic Back Stretch",
+    "frames": 3,
+    "view": "Side view"
+  },
+  {
+    "n": 4,
+    "exerciseId": "lib.Dynamic_Chest_Stretch",
+    "slug": "dynamic-chest-stretch",
+    "name": "Dynamic Chest Stretch",
+    "frames": 3,
+    "view": "Side view"
+  },
+  {
+    "n": 5,
+    "exerciseId": "lib.Elbow_Circles",
+    "slug": "elbow-circles",
+    "name": "Elbow Circles",
+    "frames": 3,
+    "view": "Side view"
+  },
+  {
+    "n": 6,
+    "exerciseId": "lib.Elbows_Back",
+    "slug": "elbows-back",
+    "name": "Elbows Back",
+    "frames": 3,
+    "view": "Side view"
+  },
+  {
+    "n": 7,
+    "exerciseId": "lib.Hamstring_Stretch",
+    "slug": "hamstring-stretch",
+    "name": "Hamstring Stretch",
+    "frames": 3,
+    "view": "Side view"
+  },
+  {
+    "n": 8,
+    "exerciseId": "lib.Hug_Knees_To_Chest",
+    "slug": "hug-knees-to-chest",
+    "name": "Hug Knees To Chest",
+    "frames": 3,
+    "view": "Side view"
+  }
+]

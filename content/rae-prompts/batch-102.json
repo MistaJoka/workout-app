@@ -1,0 +1,66 @@
+[
+  {
+    "n": 1,
+    "exerciseId": "lib.Drop_Push",
+    "slug": "drop-push",
+    "name": "Drop Push",
+    "frames": 4,
+    "view": "Side view"
+  },
+  {
+    "n": 2,
+    "exerciseId": "lib.Farmers_Walk",
+    "slug": "farmers-walk",
+    "name": "Farmer's Walk",
+    "frames": 4,
+    "view": "Side view"
+  },
+  {
+    "n": 3,
+    "exerciseId": "lib.Foot-SMR",
+    "slug": "foot-smr",
+    "name": "Foot-SMR",
+    "frames": 3,
+    "view": "Side view"
+  },
+  {
+    "n": 4,
+    "exerciseId": "lib.Forward_Drag_with_Press",
+    "slug": "forward-drag-with-press",
+    "name": "Forward Drag with Press",
+    "frames": 4,
+    "view": "Side view"
+  },
+  {
+    "n": 5,
+    "exerciseId": "lib.Front_Plate_Raise",
+    "slug": "front-plate-raise",
+    "name": "Front Plate Raise",
+    "frames": 4,
+    "view": "Side view"
+  },
+  {
+    "n": 6,
+    "exerciseId": "lib.Gironda_Sternum_Chins",
+    "slug": "gironda-sternum-chins",
+    "name": "Gironda Sternum Chins",
+    "frames": 4,
+    "view": "Side view"
+  },
+  {
+    "n": 7,
+    "exerciseId": "lib.IT_Band_and_Glute_Stretch",
+    "slug": "it-band-and-glute-stretch",
+    "name": "IT Band and Glute Stretch",
+    "frames": 3,
+    "view": "Side view"
+  },
+  {
+    "n": 8,
+    "exerciseId": "lib.Intermediate_Groin_Stretch",
+    "slug": "intermediate-groin-stretch",
+    "name": "Intermediate Groin Stretch",
+    "frames": 3,
+    "view": "Side view"
+  }
+]

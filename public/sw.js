@@ -10,7 +10,7 @@
 //   deletes it, so a routine built from the library keeps its photos
 //   offline across app updates. The upstream revision is pinned, so the
 //   entries never go stale.
-const CACHE_NAME = 'workout-app-shell-v12'
+const CACHE_NAME = 'workout-app-shell-v13'
 const MEDIA_CACHE_NAME = 'workout-app-media-v1'
 
 // Movement photos are precached so a workout works fully offline even if
@@ -47,8 +47,10 @@ self.addEventListener('install', (event) => {
     caches.open(CACHE_NAME).then(async (cache) => {
       await cache.addAll(SHELL_URLS)
       const loops = await (await fetch('/rae/loops.json')).json()
+      // Featured loops are precached; the hundreds of library loops are
+      // cached on first view in the long-lived media cache (below).
       await cache.addAll(
-        loops.flatMap((loop) => [
+        loops.filter((loop) => loop.featured).flatMap((loop) => [
           `/rae/${loop.id}.webp`,
           ...loop.stills.map((frame) => `/rae/${loop.id}-${frame}.png`),
         ])
@@ -95,6 +97,26 @@ self.addEventListener('fetch', (event) => {
   }
 
   if (url.origin !== self.location.origin) return
+
+  // Rae's library exercise loops: cache-first in the long-lived media cache,
+  // so a move she has demonstrated once keeps working offline across app
+  // updates (like library photos).
+  if (url.pathname.startsWith('/rae/ex-')) {
+    event.respondWith(
+      caches.match(request).then(
+        (cached) =>
+          cached ||
+          fetch(request).then((response) => {
+            if (response.ok) {
+              const copy = response.clone()
+              caches.open(MEDIA_CACHE_NAME).then((cache) => cache.put(request, copy))
+            }
+            return response
+          })
+      )
+    )
+    return
+  }
 
   // Navigations (the HTML document): network-first so a new deploy is
   // picked up immediately, falling back to the cached shell when offline.

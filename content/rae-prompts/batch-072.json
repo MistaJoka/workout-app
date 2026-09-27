@@ -1,0 +1,66 @@
+[
+  {
+    "n": 1,
+    "exerciseId": "lib.Barbell_Bench_Press_-_Medium_Grip",
+    "slug": "barbell-bench-press-medium-grip",
+    "name": "Barbell Bench Press - Medium Grip",
+    "frames": 4,
+    "view": "Side view"
+  },
+  {
+    "n": 2,
+    "exerciseId": "lib.Barbell_Curl",
+    "slug": "barbell-curl",
+    "name": "Barbell Curl",
+    "frames": 4,
+    "view": "Side view"
+  },
+  {
+    "n": 3,
+    "exerciseId": "lib.Barbell_Curls_Lying_Against_An_Incline",
+    "slug": "barbell-curls-lying-against-an-incline",
+    "name": "Barbell Curls Lying Against An Incline",
+    "frames": 4,
+    "view": "Side view"
+  },
+  {
+    "n": 4,
+    "exerciseId": "lib.Barbell_Incline_Bench_Press_-_Medium_Grip",
+    "slug": "barbell-incline-bench-press-medium-grip",
+    "name": "Barbell Incline Bench Press - Medium Grip",
+    "frames": 4,
+    "view": "Side view"
+  },
+  {
+    "n": 5,
+    "exerciseId": "lib.Barbell_Incline_Shoulder_Raise",
+    "slug": "barbell-incline-shoulder-raise",
+    "name": "Barbell Incline Shoulder Raise",
+    "frames": 4,
+    "view": "Side view"
+  },
+  {
+    "n": 6,
+    "exerciseId": "lib.Barbell_Rear_Delt_Row",
+    "slug": "barbell-rear-delt-row",
+    "name": "Barbell Rear Delt Row",
+    "frames": 4,
+    "view": "Side view"
+  },
+  {
+    "n": 7,
+    "exerciseId": "lib.Barbell_Seated_Calf_Raise",
+    "slug": "barbell-seated-calf-raise",
+    "name": "Barbell Seated Calf Raise",
+    "frames": 4,
+    "view": "Side view"
+  },
+  {
+    "n": 8,
+    "exerciseId": "lib.Barbell_Shrug",
+    "slug": "barbell-shrug",
+    "name": "Barbell Shrug",
+    "frames": 4,
+    "view": "Front view"
+  }
+]

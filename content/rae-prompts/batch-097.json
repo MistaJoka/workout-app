@@ -1,0 +1,66 @@
+[
+  {
+    "n": 1,
+    "exerciseId": "lib.Round_The_World_Shoulder_Stretch",
+    "slug": "round-the-world-shoulder-stretch",
+    "name": "Round The World Shoulder Stretch",
+    "frames": 3,
+    "view": "Side view"
+  },
+  {
+    "n": 2,
+    "exerciseId": "lib.Sandbag_Load",
+    "slug": "sandbag-load",
+    "name": "Sandbag Load",
+    "frames": 4,
+    "view": "Side view"
+  },
+  {
+    "n": 3,
+    "exerciseId": "lib.Seated_Band_Hamstring_Curl",
+    "slug": "seated-band-hamstring-curl",
+    "name": "Seated Band Hamstring Curl",
+    "frames": 4,
+    "view": "Side view"
+  },
+  {
+    "n": 4,
+    "exerciseId": "lib.Side_Hop-Sprint",
+    "slug": "side-hop-sprint",
+    "name": "Side Hop-Sprint",
+    "frames": 4,
+    "view": "Side view"
+  },
+  {
+    "n": 5,
+    "exerciseId": "lib.Side_to_Side_Box_Shuffle",
+    "slug": "side-to-side-box-shuffle",
+    "name": "Side to Side Box Shuffle",
+    "frames": 4,
+    "view": "Front view"
+  },
+  {
+    "n": 6,
+    "exerciseId": "lib.Single_Leg_Push-off",
+    "slug": "single-leg-push-off",
+    "name": "Single Leg Push-off",
+    "frames": 4,
+    "view": "Side view"
+  },
+  {
+    "n": 7,
+    "exerciseId": "lib.Single-Cone_Sprint_Drill",
+    "slug": "single-cone-sprint-drill",
+    "name": "Single-Cone Sprint Drill",
+    "frames": 4,
+    "view": "Side view"
+  },
+  {
+    "n": 8,
+    "exerciseId": "lib.Single-Leg_High_Box_Squat",
+    "slug": "single-leg-high-box-squat",
+    "name": "Single-Leg High Box Squat",
+    "frames": 4,
+    "view": "Side view"
+  }
+]

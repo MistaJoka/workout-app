@@ -1,0 +1,66 @@
+[
+  {
+    "n": 1,
+    "exerciseId": "lib.Leg_Lift",
+    "slug": "leg-lift",
+    "name": "Leg Lift",
+    "frames": 4,
+    "view": "Side view"
+  },
+  {
+    "n": 2,
+    "exerciseId": "lib.Leg_Pull-In",
+    "slug": "leg-pull-in",
+    "name": "Leg Pull-In",
+    "frames": 4,
+    "view": "Side view"
+  },
+  {
+    "n": 3,
+    "exerciseId": "lib.Lower_Back_Curl",
+    "slug": "lower-back-curl",
+    "name": "Lower Back Curl",
+    "frames": 3,
+    "view": "Side view"
+  },
+  {
+    "n": 4,
+    "exerciseId": "lib.Oblique_Crunches",
+    "slug": "oblique-crunches",
+    "name": "Oblique Crunches",
+    "frames": 4,
+    "view": "Side view"
+  },
+  {
+    "n": 5,
+    "exerciseId": "lib.Oblique_Crunches_-_On_The_Floor",
+    "slug": "oblique-crunches-on-the-floor",
+    "name": "Oblique Crunches - On The Floor",
+    "frames": 4,
+    "view": "Side view"
+  },
+  {
+    "n": 6,
+    "exerciseId": "lib.Plyo_Push-up",
+    "slug": "plyo-push-up",
+    "name": "Plyo Push-up",
+    "frames": 4,
+    "view": "Side view"
+  },
+  {
+    "n": 7,
+    "exerciseId": "lib.Pullups",
+    "slug": "pullups",
+    "name": "Pullups",
+    "frames": 4,
+    "view": "Side view"
+  },
+  {
+    "n": 8,
+    "exerciseId": "lib.Push_Up_to_Side_Plank",
+    "slug": "push-up-to-side-plank",
+    "name": "Push Up to Side Plank",
+    "frames": 4,
+    "view": "Side view"
+  }
+]

@@ -1,0 +1,66 @@
+[
+  {
+    "n": 1,
+    "exerciseId": "lib.Jerk_Balance",
+    "slug": "jerk-balance",
+    "name": "Jerk Balance",
+    "frames": 4,
+    "view": "Side view"
+  },
+  {
+    "n": 2,
+    "exerciseId": "lib.Jerk_Dip_Squat",
+    "slug": "jerk-dip-squat",
+    "name": "Jerk Dip Squat",
+    "frames": 4,
+    "view": "Side view"
+  },
+  {
+    "n": 3,
+    "exerciseId": "lib.Kneeling_Squat",
+    "slug": "kneeling-squat",
+    "name": "Kneeling Squat",
+    "frames": 4,
+    "view": "Side view"
+  },
+  {
+    "n": 4,
+    "exerciseId": "lib.Landmine_Linear_Jammer",
+    "slug": "landmine-linear-jammer",
+    "name": "Landmine Linear Jammer",
+    "frames": 4,
+    "view": "Side view"
+  },
+  {
+    "n": 5,
+    "exerciseId": "lib.Lying_Close-Grip_Barbell_Triceps_Extension_Behind_The_Head",
+    "slug": "lying-close-grip-barbell-triceps-extension-behind-the-head",
+    "name": "Lying Close-Grip Barbell Triceps Extension Behind The Head",
+    "frames": 4,
+    "view": "Side view"
+  },
+  {
+    "n": 6,
+    "exerciseId": "lib.Lying_High_Bench_Barbell_Curl",
+    "slug": "lying-high-bench-barbell-curl",
+    "name": "Lying High Bench Barbell Curl",
+    "frames": 4,
+    "view": "Side view"
+  },
+  {
+    "n": 7,
+    "exerciseId": "lib.Muscle_Snatch",
+    "slug": "muscle-snatch",
+    "name": "Muscle Snatch",
+    "frames": 4,
+    "view": "Side view"
+  },
+  {
+    "n": 8,
+    "exerciseId": "lib.Narrow_Stance_Squats",
+    "slug": "narrow-stance-squats",
+    "name": "Narrow Stance Squats",
+    "frames": 4,
+    "view": "Side view"
+  }
+]

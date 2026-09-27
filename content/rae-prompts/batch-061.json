@@ -1,0 +1,66 @@
+[
+  {
+    "n": 1,
+    "exerciseId": "lib.Incline_Cable_Flye",
+    "slug": "incline-cable-flye",
+    "name": "Incline Cable Flye",
+    "frames": 4,
+    "view": "Front view"
+  },
+  {
+    "n": 2,
+    "exerciseId": "lib.Kneeling_Cable_Triceps_Extension",
+    "slug": "kneeling-cable-triceps-extension",
+    "name": "Kneeling Cable Triceps Extension",
+    "frames": 4,
+    "view": "Side view"
+  },
+  {
+    "n": 3,
+    "exerciseId": "lib.Lying_Cable_Curl",
+    "slug": "lying-cable-curl",
+    "name": "Lying Cable Curl",
+    "frames": 4,
+    "view": "Side view"
+  },
+  {
+    "n": 4,
+    "exerciseId": "lib.One-Legged_Cable_Kickback",
+    "slug": "one-legged-cable-kickback",
+    "name": "One-Legged Cable Kickback",
+    "frames": 4,
+    "view": "Side view"
+  },
+  {
+    "n": 5,
+    "exerciseId": "lib.Overhead_Cable_Curl",
+    "slug": "overhead-cable-curl",
+    "name": "Overhead Cable Curl",
+    "frames": 4,
+    "view": "Side view"
+  },
+  {
+    "n": 6,
+    "exerciseId": "lib.Seated_One-arm_Cable_Pulley_Rows",
+    "slug": "seated-one-arm-cable-pulley-rows",
+    "name": "Seated One-arm Cable Pulley Rows",
+    "frames": 4,
+    "view": "Side view"
+  },
+  {
+    "n": 7,
+    "exerciseId": "lib.Standing_Low-Pulley_One-Arm_Triceps_Extension",
+    "slug": "standing-low-pulley-one-arm-triceps-extension",
+    "name": "Standing Low-Pulley One-Arm Triceps Extension",
+    "frames": 4,
+    "view": "Side view"
+  },
+  {
+    "n": 8,
+    "exerciseId": "lib.Standing_One-Arm_Cable_Curl",
+    "slug": "standing-one-arm-cable-curl",
+    "name": "Standing One-Arm Cable Curl",
+    "frames": 4,
+    "view": "Side view"
+  }
+]

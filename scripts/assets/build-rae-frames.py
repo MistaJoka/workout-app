@@ -68,6 +68,8 @@ def main() -> None:
     ap.add_argument('--order', default='0,1,2,3', help='playback order of key frames')
     ap.add_argument('--hold', default='', help='frame:ticks pairs, e.g. 0:3,2:2')
     ap.add_argument('--fps', type=int, default=8)
+    ap.add_argument('--stills', default='', help='only write these key frames as PNGs (default: all, plus a sprite sheet)')
+    ap.add_argument('--lossy', action='store_true', help='lossy webp loop (library scale: ~3x smaller)')
     ap.add_argument('--anchor', choices=['foot', 'center', 'grid'], default='foot',
                     help="grid: frames sit in N equal slots across the strip and keep the position they were drawn at (floor moves, props)")
     args = ap.parse_args()
@@ -192,12 +194,14 @@ def build(aligned: list[np.ndarray], args) -> None:
 
     OUT.mkdir(parents=True, exist_ok=True)
     eid = args.exercise_id
-    for i, f in enumerate(final):
-        f.save(OUT / f'{eid}-{i}.png', optimize=True)
-    sheet = Image.new('RGBA', (size[0] * len(final), size[1]))
-    for i, f in enumerate(final):
-        sheet.alpha_composite(f, (i * size[0], 0))
-    sheet.save(OUT / f'{eid}.sheet.png', optimize=True)
+    keep = [int(x) for x in args.stills.split(',')] if args.stills else list(range(len(final)))
+    for i in keep:
+        final[i].save(OUT / f'{eid}-{i}.png', optimize=True)
+    if not args.stills:
+        sheet = Image.new('RGBA', (size[0] * len(final), size[1]))
+        for i, f in enumerate(final):
+            sheet.alpha_composite(f, (i * size[0], 0))
+        sheet.save(OUT / f'{eid}.sheet.png', optimize=True)
 
     order = [int(x) for x in args.order.split(',')]
     holds = {int(k): int(v) for k, v in (p.split(':') for p in args.hold.split(',') if p)}
@@ -205,7 +209,8 @@ def build(aligned: list[np.ndarray], args) -> None:
     timeline = [(i, tick * holds.get(i, 1)) for i in order]
     seq = [final[i] for i, _ in timeline]
     seq[0].save(OUT / f'{eid}.webp', save_all=True, append_images=seq[1:],
-                duration=[d for _, d in timeline], loop=0, lossless=True)
+                duration=[d for _, d in timeline], loop=0,
+                **({'lossless': False, 'quality': 88, 'method': 6} if args.lossy else {'lossless': True}))
     (OUT / f'{eid}.json').write_text(json.dumps({
         'id': eid,
         'source': Path(args.strip).name,

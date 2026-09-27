@@ -1,0 +1,66 @@
+[
+  {
+    "n": 1,
+    "exerciseId": "lib.Inverted_Row",
+    "slug": "inverted-row",
+    "name": "Inverted Row",
+    "frames": 4,
+    "view": "Side view"
+  },
+  {
+    "n": 2,
+    "exerciseId": "lib.Knee_Across_The_Body",
+    "slug": "knee-across-the-body",
+    "name": "Knee Across The Body",
+    "frames": 3,
+    "view": "Side view"
+  },
+  {
+    "n": 3,
+    "exerciseId": "lib.Kneeling_Arm_Drill",
+    "slug": "kneeling-arm-drill",
+    "name": "Kneeling Arm Drill",
+    "frames": 4,
+    "view": "Side view"
+  },
+  {
+    "n": 4,
+    "exerciseId": "lib.Kneeling_Forearm_Stretch",
+    "slug": "kneeling-forearm-stretch",
+    "name": "Kneeling Forearm Stretch",
+    "frames": 3,
+    "view": "Side view"
+  },
+  {
+    "n": 5,
+    "exerciseId": "lib.Kneeling_Hip_Flexor",
+    "slug": "kneeling-hip-flexor",
+    "name": "Kneeling Hip Flexor",
+    "frames": 3,
+    "view": "Side view"
+  },
+  {
+    "n": 6,
+    "exerciseId": "lib.Leg-Up_Hamstring_Stretch",
+    "slug": "leg-up-hamstring-stretch",
+    "name": "Leg-Up Hamstring Stretch",
+    "frames": 3,
+    "view": "Side view"
+  },
+  {
+    "n": 7,
+    "exerciseId": "lib.Linear_3-Part_Start_Technique",
+    "slug": "linear-3-part-start-technique",
+    "name": "Linear 3-Part Start Technique",
+    "frames": 4,
+    "view": "Side view"
+  },
+  {
+    "n": 8,
+    "exerciseId": "lib.Linear_Acceleration_Wall_Drill",
+    "slug": "linear-acceleration-wall-drill",
+    "name": "Linear Acceleration Wall Drill",
+    "frames": 4,
+    "view": "Side view"
+  }
+]

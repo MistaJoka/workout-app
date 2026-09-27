@@ -1,0 +1,66 @@
+[
+  {
+    "n": 1,
+    "exerciseId": "lib.T-Bar_Row_with_Handle",
+    "slug": "t-bar-row-with-handle",
+    "name": "T-Bar Row with Handle",
+    "frames": 4,
+    "view": "Side view"
+  },
+  {
+    "n": 2,
+    "exerciseId": "lib.Upright_Barbell_Row",
+    "slug": "upright-barbell-row",
+    "name": "Upright Barbell Row",
+    "frames": 4,
+    "view": "Side view"
+  },
+  {
+    "n": 3,
+    "exerciseId": "lib.Wide-Grip_Standing_Barbell_Curl",
+    "slug": "wide-grip-standing-barbell-curl",
+    "name": "Wide-Grip Standing Barbell Curl",
+    "frames": 4,
+    "view": "Side view"
+  },
+  {
+    "n": 4,
+    "exerciseId": "lib.Wrist_Rotations_with_Straight_Bar",
+    "slug": "wrist-rotations-with-straight-bar",
+    "name": "Wrist Rotations with Straight Bar",
+    "frames": 4,
+    "view": "Side view"
+  },
+  {
+    "n": 5,
+    "exerciseId": "lib.Barbell_Ab_Rollout",
+    "slug": "barbell-ab-rollout",
+    "name": "Barbell Ab Rollout",
+    "frames": 4,
+    "view": "Side view"
+  },
+  {
+    "n": 6,
+    "exerciseId": "lib.Barbell_Deadlift",
+    "slug": "barbell-deadlift",
+    "name": "Barbell Deadlift",
+    "frames": 4,
+    "view": "Side view"
+  },
+  {
+    "n": 7,
+    "exerciseId": "lib.Barbell_Full_Squat",
+    "slug": "barbell-full-squat",
+    "name": "Barbell Full Squat",
+    "frames": 4,
+    "view": "Side view"
+  },
+  {
+    "n": 8,
+    "exerciseId": "lib.Barbell_Glute_Bridge",
+    "slug": "barbell-glute-bridge",
+    "name": "Barbell Glute Bridge",
+    "frames": 4,
+    "view": "Side view"
+  }
+]

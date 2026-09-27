@@ -47,7 +47,7 @@ export function MeetRaeScreen() {
       </section>
 
       <h2 className="pt-2 text-lg font-bold">Moves</h2>
-      {RAE_LOOPS.map((loop) => (
+      {RAE_LOOPS.filter((loop) => loop.featured).map((loop) => (
         <section key={loop.id} className="field-info space-y-2 p-4 text-center">
           <p className="font-bold">{loop.name}</p>
           <RaeExerciseLoop

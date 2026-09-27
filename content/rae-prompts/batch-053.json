@@ -1,0 +1,66 @@
+[
+  {
+    "n": 1,
+    "exerciseId": "lib.Cable_Deadlifts",
+    "slug": "cable-deadlifts",
+    "name": "Cable Deadlifts",
+    "frames": 4,
+    "view": "Side view"
+  },
+  {
+    "n": 2,
+    "exerciseId": "lib.Cable_Hammer_Curls_-_Rope_Attachment",
+    "slug": "cable-hammer-curls-rope-attachment",
+    "name": "Cable Hammer Curls - Rope Attachment",
+    "frames": 4,
+    "view": "Side view"
+  },
+  {
+    "n": 3,
+    "exerciseId": "lib.Cable_Hip_Adduction",
+    "slug": "cable-hip-adduction",
+    "name": "Cable Hip Adduction",
+    "frames": 4,
+    "view": "Side view"
+  },
+  {
+    "n": 4,
+    "exerciseId": "lib.Cable_Incline_Pushdown",
+    "slug": "cable-incline-pushdown",
+    "name": "Cable Incline Pushdown",
+    "frames": 4,
+    "view": "Side view"
+  },
+  {
+    "n": 5,
+    "exerciseId": "lib.Cable_Incline_Triceps_Extension",
+    "slug": "cable-incline-triceps-extension",
+    "name": "Cable Incline Triceps Extension",
+    "frames": 4,
+    "view": "Side view"
+  },
+  {
+    "n": 6,
+    "exerciseId": "lib.Cable_Internal_Rotation",
+    "slug": "cable-internal-rotation",
+    "name": "Cable Internal Rotation",
+    "frames": 4,
+    "view": "Side view"
+  },
+  {
+    "n": 7,
+    "exerciseId": "lib.Cable_Iron_Cross",
+    "slug": "cable-iron-cross",
+    "name": "Cable Iron Cross",
+    "frames": 4,
+    "view": "Side view"
+  },
+  {
+    "n": 8,
+    "exerciseId": "lib.Cable_Judo_Flip",
+    "slug": "cable-judo-flip",
+    "name": "Cable Judo Flip",
+    "frames": 4,
+    "view": "Side view"
+  }
+]

@@ -1,0 +1,66 @@
+[
+  {
+    "n": 1,
+    "exerciseId": "lib.Standing_Barbell_Press_Behind_Neck",
+    "slug": "standing-barbell-press-behind-neck",
+    "name": "Standing Barbell Press Behind Neck",
+    "frames": 4,
+    "view": "Side view"
+  },
+  {
+    "n": 2,
+    "exerciseId": "lib.Standing_Front_Barbell_Raise_Over_Head",
+    "slug": "standing-front-barbell-raise-over-head",
+    "name": "Standing Front Barbell Raise Over Head",
+    "frames": 4,
+    "view": "Side view"
+  },
+  {
+    "n": 3,
+    "exerciseId": "lib.Stiff-Legged_Barbell_Deadlift",
+    "slug": "stiff-legged-barbell-deadlift",
+    "name": "Stiff-Legged Barbell Deadlift",
+    "frames": 4,
+    "view": "Side view"
+  },
+  {
+    "n": 4,
+    "exerciseId": "lib.Sumo_Deadlift",
+    "slug": "sumo-deadlift",
+    "name": "Sumo Deadlift",
+    "frames": 4,
+    "view": "Side view"
+  },
+  {
+    "n": 5,
+    "exerciseId": "lib.Sumo_Deadlift_with_Bands",
+    "slug": "sumo-deadlift-with-bands",
+    "name": "Sumo Deadlift with Bands",
+    "frames": 4,
+    "view": "Side view"
+  },
+  {
+    "n": 6,
+    "exerciseId": "lib.Sumo_Deadlift_with_Chains",
+    "slug": "sumo-deadlift-with-chains",
+    "name": "Sumo Deadlift with Chains",
+    "frames": 4,
+    "view": "Side view"
+  },
+  {
+    "n": 7,
+    "exerciseId": "lib.Weighted_Jump_Squat",
+    "slug": "weighted-jump-squat",
+    "name": "Weighted Jump Squat",
+    "frames": 4,
+    "view": "Side view"
+  },
+  {
+    "n": 8,
+    "exerciseId": "lib.Wide_Stance_Barbell_Squat",
+    "slug": "wide-stance-barbell-squat",
+    "name": "Wide Stance Barbell Squat",
+    "frames": 4,
+    "view": "Side view"
+  }
+]
