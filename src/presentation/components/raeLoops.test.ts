@@ -35,3 +35,12 @@ describe('raeStillFor', () => {
     expect(raeStillFor(undefined)).toBeNull()
   })
 })
+
+describe('library moves Rae demonstrates (owner-approved matches)', () => {
+  it('maps the four matching extras to their library exercises', () => {
+    expect(raeLoopForExercise('lib.Seated_Dumbbell_Press')?.id).toBe('ex-seated-dumbbell-press')
+    expect(raeLoopForExercise('lib.One-Arm_Dumbbell_Row')?.id).toBe('ex-dumbbell-row')
+    expect(raeLoopForExercise('lib.Split_Squats')?.id).toBe('ex-split-squat')
+    expect(raeLoopForExercise('lib.Stiff-Legged_Dumbbell_Deadlift')?.id).toBe('ex-dumbbell-rdl')
+  })
+})

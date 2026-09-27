@@ -167,7 +167,9 @@
       0,
       3
     ],
-    "exerciseIds": []
+    "exerciseIds": [
+      "lib.Stiff-Legged_Dumbbell_Deadlift"
+    ]
   },
   {
     "id": "ex-seated-dumbbell-press",
@@ -178,7 +180,9 @@
       0,
       2
     ],
-    "exerciseIds": []
+    "exerciseIds": [
+      "lib.Seated_Dumbbell_Press"
+    ]
   },
   {
     "id": "ex-dumbbell-row",
@@ -189,7 +193,9 @@
       0,
       2
     ],
-    "exerciseIds": []
+    "exerciseIds": [
+      "lib.One-Arm_Dumbbell_Row"
+    ]
   },
   {
     "id": "ex-split-squat",
@@ -200,6 +206,8 @@
       0,
       2
     ],
-    "exerciseIds": []
+    "exerciseIds": [
+      "lib.Split_Squats"
+    ]
   }
 ]
