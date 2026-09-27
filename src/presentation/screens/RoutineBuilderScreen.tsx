@@ -14,6 +14,7 @@ import { FilterSheet } from '../components/FilterSheet'
 import { kgToUnit, roundToStep, stepInUnit, unitToKg } from '../units'
 import { useWeightUnit } from '../components/useWeightUnit'
 import { BackButton } from '../components/BackButton'
+import { RaeNote } from '../components/RaeNote'
 
 type Row = EditRow
 
@@ -142,7 +143,7 @@ export function RoutineBuilderScreen() {
         className="input text-lg font-semibold"
       />
 
-      {rows.length === 0 && <p className="text-sm text-ink-muted">Add an exercise to get started.</p>}
+      {rows.length === 0 && <RaeNote expression="wink">Add your first exercise and we'll build this together.</RaeNote>}
 
       <ul className="space-y-3">
         {rows.map((row, index) => (

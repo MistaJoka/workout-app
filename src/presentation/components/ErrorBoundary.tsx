@@ -1,6 +1,7 @@
 import { Component, type ErrorInfo, type ReactNode } from 'react'
 import { exportAll } from '../../infrastructure/exportImport/exportImport'
 import { downloadBackup } from '../../infrastructure/exportImport/downloadBackup'
+import { RaeFace } from './Rae'
 
 type State = { error: Error | null }
 
@@ -20,6 +21,7 @@ export class ErrorBoundary extends Component<{ children: ReactNode }, State> {
     return (
       <div className="min-h-screen bg-bg p-4 text-ink">
         <div className="card mt-8 space-y-3 p-4">
+          <RaeFace expression="surprised" size={72} motion="none" />
           <p className="text-lg font-bold">Something went wrong</p>
           <p className="text-sm text-ink-muted">Your data is still on this device. Reload to keep going, or save a backup first.</p>
           <div className="flex gap-2">

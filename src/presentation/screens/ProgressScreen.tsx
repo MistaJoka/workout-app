@@ -9,6 +9,7 @@ import { formatWeight } from '../units'
 import { useWeightUnit } from '../components/useWeightUnit'
 import { BodyWeightCard } from '../components/BodyWeightCard'
 import { buildHistoryRows, type HistoryRow } from './progressHistoryRows'
+import { RaeNote } from '../components/RaeNote'
 
 type Snapshot = {
   rows: HistoryRow[]
@@ -49,7 +50,16 @@ export function ProgressScreen() {
       {snapshot === null && <p className="text-ink-muted">Loading…</p>}
 
       {rows && rows.length === 0 && (
-        <p className="text-ink-muted">No workouts yet. Your first one will show up here.</p>
+        <RaeNote expression="smile">No workouts yet. Finish your first one and I'll keep score here.</RaeNote>
+      )}
+
+      {snapshot && rows && rows.length > 0 && (
+        <RaeNote expression={snapshot.streak >= 3 ? 'cheer' : 'happy'}>
+          <span className="font-semibold">
+            {totalWorkouts === 1 ? '1 workout' : `${totalWorkouts} workouts`} and {totalSets} sets so far.
+          </span>{' '}
+          {snapshot.streak >= 2 ? `${snapshot.streak} days in a row. ` : ''}Proud of you.
+        </RaeNote>
       )}
 
       {snapshot && rows && rows.length > 0 && (

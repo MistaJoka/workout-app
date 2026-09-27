@@ -11,6 +11,7 @@ import { formatWeight } from '../units'
 import { useWeightUnit } from '../components/useWeightUnit'
 import { ThumbBar } from '../components/ThumbBar'
 import { RaeFace } from '../components/Rae'
+import { RaeNote } from '../components/RaeNote'
 
 type Candidate = {
   exerciseId: string
@@ -71,6 +72,15 @@ export function SessionCompleteScreen() {
           {result.totalSetsCompleted} of {result.totalSetsPlanned} sets completed
           {result.status === 'COMPLETED_SHORTENED' ? ' (ended early)' : ''}
         </p>
+      )}
+      {result && (
+        // Ties the finish to Today's week: every finished workout grows a
+        // flower there (WeekBlooms), ended-early ones included.
+        <RaeNote expression={result.status === 'COMPLETED_SHORTENED' ? 'smile' : 'laugh'} className="mx-auto max-w-xs">
+          {result.status === 'COMPLETED_SHORTENED'
+            ? 'You showed up, and that counts. A new flower is growing in your week.'
+            : 'A new flower just bloomed in your week!'}
+        </RaeNote>
       )}
 
       {candidates.length > 0 && (
