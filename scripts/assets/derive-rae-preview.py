@@ -28,8 +28,8 @@ EXPRESSIONS = {
     'determined': 582, 'tired': 687, 'surprised': 778, 'laugh': 878, 'wink': 974,
 }
 FIGURES = {
-    'full-front': (296, 44, 408, 500),
-    'full-3q': (404, 44, 524, 500),
+    'full-front': (282, 40, 418, 505),
+    'full-3q': (408, 40, 546, 505),
 }
 
 

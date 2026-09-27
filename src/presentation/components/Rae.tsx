@@ -50,13 +50,14 @@ type FigureProps = {
 
 export function RaeFigure({ view, height = 240 }: FigureProps) {
   const src = view === 'front' ? '/rae/full-front.png' : '/rae/full-3q.png'
-  // Source figures are ~110x434.
+  // Source sizes: front 133x434, 3/4 119x433 (hands included).
+  const aspect = view === 'front' ? 133 / 434 : 119 / 433
   return (
     <img
       src={src}
       alt={view === 'front' ? 'Rae, front view' : 'Rae, three-quarter view'}
       height={height}
-      width={Math.round((height * 110) / 434)}
+      width={Math.round(height * aspect)}
       className="rae-bob"
       draggable={false}
     />

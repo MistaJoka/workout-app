@@ -16,6 +16,8 @@ import type { WorkoutTemplate } from '../../domain/content/types'
 import { WEEKDAY_LABELS, isScheduleSet, resolveToday, type TodayResolution, type Weekday } from '../../domain/schedule/weeklySchedule'
 import { WelcomeCard } from '../components/WelcomeCard'
 import { RaeHero } from '../components/RaeHero'
+import { dayPart, greeting } from '../greeting'
+import { activeProfile } from '../../infrastructure/profiles'
 
 function estimateMinutes(template: WorkoutTemplate | undefined): number {
   if (!template) return 0
@@ -37,6 +39,8 @@ export function TodayScreen() {
   const [inProgress, setInProgress] = useState<SessionPlan[] | null>(null)
   const [plan, setPlan] = useState<Plan | null>(null)
   const [custom, setCustom] = useState<WorkoutTemplate[]>([])
+  const [profile] = useState(() => activeProfile())
+  const [now] = useState(() => new Date())
 
   useEffect(() => {
     getInProgressSessions().then(setInProgress)
@@ -74,9 +78,9 @@ export function TodayScreen() {
 
   return (
     <div className="p-4 space-y-4">
-      <h1 className="text-xl font-bold">Today</h1>
+      <h1 className="text-xl font-bold">{greeting(now, profile.name)}</h1>
 
-      <RaeHero />
+      <RaeHero part={dayPart(now)} />
 
       <WelcomeCard />
 
