@@ -1,9 +1,13 @@
 import { useState } from 'react'
 import { BackButton } from '../components/BackButton'
-import { RAE_EXPRESSIONS, RaeFace, RaeFigure, type RaeExpression } from '../components/Rae'
+import { RAE_EXPRESSIONS, RaeExerciseLoop, RaeFace, RaeFigure, type RaeExpression } from '../components/Rae'
+import { effectiveMotion, usePrefersReducedMotion } from '../components/MovementMedia'
+import { useTheme } from '../theme/ThemeContext'
 
 export function MeetRaeScreen() {
   const [expression, setExpression] = useState<RaeExpression>('happy')
+  const { motion } = useTheme()
+  const animate = effectiveMotion(motion, usePrefersReducedMotion()) === 'full'
 
   function next() {
     const index = RAE_EXPRESSIONS.indexOf(expression)
@@ -41,6 +45,10 @@ export function MeetRaeScreen() {
         </div>
       </section>
 
+      <section className="field-info space-y-2 p-4 text-center">
+        <p className="font-bold">Squat</p>
+        <RaeExerciseLoop id="ex-squat" name="squat" width={156} height={264} stills={[0, 2]} animate={animate} />
+      </section>
     </div>
   )
 }

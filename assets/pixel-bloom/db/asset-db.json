@@ -458,6 +458,36 @@
       "motionOff": "show static start/mid/bottom sequence",
       "exerciseId": "fs.bodyweight-squat",
       "notes": "Instructional motion takes priority over personality animation. Fixed orthographic side camera. No looking at viewer during movement. Preserve all Rae v1 identity locks across every frame."
+    },
+    {
+      "id": "rae-ex-squat-loop",
+      "characterId": "rae",
+      "kind": "animated-webp",
+      "status": "review",
+      "repoPath": "public/rae/ex-squat.webp",
+      "perspective": "side-left",
+      "format": "webp",
+      "width": 156,
+      "height": 264,
+      "transparent": true,
+      "tags": ["rae", "exercise", "squat", "drawn-frames", "v1"],
+      "sourceAssetId": "rae-canonical-reference",
+      "notes": "Drawn-frame exercise loop: 4 whole-body key frames drawn by ChatGPT in one strip (source assets/pixel-bloom/character/rae/source/exercise/squat-strip-v1.png, 2026-09-26 9:46 PM), keyed, foot-aligned and palette-shared by scripts/assets/build-rae-frames.py. No warping. Awaiting owner review; frame 1 reads slightly 3/4 rather than true side."
+    },
+    {
+      "id": "rae-ex-squat-sheet",
+      "characterId": "rae",
+      "kind": "sprite-sheet",
+      "status": "review",
+      "repoPath": "public/rae/ex-squat.sheet.png",
+      "perspective": "side-left",
+      "format": "png",
+      "width": 624,
+      "height": 264,
+      "transparent": true,
+      "tags": ["rae", "exercise", "squat", "drawn-frames", "v1"],
+      "sourceAssetId": "rae-canonical-reference",
+      "notes": "Drawn-frame exercise loop: 4 whole-body key frames drawn by ChatGPT in one strip (source assets/pixel-bloom/character/rae/source/exercise/squat-strip-v1.png, 2026-09-26 9:46 PM), keyed, foot-aligned and palette-shared by scripts/assets/build-rae-frames.py. No warping. Awaiting owner review; frame 1 reads slightly 3/4 rather than true side."
     }
   ]
 }

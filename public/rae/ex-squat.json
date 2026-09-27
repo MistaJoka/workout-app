@@ -1,0 +1,25 @@
+{
+  "id": "ex-squat",
+  "source": "squat-strip-v1.png",
+  "frameWidth": 156,
+  "frameHeight": 264,
+  "frames": 4,
+  "timeline": [
+    {
+      "frame": 0,
+      "ms": 500
+    },
+    {
+      "frame": 1,
+      "ms": 250
+    },
+    {
+      "frame": 2,
+      "ms": 500
+    },
+    {
+      "frame": 3,
+      "ms": 250
+    }
+  ]
+}

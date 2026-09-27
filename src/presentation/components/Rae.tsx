@@ -62,3 +62,28 @@ export function RaeFigure({ view, height = 240 }: FigureProps) {
     />
   )
 }
+
+type LoopProps = {
+  // Built by scripts/assets/build-rae-frames.py into public/rae/<id>.*
+  id: string
+  name: string
+  width: number
+  height: number
+  // Key frames shown side by side when motion is reduced/off, so the
+  // movement stays fully visible without animation.
+  stills: readonly number[]
+  animate: boolean
+}
+
+export function RaeExerciseLoop({ id, name, width, height, stills, animate }: LoopProps) {
+  if (animate) {
+    return <img src={`/rae/${id}.webp`} alt={`Rae doing a ${name}`} width={width} height={height} className="mx-auto" />
+  }
+  return (
+    <div className="flex justify-center gap-3">
+      {stills.map((frame) => (
+        <img key={frame} src={`/rae/${id}-${frame}.png`} alt={`${name}, frame ${frame + 1}`} width={width} height={height} />
+      ))}
+    </div>
+  )
+}
