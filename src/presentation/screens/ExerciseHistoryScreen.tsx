@@ -7,6 +7,7 @@ import type { ExerciseHistoryPoint, PersonalRecord } from '../../domain/progress
 import { formatWeight } from '../units'
 import { useWeightUnit } from '../components/useWeightUnit'
 import { BackButton } from '../components/BackButton'
+import { RaeNote } from '../components/RaeNote'
 
 type View = {
   name: string
@@ -38,7 +39,7 @@ export function ExerciseHistoryScreen() {
   if (view === null) {
     return (
       <div className="p-4 space-y-2">
-        <p>No history for this exercise yet.</p>
+        <RaeNote expression="smile">No history for this one yet. Do it once and it shows up here.</RaeNote>
         <button className="underline" onClick={() => navigate('/progress')}>
           Back to Progress
         </button>

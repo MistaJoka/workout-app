@@ -8,6 +8,7 @@ import { activeProfile, loadProfiles } from '../../infrastructure/profiles'
 import { ProfileSwitcher } from '../components/ProfileSwitcher'
 import { useFeedbackSettings } from '../components/useFeedbackSettings'
 import { useWeightUnit } from '../components/useWeightUnit'
+import { RaeFace } from '../components/Rae'
 
 const LAST_EXPORT_KEY = 'lastExportAt'
 
@@ -121,8 +122,12 @@ export function SettingsScreen() {
 
 
       <section className="space-y-2">
-        <Link to="/rae" className="btn-secondary w-full">
-          Meet Rae
+        <Link to="/rae" className="card flex w-full items-center gap-3 p-3">
+          <RaeFace expression="wink" size={44} motion="none" />
+          <span className="flex-1 font-semibold">Meet Rae, your coach</span>
+          <span className="text-xl text-ink-muted" aria-hidden>
+            ›
+          </span>
         </Link>
         <Link to="/about" className="btn-secondary w-full">
           About, animations, credits

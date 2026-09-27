@@ -8,10 +8,20 @@ import type { SessionPlan } from '../../domain/session/types'
 import { getProgression } from '../../infrastructure/db/repositories/familiarityProgressionRepository'
 import { BackButton } from '../components/BackButton'
 import { ThumbBar } from '../components/ThumbBar'
+import { ExerciseThumb } from '../components/ExerciseThumb'
+import { RaeFace, type RaeExpression } from '../components/Rae'
 import { useWeightUnit } from '../components/useWeightUnit'
 import { formatWeight } from '../units'
 
 const TIME_CHOICES = [10, 15, 20, 30, 45, 60]
+
+function feelingFace(energy: number, comfort: number): RaeExpression {
+  const mood = (energy + comfort) / 2
+  if (mood <= 2) return 'smile'
+  if (mood < 3.5) return 'happy'
+  if (mood < 4.5) return 'determined'
+  return 'cheer'
+}
 
 type Loaded = {
   template: WorkoutTemplate
@@ -119,7 +129,12 @@ export function CheckInScreen() {
       </div>
 
       <section className="space-y-4">
-        <h2 className="text-lg font-bold">How are you feeling?</h2>
+        <div className="flex items-center justify-between gap-3">
+          <h2 className="text-lg font-bold">How are you feeling?</h2>
+          {/* Rae mirrors the answers back, never judging a low day: the
+              lowest she goes is a gentle smile. Keyed so each change pops. */}
+          <RaeFace key={feelingFace(energy, comfort)} expression={feelingFace(energy, comfort)} size={56} motion="pop" />
+        </div>
         <ScaleField label="Energy" value={energy} onChange={setEnergy} low="Low" high="High" />
         <ScaleField label="Comfort" value={comfort} onChange={setComfort} low="Sore" high="Great" />
         <ChoiceField
@@ -135,12 +150,18 @@ export function CheckInScreen() {
         <h2 className="text-lg font-bold">Your workout</h2>
         <ul className="space-y-2">
           {preview.exercises.map((exercise) => (
-            <li key={exercise.exerciseId} className="card p-3">
-              <p className="font-semibold">{exercise.name}</p>
-              <p className="text-sm text-ink-muted">
-                {exercise.sets} sets × {exercise.reps ? `${exercise.reps} reps` : `${exercise.timeSeconds}s`}
-                {exercise.weightKg != null ? ` @ ${formatWeight(exercise.weightKg, unit)}` : ''}, rest {exercise.restSeconds}s
-              </p>
+            <li key={exercise.exerciseId} className="card flex items-center gap-3 p-2">
+              <ExerciseThumb
+                exercise={loaded.exercises.find((e) => e.id === exercise.exerciseId)}
+                className="h-12 w-16 rounded-panel"
+              />
+              <div className="min-w-0">
+                <p className="truncate font-semibold">{exercise.name}</p>
+                <p className="text-sm text-ink-muted">
+                  {exercise.sets} sets × {exercise.reps ? `${exercise.reps} reps` : `${exercise.timeSeconds}s`}
+                  {exercise.weightKg != null ? ` @ ${formatWeight(exercise.weightKg, unit)}` : ''}, rest {exercise.restSeconds}s
+                </p>
+              </div>
             </li>
           ))}
         </ul>

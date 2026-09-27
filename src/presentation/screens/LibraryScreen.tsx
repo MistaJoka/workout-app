@@ -1,13 +1,16 @@
 import { countLabel } from '../format'
 import { useDeferredValue, useEffect, useMemo, useState } from 'react'
 import { Link } from 'react-router-dom'
-import { loadLibrary } from '../../domain/content/catalog'
+import { getExercises, loadLibrary } from '../../domain/content/catalog'
 import { EQUIPMENT_OPTIONS, MUSCLE_GROUPS, filterExercises, type LibraryFilters } from '../../domain/content/library'
 import type { Exercise } from '../../domain/content/types'
 import { foundationStrengthStarterTemplates } from '../../domain/content/fixtures/foundationStrengthStarter'
 import { listCustomTemplates } from '../../infrastructure/db/repositories/customTemplateRepository'
 import type { WorkoutTemplate } from '../../domain/content/types'
 import { FilterSheet } from '../components/FilterSheet'
+import { ExerciseThumb } from '../components/ExerciseThumb'
+import { RaeNote } from '../components/RaeNote'
+import { RAE_LOOPS } from '../components/raeLoops'
 
 const PAGE = 40
 
@@ -30,6 +33,13 @@ export function LibraryScreen() {
     [library, deferredFilters]
   )
   const filtering = Boolean(filters.query || filters.muscle || filters.equipment || filters.level)
+  // The moves Rae demonstrates herself (the curated starter set, which
+  // lives outside the discovery library), leading the page when you're
+  // browsing rather than searching.
+  const [raeMoves, setRaeMoves] = useState<Exercise[]>([])
+  useEffect(() => {
+    getExercises(RAE_LOOPS.flatMap((loop) => loop.exerciseIds)).then((found) => setRaeMoves([...found.values()]))
+  }, [])
 
   function toggle<K extends keyof LibraryFilters>(key: K, value: LibraryFilters[K]) {
     setLimit(PAGE)
@@ -58,6 +68,24 @@ export function LibraryScreen() {
           <Link to="/routines/new" className="btn-secondary w-full">
             + New routine
           </Link>
+        </section>
+      )}
+
+      {!filtering && raeMoves.length > 0 && (
+        <section className="space-y-2">
+          <p className="text-sm font-semibold text-ink-muted">Moves Rae shows you</p>
+          <div className="-mx-4 flex gap-2 overflow-x-auto px-4 pb-1">
+            {raeMoves.map((exercise) => (
+              <Link
+                key={exercise.id}
+                to={`/exercise/${exercise.id}`}
+                className="card flex w-28 flex-none flex-col items-center gap-1 p-2 text-center"
+              >
+                <ExerciseThumb exercise={exercise} className="h-24 w-24 rounded-panel" />
+                <span className="line-clamp-2 text-xs font-semibold leading-tight">{exercise.name}</span>
+              </Link>
+            ))}
+          </div>
         </section>
       )}
 
@@ -113,6 +141,9 @@ export function LibraryScreen() {
             {countLabel(results.length, 'exercise')}
           </p>
         )}
+        {library && results.length === 0 && (
+          <RaeNote expression="surprised">Nothing matches that. Try a shorter search or fewer filters.</RaeNote>
+        )}
         <ul className="space-y-2">
           {results.slice(0, limit).map((exercise) => (
             <li key={exercise.id} className="[content-visibility:auto] [contain-intrinsic-size:auto_76px]">
@@ -120,16 +151,7 @@ export function LibraryScreen() {
                 to={`/exercise/${exercise.id}`}
                 className="flex items-center gap-3 card p-2"
               >
-                {exercise.mediaManifest.start ? (
-                  <img
-                    src={exercise.mediaManifest.start}
-                    alt=""
-                    loading="lazy"
-                    className="h-14 w-20 flex-none rounded-panel object-cover"
-                  />
-                ) : (
-                  <div className="h-14 w-20 flex-none rounded-panel bg-bg" />
-                )}
+                <ExerciseThumb exercise={exercise} className="h-14 w-20 rounded-panel" />
                 <div className="min-w-0">
                   <p className="truncate font-semibold">{exercise.name}</p>
                   <p className="truncate text-xs text-ink-muted">

@@ -6,6 +6,7 @@ import { deleteCustomTemplate, isCustomTemplateId } from '../../infrastructure/d
 import { formatWeight } from '../units'
 import { useWeightUnit } from '../components/useWeightUnit'
 import { BackButton } from '../components/BackButton'
+import { ExerciseThumb } from '../components/ExerciseThumb'
 
 export function RoutineDetailScreen() {
   const { templateId } = useParams()
@@ -62,11 +63,7 @@ export function RoutineDetailScreen() {
                 to={`/exercise/${te.exerciseId}`}
                 className="flex items-center gap-3 card p-2"
               >
-                {exercise?.mediaManifest.start ? (
-                  <img src={exercise.mediaManifest.start} alt="" className="h-12 w-16 flex-none rounded-panel object-cover" />
-                ) : (
-                  <div className="h-12 w-16 flex-none rounded-panel bg-bg" />
-                )}
+                <ExerciseThumb exercise={exercise} className="h-12 w-16 rounded-panel" />
                 <span className="min-w-0 flex-1 truncate font-semibold">{exercise?.name ?? te.exerciseId}</span>
                 <span className="flex-none text-sm text-ink-muted">{dose}</span>
               </Link>

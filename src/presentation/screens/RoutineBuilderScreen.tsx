@@ -14,6 +14,8 @@ import { FilterSheet } from '../components/FilterSheet'
 import { kgToUnit, roundToStep, stepInUnit, unitToKg } from '../units'
 import { useWeightUnit } from '../components/useWeightUnit'
 import { BackButton } from '../components/BackButton'
+import { RaeNote } from '../components/RaeNote'
+import { ExerciseThumb } from '../components/ExerciseThumb'
 
 type Row = EditRow
 
@@ -142,15 +144,13 @@ export function RoutineBuilderScreen() {
         className="input text-lg font-semibold"
       />
 
-      {rows.length === 0 && <p className="text-sm text-ink-muted">Add an exercise to get started.</p>}
+      {rows.length === 0 && <RaeNote expression="wink">Add your first exercise and we'll build this together.</RaeNote>}
 
       <ul className="space-y-3">
         {rows.map((row, index) => (
           <li key={row.exerciseId} className="card p-3 space-y-3">
             <div className="flex items-center gap-2">
-              {row.exercise?.mediaManifest.start && (
-                <img src={row.exercise.mediaManifest.start} alt="" className="h-12 w-16 flex-none rounded-panel object-cover" />
-              )}
+              <ExerciseThumb exercise={row.exercise} className="h-12 w-16 rounded-panel" />
               <p className="min-w-0 flex-1 truncate font-semibold">
                 {row.exercise ? row.exercise.name : 'Exercise no longer available'}
               </p>
@@ -334,11 +334,7 @@ function ExercisePicker({
               className="flex w-full items-center gap-3 card p-2 text-left"
               onClick={() => onPick(exercise)}
             >
-              {exercise.mediaManifest.start ? (
-                <img src={exercise.mediaManifest.start} alt="" loading="lazy" className="h-12 w-16 flex-none rounded-panel object-cover" />
-              ) : (
-                <div className="h-12 w-16 flex-none rounded-panel bg-bg" />
-              )}
+              <ExerciseThumb exercise={exercise} className="h-12 w-16 rounded-panel" />
               <span className="min-w-0 flex-1">
                 <span className="block truncate font-semibold">{exercise.name}</span>
                 <span className="block truncate text-xs text-ink-muted">

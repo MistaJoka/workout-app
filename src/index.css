@@ -326,6 +326,16 @@ input[type='range'] {
   transform-origin: 50% 90%;
 }
 
+/* RaeNote: Rae's speech bubble, its corner nearest her face squared off
+   so it reads as coming from her. */
+.rae-note__bubble {
+  background-color: var(--color-surface);
+  border: 2px solid var(--color-border);
+  border-radius: 18px 18px 18px 4px;
+  padding: 0.625rem 0.875rem;
+  line-height: 1.35;
+}
+
 /* Explicit reduced/off always wins. */
 [data-motion='reduced'] *,
 [data-motion='off'] * {
