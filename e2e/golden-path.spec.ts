@@ -104,7 +104,8 @@ test.describe('library and routines', () => {
     await page.getByRole('button', { name: /^Filters/ }).click()
     await page.getByRole('button', { name: 'No equipment' }).click()
     await page.getByRole('button', { name: 'Done' }).click()
-    await expect(page.getByText('2 exercises')).toBeVisible()
+    // Bodyweight Squat, Rae's Mini Squat, and one more library squat.
+    await expect(page.getByText('3 exercises')).toBeVisible()
 
     await page.getByRole('link', { name: /Bodyweight Squat/ }).first().click()
     await expect(page.getByRole('heading', { name: 'Bodyweight Squat' })).toBeVisible()

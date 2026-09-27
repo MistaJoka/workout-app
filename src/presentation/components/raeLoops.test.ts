@@ -45,10 +45,10 @@ describe('library moves Rae demonstrates (owner-approved matches)', () => {
   })
 })
 
-describe('Rae chair moves', () => {
-  it('each of the 7 chair exercises has its own loop', async () => {
-    const { raeChairMoves } = await import('../../domain/content/fixtures/raeChairMoves')
-    for (const move of raeChairMoves) {
+describe('Rae moves', () => {
+  it('each bundled Rae exercise has its own loop', async () => {
+    const { raeMoves } = await import('../../domain/content/fixtures/raeMoves')
+    for (const move of raeMoves) {
       expect(raeLoopForExercise(move.id)?.id, move.id).toBe(`ex-${move.id.replace('rae.', '')}`)
     }
   })

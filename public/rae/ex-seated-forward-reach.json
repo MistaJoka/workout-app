@@ -1,0 +1,25 @@
+{
+  "id": "ex-seated-forward-reach",
+  "source": "seated-forward-reach-strip-v1.png",
+  "frameWidth": 254,
+  "frameHeight": 264,
+  "frames": 4,
+  "timeline": [
+    {
+      "frame": 0,
+      "ms": 375
+    },
+    {
+      "frame": 1,
+      "ms": 375
+    },
+    {
+      "frame": 2,
+      "ms": 125
+    },
+    {
+      "frame": 3,
+      "ms": 125
+    }
+  ]
+}

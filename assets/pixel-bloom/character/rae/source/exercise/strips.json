@@ -640,5 +640,181 @@
       "rae.chair-squat-tap"
     ],
     "redraw": "Lotus tattoo drawn on her shoulder/upper arm, not under her anatomical-left collarbone."
+  },
+  {
+    "id": "mini-squat",
+    "name": "Mini Squat",
+    "source": "library/mini-squat-strip-v1.png",
+    "sha256": "7a857f656c186b5fb659b8b835a294040899532cada1a883a33bd7b7eba27db2",
+    "downloadedAs": "rae-low-impact-batch-15.zip:01-mini-squat.png (separator lines and neighbour slivers removed)",
+    "batch": "low-impact-15",
+    "frames": 4,
+    "anchor": "grid",
+    "order": "0,1,2,3",
+    "hold": "0:3,2:3",
+    "fps": 8,
+    "stills": [
+      0,
+      2
+    ],
+    "exerciseIds": [
+      "rae.mini-squat"
+    ],
+    "featured": true,
+    "redraw": "Off-model (afro puff, headband ears, arm tattoos) and low-res (~190px source). Owner: use for now, redraw in the bible style."
+  },
+  {
+    "id": "reverse-lunge",
+    "name": "Reverse Lunge",
+    "source": "library/reverse-lunge-strip-v1.png",
+    "sha256": "cf867e64753df924f561e285bde47e2341f33549858da2089df01bd344fb6218",
+    "downloadedAs": "rae-low-impact-batch-15.zip:06-reverse-lunge.png (separator lines and neighbour slivers removed)",
+    "batch": "low-impact-15",
+    "frames": 5,
+    "anchor": "grid",
+    "order": "0,1,2,3,4",
+    "hold": "0:3,2:3",
+    "fps": 8,
+    "stills": [
+      0,
+      2
+    ],
+    "exerciseIds": [
+      "rae.reverse-lunge"
+    ],
+    "featured": true,
+    "redraw": "Off-model (afro puff, headband ears, arm tattoos) and low-res (~190px source). Owner: use for now, redraw in the bible style."
+  },
+  {
+    "id": "seated-march",
+    "name": "Seated March",
+    "source": "library/seated-march-strip-v1.png",
+    "sha256": "61ae6d064a21db2694e38b6ccb68cbd01e7ee7338facfe6e60c89d824466bf70",
+    "downloadedAs": "rae-low-impact-batch-15.zip:10-seated-march.png (separator lines and neighbour slivers removed)",
+    "batch": "low-impact-15",
+    "frames": 5,
+    "anchor": "grid",
+    "order": "0,1,2,3,4",
+    "hold": "0:3,2:3",
+    "fps": 8,
+    "stills": [
+      0,
+      2
+    ],
+    "exerciseIds": [
+      "rae.seated-march"
+    ],
+    "featured": true,
+    "redraw": "Off-model (afro puff, headband ears, arm tattoos) and low-res (~190px source). Owner: use for now, redraw in the bible style."
+  },
+  {
+    "id": "seated-ankle-pumps",
+    "name": "Seated Ankle Pumps",
+    "source": "library/seated-ankle-pumps-strip-v1.png",
+    "sha256": "58cb8977e454f96c39b2445de80837452d5857ee63087e6d202e48a46373f85b",
+    "downloadedAs": "rae-low-impact-batch-15.zip:11-seated-ankle-pumps.png (separator lines and neighbour slivers removed)",
+    "batch": "low-impact-15",
+    "frames": 4,
+    "anchor": "grid",
+    "order": "0,1,2,3",
+    "hold": "0:3,2:3",
+    "fps": 8,
+    "stills": [
+      0,
+      2
+    ],
+    "exerciseIds": [
+      "rae.seated-ankle-pumps"
+    ],
+    "featured": true,
+    "redraw": "Off-model (afro puff, headband ears, arm tattoos) and low-res (~190px source). Owner: use for now, redraw in the bible style."
+  },
+  {
+    "id": "seated-knee-extension",
+    "name": "Seated Knee Extension",
+    "source": "library/seated-knee-extension-strip-v1.png",
+    "sha256": "fe754a7479fd07ebaa7c84166db9ee6392c311a2849787f05dfd51fb8e3c13ea",
+    "downloadedAs": "rae-low-impact-batch-15.zip:12-seated-knee-extension.png (separator lines and neighbour slivers removed)",
+    "batch": "low-impact-15",
+    "frames": 4,
+    "anchor": "grid",
+    "order": "0,1,2,3",
+    "hold": "0:3,2:3",
+    "fps": 8,
+    "stills": [
+      0,
+      2
+    ],
+    "exerciseIds": [
+      "rae.seated-knee-extension"
+    ],
+    "featured": true,
+    "redraw": "Off-model (afro puff, headband ears, arm tattoos) and low-res (~190px source). Owner: use for now, redraw in the bible style."
+  },
+  {
+    "id": "seated-forward-reach",
+    "name": "Seated Forward Reach",
+    "source": "library/seated-forward-reach-strip-v1.png",
+    "sha256": "e6e5ad46beeb50e5463d78586c95bbe0e942aa8eefec1f5afdd7c29fb6653143",
+    "downloadedAs": "rae-low-impact-batch-15.zip:13-seated-forward-reach.png (separator lines and neighbour slivers removed)",
+    "batch": "low-impact-15",
+    "frames": 4,
+    "anchor": "grid",
+    "order": "0,1,2,3",
+    "hold": "0:3,1:3",
+    "fps": 8,
+    "stills": [
+      0,
+      1
+    ],
+    "exerciseIds": [
+      "rae.seated-forward-reach"
+    ],
+    "featured": true,
+    "redraw": "Off-model (afro puff, headband ears, arm tattoos) and low-res (~190px source). Owner: use for now, redraw in the bible style."
+  },
+  {
+    "id": "seated-torso-rotation",
+    "name": "Seated Torso Rotation",
+    "source": "library/seated-torso-rotation-strip-v1.png",
+    "sha256": "4f3fbab066b0aaabd184346464ceb14a3713c6598c0d1ae38e325fc24ad6a34b",
+    "downloadedAs": "rae-low-impact-batch-15.zip:14-seated-torso-rotation.png (separator lines and neighbour slivers removed)",
+    "batch": "low-impact-15",
+    "frames": 4,
+    "anchor": "grid",
+    "order": "0,1,2,3",
+    "hold": "0:3,1:3",
+    "fps": 8,
+    "stills": [
+      0,
+      1
+    ],
+    "exerciseIds": [
+      "rae.seated-torso-rotation"
+    ],
+    "featured": true,
+    "redraw": "Off-model (afro puff, headband ears, arm tattoos) and low-res (~190px source). Owner: use for now, redraw in the bible style."
+  },
+  {
+    "id": "chair-supported-knee-lift",
+    "name": "Chair-Supported Knee Lift",
+    "source": "library/chair-supported-knee-lift-strip-v1.png",
+    "sha256": "0ac77bcaa282e69267e9907f10c49f3b77ecaedbc1e2d14b9f5e1b983c933aee",
+    "downloadedAs": "rae-low-impact-batch-15.zip:15-chair-supported-knee-lift.png (separator lines and neighbour slivers removed)",
+    "batch": "low-impact-15",
+    "frames": 5,
+    "anchor": "grid",
+    "order": "0,1,2,3,4",
+    "hold": "0:3,2:3",
+    "fps": 8,
+    "stills": [
+      0,
+      2
+    ],
+    "exerciseIds": [
+      "rae.chair-supported-knee-lift"
+    ],
+    "featured": true,
+    "redraw": "Off-model (afro puff, headband ears, arm tattoos) and low-res (~190px source). Owner: use for now, redraw in the bible style."
   }
 ]

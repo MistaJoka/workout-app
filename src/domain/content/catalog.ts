@@ -4,7 +4,7 @@ import {
   foundationStrengthStarterTemplates,
   templateById as curatedTemplateById,
 } from './fixtures/foundationStrengthStarter'
-import { listedRaeChairMoves, raeChairMoveById } from './fixtures/raeChairMoves'
+import { listedRaeMoves, raeMoveById } from './fixtures/raeMoves'
 import { getCustomTemplate, listCustomTemplates } from '../../infrastructure/db/repositories/customTemplateRepository'
 
 export async function getTemplate(id: string): Promise<WorkoutTemplate | undefined> {
@@ -15,9 +15,9 @@ export async function listAllTemplates(): Promise<{ curated: WorkoutTemplate[]; 
   return { curated: foundationStrengthStarterTemplates, custom: await listCustomTemplates() }
 }
 
-// Bundled exercises resolve synchronously: the starter pack plus Rae's chair
+// Bundled exercises resolve synchronously: the starter pack plus Rae's own
 // moves (which have no library record of their own).
-const curatedById: ReadonlyMap<string, Exercise> = new Map([...starterById, ...raeChairMoveById])
+const curatedById: ReadonlyMap<string, Exercise> = new Map([...starterById, ...raeMoveById])
 
 let libraryPromise: Promise<Exercise[]> | null = null
 
@@ -25,10 +25,10 @@ let libraryPromise: Promise<Exercise[]> | null = null
 // for it; curated exercises resolve synchronously from the bundled pack.
 export function loadLibrary(): Promise<Exercise[]> {
   if (!libraryPromise) {
-    // Rae's chair moves lead the list so they are searchable and usable in
+    // Rae's own moves lead the list so they are searchable and usable in
     // the routine builder like any library exercise.
     libraryPromise = import('./generated/libraryExercises.json').then((m) => [
-      ...listedRaeChairMoves,
+      ...listedRaeMoves,
       ...(m.default as Exercise[]),
     ])
   }

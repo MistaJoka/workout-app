@@ -1,20 +1,20 @@
 import { describe, expect, it } from 'vitest'
-import { raeChairMoves } from './fixtures/raeChairMoves'
+import { raeMoves } from './fixtures/raeMoves'
 import { validateContentPack } from './schema'
 import { getExercise, getExercises, loadLibrary } from './catalog'
 
-describe('Rae chair moves', () => {
+describe('Rae moves', () => {
   it('are valid exercises', () => {
     const pack = {
-      id: 'rae.chair-moves',
+      id: 'rae.moves',
       version: 1,
-      name: 'Rae chair moves',
+      name: 'Rae moves',
       dependsOn: [],
-      exerciseIds: raeChairMoves.map((e) => e.id),
+      exerciseIds: raeMoves.map((e) => e.id),
       templateIds: [],
     }
-    expect(validateContentPack(pack, raeChairMoves, []).errors).toEqual([])
-    expect(new Set(raeChairMoves.map((e) => e.id)).size).toBe(7)
+    expect(validateContentPack(pack, raeMoves, []).errors).toEqual([])
+    expect(new Set(raeMoves.map((e) => e.id)).size).toBe(15)
   })
 
   it('resolve through the catalog and appear in the Library', async () => {
@@ -22,8 +22,9 @@ describe('Rae chair moves', () => {
     expect((await getExercise(id))?.name).toBe('Chair Squat Tap')
     expect((await getExercises([id])).get(id)?.name).toBe('Chair Squat Tap')
     const library = await loadLibrary()
-    const listed = library.filter((e) => e.id.startsWith('rae.chair')).map((e) => e.id)
-    expect(listed).toHaveLength(5)
+    const listed = library.filter((e) => e.id.startsWith('rae.')).map((e) => e.id)
+    expect(listed).toHaveLength(13)
+    expect(listed).toContain('rae.seated-march')
     expect(listed).not.toContain('rae.chair-sit-to-stand-hands-clasped')
     expect(listed).not.toContain('rae.chair-sit-to-stand-hands-on-thighs')
   })

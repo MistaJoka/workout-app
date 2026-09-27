@@ -98,6 +98,18 @@ Use this mailbox when implementation reaches a product/data/spec/asset/test gap 
 **Constraints already known:** no invented safety rules; sit-to-stand is a standard beginner movement. The library's "Chair Squat" is a different (machine) exercise.
 **Proposed fallback if unresolved:** ship as draft (current state).
 
+## REQ-20260927-004 — Redraw the low-impact set in the bible style; review steps
+
+**Status:** OPEN
+**Blocking:** no (the owner said "use them for now")
+**Implementation context:** `src/domain/content/fixtures/raeMoves.ts` (low-impact section), strips.json batch `low-impact-15`
+**Need:**
+1. The owner's `rae-low-impact-batch-15.zip` drew Rae off-model (afro puff, ears on a headband, arm tattoos) at low resolution (~190px). Eight of its moves are in the app, marked `redraw`: mini squat, reverse lunge, seated march, seated ankle pumps, seated knee extension, seated forward reach, seated torso rotation, chair-supported knee lift. Redraw each as a full-size strip in the approved bible style (the batch-prompt format in `content/rae-prompts/`).
+2. Its reverse crunch was unusable (frames overlap) and was dropped. `lib.Reverse_Crunch` stays in the normal batches. The seven moves it duplicated (incline push-up, dead bug, plank, glute bridge, crunch, superman) keep their existing bible-style strips.
+3. The 14-move sheet `ChatGPT Image Sep 26, 2026, 11_42_00 PM.png` (bike, treadmill, cable, lat pulldown, dumbbell moves) has the same off-model look and was not imported. Most of its equipment is outside the 304-move home library.
+4. Review the drafted step text for the 8 moves, as in REQ-20260926-003.
+**Proposed fallback if unresolved:** keep the current off-model loops.
+
 ## Template
 
 ```md

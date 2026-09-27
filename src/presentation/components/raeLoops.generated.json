@@ -444,5 +444,117 @@
       "rae.chair-squat-tap"
     ],
     "featured": true
+  },
+  {
+    "id": "ex-mini-squat",
+    "name": "Mini Squat",
+    "width": 206,
+    "height": 264,
+    "stills": [
+      0,
+      2
+    ],
+    "exerciseIds": [
+      "rae.mini-squat"
+    ],
+    "featured": true
+  },
+  {
+    "id": "ex-reverse-lunge",
+    "name": "Reverse Lunge",
+    "width": 246,
+    "height": 264,
+    "stills": [
+      0,
+      2
+    ],
+    "exerciseIds": [
+      "rae.reverse-lunge"
+    ],
+    "featured": true
+  },
+  {
+    "id": "ex-seated-march",
+    "name": "Seated March",
+    "width": 360,
+    "height": 236,
+    "stills": [
+      0,
+      2
+    ],
+    "exerciseIds": [
+      "rae.seated-march"
+    ],
+    "featured": true
+  },
+  {
+    "id": "ex-seated-ankle-pumps",
+    "name": "Seated Ankle Pumps",
+    "width": 360,
+    "height": 232,
+    "stills": [
+      0,
+      2
+    ],
+    "exerciseIds": [
+      "rae.seated-ankle-pumps"
+    ],
+    "featured": true
+  },
+  {
+    "id": "ex-seated-knee-extension",
+    "name": "Seated Knee Extension",
+    "width": 360,
+    "height": 174,
+    "stills": [
+      0,
+      2
+    ],
+    "exerciseIds": [
+      "rae.seated-knee-extension"
+    ],
+    "featured": true
+  },
+  {
+    "id": "ex-seated-forward-reach",
+    "name": "Seated Forward Reach",
+    "width": 254,
+    "height": 264,
+    "stills": [
+      0,
+      1
+    ],
+    "exerciseIds": [
+      "rae.seated-forward-reach"
+    ],
+    "featured": true
+  },
+  {
+    "id": "ex-seated-torso-rotation",
+    "name": "Seated Torso Rotation",
+    "width": 276,
+    "height": 264,
+    "stills": [
+      0,
+      1
+    ],
+    "exerciseIds": [
+      "rae.seated-torso-rotation"
+    ],
+    "featured": true
+  },
+  {
+    "id": "ex-chair-supported-knee-lift",
+    "name": "Chair-Supported Knee Lift",
+    "width": 360,
+    "height": 200,
+    "stills": [
+      0,
+      2
+    ],
+    "exerciseIds": [
+      "rae.chair-supported-knee-lift"
+    ],
+    "featured": true
   }
 ]
