@@ -1,7 +1,7 @@
 import { countLabel } from '../format'
 import { useDeferredValue, useEffect, useMemo, useState } from 'react'
 import { Link } from 'react-router-dom'
-import { loadLibrary } from '../../domain/content/catalog'
+import { getExercises, loadLibrary } from '../../domain/content/catalog'
 import { EQUIPMENT_OPTIONS, MUSCLE_GROUPS, filterExercises, type LibraryFilters } from '../../domain/content/library'
 import type { Exercise } from '../../domain/content/types'
 import { foundationStrengthStarterTemplates } from '../../domain/content/fixtures/foundationStrengthStarter'
@@ -10,7 +10,7 @@ import type { WorkoutTemplate } from '../../domain/content/types'
 import { FilterSheet } from '../components/FilterSheet'
 import { ExerciseThumb } from '../components/ExerciseThumb'
 import { RaeNote } from '../components/RaeNote'
-import { raeStillFor } from '../components/raeLoops'
+import { RAE_LOOPS } from '../components/raeLoops'
 
 const PAGE = 40
 
@@ -33,9 +33,13 @@ export function LibraryScreen() {
     [library, deferredFilters]
   )
   const filtering = Boolean(filters.query || filters.muscle || filters.equipment || filters.level)
-  // The moves Rae demonstrates herself, leading the page when you're
+  // The moves Rae demonstrates herself (the curated starter set, which
+  // lives outside the discovery library), leading the page when you're
   // browsing rather than searching.
-  const raeMoves = useMemo(() => (library ?? []).filter((e) => raeStillFor(e.id) != null), [library])
+  const [raeMoves, setRaeMoves] = useState<Exercise[]>([])
+  useEffect(() => {
+    getExercises(RAE_LOOPS.flatMap((loop) => loop.exerciseIds)).then((found) => setRaeMoves([...found.values()]))
+  }, [])
 
   function toggle<K extends keyof LibraryFilters>(key: K, value: LibraryFilters[K]) {
     setLimit(PAGE)
