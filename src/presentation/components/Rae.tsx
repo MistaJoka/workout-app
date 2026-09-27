@@ -74,9 +74,11 @@ type LoopProps = {
   // movement stays fully visible without animation.
   stills: readonly number[]
   animate: boolean
+  // Extra classes for each image, e.g. a max height in the workout player.
+  imgClassName?: string
 }
 
-export function RaeExerciseLoop({ id, name, width, height, stills, animate }: LoopProps) {
+export function RaeExerciseLoop({ id, name, width, height, stills, animate, imgClassName = '' }: LoopProps) {
   if (animate) {
     return (
       <img
@@ -84,7 +86,7 @@ export function RaeExerciseLoop({ id, name, width, height, stills, animate }: Lo
         alt={`Rae doing a ${name}`}
         width={width}
         height={height}
-        className="mx-auto h-auto max-w-full"
+        className={`mx-auto h-auto max-w-full ${imgClassName}`}
       />
     )
   }
@@ -97,7 +99,7 @@ export function RaeExerciseLoop({ id, name, width, height, stills, animate }: Lo
           alt={`${name}, frame ${frame + 1}`}
           width={width}
           height={height}
-          className="h-auto min-w-0 flex-1"
+          className={`h-auto min-w-0 flex-1 object-contain ${imgClassName}`}
           style={{ maxWidth: width }}
         />
       ))}

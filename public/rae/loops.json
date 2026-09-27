@@ -7,6 +7,9 @@
     "stills": [
       0,
       2
+    ],
+    "exerciseIds": [
+      "fs.bodyweight-squat"
     ]
   },
   {
@@ -17,6 +20,9 @@
     "stills": [
       0,
       3
+    ],
+    "exerciseIds": [
+      "fs.incline-push-up"
     ]
   },
   {
@@ -27,6 +33,9 @@
     "stills": [
       0,
       3
+    ],
+    "exerciseIds": [
+      "fs.single-leg-glute-bridge"
     ]
   },
   {
@@ -37,6 +46,9 @@
     "stills": [
       0,
       2
+    ],
+    "exerciseIds": [
+      "fs.dead-bug"
     ]
   },
   {
@@ -46,6 +58,9 @@
     "height": 153,
     "stills": [
       0
+    ],
+    "exerciseIds": [
+      "fs.plank"
     ]
   },
   {
@@ -56,6 +71,9 @@
     "stills": [
       0,
       3
+    ],
+    "exerciseIds": [
+      "fs.walking-lunge"
     ]
   },
   {
@@ -66,6 +84,9 @@
     "stills": [
       0,
       3
+    ],
+    "exerciseIds": [
+      "fs.glute-bridge"
     ]
   },
   {
@@ -76,6 +97,9 @@
     "stills": [
       0,
       2
+    ],
+    "exerciseIds": [
+      "fs.crunches"
     ]
   },
   {
@@ -86,6 +110,9 @@
     "stills": [
       0,
       2
+    ],
+    "exerciseIds": [
+      "fs.superman"
     ]
   },
   {
@@ -96,7 +123,8 @@
     "stills": [
       0,
       2
-    ]
+    ],
+    "exerciseIds": []
   },
   {
     "id": "ex-cat-cow",
@@ -106,7 +134,8 @@
     "stills": [
       1,
       3
-    ]
+    ],
+    "exerciseIds": []
   },
   {
     "id": "ex-side-plank",
@@ -115,7 +144,8 @@
     "height": 228,
     "stills": [
       0
-    ]
+    ],
+    "exerciseIds": []
   },
   {
     "id": "ex-step-up",
@@ -125,7 +155,8 @@
     "stills": [
       0,
       3
-    ]
+    ],
+    "exerciseIds": []
   },
   {
     "id": "ex-dumbbell-rdl",
@@ -135,7 +166,8 @@
     "stills": [
       0,
       3
-    ]
+    ],
+    "exerciseIds": []
   },
   {
     "id": "ex-seated-dumbbell-press",
@@ -145,7 +177,8 @@
     "stills": [
       0,
       2
-    ]
+    ],
+    "exerciseIds": []
   },
   {
     "id": "ex-dumbbell-row",
@@ -155,7 +188,8 @@
     "stills": [
       0,
       2
-    ]
+    ],
+    "exerciseIds": []
   },
   {
     "id": "ex-split-squat",
@@ -165,6 +199,7 @@
     "stills": [
       0,
       2
-    ]
+    ],
+    "exerciseIds": []
   }
 ]

@@ -21,7 +21,8 @@ test.describe('golden path', () => {
     // The player shows the movement and its steps, not just a name.
     await expect(page.getByRole('heading', { name: 'Bodyweight Squat' })).toBeVisible()
     await expect(page.getByText(/Set 1 of 2/)).toBeVisible()
-    await expect(page.locator('img[alt*="start position"]')).toBeVisible()
+    // Rae demonstrates the curated moves in place of the photos.
+    await expect(page.getByAltText('Rae doing a bodyweight squat')).toBeVisible()
     await expect(page.getByText(/Stand with your feet shoulder width apart/)).toBeVisible()
 
     // Reps-based sets ask the yes/no question; the rest screen counts down.
