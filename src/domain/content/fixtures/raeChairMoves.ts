@@ -76,4 +76,11 @@ export const raeChairMoves: Exercise[] = [
   ]),
 ]
 
+// Owner, 2026-09-26: drop one of each near-duplicate pair. They stay
+// resolvable (a routine may already use them) but are not listed.
+const RETIRED = new Set(['rae.chair-sit-to-stand-hands-clasped', 'rae.chair-sit-to-stand-hands-on-thighs'])
+
 export const raeChairMoveById: ReadonlyMap<string, Exercise> = new Map(raeChairMoves.map((e) => [e.id, e]))
+
+// What the Library lists and the routine builder offers.
+export const listedRaeChairMoves: Exercise[] = raeChairMoves.filter((e) => !RETIRED.has(e.id))

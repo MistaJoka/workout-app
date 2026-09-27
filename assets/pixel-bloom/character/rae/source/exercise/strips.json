@@ -78,7 +78,8 @@
     "exerciseIds": [
       "fs.dead-bug",
       "lib.Dead_Bug"
-    ]
+    ],
+    "redraw": "Frame 6 drawn mirrored (head on the other side); loop plays frames 1-5."
   },
   {
     "id": "plank",
@@ -321,7 +322,8 @@
     "batch": "extra",
     "exerciseIds": [
       "lib.Split_Squats"
-    ]
+    ],
+    "redraw": "Frames barely change depth; needs a clear descent."
   },
   {
     "id": "3-4-sit-up",
@@ -508,7 +510,8 @@
     ],
     "exerciseIds": [
       "rae.chair-sit-to-stand-arms-forward"
-    ]
+    ],
+    "redraw": "Lotus tattoo drawn on her shoulder/upper arm, not under her anatomical-left collarbone."
   },
   {
     "id": "chair-sit-to-stand-hands-on-thighs",
@@ -528,7 +531,9 @@
     ],
     "exerciseIds": [
       "rae.chair-sit-to-stand-hands-on-thighs"
-    ]
+    ],
+    "retired": "Owner dropped this near-duplicate on 2026-09-26; kept for routines that already use it.",
+    "featured": false
   },
   {
     "id": "chair-sit-to-stand-overhead-reach",
@@ -548,7 +553,8 @@
     ],
     "exerciseIds": [
       "rae.chair-sit-to-stand-overhead-reach"
-    ]
+    ],
+    "redraw": "Lotus tattoo drawn on her shoulder/upper arm, not under her anatomical-left collarbone."
   },
   {
     "id": "chair-sit-to-stand-hands-clasped",
@@ -568,7 +574,9 @@
     ],
     "exerciseIds": [
       "rae.chair-sit-to-stand-hands-clasped"
-    ]
+    ],
+    "retired": "Owner dropped this near-duplicate on 2026-09-26; kept for routines that already use it.",
+    "featured": false
   },
   {
     "id": "chair-sit-to-stand-arms-crossed",
@@ -588,7 +596,8 @@
     ],
     "exerciseIds": [
       "rae.chair-sit-to-stand-arms-crossed"
-    ]
+    ],
+    "redraw": "Lotus tattoo drawn on her shoulder/upper arm, not under her anatomical-left collarbone."
   },
   {
     "id": "chair-sit-to-stand-push-off-knees",
@@ -608,7 +617,8 @@
     ],
     "exerciseIds": [
       "rae.chair-sit-to-stand-push-off-knees"
-    ]
+    ],
+    "redraw": "Lotus tattoo drawn on her shoulder/upper arm, not under her anatomical-left collarbone."
   },
   {
     "id": "chair-squat-tap",
@@ -628,6 +638,7 @@
     ],
     "exerciseIds": [
       "rae.chair-squat-tap"
-    ]
+    ],
+    "redraw": "Lotus tattoo drawn on her shoulder/upper arm, not under her anatomical-left collarbone."
   }
 ]

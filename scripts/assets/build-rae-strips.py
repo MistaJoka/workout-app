@@ -36,7 +36,7 @@ for strip in json.loads((SRC / 'strips.json').read_text()):
         'exerciseIds': strip.get('exerciseIds', []),
         # Featured loops are precached and listed on Meet Rae; the rest are
         # cached on first view (there are hundreds).
-        'featured': not strip.get('lean', False),
+        'featured': strip.get('featured', not strip.get('lean', False)),
     })
 text = json.dumps(loops, indent=2) + '\n'
 (ROOT / 'public/rae/loops.json').write_text(text)
