@@ -1,65 +1,65 @@
 [
   {
     "n": 1,
-    "exerciseId": "lib.Trail_Running_Walking",
-    "slug": "trail-running-walking",
-    "name": "Trail Running/Walking",
+    "exerciseId": "lib.Upright_Row_-_With_Bands",
+    "slug": "upright-row-with-bands",
+    "name": "Upright Row - With Bands",
     "frames": 4,
     "view": "Side view"
   },
   {
     "n": 2,
-    "exerciseId": "lib.Tricep_Side_Stretch",
-    "slug": "tricep-side-stretch",
-    "name": "Tricep Side Stretch",
+    "exerciseId": "lib.Hamstring-SMR",
+    "slug": "hamstring-smr",
+    "name": "Hamstring-SMR",
     "frames": 3,
     "view": "Side view"
   },
   {
     "n": 3,
-    "exerciseId": "lib.Triceps_Stretch",
-    "slug": "triceps-stretch",
-    "name": "Triceps Stretch",
+    "exerciseId": "lib.Latissimus_Dorsi-SMR",
+    "slug": "latissimus-dorsi-smr",
+    "name": "Latissimus Dorsi-SMR",
     "frames": 3,
     "view": "Side view"
   },
   {
     "n": 4,
-    "exerciseId": "lib.Upper_Back_Stretch",
-    "slug": "upper-back-stretch",
-    "name": "Upper Back Stretch",
+    "exerciseId": "lib.Lower_Back-SMR",
+    "slug": "lower-back-smr",
+    "name": "Lower Back-SMR",
     "frames": 3,
     "view": "Side view"
   },
   {
     "n": 5,
-    "exerciseId": "lib.Upper_Back-Leg_Grab",
-    "slug": "upper-back-leg-grab",
-    "name": "Upper Back-Leg Grab",
+    "exerciseId": "lib.Adductor",
+    "slug": "adductor",
+    "name": "Adductor",
     "frames": 3,
     "view": "Side view"
   },
   {
     "n": 6,
-    "exerciseId": "lib.Upward_Stretch",
-    "slug": "upward-stretch",
-    "name": "Upward Stretch",
+    "exerciseId": "lib.Brachialis-SMR",
+    "slug": "brachialis-smr",
+    "name": "Brachialis-SMR",
     "frames": 3,
     "view": "Side view"
   },
   {
     "n": 7,
-    "exerciseId": "lib.Adductor_Groin",
-    "slug": "adductor-groin",
-    "name": "Adductor/Groin",
+    "exerciseId": "lib.Calves-SMR",
+    "slug": "calves-smr",
+    "name": "Calves-SMR",
     "frames": 3,
     "view": "Side view"
   },
   {
     "n": 8,
-    "exerciseId": "lib.Crossover_Reverse_Lunge",
-    "slug": "crossover-reverse-lunge",
-    "name": "Crossover Reverse Lunge",
+    "exerciseId": "lib.Iliotibial_Tract-SMR",
+    "slug": "iliotibial-tract-smr",
+    "name": "Iliotibial Tract-SMR",
     "frames": 3,
     "view": "Side view"
   }

@@ -1,66 +1,66 @@
 [
   {
     "n": 1,
-    "exerciseId": "lib.Push-Up_Wide",
-    "slug": "push-up-wide",
-    "name": "Push-Up Wide",
-    "frames": 4,
+    "exerciseId": "lib.Scissor_Kick",
+    "slug": "scissor-kick",
+    "name": "Scissor Kick",
+    "frames": 3,
     "view": "Side view"
   },
   {
     "n": 2,
-    "exerciseId": "lib.Push-Ups_With_Feet_Elevated",
-    "slug": "push-ups-with-feet-elevated",
-    "name": "Push-Ups With Feet Elevated",
+    "exerciseId": "lib.Seated_Flat_Bench_Leg_Pull-In",
+    "slug": "seated-flat-bench-leg-pull-in",
+    "name": "Seated Flat Bench Leg Pull-In",
     "frames": 4,
     "view": "Side view"
   },
   {
     "n": 3,
-    "exerciseId": "lib.Pushups",
-    "slug": "pushups",
-    "name": "Pushups",
+    "exerciseId": "lib.Seated_Leg_Tucks",
+    "slug": "seated-leg-tucks",
+    "name": "Seated Leg Tucks",
     "frames": 4,
     "view": "Side view"
   },
   {
     "n": 4,
-    "exerciseId": "lib.Pushups_Close_and_Wide_Hand_Positions",
-    "slug": "pushups-close-and-wide-hand-positions",
-    "name": "Pushups (Close and Wide Hand Positions)",
-    "frames": 4,
-    "view": "Side view"
-  },
-  {
-    "n": 5,
-    "exerciseId": "lib.Rear_Leg_Raises",
-    "slug": "rear-leg-raises",
-    "name": "Rear Leg Raises",
+    "exerciseId": "lib.Side_Leg_Raises",
+    "slug": "side-leg-raises",
+    "name": "Side Leg Raises",
     "frames": 3,
     "view": "Side view"
   },
   {
+    "n": 5,
+    "exerciseId": "lib.Sit-Up",
+    "slug": "sit-up",
+    "name": "Sit-Up",
+    "frames": 4,
+    "view": "Side view"
+  },
+  {
     "n": 6,
-    "exerciseId": "lib.Reverse_Crunch",
-    "slug": "reverse-crunch",
-    "name": "Reverse Crunch",
+    "exerciseId": "lib.Spider_Crawl",
+    "slug": "spider-crawl",
+    "name": "Spider Crawl",
     "frames": 4,
     "view": "Side view"
   },
   {
     "n": 7,
-    "exerciseId": "lib.Rocket_Jump",
-    "slug": "rocket-jump",
-    "name": "Rocket Jump",
-    "frames": 4,
+    "exerciseId": "lib.Standing_Hip_Circles",
+    "slug": "standing-hip-circles",
+    "name": "Standing Hip Circles",
+    "frames": 3,
     "view": "Side view"
   },
   {
     "n": 8,
-    "exerciseId": "lib.Scissor_Kick",
-    "slug": "scissor-kick",
-    "name": "Scissor Kick",
-    "frames": 3,
+    "exerciseId": "lib.Standing_Towel_Triceps_Extension",
+    "slug": "standing-towel-triceps-extension",
+    "name": "Standing Towel Triceps Extension",
+    "frames": 4,
     "view": "Side view"
   }
 ]

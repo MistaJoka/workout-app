@@ -1,65 +1,65 @@
 [
   {
     "n": 1,
-    "exerciseId": "lib.Overhead_Stretch",
-    "slug": "overhead-stretch",
-    "name": "Overhead Stretch",
+    "exerciseId": "lib.Crossover_Reverse_Lunge",
+    "slug": "crossover-reverse-lunge",
+    "name": "Crossover Reverse Lunge",
     "frames": 3,
     "view": "Side view"
   },
   {
     "n": 2,
-    "exerciseId": "lib.Prone_Manual_Hamstring",
-    "slug": "prone-manual-hamstring",
-    "name": "Prone Manual Hamstring",
-    "frames": 3,
+    "exerciseId": "lib.Floor_Glute-Ham_Raise",
+    "slug": "floor-glute-ham-raise",
+    "name": "Floor Glute-Ham Raise",
+    "frames": 4,
     "view": "Side view"
   },
   {
     "n": 3,
-    "exerciseId": "lib.Runners_Stretch",
-    "slug": "runners-stretch",
-    "name": "Runner's Stretch",
+    "exerciseId": "lib.Frog_Hops",
+    "slug": "frog-hops",
+    "name": "Frog Hops",
     "frames": 3,
     "view": "Side view"
   },
   {
     "n": 4,
-    "exerciseId": "lib.Scapular_Pull-Up",
-    "slug": "scapular-pull-up",
-    "name": "Scapular Pull-Up",
-    "frames": 4,
+    "exerciseId": "lib.Groin_and_Back_Stretch",
+    "slug": "groin-and-back-stretch",
+    "name": "Groin and Back Stretch",
+    "frames": 3,
     "view": "Side view"
   },
   {
     "n": 5,
-    "exerciseId": "lib.Seated_Calf_Stretch",
-    "slug": "seated-calf-stretch",
-    "name": "Seated Calf Stretch",
+    "exerciseId": "lib.Iron_Crosses_stretch",
+    "slug": "iron-crosses-stretch",
+    "name": "Iron Crosses (stretch)",
     "frames": 3,
     "view": "Side view"
   },
   {
     "n": 6,
-    "exerciseId": "lib.Seated_Floor_Hamstring_Stretch",
-    "slug": "seated-floor-hamstring-stretch",
-    "name": "Seated Floor Hamstring Stretch",
+    "exerciseId": "lib.Pelvic_Tilt_Into_Bridge",
+    "slug": "pelvic-tilt-into-bridge",
+    "name": "Pelvic Tilt Into Bridge",
     "frames": 3,
     "view": "Side view"
   },
   {
     "n": 7,
-    "exerciseId": "lib.Seated_Overhead_Stretch",
-    "slug": "seated-overhead-stretch",
-    "name": "Seated Overhead Stretch",
+    "exerciseId": "lib.Windmills",
+    "slug": "windmills",
+    "name": "Windmills",
     "frames": 3,
-    "view": "Side view"
+    "view": "Front view"
   },
   {
     "n": 8,
-    "exerciseId": "lib.Shoulder_Circles",
-    "slug": "shoulder-circles",
-    "name": "Shoulder Circles",
+    "exerciseId": "lib.Worlds_Greatest_Stretch",
+    "slug": "worlds-greatest-stretch",
+    "name": "World's Greatest Stretch",
     "frames": 3,
     "view": "Side view"
   }

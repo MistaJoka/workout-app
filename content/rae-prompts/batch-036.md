@@ -1,4 +1,4 @@
-# Rae batch 036 of 108
+# Rae batch 036 of 37
 
 Paste everything below the line into the Rae chat, then download all images at once.
 
@@ -12,34 +12,34 @@ Using the approved Rae v1 character bible exactly (same face, black 4C hair, two
 - Equipment is drawn identically in every frame.
 
 
-**1. Seated Side Lateral Raise** (Front view, 4 frames; equipment: dumbbells (one if the steps use one arm))
-Frames: 1) start position, 2) halfway, 3) end of the movement (peak), 4) halfway back.
-Steps: Pick a couple of dumbbells and sit at the end of a flat bench with your feet firmly on the floor. Hold the dumbbells with your palms facing in and your arms straight down at your sides at arms' length. This will be your starting position. While maintaining the torso stationary (no swinging), lift the dumbbells to your side with a slight bend on the elbow and the hands slightly tilted forward as if pouring water in a glass. Continue to go up until you arms are parallel to the floor. Exhale as you execute this movement and pause for a second at the top. Lower the dumbbells back down slowly to the starting position as you inhale. Repeat for the recommended amount of repetitions.
+**1. Standing Hamstring and Calf Stretch** (Side view, 3 frames; equipment: whatever equipment the steps describe, drawn simply)
+Frames: a held position: 1) settle in, 2) the hold with a tiny breath in, 3) the hold.
+Steps: Being by looping a belt, band, or rope around one foot. While standing, place that foot forward. Bend your back leg, while keeping the front one straight. Now raise the toes of your front foot off of the ground and lean forward. Using the belt, pull on the top of the foot to increase the stretch in the calf. Hold for 10-20 seconds and repeat with the other foot.
 
-**2. Seated Triceps Press** (Side view, 4 frames; equipment: dumbbells (one if the steps use one arm))
-Frames: 1) start position, 2) halfway, 3) end of the movement (peak), 4) halfway back.
-Steps: Sit down on a bench with back support and grasp a dumbbell with both hands and hold it overhead at arm's length. Tip: a better way is to have somebody hand it to you especially if it is very heavy. The resistance should be resting in the palms of your hands with your thumbs around it. The palm of the hand should be facing inward. This will be your starting position. Keeping your upper arms close to your head (elbows in) and perpendicular to the floor, lower the resistance in a semi-circular motion behind your head until your forearms touch your biceps. Tip: The upper arms should remain stationary and only the forearms should move. Breathe in as you perform this step. Go back to the starting position by using the triceps to raise the dumbbell. Breathe out as you perform this step. Repeat for the recommended amount of repetitions.
+**2. Anterior Tibialis-SMR** (Side view, 3 frames; equipment: whatever equipment the steps describe, drawn simply)
+Frames: a held position: 1) settle in, 2) the hold with a tiny breath in, 3) the hold.
+Steps: Begin seated on the ground with your legs bent and your feet on the floor. Using a Muscle Roller or a rolling pin, apply pressure to the muscles on the outside of your shins. Work from just below the knee to above the ankle, pausing at points of tension for 10-30 seconds. Repeat on the other leg.
 
-**3. Side Lateral Raise** (Front view, 4 frames; equipment: dumbbells (one if the steps use one arm))
-Frames: 1) start position, 2) halfway, 3) end of the movement (peak), 4) halfway back.
-Steps: Pick a couple of dumbbells and stand with a straight torso and the dumbbells by your side at arms length with the palms of the hand facing you. This will be your starting position. While maintaining the torso in a stationary position (no swinging), lift the dumbbells to your side with a slight bend on the elbow and the hands slightly tilted forward as if pouring water in a glass. Continue to go up until you arms are parallel to the floor. Exhale as you execute this movement and pause for a second at the top. Lower the dumbbells back down slowly to the starting position as you inhale. Repeat for the recommended amount of repetitions.
+**3. Foot-SMR** (Side view, 3 frames; equipment: whatever equipment the steps describe, drawn simply)
+Frames: a held position: 1) settle in, 2) the hold with a tiny breath in, 3) the hold.
+Steps: This exercise stretches the fascia of the muscles in the feet. Start off seated with your shoes removed. Using a foot roller or a similar object, such as a small section of pvc pipe, place your foot against the roller across the arch of your foot. This will be your starting position. Press down firmly, rolling across the arch of your foot. Hold for 10-30 seconds, and then switch feet.
 
-**4. Side Laterals to Front Raise** (Front view, 4 frames; equipment: dumbbells (one if the steps use one arm))
-Frames: 1) start position, 2) halfway, 3) end of the movement (peak), 4) halfway back.
-Steps: In a standing position, hold a pair of dumbbells at your side. This will be your starting position. Keeping your elbows slightly bent, raise the weights directly in front of you to shoulder height, avoiding any swinging or cheating. At the top of the exercise move the weights out in front of you, keeping your arms extended. Lower the weights with a controlled motion. On the next repetition, raise the weights in front of you to shoulder height before moving the weights laterally to your sides. Lower the weights to the starting position.
+**4. IT Band and Glute Stretch** (Side view, 3 frames; equipment: whatever equipment the steps describe, drawn simply)
+Frames: a held position: 1) settle in, 2) the hold with a tiny breath in, 3) the hold.
+Steps: Loop a belt, rope, or band around one of your feet, and swing that leg across your body to the opposite side, keeping the leg extended as you lay on the ground. This will be your starting position. Keeping your foot off of the floor, pull on the belt, using the tension to pull the toes up. Hold for 10-20 seconds, and repeat on the other side.
 
-**5. Single Dumbbell Raise** (Side view, 4 frames; equipment: dumbbells (one if the steps use one arm))
-Frames: 1) start position, 2) halfway, 3) end of the movement (peak), 4) halfway back.
-Steps: With a wide stance, hold a dumbell with both hands, grasping the head of the dumbbell instead of the handle. Your arms should be extended and hanging at the waist. This will be your starting position. Raise the weight until it is above shoulder level, keeping your arms extended. Your torso and hips should remain stationary throughout the movement. Return to the starting position and repeat for the recommended amount of repetitions.
+**5. Intermediate Groin Stretch** (Side view, 3 frames; equipment: whatever equipment the steps describe, drawn simply)
+Frames: a held position: 1) settle in, 2) the hold with a tiny breath in, 3) the hold.
+Steps: Lie on your back with your legs extended. Loop a belt, rope, or band around one of your feet, and swing that leg as far to the side as you can. This will be your starting position. Pull gently on the belt to create tension in your groin and hamstring muscles. Hold for 10-20 seconds, and repeat on the other side.
 
-**6. Spell Caster** (Side view, 4 frames; equipment: dumbbells (one if the steps use one arm))
-Frames: 1) start position, 2) halfway, 3) end of the movement (peak), 4) halfway back.
-Steps: Hold a dumbbell in each hand with a pronated grip. Your feet should be wide with your hips and knees extended. This will be your starting position. Begin the movement by pulling both of the dumbbells to one side next to your hip, rotating your torso. Keeping your arms straight and the dumbbells parallel to the ground, rotate your torso to swing the weights to your opposite side. Continue alternating, rotating from one side to the other until the set is complete.
+**6. Intermediate Hip Flexor and Quad Stretch** (Side view, 3 frames; equipment: whatever equipment the steps describe, drawn simply)
+Frames: a held position: 1) settle in, 2) the hold with a tiny breath in, 3) the hold.
+Steps: Lie face down on the floor, with a rope, belt, or band looped around one foot. Flex the knee and extend the hip of the leg to be stretched, using both hands to pull on the belt. Your knee and your hip should come off of the floor, creating tension in the hip flexors and quadriceps. Hold the stretch for 10-20 seconds, and repeat on the other leg.
 
-**7. Split Squat with Dumbbells** (Side view, 4 frames; equipment: dumbbells (one if the steps use one arm))
-Frames: 1) start position, 2) halfway, 3) end of the movement (peak), 4) halfway back.
-Steps: Position yourself into a staggered stance with the rear foot elevated and front foot forward. Hold a dumbbell in each hand, letting them hang at the sides. This will be your starting position. Begin by descending, flexing your knee and hip to lower your body down. Maintain good posture througout the movement. Keep the front knee in line with the foot as you perform the exercise. At the bottom of the movement, drive through the heel to extend the knee and hip to return to the starting position.
+**7. Neck-SMR** (Side view, 3 frames; equipment: whatever equipment the steps describe, drawn simply)
+Frames: a held position: 1) settle in, 2) the hold with a tiny breath in, 3) the hold.
+Steps: Using a muscle roller or a rolling pin, place the roller behind your head and against your neck. Make sure that you do not place the roller directly against the spine, but turned slightly so that the roller is pressed against the muscles to either side of the spine. This will be your starting position. Starting at the top of your neck, slowly roll down the muscles of your neck, pausing at points of tension for 10-30 seconds.
 
-**8. Standing Alternating Dumbbell Press** (Side view, 4 frames; equipment: dumbbells (one if the steps use one arm))
-Frames: 1) start position, 2) halfway, 3) end of the movement (peak), 4) halfway back.
-Steps: Stand with a dumbbell in each hand. Raise the dumbbells to your shoulders with your palms facing forward and your elbows pointed out. This will be your starting position. Extend one arm to press the dumbbell straight up, keeping your off hand in place. Do not lean or jerk the weight during the movement. After a brief pause, return the weight to the starting position. Repeat for the opposite side, continuing to alternate between arms.
+**8. Peroneals Stretch** (Side view, 3 frames; equipment: whatever equipment the steps describe, drawn simply)
+Frames: a held position: 1) settle in, 2) the hold with a tiny breath in, 3) the hold.
+Steps: In a seated position, loop a belt, rope, or band around one foot. This will be your starting position. With the leg extended and the heel off of the ground, pull on the belt so that the foot is inverted, with the inside of the foot being pulled towards you. Hold for 10-20 seconds, and then switch sides.

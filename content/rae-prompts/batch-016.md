@@ -1,4 +1,4 @@
-# Rae batch 016 of 108
+# Rae batch 016 of 37
 
 Paste everything below the line into the Rae chat, then download all images at once.
 
@@ -12,34 +12,34 @@ Using the approved Rae v1 character bible exactly (same face, black 4C hair, two
 - Equipment is drawn identically in every frame.
 
 
-**1. Inverted Row** (Side view, 4 frames; equipment: none)
-Frames: 1) start position, 2) halfway, 3) end of the movement (peak), 4) halfway back.
-Steps: Position a bar in a rack to about waist height. You can also use a smith machine. Take a wider than shoulder width grip on the bar and position yourself hanging underneath the bar. Your body should be straight with your heels on the ground with your arms fully extended. This will be your starting position. Begin by flexing the elbow, pulling your chest towards the bar. Retract your shoulder blades as you perform the movement. Pause at the top of the motion, and return yourself to the start position. Repeat for the desired number of repetitions.
-
-**2. Knee Across The Body** (Side view, 3 frames; equipment: none)
+**1. Sit Squats** (Side view, 3 frames; equipment: none)
 Frames: a held position: 1) settle in, 2) the hold with a tiny breath in, 3) the hold.
-Steps: Lie down on the floor with your right leg straight. Bend your left leg and lower it across your body, holding the knee down toward the floor with your right hand. (The knee doesn't need to touch the floor if you're tight.) Place your left arm comfortably beside you and turn your head to the left. Imagine you have a weight tied to your tailbone. let your tailbone fall back toward the floor as your chest reaches in the opposite direction to stretch your lower back. Switch sides.
+Steps: Stand with your feet shoulder width apart. This will be your starting position. Begin the movement by flexing your knees and hips, sitting back with your hips. Continue until you have squatted a portion of the way down, but are above parallel, and quickly reverse the motion until you return to the starting position. Repeat for 5-10 repetitions.
 
-**3. Kneeling Arm Drill** (Side view, 4 frames; equipment: none)
-Frames: 1) start position, 2) halfway, 3) end of the movement (peak), 4) halfway back.
-Steps: This drill helps increase arm efficiency during the run. Begin kneeling, left foot in front, right knee down. Apply pressure through the front heel to keep your glutes and hamstrings activated. Begin by blocking the arms in long, pendulum like swings. Close the arm angle, blocking with the arms as you would when jogging, progressing to a run and finally a sprint. As soon as your hands pass the hip, accelerate them forward during the sprinting motion to move them as quickly as possible. Switch knees and repeat.
-
-**4. Kneeling Forearm Stretch** (Side view, 3 frames; equipment: none)
+**2. Spinal Stretch** (Side view, 3 frames; equipment: none)
 Frames: a held position: 1) settle in, 2) the hold with a tiny breath in, 3) the hold.
-Steps: Start by kneeling on a mat with your palms flat and your fingers pointing back toward your knees. Slowly lean back keeping your palms flat on the floor until you feel a stretch in your wrists and forearms. Hold for 20-30 seconds.
+Steps: Sit in a chair so your back is straight and your feet planted on the floor. Interlace your fingers behind your head, elbows out and your chin down. Twist your upper body to one side about 3 times as far as you can. Then lean forward and twist your torso to reach your elbow to the floor on the inside of your knee. Return to upright position and then repeat for your other side.
 
-**5. Kneeling Hip Flexor** (Side view, 3 frames; equipment: none)
+**3. Standing Gastrocnemius Calf Stretch** (Side view, 3 frames; equipment: none)
 Frames: a held position: 1) settle in, 2) the hold with a tiny breath in, 3) the hold.
-Steps: Kneel on a mat and bring your right knee up so the bottom of your foot is on the floor and extend your left leg out behind you so the top of your foot is on the floor. Shift your weight forward until you feel a stretch in your hip. Hold for 15 seconds, then repeat for your other side.
+Steps: Place your right heel on a step with your knee extended and lean forward to grab your right toe with your right hand. Your left knee should be slightly bent and your back should be straight. Support your weight on your left leg and place your left hand on your left thigh. Pull your right toes toward your knee until you feel a stretch in your calf.
 
-**6. Leg-Up Hamstring Stretch** (Side view, 3 frames; equipment: none)
+**4. Standing Hip Flexors** (Side view, 3 frames; equipment: none)
 Frames: a held position: 1) settle in, 2) the hold with a tiny breath in, 3) the hold.
-Steps: Lie flat on your back, bend one knee, and put that foot flat on the floor to stabilize your spine. Extend the other leg in the air. If you're tight, you wont be able to straighten it. That's okay. Extend the knee so that the sole of the lifted foot faces the ceiling (or as close as you can get it). Slowly straighten the legs as much as possible and then pull the leg toward your nose. Switch sides.
+Steps: Stand up straight with the spine vertical, the left foot slightly in front of the right. Bend both knees and lift the back heel off the floor as you press the right hip forward. You can't get a thorough, deep stretch in this position, however, because it's hard to relax the hip flexor and stand on it at the same time. Switch sides.
 
-**7. Linear 3-Part Start Technique** (Side view, 4 frames; equipment: none)
-Frames: 1) start position, 2) halfway, 3) end of the movement (peak), 4) halfway back.
-Steps: This drill helps you accelerate as quickly as possible into a sprint from a dead stop. It helps to use a line to start from. Begin with two feet on the line. Place your left foot with the toe next to your right ankle. Place your right foot 4-6 inches behind the left. Place your right hand onto the line, and thing bring your nose close to your left knee. Squat down as you lean foward, your head being lower than your hips and your weight loaded onto the left leg. This will be your starting position. Take your left hand up so that it is parallel to the ground, pointing behind you, and explode out when ready.
+**5. Standing Lateral Stretch** (Front view, 3 frames; equipment: none)
+Frames: a held position: 1) settle in, 2) the hold with a tiny breath in, 3) the hold.
+Steps: Take a slightly wider than hip distance stance with your knees slightly bent. Place your right hand on your right hip to support the spine. Raise your left arm in a vertical line and place your left hand behind your head. Keep it there as you incline your torso to the right. Keep your weight evenly distributed between both legs (don't lean into your left hip). Switch sides.
 
-**8. Linear Acceleration Wall Drill** (Side view, 4 frames; equipment: none)
-Frames: 1) start position, 2) halfway, 3) end of the movement (peak), 4) halfway back.
-Steps: Lean at around 45 degrees against a wall. Your feet should be together, glutes contracted. Begin by lifting your right knee quickly, pausing, and then driving it straight down into the ground. Switch legs, raising the opposite knee, and then attacking the ground straight down. Repeat once more with your right leg, and as soon as the right foot strikes the ground hammer them out rapidly, alternating left and right as fast as you can.
+**6. Standing Pelvic Tilt** (Side view, 3 frames; equipment: none)
+Frames: a held position: 1) settle in, 2) the hold with a tiny breath in, 3) the hold.
+Steps: Start off with your feet hip-distance apart. Bend your knees slightly to keep them soft and springy. You may want to move your pelvis forward and backward and back few times before holding the tailbone forward in this stretch.
+
+**7. Standing Soleus And Achilles Stretch** (Side view, 3 frames; equipment: none)
+Frames: a held position: 1) settle in, 2) the hold with a tiny breath in, 3) the hold.
+Steps: Stand with your feet hip-distance apart, one foot slightly in front of the other. Bend both knees, keeping your back heel on the floor. Switch sides.
+
+**8. Standing Toe Touches** (Side view, 3 frames; equipment: none)
+Frames: a held position: 1) settle in, 2) the hold with a tiny breath in, 3) the hold.
+Steps: Stand with some space in front and behind you. Bend at the waist, keeping your legs straight, until you can relax and let your upper body hang down in front of you. Let your arms and hands hang down naturally. Hold for 10 to 20 seconds.

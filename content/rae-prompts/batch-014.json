@@ -1,65 +1,65 @@
 [
   {
     "n": 1,
-    "exerciseId": "lib.Arm_Circles",
-    "slug": "arm-circles",
-    "name": "Arm Circles",
+    "exerciseId": "lib.One_Half_Locust",
+    "slug": "one-half-locust",
+    "name": "One Half Locust",
     "frames": 3,
-    "view": "Front view"
+    "view": "Side view"
   },
   {
     "n": 2,
-    "exerciseId": "lib.Calf_Stretch_Elbows_Against_Wall",
-    "slug": "calf-stretch-elbows-against-wall",
-    "name": "Calf Stretch Elbows Against Wall",
+    "exerciseId": "lib.One_Knee_To_Chest",
+    "slug": "one-knee-to-chest",
+    "name": "One Knee To Chest",
     "frames": 3,
     "view": "Side view"
   },
   {
     "n": 3,
-    "exerciseId": "lib.Calf_Stretch_Hands_Against_Wall",
-    "slug": "calf-stretch-hands-against-wall",
-    "name": "Calf Stretch Hands Against Wall",
+    "exerciseId": "lib.Overhead_Stretch",
+    "slug": "overhead-stretch",
+    "name": "Overhead Stretch",
     "frames": 3,
     "view": "Side view"
   },
   {
     "n": 4,
-    "exerciseId": "lib.Carioca_Quick_Step",
-    "slug": "carioca-quick-step",
-    "name": "Carioca Quick Step",
-    "frames": 4,
+    "exerciseId": "lib.Prone_Manual_Hamstring",
+    "slug": "prone-manual-hamstring",
+    "name": "Prone Manual Hamstring",
+    "frames": 3,
     "view": "Side view"
   },
   {
     "n": 5,
-    "exerciseId": "lib.Cat_Stretch",
-    "slug": "cat-stretch",
-    "name": "Cat Stretch",
+    "exerciseId": "lib.Runners_Stretch",
+    "slug": "runners-stretch",
+    "name": "Runner's Stretch",
     "frames": 3,
     "view": "Side view"
   },
   {
     "n": 6,
-    "exerciseId": "lib.Chair_Lower_Back_Stretch",
-    "slug": "chair-lower-back-stretch",
-    "name": "Chair Lower Back Stretch",
-    "frames": 3,
+    "exerciseId": "lib.Scapular_Pull-Up",
+    "slug": "scapular-pull-up",
+    "name": "Scapular Pull-Up",
+    "frames": 4,
     "view": "Side view"
   },
   {
     "n": 7,
-    "exerciseId": "lib.Childs_Pose",
-    "slug": "childs-pose",
-    "name": "Child's Pose",
+    "exerciseId": "lib.Seated_Calf_Stretch",
+    "slug": "seated-calf-stretch",
+    "name": "Seated Calf Stretch",
     "frames": 3,
     "view": "Side view"
   },
   {
     "n": 8,
-    "exerciseId": "lib.Chin_To_Chest_Stretch",
-    "slug": "chin-to-chest-stretch",
-    "name": "Chin To Chest Stretch",
+    "exerciseId": "lib.Seated_Floor_Hamstring_Stretch",
+    "slug": "seated-floor-hamstring-stretch",
+    "name": "Seated Floor Hamstring Stretch",
     "frames": 3,
     "view": "Side view"
   }

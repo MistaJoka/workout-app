@@ -1,65 +1,65 @@
 [
   {
     "n": 1,
-    "exerciseId": "lib.Lying_Prone_Quadriceps",
-    "slug": "lying-prone-quadriceps",
-    "name": "Lying Prone Quadriceps",
+    "exerciseId": "lib.Knee_Across_The_Body",
+    "slug": "knee-across-the-body",
+    "name": "Knee Across The Body",
     "frames": 3,
     "view": "Side view"
   },
   {
     "n": 2,
-    "exerciseId": "lib.Overhead_Triceps",
-    "slug": "overhead-triceps",
-    "name": "Overhead Triceps",
+    "exerciseId": "lib.Kneeling_Forearm_Stretch",
+    "slug": "kneeling-forearm-stretch",
+    "name": "Kneeling Forearm Stretch",
     "frames": 3,
     "view": "Side view"
   },
   {
     "n": 3,
-    "exerciseId": "lib.Seated_Biceps",
-    "slug": "seated-biceps",
-    "name": "Seated Biceps",
+    "exerciseId": "lib.Kneeling_Hip_Flexor",
+    "slug": "kneeling-hip-flexor",
+    "name": "Kneeling Hip Flexor",
     "frames": 3,
     "view": "Side view"
   },
   {
     "n": 4,
-    "exerciseId": "lib.Seated_Front_Deltoid",
-    "slug": "seated-front-deltoid",
-    "name": "Seated Front Deltoid",
+    "exerciseId": "lib.Leg-Up_Hamstring_Stretch",
+    "slug": "leg-up-hamstring-stretch",
+    "name": "Leg-Up Hamstring Stretch",
     "frames": 3,
     "view": "Side view"
   },
   {
     "n": 5,
-    "exerciseId": "lib.Seated_Glute",
-    "slug": "seated-glute",
-    "name": "Seated Glute",
+    "exerciseId": "lib.Looking_At_Ceiling",
+    "slug": "looking-at-ceiling",
+    "name": "Looking At Ceiling",
     "frames": 3,
     "view": "Side view"
   },
   {
     "n": 6,
-    "exerciseId": "lib.Alternate_Leg_Diagonal_Bound",
-    "slug": "alternate-leg-diagonal-bound",
-    "name": "Alternate Leg Diagonal Bound",
-    "frames": 4,
+    "exerciseId": "lib.Middle_Back_Stretch",
+    "slug": "middle-back-stretch",
+    "name": "Middle Back Stretch",
+    "frames": 3,
     "view": "Side view"
   },
   {
     "n": 7,
-    "exerciseId": "lib.Ankle_Circles",
-    "slug": "ankle-circles",
-    "name": "Ankle Circles",
+    "exerciseId": "lib.On_Your_Side_Quad_Stretch",
+    "slug": "on-your-side-quad-stretch",
+    "name": "On Your Side Quad Stretch",
     "frames": 3,
     "view": "Side view"
   },
   {
     "n": 8,
-    "exerciseId": "lib.Ankle_On_The_Knee",
-    "slug": "ankle-on-the-knee",
-    "name": "Ankle On The Knee",
+    "exerciseId": "lib.One_Arm_Against_Wall",
+    "slug": "one-arm-against-wall",
+    "name": "One Arm Against Wall",
     "frames": 3,
     "view": "Side view"
   }

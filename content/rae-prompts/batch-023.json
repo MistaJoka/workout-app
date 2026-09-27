@@ -1,66 +1,66 @@
 [
   {
     "n": 1,
-    "exerciseId": "lib.Back_Flyes_-_With_Bands",
-    "slug": "back-flyes-with-bands",
-    "name": "Back Flyes - With Bands",
-    "frames": 4,
-    "view": "Front view"
+    "exerciseId": "lib.Hug_A_Ball",
+    "slug": "hug-a-ball",
+    "name": "Hug A Ball",
+    "frames": 3,
+    "view": "Side view"
   },
   {
     "n": 2,
-    "exerciseId": "lib.Band_Good_Morning",
-    "slug": "band-good-morning",
-    "name": "Band Good Morning",
+    "exerciseId": "lib.Physioball_Hip_Bridge",
+    "slug": "physioball-hip-bridge",
+    "name": "Physioball Hip Bridge",
     "frames": 4,
     "view": "Side view"
   },
   {
     "n": 3,
-    "exerciseId": "lib.Band_Good_Morning_Pull_Through",
-    "slug": "band-good-morning-pull-through",
-    "name": "Band Good Morning (Pull Through)",
-    "frames": 4,
+    "exerciseId": "lib.Pyramid",
+    "slug": "pyramid",
+    "name": "Pyramid",
+    "frames": 3,
     "view": "Side view"
   },
   {
     "n": 4,
-    "exerciseId": "lib.Band_Hip_Adductions",
-    "slug": "band-hip-adductions",
-    "name": "Band Hip Adductions",
-    "frames": 4,
+    "exerciseId": "lib.Torso_Rotation",
+    "slug": "torso-rotation",
+    "name": "Torso Rotation",
+    "frames": 3,
     "view": "Side view"
   },
   {
     "n": 5,
-    "exerciseId": "lib.Band_Pull_Apart",
-    "slug": "band-pull-apart",
-    "name": "Band Pull Apart",
-    "frames": 4,
+    "exerciseId": "lib.Downward_Facing_Balance",
+    "slug": "downward-facing-balance",
+    "name": "Downward Facing Balance",
+    "frames": 3,
     "view": "Side view"
   },
   {
     "n": 6,
-    "exerciseId": "lib.Band_Skull_Crusher",
-    "slug": "band-skull-crusher",
-    "name": "Band Skull Crusher",
+    "exerciseId": "lib.Push-Ups_With_Feet_On_An_Exercise_Ball",
+    "slug": "push-ups-with-feet-on-an-exercise-ball",
+    "name": "Push-Ups With Feet On An Exercise Ball",
     "frames": 4,
     "view": "Side view"
   },
   {
     "n": 7,
-    "exerciseId": "lib.Bench_Press_-_With_Bands",
-    "slug": "bench-press-with-bands",
-    "name": "Bench Press - With Bands",
+    "exerciseId": "lib.Weighted_Ball_Hyperextension",
+    "slug": "weighted-ball-hyperextension",
+    "name": "Weighted Ball Hyperextension",
     "frames": 4,
     "view": "Side view"
   },
   {
     "n": 8,
-    "exerciseId": "lib.Calf_Raises_-_With_Bands",
-    "slug": "calf-raises-with-bands",
-    "name": "Calf Raises - With Bands",
+    "exerciseId": "lib.Weighted_Ball_Side_Bend",
+    "slug": "weighted-ball-side-bend",
+    "name": "Weighted Ball Side Bend",
     "frames": 4,
-    "view": "Side view"
+    "view": "Front view"
   }
 ]

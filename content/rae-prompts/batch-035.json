@@ -1,66 +1,66 @@
 [
   {
     "n": 1,
-    "exerciseId": "lib.Preacher_Hammer_Dumbbell_Curl",
-    "slug": "preacher-hammer-dumbbell-curl",
-    "name": "Preacher Hammer Dumbbell Curl",
-    "frames": 4,
+    "exerciseId": "lib.Chair_Leg_Extended_Stretch",
+    "slug": "chair-leg-extended-stretch",
+    "name": "Chair Leg Extended Stretch",
+    "frames": 3,
     "view": "Side view"
   },
   {
     "n": 2,
-    "exerciseId": "lib.Reverse_Flyes",
-    "slug": "reverse-flyes",
-    "name": "Reverse Flyes",
-    "frames": 4,
-    "view": "Front view"
+    "exerciseId": "lib.Chair_Upper_Body_Stretch",
+    "slug": "chair-upper-body-stretch",
+    "name": "Chair Upper Body Stretch",
+    "frames": 3,
+    "view": "Side view"
   },
   {
     "n": 3,
-    "exerciseId": "lib.Seated_Bent-Over_One-Arm_Dumbbell_Triceps_Extension",
-    "slug": "seated-bent-over-one-arm-dumbbell-triceps-extension",
-    "name": "Seated Bent-Over One-Arm Dumbbell Triceps Extension",
-    "frames": 4,
+    "exerciseId": "lib.Chest_And_Front_Of_Shoulder_Stretch",
+    "slug": "chest-and-front-of-shoulder-stretch",
+    "name": "Chest And Front Of Shoulder Stretch",
+    "frames": 3,
     "view": "Side view"
   },
   {
     "n": 4,
-    "exerciseId": "lib.Seated_Dumbbell_Curl",
-    "slug": "seated-dumbbell-curl",
-    "name": "Seated Dumbbell Curl",
-    "frames": 4,
+    "exerciseId": "lib.On-Your-Back_Quad_Stretch",
+    "slug": "on-your-back-quad-stretch",
+    "name": "On-Your-Back Quad Stretch",
+    "frames": 3,
     "view": "Side view"
   },
   {
     "n": 5,
-    "exerciseId": "lib.Seated_Dumbbell_Inner_Biceps_Curl",
-    "slug": "seated-dumbbell-inner-biceps-curl",
-    "name": "Seated Dumbbell Inner Biceps Curl",
-    "frames": 4,
+    "exerciseId": "lib.One_Handed_Hang",
+    "slug": "one-handed-hang",
+    "name": "One Handed Hang",
+    "frames": 3,
     "view": "Side view"
   },
   {
     "n": 6,
-    "exerciseId": "lib.Seated_Dumbbell_Palms-Down_Wrist_Curl",
-    "slug": "seated-dumbbell-palms-down-wrist-curl",
-    "name": "Seated Dumbbell Palms-Down Wrist Curl",
-    "frames": 4,
+    "exerciseId": "lib.Round_The_World_Shoulder_Stretch",
+    "slug": "round-the-world-shoulder-stretch",
+    "name": "Round The World Shoulder Stretch",
+    "frames": 3,
     "view": "Side view"
   },
   {
     "n": 7,
-    "exerciseId": "lib.Seated_Dumbbell_Palms-Up_Wrist_Curl",
-    "slug": "seated-dumbbell-palms-up-wrist-curl",
-    "name": "Seated Dumbbell Palms-Up Wrist Curl",
-    "frames": 4,
+    "exerciseId": "lib.Standing_Biceps_Stretch",
+    "slug": "standing-biceps-stretch",
+    "name": "Standing Biceps Stretch",
+    "frames": 3,
     "view": "Side view"
   },
   {
     "n": 8,
-    "exerciseId": "lib.Seated_One-Arm_Dumbbell_Palms-Up_Wrist_Curl",
-    "slug": "seated-one-arm-dumbbell-palms-up-wrist-curl",
-    "name": "Seated One-Arm Dumbbell Palms-Up Wrist Curl",
-    "frames": 4,
+    "exerciseId": "lib.Standing_Elevated_Quad_Stretch",
+    "slug": "standing-elevated-quad-stretch",
+    "name": "Standing Elevated Quad Stretch",
+    "frames": 3,
     "view": "Side view"
   }
 ]

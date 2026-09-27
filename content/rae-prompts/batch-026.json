@@ -1,66 +1,66 @@
 [
   {
     "n": 1,
-    "exerciseId": "lib.Brachialis-SMR",
-    "slug": "brachialis-smr",
-    "name": "Brachialis-SMR",
-    "frames": 3,
-    "view": "Side view"
+    "exerciseId": "lib.Dumbbell_Flyes",
+    "slug": "dumbbell-flyes",
+    "name": "Dumbbell Flyes",
+    "frames": 4,
+    "view": "Front view"
   },
   {
     "n": 2,
-    "exerciseId": "lib.Calves-SMR",
-    "slug": "calves-smr",
-    "name": "Calves-SMR",
-    "frames": 3,
+    "exerciseId": "lib.Dumbbell_Incline_Row",
+    "slug": "dumbbell-incline-row",
+    "name": "Dumbbell Incline Row",
+    "frames": 4,
     "view": "Side view"
   },
   {
     "n": 3,
-    "exerciseId": "lib.Iliotibial_Tract-SMR",
-    "slug": "iliotibial-tract-smr",
-    "name": "Iliotibial Tract-SMR",
-    "frames": 3,
+    "exerciseId": "lib.Dumbbell_Incline_Shoulder_Raise",
+    "slug": "dumbbell-incline-shoulder-raise",
+    "name": "Dumbbell Incline Shoulder Raise",
+    "frames": 4,
     "view": "Side view"
   },
   {
     "n": 4,
-    "exerciseId": "lib.Peroneals-SMR",
-    "slug": "peroneals-smr",
-    "name": "Peroneals-SMR",
-    "frames": 3,
+    "exerciseId": "lib.Dumbbell_Lunges",
+    "slug": "dumbbell-lunges",
+    "name": "Dumbbell Lunges",
+    "frames": 4,
     "view": "Side view"
   },
   {
     "n": 5,
-    "exerciseId": "lib.Piriformis-SMR",
-    "slug": "piriformis-smr",
-    "name": "Piriformis-SMR",
-    "frames": 3,
+    "exerciseId": "lib.Dumbbell_Raise",
+    "slug": "dumbbell-raise",
+    "name": "Dumbbell Raise",
+    "frames": 4,
     "view": "Side view"
   },
   {
     "n": 6,
-    "exerciseId": "lib.Quadriceps-SMR",
-    "slug": "quadriceps-smr",
-    "name": "Quadriceps-SMR",
-    "frames": 3,
+    "exerciseId": "lib.Dumbbell_Scaption",
+    "slug": "dumbbell-scaption",
+    "name": "Dumbbell Scaption",
+    "frames": 4,
     "view": "Side view"
   },
   {
     "n": 7,
-    "exerciseId": "lib.Rhomboids-SMR",
-    "slug": "rhomboids-smr",
-    "name": "Rhomboids-SMR",
-    "frames": 3,
+    "exerciseId": "lib.Dumbbell_Seated_One-Leg_Calf_Raise",
+    "slug": "dumbbell-seated-one-leg-calf-raise",
+    "name": "Dumbbell Seated One-Leg Calf Raise",
+    "frames": 4,
     "view": "Side view"
   },
   {
     "n": 8,
-    "exerciseId": "lib.Ball_Leg_Curl",
-    "slug": "ball-leg-curl",
-    "name": "Ball Leg Curl",
+    "exerciseId": "lib.Dumbbell_Shrug",
+    "slug": "dumbbell-shrug",
+    "name": "Dumbbell Shrug",
     "frames": 4,
-    "view": "Side view"
+    "view": "Front view"
   }
 ]

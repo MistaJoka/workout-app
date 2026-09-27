@@ -1,66 +1,66 @@
 [
   {
     "n": 1,
-    "exerciseId": "lib.Scissors_Jump",
-    "slug": "scissors-jump",
-    "name": "Scissors Jump",
+    "exerciseId": "lib.Step-up_with_Knee_Raise",
+    "slug": "step-up-with-knee-raise",
+    "name": "Step-up with Knee Raise",
     "frames": 4,
     "view": "Side view"
   },
   {
     "n": 2,
-    "exerciseId": "lib.Seated_Flat_Bench_Leg_Pull-In",
-    "slug": "seated-flat-bench-leg-pull-in",
-    "name": "Seated Flat Bench Leg Pull-In",
-    "frames": 4,
-    "view": "Side view"
-  },
-  {
-    "n": 3,
-    "exerciseId": "lib.Seated_Leg_Tucks",
-    "slug": "seated-leg-tucks",
-    "name": "Seated Leg Tucks",
-    "frames": 4,
-    "view": "Side view"
-  },
-  {
-    "n": 4,
-    "exerciseId": "lib.Side_Leg_Raises",
-    "slug": "side-leg-raises",
-    "name": "Side Leg Raises",
+    "exerciseId": "lib.Stomach_Vacuum",
+    "slug": "stomach-vacuum",
+    "name": "Stomach Vacuum",
     "frames": 3,
     "view": "Side view"
   },
   {
+    "n": 3,
+    "exerciseId": "lib.Toe_Touchers",
+    "slug": "toe-touchers",
+    "name": "Toe Touchers",
+    "frames": 3,
+    "view": "Side view"
+  },
+  {
+    "n": 4,
+    "exerciseId": "lib.Tuck_Crunch",
+    "slug": "tuck-crunch",
+    "name": "Tuck Crunch",
+    "frames": 4,
+    "view": "Side view"
+  },
+  {
     "n": 5,
-    "exerciseId": "lib.Single_Leg_Butt_Kick",
-    "slug": "single-leg-butt-kick",
-    "name": "Single Leg Butt Kick",
+    "exerciseId": "lib.V-Bar_Pullup",
+    "slug": "v-bar-pullup",
+    "name": "V-Bar Pullup",
     "frames": 4,
     "view": "Side view"
   },
   {
     "n": 6,
-    "exerciseId": "lib.Sit-Up",
-    "slug": "sit-up",
-    "name": "Sit-Up",
+    "exerciseId": "lib.Wind_Sprints",
+    "slug": "wind-sprints",
+    "name": "Wind Sprints",
     "frames": 4,
     "view": "Side view"
   },
   {
     "n": 7,
-    "exerciseId": "lib.Spider_Crawl",
-    "slug": "spider-crawl",
-    "name": "Spider Crawl",
-    "frames": 4,
+    "exerciseId": "lib.Wrist_Circles",
+    "slug": "wrist-circles",
+    "name": "Wrist Circles",
+    "frames": 3,
     "view": "Side view"
   },
   {
     "n": 8,
-    "exerciseId": "lib.Split_Jump",
-    "slug": "split-jump",
-    "name": "Split Jump",
-    "frames": 4,
+    "exerciseId": "lib.All_Fours_Quad_Stretch",
+    "slug": "all-fours-quad-stretch",
+    "name": "All Fours Quad Stretch",
+    "frames": 3,
     "view": "Side view"
   }
 ]

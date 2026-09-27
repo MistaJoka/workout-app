@@ -1,66 +1,66 @@
 [
   {
     "n": 1,
-    "exerciseId": "lib.Russian_Twist",
-    "slug": "russian-twist",
-    "name": "Russian Twist",
+    "exerciseId": "lib.Decline_Push-Up",
+    "slug": "decline-push-up",
+    "name": "Decline Push-Up",
     "frames": 4,
     "view": "Side view"
   },
   {
     "n": 2,
-    "exerciseId": "lib.Single-Arm_Push-Up",
-    "slug": "single-arm-push-up",
-    "name": "Single-Arm Push-Up",
-    "frames": 4,
+    "exerciseId": "lib.Dynamic_Back_Stretch",
+    "slug": "dynamic-back-stretch",
+    "name": "Dynamic Back Stretch",
+    "frames": 3,
     "view": "Side view"
   },
   {
     "n": 3,
-    "exerciseId": "lib.Wide-Grip_Rear_Pull-Up",
-    "slug": "wide-grip-rear-pull-up",
-    "name": "Wide-Grip Rear Pull-Up",
-    "frames": 4,
+    "exerciseId": "lib.Dynamic_Chest_Stretch",
+    "slug": "dynamic-chest-stretch",
+    "name": "Dynamic Chest Stretch",
+    "frames": 3,
     "view": "Side view"
   },
   {
     "n": 4,
-    "exerciseId": "lib.Handstand_Push-Ups",
-    "slug": "handstand-push-ups",
-    "name": "Handstand Push-Ups",
-    "frames": 4,
+    "exerciseId": "lib.Elbow_Circles",
+    "slug": "elbow-circles",
+    "name": "Elbow Circles",
+    "frames": 3,
     "view": "Side view"
   },
   {
     "n": 5,
-    "exerciseId": "lib.Hanging_Leg_Raise",
-    "slug": "hanging-leg-raise",
-    "name": "Hanging Leg Raise",
-    "frames": 4,
+    "exerciseId": "lib.Elbows_Back",
+    "slug": "elbows-back",
+    "name": "Elbows Back",
+    "frames": 3,
     "view": "Side view"
   },
   {
     "n": 6,
-    "exerciseId": "lib.Hanging_Pike",
-    "slug": "hanging-pike",
-    "name": "Hanging Pike",
-    "frames": 4,
+    "exerciseId": "lib.Hamstring_Stretch",
+    "slug": "hamstring-stretch",
+    "name": "Hamstring Stretch",
+    "frames": 3,
     "view": "Side view"
   },
   {
     "n": 7,
-    "exerciseId": "lib.Lying_Crossover",
-    "slug": "lying-crossover",
-    "name": "Lying Crossover",
+    "exerciseId": "lib.Hug_Knees_To_Chest",
+    "slug": "hug-knees-to-chest",
+    "name": "Hug Knees To Chest",
     "frames": 3,
     "view": "Side view"
   },
   {
     "n": 8,
-    "exerciseId": "lib.Lying_Glute",
-    "slug": "lying-glute",
-    "name": "Lying Glute",
-    "frames": 3,
+    "exerciseId": "lib.Inverted_Row",
+    "slug": "inverted-row",
+    "name": "Inverted Row",
+    "frames": 4,
     "view": "Side view"
   }
 ]

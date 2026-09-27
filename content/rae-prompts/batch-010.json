@@ -1,66 +1,66 @@
 [
   {
     "n": 1,
-    "exerciseId": "lib.V-Bar_Pullup",
-    "slug": "v-bar-pullup",
-    "name": "V-Bar Pullup",
+    "exerciseId": "lib.Hyperextensions_With_No_Hyperextension_Bench",
+    "slug": "hyperextensions-with-no-hyperextension-bench",
+    "name": "Hyperextensions With No Hyperextension Bench",
     "frames": 4,
     "view": "Side view"
   },
   {
     "n": 2,
-    "exerciseId": "lib.Wind_Sprints",
-    "slug": "wind-sprints",
-    "name": "Wind Sprints",
+    "exerciseId": "lib.Natural_Glute_Ham_Raise",
+    "slug": "natural-glute-ham-raise",
+    "name": "Natural Glute Ham Raise",
     "frames": 4,
     "view": "Side view"
   },
   {
     "n": 3,
-    "exerciseId": "lib.Wrist_Circles",
-    "slug": "wrist-circles",
-    "name": "Wrist Circles",
-    "frames": 3,
+    "exerciseId": "lib.Push-Ups_-_Close_Triceps_Position",
+    "slug": "push-ups-close-triceps-position",
+    "name": "Push-Ups - Close Triceps Position",
+    "frames": 4,
     "view": "Side view"
   },
   {
     "n": 4,
-    "exerciseId": "lib.All_Fours_Quad_Stretch",
-    "slug": "all-fours-quad-stretch",
-    "name": "All Fours Quad Stretch",
-    "frames": 3,
+    "exerciseId": "lib.Russian_Twist",
+    "slug": "russian-twist",
+    "name": "Russian Twist",
+    "frames": 4,
     "view": "Side view"
   },
   {
     "n": 5,
-    "exerciseId": "lib.Bench_Jump",
-    "slug": "bench-jump",
-    "name": "Bench Jump",
+    "exerciseId": "lib.Single-Arm_Push-Up",
+    "slug": "single-arm-push-up",
+    "name": "Single-Arm Push-Up",
     "frames": 4,
     "view": "Side view"
   },
   {
     "n": 6,
-    "exerciseId": "lib.Body-Up",
-    "slug": "body-up",
-    "name": "Body-Up",
+    "exerciseId": "lib.Wide-Grip_Rear_Pull-Up",
+    "slug": "wide-grip-rear-pull-up",
+    "name": "Wide-Grip Rear Pull-Up",
     "frames": 4,
     "view": "Side view"
   },
   {
     "n": 7,
-    "exerciseId": "lib.Clock_Push-Up",
-    "slug": "clock-push-up",
-    "name": "Clock Push-Up",
-    "frames": 4,
+    "exerciseId": "lib.Ankle_Circles",
+    "slug": "ankle-circles",
+    "name": "Ankle Circles",
+    "frames": 3,
     "view": "Side view"
   },
   {
     "n": 8,
-    "exerciseId": "lib.Close-Grip_Push-Up_off_of_a_Dumbbell",
-    "slug": "close-grip-push-up-off-of-a-dumbbell",
-    "name": "Close-Grip Push-Up off of a Dumbbell",
-    "frames": 4,
+    "exerciseId": "lib.Ankle_On_The_Knee",
+    "slug": "ankle-on-the-knee",
+    "name": "Ankle On The Knee",
+    "frames": 3,
     "view": "Side view"
   }
 ]
