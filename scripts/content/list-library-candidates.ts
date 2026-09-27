@@ -7,31 +7,33 @@
 // Usage: npm run library:review
 import { writeFileSync } from 'node:fs'
 import { buildLibraryCandidates, SNAPSHOT_URL } from './buildLibraryCandidates'
-import { filterForReview, renderChecklistMarkdown } from './curationChecklist'
+import { readFileSync } from 'node:fs'
+import { isHomeFriendly, renderChecklistMarkdown } from './curationChecklist'
 import { FREE_EXERCISE_DB_SOURCE } from './fixtures/freeExerciseDbSample'
 
 const OUTPUT_PATH = 'content/staging/library-curation-checklist.md'
 
-const level = 'beginner' as const
-const excludedCategories = new Set(['plyometrics', 'powerlifting', 'olympic weightlifting', 'strongman'])
-const excludedEquipment = new Set(['barbell', 'e-z curl bar'])
-// Isolation (single-joint accessory) work is conventionally added later in a
-// beginner program, after compound movements — a program-structure default,
-// not a claim about any individual's specific condition.
-const excludedMechanics = new Set(['isolation'])
+// Every upstream exercise is listed, so the owner can check anything by
+// hand; the owner's home-friendly rule (isHomeFriendly) decides which boxes
+// start checked. Exercises Rae already demonstrates always stay.
+const RAE_LOOPS_PATH = 'src/presentation/components/raeLoops.generated.json'
 
 async function main() {
   const candidates = await buildLibraryCandidates()
-  const forReview = filterForReview(candidates, { level, excludedCategories, excludedEquipment, excludedMechanics })
+  const loops = JSON.parse(readFileSync(RAE_LOOPS_PATH, 'utf8')) as { exerciseIds: string[] }[]
+  const raeDemoIds = new Set(loops.flatMap((loop) => loop.exerciseIds))
+  const preChecked = (e: (typeof candidates)[number]) => isHomeFriendly(e, raeDemoIds)
 
-  const markdown = renderChecklistMarkdown(forReview, {
+  const markdown = renderChecklistMarkdown(candidates, {
     totalCount: candidates.length,
     sourceRevision: FREE_EXERCISE_DB_SOURCE.sourceRevision,
-    filterDescription: `level=${level}, category not in {${[...excludedCategories].join(', ')}}, equipment not in {${[...excludedEquipment].join(', ')}}, mechanic not in {${[...excludedMechanics].join(', ')}}`,
+    filterDescription:
+      "none (all listed). Boxes start checked by the owner's home-friendly rule: bodyweight/no equipment, bands, foam roller, exercise ball and chair/wall/floor stretches below expert; light dumbbell/kettlebell/medicine ball at beginner only; no barbell, EZ bar, cable, machine, heavy-lifting categories or jump training; anything Rae already demonstrates stays",
+    preChecked,
   })
 
   writeFileSync(OUTPUT_PATH, markdown)
-  console.log(`Wrote ${forReview.length} of ${candidates.length} candidates -> ${OUTPUT_PATH}`)
+  console.log(`Wrote ${candidates.length} candidates (${candidates.filter(preChecked).length} pre-checked) -> ${OUTPUT_PATH}`)
   console.log(`Source: ${SNAPSHOT_URL}`)
 }
 
