@@ -9,8 +9,10 @@ test.describe('golden path', () => {
     await page.getByRole('button', { name: 'Got it' }).click()
     await expect(page.getByText('Welcome')).toBeHidden()
 
-    // Check-in and the workout preview are one screen, with one Start.
-    await page.getByRole('link', { name: /Full-Body A/ }).click()
+    // Today leads with one workout under Rae; check-in and the preview are
+    // one screen, with one Start.
+    await expect(page.locator('.today-mission')).toContainText('Full-Body A')
+    await page.getByRole('link', { name: 'Start workout' }).click()
     await expect(page.getByText('How are you feeling?')).toBeVisible()
     await expect(page.getByText('Bodyweight Squat')).toBeVisible()
     await page.getByRole('radio', { name: '4' }).first().click()
@@ -32,8 +34,10 @@ test.describe('golden path', () => {
     await expect(page.getByText('10 of 10 sets completed')).toBeVisible()
     await page.getByRole('link', { name: 'Back to Today' }).click()
 
-    // Rotation moved on, and Progress recorded it.
-    await expect(page.getByRole('link', { name: /Full-Body B/ })).toContainText('Up next')
+    // Today says it's done and a flower bloomed; Progress recorded it.
+    await expect(page.locator('.today-mission')).toContainText('Done for today')
+    await expect(page.locator('.today-mission')).toContainText('Full-Body A, 10 sets')
+    await expect(page.getByText('1 workout this week')).toBeVisible()
     await page.getByRole('link', { name: 'Progress' }).click()
     await expect(page.getByText('workout', { exact: true })).toBeVisible()
     await expect(page.getByText('10', { exact: true }).first()).toBeVisible()
@@ -68,7 +72,7 @@ test.describe('golden path', () => {
 test('a double tap on Skip rest does not also complete the next set', async ({ page }) => {
   await page.goto('/')
   await dismissWelcome(page)
-  await page.getByRole('link', { name: /Full-Body A/ }).click()
+  await page.getByRole('link', { name: 'Start workout' }).click()
   await page.getByRole('button', { name: 'Start workout' }).click()
   await page.getByRole('button', { name: 'Complete Set' }).click()
   await page.getByRole('button', { name: 'Yes', exact: true }).click()
@@ -116,7 +120,7 @@ test.describe('library and routines', () => {
     await expect(page.getByText('4 sets × 10 reps')).toBeVisible()
 
     await page.goto('/#/')
-    await expect(page.getByText('Your routines')).toBeVisible()
+    await expect(page.getByText(/Your routine,/)).toBeVisible()
     await expect(page.getByRole('link', { name: /Leg Day/ })).toBeVisible()
   })
 
@@ -152,8 +156,9 @@ test.describe('setup for two people', () => {
     await expect(page.getByRole('button', { name: new RegExp(`^${today} Quick 10`) })).toBeVisible()
 
     await page.goto('/#/')
-    const card = page.getByRole('link', { name: /Quick 10/ })
-    await expect(card).toContainText(today)
+    const mission = page.locator('.today-mission')
+    await expect(mission).toContainText('Quick 10')
+    await expect(mission).toContainText(today)
   })
 
   test('profiles keep two people separate on one device', async ({ page }) => {
