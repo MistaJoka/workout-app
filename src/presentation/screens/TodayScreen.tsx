@@ -15,7 +15,7 @@ import type { SessionPlan } from '../../domain/session/types'
 import type { WorkoutTemplate } from '../../domain/content/types'
 import { WEEKDAY_LABELS, isScheduleSet, resolveToday, type TodayResolution, type Weekday } from '../../domain/schedule/weeklySchedule'
 import { WelcomeCard } from '../components/WelcomeCard'
-import { RaeFace } from '../components/Rae'
+import { RaeHero } from '../components/RaeHero'
 
 function estimateMinutes(template: WorkoutTemplate | undefined): number {
   if (!template) return 0
@@ -74,12 +74,9 @@ export function TodayScreen() {
 
   return (
     <div className="p-4 space-y-4">
-      <div className="flex items-end justify-between">
-        <h1 className="text-xl font-bold">Today</h1>
-        <Link to="/rae" aria-label="Meet Rae" className="-mb-1">
-          <RaeFace expression="smile" size={56} />
-        </Link>
-      </div>
+      <h1 className="text-xl font-bold">Today</h1>
+
+      <RaeHero />
 
       <WelcomeCard />
 

@@ -257,6 +257,44 @@ input[type='range'] {
 .rae-pop { animation: rae-pop 0.55s cubic-bezier(0.2, 0.9, 0.3, 1.2) both; }
 .pixelated { image-rendering: pixelated; }
 
+/* Today's Rae hero: a pastel stage after the light Pixel Bloom sheet
+   (sky over lavender, blush floor). Sparkles twinkle only under full motion. */
+.rae-hero {
+  position: relative;
+  height: 184px;
+  overflow: hidden;
+  border-radius: 1.5rem;
+  background:
+    radial-gradient(ellipse 38% 26% at 22% 30%, rgb(255 255 255 / 0.7), transparent 70%),
+    radial-gradient(ellipse 30% 20% at 80% 22%, rgb(255 255 255 / 0.6), transparent 70%),
+    linear-gradient(180deg, var(--color-field-calm) 0%, var(--color-field-info) 62%, var(--color-field-primary) 100%);
+}
+.rae-hero__floor {
+  position: absolute;
+  inset: auto 0 0 0;
+  height: 30px;
+  background: var(--color-field-primary);
+  border-top: 3px solid rgb(255 255 255 / 0.75);
+}
+.rae-hero__figure {
+  position: absolute;
+  left: 50%;
+  bottom: 8px;
+  transform: translateX(-50%);
+}
+.rae-hero__sparkle {
+  position: absolute;
+  width: 10px;
+  height: 10px;
+  background: #fff;
+  clip-path: polygon(50% 0, 62% 38%, 100% 50%, 62% 62%, 50% 100%, 38% 62%, 0 50%, 38% 38%);
+  animation: rae-twinkle 2.8s ease-in-out infinite;
+}
+@keyframes rae-twinkle {
+  0%, 100% { opacity: 0.35; transform: scale(0.8); }
+  50% { opacity: 1; transform: scale(1.15); }
+}
+
 /* Explicit reduced/off always wins. */
 [data-motion='reduced'] *,
 [data-motion='off'] * {
