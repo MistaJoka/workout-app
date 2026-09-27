@@ -17,6 +17,7 @@ import { TodayMission, type Mission } from '../components/TodayMission'
 import { WeekBlooms } from '../components/WeekBlooms'
 import { dayPart, greeting } from '../greeting'
 import { activeProfile } from '../../infrastructure/profiles'
+import { raeStillFor } from '../components/raeLoops'
 
 const QUICK_ID = 'fs.quick-10'
 
@@ -111,8 +112,10 @@ async function loadToday(now: Date): Promise<TodayData> {
       detail: describe(primary),
       thumbs: primary.exercises.flatMap((e) => {
         const exercise = exercises.get(e.exerciseId)
-        const src = exercise?.mediaManifest.start
-        return src ? [{ src, alt: exercise.name }] : []
+        // Rae doing the move when she has it, the photo otherwise.
+        const rae = raeStillFor(e.exerciseId)
+        const src = rae?.src ?? exercise?.mediaManifest.start
+        return src && exercise ? [{ src, alt: exercise.name, rae: rae != null }] : []
       }),
       to: `/checkin/${primary.id}`,
     }

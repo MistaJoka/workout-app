@@ -5,7 +5,7 @@ import { Link } from 'react-router-dom'
 // today's finished workout, a rest day, or what's up next. Each state has
 // one primary action.
 
-export type MissionThumb = { src: string; alt: string }
+export type MissionThumb = { src: string; alt: string; rae?: boolean }
 
 export type Mission =
   | {
@@ -49,7 +49,9 @@ export function TodayMission({ mission }: { mission: Mission }) {
                   src={thumb.src}
                   alt=""
                   loading="lazy"
-                  className="h-11 w-11 rounded-full border-2 border-surface object-cover"
+                  className={`h-11 w-11 rounded-full border-2 border-surface ${
+                    thumb.rae ? 'bg-surface object-contain p-0.5 pixelated' : 'object-cover'
+                  }`}
                 />
               ))}
             </div>

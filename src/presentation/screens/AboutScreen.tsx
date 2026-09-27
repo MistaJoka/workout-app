@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react'
 import { BackButton } from '../components/BackButton'
 import { useTheme } from '../theme/ThemeContext'
 import { requestPersistentStorage, storageStatusLabel, type StorageStatus } from '../pwa/storagePersistence'
+import { RaeFace } from '../components/Rae'
 
 export function AboutScreen() {
   const { motion, setMotion } = useTheme()
@@ -14,7 +15,10 @@ export function AboutScreen() {
   return (
     <div className="p-4 space-y-4 text-sm">
       <BackButton />
-      <h1 className="text-xl font-bold">About</h1>
+      <div className="flex items-center gap-3">
+        <RaeFace expression="happy" size={56} motion="none" />
+        <h1 className="text-xl font-bold">About</h1>
+      </div>
       <p>
         Foundation Strength is a private, offline-first workout app. Everything stays on this device; there is no
         account and nothing is sent anywhere.
