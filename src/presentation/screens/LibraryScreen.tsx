@@ -38,7 +38,11 @@ export function LibraryScreen() {
   // browsing rather than searching.
   const [raeMoves, setRaeMoves] = useState<Exercise[]>([])
   useEffect(() => {
-    getExercises(RAE_LOOPS.flatMap((loop) => loop.exerciseIds)).then((found) => setRaeMoves([...found.values()]))
+    // Featured loops only: the precached, workout-ready set. RAE_LOOPS
+    // grows toward the whole library; those moves show Rae in the list
+    // below instead of all crowding this row.
+    const featured = RAE_LOOPS.filter((loop) => 'featured' in loop && loop.featured)
+    getExercises(featured.flatMap((loop) => loop.exerciseIds)).then((found) => setRaeMoves([...found.values()]))
   }, [])
 
   function toggle<K extends keyof LibraryFilters>(key: K, value: LibraryFilters[K]) {
