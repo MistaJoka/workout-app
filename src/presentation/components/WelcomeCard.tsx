@@ -18,9 +18,9 @@ export function WelcomeCard() {
     <div className="field-notice p-4 space-y-2">
       <p className="font-bold">Welcome</p>
       <ul className="space-y-1 text-sm text-ink-muted">
-        <li>Tap a workout below to start. The one marked "up next" keeps you alternating.</li>
+        <li>Tap Start workout to begin. Up next keeps your workouts alternating.</li>
         <li>During a workout, every screen shows the movement and its steps.</li>
-        <li>Build your own routines from the exercises in Library.</li>
+        <li>Every workout you finish grows a flower in your week.</li>
       </ul>
       <button
         className="btn-primary"
