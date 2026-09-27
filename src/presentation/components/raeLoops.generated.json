@@ -373,7 +373,7 @@
     "exerciseIds": [
       "rae.chair-sit-to-stand-hands-on-thighs"
     ],
-    "featured": true
+    "featured": false
   },
   {
     "id": "ex-chair-sit-to-stand-overhead-reach",
@@ -401,7 +401,7 @@
     "exerciseIds": [
       "rae.chair-sit-to-stand-hands-clasped"
     ],
-    "featured": true
+    "featured": false
   },
   {
     "id": "ex-chair-sit-to-stand-arms-crossed",

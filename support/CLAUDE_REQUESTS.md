@@ -92,8 +92,8 @@ Use this mailbox when implementation reaches a product/data/spec/asset/test gap 
 **Implementation context:** `src/domain/content/fixtures/raeChairMoves.ts`, strips in `assets/pixel-bloom/character/rae/source/exercise/strips.json` (batch `chair-moves`)
 **Need:**
 1. Review the setup and steps of the 7 chair sit-to-stand moves the owner added on 2026-09-26. Claude Code drafted them to describe the drawings; they are not from a reviewed source. Add cues and common errors if appropriate.
-2. Two pairs are near-duplicates (Hands Clasped / Arms Crossed; Hands on Thighs / Push Off Knees). Should either be merged or redrawn to differ?
-3. Identity drift in these strips: the lotus tattoo is drawn on her shoulder/upper arm, not under her anatomical-left collarbone. Redraw if the owner wants them canon-accurate.
+2. ~~Near-duplicate pairs~~. Decided by the owner on 2026-09-26: Hands Clasped and Hands on Thighs are retired (unlisted but still resolvable); Arms Crossed and Push Off Knees stay.
+3. Identity drift in these strips: the lotus tattoo is drawn on her shoulder/upper arm, not under her anatomical-left collarbone. The owner said to label these for a later redraw; see the `redraw` field in strips.json (which also lists dead bug and split squat).
 **Requested output:** reviewed step text (a data change in the fixture) and a decision on the pairs and redraws.
 **Constraints already known:** no invented safety rules; sit-to-stand is a standard beginner movement. The library's "Chair Squat" is a different (machine) exercise.
 **Proposed fallback if unresolved:** ship as draft (current state).

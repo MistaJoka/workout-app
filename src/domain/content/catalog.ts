@@ -4,7 +4,7 @@ import {
   foundationStrengthStarterTemplates,
   templateById as curatedTemplateById,
 } from './fixtures/foundationStrengthStarter'
-import { raeChairMoveById, raeChairMoves } from './fixtures/raeChairMoves'
+import { listedRaeChairMoves, raeChairMoveById } from './fixtures/raeChairMoves'
 import { getCustomTemplate, listCustomTemplates } from '../../infrastructure/db/repositories/customTemplateRepository'
 
 export async function getTemplate(id: string): Promise<WorkoutTemplate | undefined> {
@@ -28,7 +28,7 @@ export function loadLibrary(): Promise<Exercise[]> {
     // Rae's chair moves lead the list so they are searchable and usable in
     // the routine builder like any library exercise.
     libraryPromise = import('./generated/libraryExercises.json').then((m) => [
-      ...raeChairMoves,
+      ...listedRaeChairMoves,
       ...(m.default as Exercise[]),
     ])
   }
