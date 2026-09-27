@@ -44,6 +44,7 @@ The pre-reconciliation prototype remains preserved on branch `legacy-mvp-2026-09
 ```bash
 npm run check                 # tsc -b --force && vitest run && vite build — run before every commit
 npm run e2e                   # Playwright: phone-viewport journeys against a production build (first time: npm run e2e:install)
+npm run e2e:webkit            # same journeys in WebKit (iPhone 13 profile) inside Playwright's Ubuntu Docker image — WebKit can't run natively on this Arch host
 npm run generate:library      # regenerate src/domain/content/generated/libraryExercises.json from the pinned free-exercise-db revision
 npm run build && systemctl --user restart workout-app.service   # deploy: tailnet https://nomad.tailed9e33.ts.net:8443 (stable); LAN http://<this machine's DHCP IP>:4173 — `ip -4 -br addr`, was 192.168.1.130 on 2026-09-19
 ```
@@ -97,7 +98,7 @@ Placement rules (owner-approved button pass, 2026-09-26):
 
 ## Platform quality rules
 
-- Phone-sized Chromium is not sufficient proof for an iPhone-first product; critical E2E must also cover WebKit/iPhone-like configuration.
+- Phone-sized Chromium is not sufficient proof for an iPhone-first product; critical E2E must also cover WebKit/iPhone-like configuration. (`npm run e2e:webkit`). Playwright WebKit can't drive service-worker reloads, so the offline journey (`e2e/offline.spec.ts`, real network-off reload + full workout) is Chromium-only; real-iPhone offline stays a manual check.
 - An Offline banner is not proof of offline function; test an actually network-disabled reload/execution path.
 - Wake lock/audio/animation are progressive enhancement and must fail safely.
 - Storage quota/eviction/write failures are real local failure modes; do not mislabel them as network failures.

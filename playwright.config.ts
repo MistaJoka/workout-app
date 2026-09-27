@@ -1,4 +1,4 @@
-import { defineConfig } from '@playwright/test'
+import { defineConfig, devices } from '@playwright/test'
 
 // End-to-end tests run against a production build served by `vite preview`,
 // on a phone-sized viewport, with a fresh browser context (fresh IndexedDB,
@@ -17,6 +17,17 @@ export default defineConfig({
     hasTouch: true,
     trace: 'retain-on-failure',
   },
+  // Chromium phone runs locally (`npm run e2e`). WebKit is the iPhone
+  // engine; CLAUDE.md requires it for an iPhone-first app, but its Linux
+  // build needs Ubuntu libraries, so `npm run e2e:webkit` runs it inside
+  // Playwright's official Ubuntu image (scripts/e2e-webkit.sh).
+  projects: [
+    { name: 'chromium' },
+    {
+      name: 'webkit-iphone',
+      use: { ...devices['iPhone 13'], baseURL: 'http://localhost:4199', trace: 'retain-on-failure' },
+    },
+  ],
   webServer: {
     command: 'npm run build && npm run preview -- --port 4199 --strictPort',
     url: 'http://localhost:4199',

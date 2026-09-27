@@ -7,7 +7,12 @@ import { dismissWelcome, finishWorkout } from './helpers'
 // visit runs under it and fills the runtime cache), then cuts the network
 // entirely, reloads, and does a full curated workout with nothing but the
 // cache. Every image the workout shows must actually load.
-test('a curated workout runs start to finish with the network off', async ({ page, context }) => {
+test('a curated workout runs start to finish with the network off', async ({ page, context, browserName }) => {
+  // Playwright's Linux WebKit can't drive a service-worker reload
+  // ("WebKit encountered an internal error" on the first reload). That's a
+  // tooling limit, not an app result: real-iPhone offline stays a manual
+  // check (docs/IOS_PWA_RUNTIME.md).
+  test.skip(browserName === 'webkit', "Playwright WebKit can't drive service-worker reloads")
   test.setTimeout(180_000)
   await page.goto('/')
   await dismissWelcome(page)
