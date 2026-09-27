@@ -80,8 +80,12 @@ def find_downloads(count: int) -> list[Path]:
 def main() -> None:
     if len(sys.argv) < 2:
         raise SystemExit(__doc__)
-    batch_no = sys.argv[1].zfill(3)
-    items = json.loads((PROMPTS / f'batch-{batch_no}.json').read_text())
+    arg = sys.argv[1]
+    # 'redraw-001' takes in a redraw paste (rae-redraw-prompts.py); a bare
+    # number is a library batch.
+    batch_no = arg if arg.startswith('redraw-') else arg.zfill(3)
+    batch_file = f'{batch_no}.json' if arg.startswith('redraw-') else f'batch-{batch_no}.json'
+    items = json.loads((PROMPTS / batch_file).read_text())
     files = [Path(p) for p in sys.argv[2:]] or find_downloads(len(items))
     if len(files) != len(items):
         raise SystemExit(f'batch {batch_no} has {len(items)} exercises but {len(files)} images were given')
@@ -118,7 +122,13 @@ def main() -> None:
             'exerciseIds': [item['exerciseId']],
             'lean': True,
         }
-        if item['slug'] in by_id:
+        if item.get('redraw') and item['slug'] in by_id:
+            # New art only: name, mapping, batch/group, featured and lean stay.
+            art = {k: entry[k] for k in ('source', 'sha256', 'downloadedAs', 'frames', 'anchor', 'order', 'hold', 'fps', 'stills')}
+            by_id[item['slug']].update(art)
+            by_id[item['slug']].pop('redraw', None)
+            by_id[item['slug']]['redrawnFrom'] = batch_no
+        elif item['slug'] in by_id:
             by_id[item['slug']].update(entry)
         else:
             manifest.append(entry)

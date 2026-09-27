@@ -14,3 +14,7 @@ Each `batch-NNN.md` has 8 exercises for ChatGPT to draw as Rae frame strips. The
 `npm run rae:prompts` rewrites the batches, skipping exercises Rae already demos.
 
 Source strips are kept in `assets/pixel-bloom/character/rae/source/exercise/library/`, out of git (they're large). Each one's SHA-256 is recorded in `strips.json`.
+
+## Redraws
+
+`redraw-NNN.md` asks ChatGPT to redraw every strip flagged `redraw` in `strips.json` (off-model art, a mirrored frame, not enough movement). Paste, download all, then run `npm run rae:intake -- redraw-NNN`. Only the art is replaced; the move's name, mapping and grouping stay, and its `redraw` flag is cleared. Regenerate the redraw pastes with `python3 scripts/assets/rae-redraw-prompts.py` after new flags are added.

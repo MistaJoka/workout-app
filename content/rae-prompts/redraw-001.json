@@ -1,0 +1,74 @@
+[
+  {
+    "n": 1,
+    "exerciseId": "fs.dead-bug",
+    "slug": "dead-bug",
+    "name": "Dead Bug",
+    "frames": 6,
+    "view": "Side view",
+    "redraw": true
+  },
+  {
+    "n": 2,
+    "exerciseId": "lib.Split_Squats",
+    "slug": "split-squat",
+    "name": "Split Squats",
+    "frames": 4,
+    "view": "Side view",
+    "redraw": true
+  },
+  {
+    "n": 3,
+    "exerciseId": "rae.chair-sit-to-stand-arms-forward",
+    "slug": "chair-sit-to-stand-arms-forward",
+    "name": "Chair Sit-to-Stand, Arms Forward",
+    "frames": 6,
+    "view": "Side view",
+    "redraw": true
+  },
+  {
+    "n": 4,
+    "exerciseId": "rae.chair-sit-to-stand-overhead-reach",
+    "slug": "chair-sit-to-stand-overhead-reach",
+    "name": "Chair Sit-to-Stand with Overhead Reach",
+    "frames": 7,
+    "view": "Side view",
+    "redraw": true
+  },
+  {
+    "n": 5,
+    "exerciseId": "rae.chair-sit-to-stand-arms-crossed",
+    "slug": "chair-sit-to-stand-arms-crossed",
+    "name": "Chair Sit-to-Stand, Arms Crossed",
+    "frames": 6,
+    "view": "Side view",
+    "redraw": true
+  },
+  {
+    "n": 6,
+    "exerciseId": "rae.chair-sit-to-stand-push-off-knees",
+    "slug": "chair-sit-to-stand-push-off-knees",
+    "name": "Chair Sit-to-Stand, Push Off Knees",
+    "frames": 6,
+    "view": "Side view",
+    "redraw": true
+  },
+  {
+    "n": 7,
+    "exerciseId": "rae.chair-squat-tap",
+    "slug": "chair-squat-tap",
+    "name": "Chair Squat Tap",
+    "frames": 6,
+    "view": "Side view",
+    "redraw": true
+  },
+  {
+    "n": 8,
+    "exerciseId": "rae.mini-squat",
+    "slug": "mini-squat",
+    "name": "Mini Squat",
+    "frames": 4,
+    "view": "Side view",
+    "redraw": true
+  }
+]

@@ -1,0 +1,65 @@
+[
+  {
+    "n": 1,
+    "exerciseId": "rae.reverse-lunge",
+    "slug": "reverse-lunge",
+    "name": "Reverse Lunge",
+    "frames": 5,
+    "view": "Side view",
+    "redraw": true
+  },
+  {
+    "n": 2,
+    "exerciseId": "rae.seated-march",
+    "slug": "seated-march",
+    "name": "Seated March",
+    "frames": 5,
+    "view": "Side view",
+    "redraw": true
+  },
+  {
+    "n": 3,
+    "exerciseId": "rae.seated-ankle-pumps",
+    "slug": "seated-ankle-pumps",
+    "name": "Seated Ankle Pumps",
+    "frames": 4,
+    "view": "Side view",
+    "redraw": true
+  },
+  {
+    "n": 4,
+    "exerciseId": "rae.seated-knee-extension",
+    "slug": "seated-knee-extension",
+    "name": "Seated Knee Extension",
+    "frames": 4,
+    "view": "Side view",
+    "redraw": true
+  },
+  {
+    "n": 5,
+    "exerciseId": "rae.seated-forward-reach",
+    "slug": "seated-forward-reach",
+    "name": "Seated Forward Reach",
+    "frames": 4,
+    "view": "Side view",
+    "redraw": true
+  },
+  {
+    "n": 6,
+    "exerciseId": "rae.seated-torso-rotation",
+    "slug": "seated-torso-rotation",
+    "name": "Seated Torso Rotation",
+    "frames": 4,
+    "view": "Side view",
+    "redraw": true
+  },
+  {
+    "n": 7,
+    "exerciseId": "rae.chair-supported-knee-lift",
+    "slug": "chair-supported-knee-lift",
+    "name": "Chair-Supported Knee Lift",
+    "frames": 5,
+    "view": "Side view",
+    "redraw": true
+  }
+]
