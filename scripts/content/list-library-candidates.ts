@@ -5,9 +5,8 @@
 // thing generate-library.ts actually trusts.
 //
 // Usage: npm run library:review
-import { writeFileSync } from 'node:fs'
+import { readFileSync, writeFileSync } from 'node:fs'
 import { buildLibraryCandidates, SNAPSHOT_URL } from './buildLibraryCandidates'
-import { readFileSync } from 'node:fs'
 import { isHomeFriendly, renderChecklistMarkdown } from './curationChecklist'
 import { FREE_EXERCISE_DB_SOURCE } from './fixtures/freeExerciseDbSample'
 
