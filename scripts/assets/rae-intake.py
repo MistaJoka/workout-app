@@ -37,7 +37,10 @@ DOWNLOADS = Path.home() / 'Downloads'
 def key_fg(path: Path) -> np.ndarray:
     rgb = np.asarray(Image.open(path).convert('RGB')).astype(int)
     r, g, b = rgb[..., 0], rgb[..., 1], rgb[..., 2]
-    magenta = (r > 150) & (b > 130) & (g < 125) & (r - g > 80) & (b - g > 60)
+    # ChatGPT's background measures g<=8, r,b>=244. Rae's pink top is also
+    # red+blue-heavy (median g~87), so a loose key punched holes in it; keep
+    # the key tight and let despill() clear the blended edge fringe.
+    magenta = (r > 200) & (b > 200) & (g < 60) & (np.abs(r - b) < 45)
     return nd.binary_opening(~magenta, iterations=1)
 
 
@@ -90,7 +93,9 @@ def main() -> None:
     for item, f in zip(items, files):
         ratio = frame_ratio(f)
         frames = item['frames']
-        if abs(ratio - frames) >= 1:
+        # A strip whose alternate frames look alike repeats at twice the frame
+        # spacing, so a ratio near half the asked count also confirms it.
+        if abs(ratio - frames) >= 1 and abs(2 * ratio - frames) >= 1.2:
             frames = max(2, min(8, round(ratio + 0.35)))
             warnings.append(f"{item['n']}. {item['name']}: asked for {item['frames']} frames, "
                             f"the strip looks like {frames}; using {frames}. Check it on the QA sheet.")

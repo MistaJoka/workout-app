@@ -32,7 +32,10 @@ SPRITE_MAX_WIDTH = 360  # floor exercises are wide and short; fit them in this b
 
 def key_magenta(rgb: np.ndarray) -> np.ndarray:
     r, g, b = (rgb[..., i].astype(int) for i in range(3))
-    magenta = (r > 150) & (b > 130) & (g < 125) & (r - g > 80) & (b - g > 60)
+    # ChatGPT's background measures g<=8, r,b>=244. Rae's pink top is also
+    # red+blue-heavy (median g~87), so a loose key punched holes in it; keep
+    # the key tight and let despill() clear the blended edge fringe.
+    magenta = (r > 200) & (b > 200) & (g < 60) & (np.abs(r - b) < 45)
     fg = nd.binary_opening(~magenta, iterations=1)
     return fg
 

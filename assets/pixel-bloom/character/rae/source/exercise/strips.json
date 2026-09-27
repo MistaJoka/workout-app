@@ -322,5 +322,172 @@
     "exerciseIds": [
       "lib.Split_Squats"
     ]
+  },
+  {
+    "id": "3-4-sit-up",
+    "name": "3/4 Sit-Up",
+    "source": "library/3-4-sit-up-strip-v1.png",
+    "sha256": "d7e119fc6c2d5488a66b1d93009c1dddd07d310be925112b0281f07d5a504467",
+    "downloadedAs": "ChatGPT Image Sep 26, 2026, 10_50_14 PM-1.png",
+    "batch": "library-001",
+    "frames": 4,
+    "anchor": "grid",
+    "order": "0,1,2,3",
+    "hold": "0:3,2:3",
+    "fps": 8,
+    "stills": [
+      0,
+      2
+    ],
+    "exerciseIds": [
+      "lib.3_4_Sit-Up"
+    ],
+    "lean": true
+  },
+  {
+    "id": "90-90-hamstring",
+    "name": "90/90 Hamstring",
+    "source": "library/90-90-hamstring-strip-v1.png",
+    "sha256": "f61dc494780eef4c5032c06a1bada83933f7851f3e5cc7e3c944ec19ffe16662",
+    "downloadedAs": "ChatGPT Image Sep 26, 2026, 10_50_17 PM-2.png",
+    "batch": "library-001",
+    "frames": 3,
+    "anchor": "grid",
+    "order": "0,1,2",
+    "hold": "0:5,1:5,2:5",
+    "fps": 8,
+    "stills": [
+      0
+    ],
+    "exerciseIds": [
+      "lib.90_90_Hamstring"
+    ],
+    "lean": true
+  },
+  {
+    "id": "air-bike",
+    "name": "Air Bike",
+    "source": "library/air-bike-strip-v1.png",
+    "sha256": "ec65392f418fd5d4dff46fca2f58a289136e1136eaf0388b4adace94cee349cf",
+    "downloadedAs": "ChatGPT Image Sep 26, 2026, 10_50_18 PM-3.png",
+    "batch": "library-001",
+    "frames": 4,
+    "anchor": "grid",
+    "order": "0,1,2,3",
+    "hold": "0:3,2:3",
+    "fps": 8,
+    "stills": [
+      0,
+      2
+    ],
+    "exerciseIds": [
+      "lib.Air_Bike"
+    ],
+    "lean": true
+  },
+  {
+    "id": "alternate-heel-touchers",
+    "name": "Alternate Heel Touchers",
+    "source": "library/alternate-heel-touchers-strip-v1.png",
+    "sha256": "9ae3a06c262df8bec25c3a2d1f404d9a28b7390acf4e82fa2909eecba4c1aa7d",
+    "downloadedAs": "ChatGPT Image Sep 26, 2026, 10_50_19 PM-4.png",
+    "batch": "library-001",
+    "frames": 4,
+    "anchor": "grid",
+    "order": "0,1,2,3",
+    "hold": "0:3,2:3",
+    "fps": 8,
+    "stills": [
+      0,
+      2
+    ],
+    "exerciseIds": [
+      "lib.Alternate_Heel_Touchers"
+    ],
+    "lean": true
+  },
+  {
+    "id": "bench-dips",
+    "name": "Bench Dips",
+    "source": "library/bench-dips-strip-v1.png",
+    "sha256": "e65e6b40202c50520ffb884c1a3f697174eca1558baea9f191fc0ecda19656c2",
+    "downloadedAs": "ChatGPT Image Sep 26, 2026, 10_50_23 PM-5.png",
+    "batch": "library-001",
+    "frames": 4,
+    "anchor": "grid",
+    "order": "0,1,2,3",
+    "hold": "0:3,2:3",
+    "fps": 8,
+    "stills": [
+      0,
+      2
+    ],
+    "exerciseIds": [
+      "lib.Bench_Dips"
+    ],
+    "lean": true
+  },
+  {
+    "id": "bent-knee-hip-raise",
+    "name": "Bent-Knee Hip Raise",
+    "source": "library/bent-knee-hip-raise-strip-v1.png",
+    "sha256": "9c1592a8fd0eb9826771cc42b7994753ebb5738921806ed3b31e443ade96f643",
+    "downloadedAs": "ChatGPT Image Sep 26, 2026, 10_50_24 PM-6.png",
+    "batch": "library-001",
+    "frames": 4,
+    "anchor": "grid",
+    "order": "0,1,2,3",
+    "hold": "0:3,2:3",
+    "fps": 8,
+    "stills": [
+      0,
+      2
+    ],
+    "exerciseIds": [
+      "lib.Bent-Knee_Hip_Raise"
+    ],
+    "lean": true
+  },
+  {
+    "id": "body-tricep-press",
+    "name": "Body Tricep Press",
+    "source": "library/body-tricep-press-strip-v1.png",
+    "sha256": "0ded0c62c773258b9f16d6206a6f57e805209bb36caad67c716a9c4305d571a5",
+    "downloadedAs": "ChatGPT Image Sep 26, 2026, 10_50_25 PM-7.png",
+    "batch": "library-001",
+    "frames": 4,
+    "anchor": "grid",
+    "order": "0,1,2,3",
+    "hold": "0:3,2:3",
+    "fps": 8,
+    "stills": [
+      0,
+      2
+    ],
+    "exerciseIds": [
+      "lib.Body_Tricep_Press"
+    ],
+    "lean": true
+  },
+  {
+    "id": "bottoms-up",
+    "name": "Bottoms Up",
+    "source": "library/bottoms-up-strip-v1.png",
+    "sha256": "550cda6706ba89be31cda0da9dfed3912013ca154a882ae2ef38fa7119f04cb7",
+    "downloadedAs": "ChatGPT Image Sep 26, 2026, 10_50_26 PM-8.png",
+    "batch": "library-001",
+    "frames": 4,
+    "anchor": "grid",
+    "order": "0,1,2,3",
+    "hold": "0:3,2:3",
+    "fps": 8,
+    "stills": [
+      0,
+      2
+    ],
+    "exerciseIds": [
+      "lib.Bottoms_Up"
+    ],
+    "lean": true
   }
 ]

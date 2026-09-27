@@ -2,7 +2,7 @@
   "id": "ex-superman",
   "source": "superman-strip-v1.png",
   "frameWidth": 360,
-  "frameHeight": 122,
+  "frameHeight": 121,
   "frames": 4,
   "timeline": [
     {

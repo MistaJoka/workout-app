@@ -10,10 +10,11 @@ Writes content/rae-prompts/batch-NNN.md (to paste) and batch-NNN.json
 (for intake). Exercises Rae already demonstrates (strips.json) are
 skipped. Order: gentlest equipment first, beginner before advanced.
 
-Usage: rae-prompts.py            # (re)write all batches
+Usage: rae-prompts.py [--force]  # write batches (--force rewrites and renumbers existing ones)
 """
 import json
 import re
+import sys
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[2]
@@ -77,6 +78,11 @@ def main() -> None:
 
     todo.sort(key=key)
     OUT.mkdir(parents=True, exist_ok=True)
+    existing = list(OUT.glob('batch-*.md'))
+    if existing and '--force' not in sys.argv:
+        # Batches are numbered once. Rewriting after some are drawn would
+        # renumber the rest (the old batch 002 would become 001).
+        raise SystemExit(f'{len(existing)} batches already exist; pass --force to rewrite and renumber them.')
     for old in OUT.glob('batch-*.*'):
         old.unlink()
     batches = [todo[i:i + BATCH_SIZE] for i in range(0, len(todo), BATCH_SIZE)]
