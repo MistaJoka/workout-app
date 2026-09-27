@@ -12,7 +12,8 @@
       "fs.bodyweight-squat",
       "lib.Bodyweight_Squat"
     ],
-    "featured": true
+    "featured": true,
+    "group": "Your workout moves"
   },
   {
     "id": "ex-incline-push-up",
@@ -27,7 +28,8 @@
       "fs.incline-push-up",
       "lib.Incline_Push-Up"
     ],
-    "featured": true
+    "featured": true,
+    "group": "Your workout moves"
   },
   {
     "id": "ex-single-leg-glute-bridge",
@@ -42,7 +44,8 @@
       "fs.single-leg-glute-bridge",
       "lib.Single_Leg_Glute_Bridge"
     ],
-    "featured": true
+    "featured": true,
+    "group": "Your workout moves"
   },
   {
     "id": "ex-dead-bug",
@@ -57,7 +60,8 @@
       "fs.dead-bug",
       "lib.Dead_Bug"
     ],
-    "featured": true
+    "featured": true,
+    "group": "Your workout moves"
   },
   {
     "id": "ex-plank",
@@ -71,7 +75,8 @@
       "fs.plank",
       "lib.Plank"
     ],
-    "featured": true
+    "featured": true,
+    "group": "Your workout moves"
   },
   {
     "id": "ex-walking-lunge",
@@ -86,7 +91,8 @@
       "fs.walking-lunge",
       "lib.Bodyweight_Walking_Lunge"
     ],
-    "featured": true
+    "featured": true,
+    "group": "Your workout moves"
   },
   {
     "id": "ex-glute-bridge",
@@ -101,7 +107,8 @@
       "fs.glute-bridge",
       "lib.Butt_Lift_Bridge"
     ],
-    "featured": true
+    "featured": true,
+    "group": "Your workout moves"
   },
   {
     "id": "ex-crunches",
@@ -116,7 +123,8 @@
       "fs.crunches",
       "lib.Crunches"
     ],
-    "featured": true
+    "featured": true,
+    "group": "Your workout moves"
   },
   {
     "id": "ex-superman",
@@ -131,7 +139,8 @@
       "fs.superman",
       "lib.Superman"
     ],
-    "featured": true
+    "featured": true,
+    "group": "Your workout moves"
   },
   {
     "id": "ex-bird-dog",
@@ -143,7 +152,8 @@
       2
     ],
     "exerciseIds": [],
-    "featured": true
+    "featured": true,
+    "group": "More moves"
   },
   {
     "id": "ex-cat-cow",
@@ -155,7 +165,8 @@
       3
     ],
     "exerciseIds": [],
-    "featured": true
+    "featured": true,
+    "group": "More moves"
   },
   {
     "id": "ex-side-plank",
@@ -166,7 +177,8 @@
       0
     ],
     "exerciseIds": [],
-    "featured": true
+    "featured": true,
+    "group": "More moves"
   },
   {
     "id": "ex-step-up",
@@ -178,7 +190,8 @@
       3
     ],
     "exerciseIds": [],
-    "featured": true
+    "featured": true,
+    "group": "More moves"
   },
   {
     "id": "ex-dumbbell-rdl",
@@ -192,7 +205,8 @@
     "exerciseIds": [
       "lib.Stiff-Legged_Dumbbell_Deadlift"
     ],
-    "featured": true
+    "featured": true,
+    "group": "More moves"
   },
   {
     "id": "ex-seated-dumbbell-press",
@@ -206,7 +220,8 @@
     "exerciseIds": [
       "lib.Seated_Dumbbell_Press"
     ],
-    "featured": true
+    "featured": true,
+    "group": "More moves"
   },
   {
     "id": "ex-dumbbell-row",
@@ -220,7 +235,8 @@
     "exerciseIds": [
       "lib.One-Arm_Dumbbell_Row"
     ],
-    "featured": true
+    "featured": true,
+    "group": "More moves"
   },
   {
     "id": "ex-split-squat",
@@ -234,7 +250,8 @@
     "exerciseIds": [
       "lib.Split_Squats"
     ],
-    "featured": true
+    "featured": true,
+    "group": "More moves"
   },
   {
     "id": "ex-3-4-sit-up",
@@ -248,7 +265,8 @@
     "exerciseIds": [
       "lib.3_4_Sit-Up"
     ],
-    "featured": false
+    "featured": false,
+    "group": "Library"
   },
   {
     "id": "ex-90-90-hamstring",
@@ -261,7 +279,8 @@
     "exerciseIds": [
       "lib.90_90_Hamstring"
     ],
-    "featured": false
+    "featured": false,
+    "group": "Library"
   },
   {
     "id": "ex-air-bike",
@@ -275,7 +294,8 @@
     "exerciseIds": [
       "lib.Air_Bike"
     ],
-    "featured": false
+    "featured": false,
+    "group": "Library"
   },
   {
     "id": "ex-alternate-heel-touchers",
@@ -289,7 +309,8 @@
     "exerciseIds": [
       "lib.Alternate_Heel_Touchers"
     ],
-    "featured": false
+    "featured": false,
+    "group": "Library"
   },
   {
     "id": "ex-bench-dips",
@@ -303,7 +324,8 @@
     "exerciseIds": [
       "lib.Bench_Dips"
     ],
-    "featured": false
+    "featured": false,
+    "group": "Library"
   },
   {
     "id": "ex-bent-knee-hip-raise",
@@ -317,7 +339,8 @@
     "exerciseIds": [
       "lib.Bent-Knee_Hip_Raise"
     ],
-    "featured": false
+    "featured": false,
+    "group": "Library"
   },
   {
     "id": "ex-body-tricep-press",
@@ -331,7 +354,8 @@
     "exerciseIds": [
       "lib.Body_Tricep_Press"
     ],
-    "featured": false
+    "featured": false,
+    "group": "Library"
   },
   {
     "id": "ex-bottoms-up",
@@ -345,7 +369,8 @@
     "exerciseIds": [
       "lib.Bottoms_Up"
     ],
-    "featured": false
+    "featured": false,
+    "group": "Library"
   },
   {
     "id": "ex-chair-sit-to-stand-arms-forward",
@@ -359,7 +384,8 @@
     "exerciseIds": [
       "rae.chair-sit-to-stand-arms-forward"
     ],
-    "featured": true
+    "featured": true,
+    "group": "Chair and low-impact"
   },
   {
     "id": "ex-chair-sit-to-stand-hands-on-thighs",
@@ -373,7 +399,8 @@
     "exerciseIds": [
       "rae.chair-sit-to-stand-hands-on-thighs"
     ],
-    "featured": false
+    "featured": false,
+    "group": "Chair and low-impact"
   },
   {
     "id": "ex-chair-sit-to-stand-overhead-reach",
@@ -387,7 +414,8 @@
     "exerciseIds": [
       "rae.chair-sit-to-stand-overhead-reach"
     ],
-    "featured": true
+    "featured": true,
+    "group": "Chair and low-impact"
   },
   {
     "id": "ex-chair-sit-to-stand-hands-clasped",
@@ -401,7 +429,8 @@
     "exerciseIds": [
       "rae.chair-sit-to-stand-hands-clasped"
     ],
-    "featured": false
+    "featured": false,
+    "group": "Chair and low-impact"
   },
   {
     "id": "ex-chair-sit-to-stand-arms-crossed",
@@ -415,7 +444,8 @@
     "exerciseIds": [
       "rae.chair-sit-to-stand-arms-crossed"
     ],
-    "featured": true
+    "featured": true,
+    "group": "Chair and low-impact"
   },
   {
     "id": "ex-chair-sit-to-stand-push-off-knees",
@@ -429,7 +459,8 @@
     "exerciseIds": [
       "rae.chair-sit-to-stand-push-off-knees"
     ],
-    "featured": true
+    "featured": true,
+    "group": "Chair and low-impact"
   },
   {
     "id": "ex-chair-squat-tap",
@@ -443,7 +474,8 @@
     "exerciseIds": [
       "rae.chair-squat-tap"
     ],
-    "featured": true
+    "featured": true,
+    "group": "Chair and low-impact"
   },
   {
     "id": "ex-mini-squat",
@@ -457,7 +489,8 @@
     "exerciseIds": [
       "rae.mini-squat"
     ],
-    "featured": true
+    "featured": true,
+    "group": "Chair and low-impact"
   },
   {
     "id": "ex-reverse-lunge",
@@ -471,7 +504,8 @@
     "exerciseIds": [
       "rae.reverse-lunge"
     ],
-    "featured": true
+    "featured": true,
+    "group": "Chair and low-impact"
   },
   {
     "id": "ex-seated-march",
@@ -485,7 +519,8 @@
     "exerciseIds": [
       "rae.seated-march"
     ],
-    "featured": true
+    "featured": true,
+    "group": "Chair and low-impact"
   },
   {
     "id": "ex-seated-ankle-pumps",
@@ -499,7 +534,8 @@
     "exerciseIds": [
       "rae.seated-ankle-pumps"
     ],
-    "featured": true
+    "featured": true,
+    "group": "Chair and low-impact"
   },
   {
     "id": "ex-seated-knee-extension",
@@ -513,7 +549,8 @@
     "exerciseIds": [
       "rae.seated-knee-extension"
     ],
-    "featured": true
+    "featured": true,
+    "group": "Chair and low-impact"
   },
   {
     "id": "ex-seated-forward-reach",
@@ -527,7 +564,8 @@
     "exerciseIds": [
       "rae.seated-forward-reach"
     ],
-    "featured": true
+    "featured": true,
+    "group": "Chair and low-impact"
   },
   {
     "id": "ex-seated-torso-rotation",
@@ -541,7 +579,8 @@
     "exerciseIds": [
       "rae.seated-torso-rotation"
     ],
-    "featured": true
+    "featured": true,
+    "group": "Chair and low-impact"
   },
   {
     "id": "ex-chair-supported-knee-lift",
@@ -555,6 +594,7 @@
     "exerciseIds": [
       "rae.chair-supported-knee-lift"
     ],
-    "featured": true
+    "featured": true,
+    "group": "Chair and low-impact"
   }
 ]

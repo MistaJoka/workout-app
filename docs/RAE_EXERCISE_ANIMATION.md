@@ -26,9 +26,23 @@ One image per exercise: one row of 3 to 6 frames, evenly spaced, on flat `#FF00F
 | Prompts | `npm run rae:prompts` → `scripts/assets/rae-prompts.py` | `content/rae-prompts/batch-NNN.md` (paste) + `.json` (intake). There are 8 exercises per batch, each with its library steps, ordered by gentlest equipment. |
 | Intake | `npm run rae:intake -- NNN [files]` → `scripts/assets/rae-intake.py` | Takes the newest ChatGPT `-1..-N` download group in batch order. It confirms the frame count from the strip's repeat spacing (autocorrelation) and flags mismatches. It copies sources to `source/exercise/library/` (gitignored, SHA-256 in the manifest), updates `strips.json` and writes a QA sheet (`content/rae-prompts/qa/`). |
 | Build | `npm run rae:build` → `scripts/assets/build-rae-strips.py` → `build-rae-frames.py` | Per strip: key magenta, place frames (`foot` = align on the planted toe; `grid` = frames keep their drawn slot position, each piece assigned by its centre, enclosed gaps stay transparent), centre on the first frame's body, fit a 264×360 box, share one 64-colour palette. Writes `public/rae/ex-<id>.webp` (loop), `ex-<id>-<n>.png` (stills) and `ex-<id>.json` (timing). |
-| Index | same | `public/rae/loops.json` + `src/presentation/components/raeLoops.generated.json` |
+| Index | same | `public/rae/loops.json` + `src/presentation/components/raeLoops.generated.json` (id, name, size, stills, `exerciseIds`, `featured`, `group`) |
+| Asset DB | same | One `rae-ex-<id>-loop` record per loop in `assets/pixel-bloom/db/asset-db.json` (`assets` list). Existing records keep their status; new ones start at `review`. The notes carry the source, mapping, and any retired/redraw reason. |
+| Re-plan | `npm run rae:prompts -- --from N` | Keeps batches 1..N-1 as they are (pasted batches keep their numbers) and re-plans N onward, e.g. after the library changed (871 → 304 on 2026-09-27: batches 003–037). |
 
-`assets/pixel-bloom/character/rae/source/exercise/strips.json` is the single manifest. Per strip it records: source file (+ SHA-256 for library strips), frames, anchor, playback order and holds, the stills shown under reduced motion, `exerciseIds` (which exercises it demonstrates), and `lean` (library scale: lossy loop and only the review stills are published).
+`assets/pixel-bloom/character/rae/source/exercise/strips.json` is the single manifest. Per strip it records:
+
+- source file (+ SHA-256 for library strips);
+- frames, anchor, playback order and holds;
+- the stills shown under reduced motion;
+- `exerciseIds` (which exercises it demonstrates);
+- `batch` (which drives the Meet Rae group);
+- `lean` (library scale: lossy loop and only the review stills are published);
+- `featured` (precached and on Meet Rae);
+- `retired` (kept resolvable, not listed);
+- `redraw` (the reason it should be redrawn).
+
+Keying: the ChatGPT background measures g ≤ 8 and r,b ≥ 244, so the key is tight (r,b > 200, g < 60, |r−b| < 45). A looser key punched holes in Rae's saturated pink top.
 
 ## Runtime
 
@@ -41,12 +55,24 @@ One image per exercise: one row of 3 to 6 frames, evenly spaced, on flat `#FF00F
 
 **Caching:** featured loops (the first 17, including every curated workout move) are precached by the service worker from `loops.json`. Library loops are cache-first in the long-lived media cache on first view, because precaching ~870 × ~130 KB is too much. Bump `CACHE_NAME` in `public/sw.js` when featured loops change.
 
+## Rae's own moves
+
+Some strips show standard beginner movements that have no free-exercise-db record: the chair sit-to-stand set and the low-impact seated set. They live in `src/domain/content/fixtures/raeMoves.ts` (ids `rae.*`, provenance `draft`, no photos). The catalog resolves them synchronously, and `loadLibrary()` lists them first, so they are searchable, usable in the routine builder and play in workouts. Retired duplicates stay resolvable for routines that already use them. Their step text was drafted from the drawings and awaits review (REQ-20260926-003, REQ-20260927-004).
+
 ## Mapping exercises
 
 Only map a strip to an exercise id when the drawing shows that exercise. The curated `fs.*` moves are also mapped to their identical library records (same free-exercise-db source id). Lookalikes need the owner's OK. For example, the dumbbell RDL strip → `lib.Stiff-Legged_Dumbbell_Deadlift` was approved on 2026-09-26.
 
-## Known art issues (redraw candidates)
+## Known art issues
 
-- `dead-bug` frame 6 is drawn mirrored and is left out of the loop.
-- `split-squat` barely changes depth between frames.
-- `glute-bridge` and `crunches` face the other way from the other floor moves. That's not an identity problem, and they must not be mirrored because the tattoo would move sides.
+The `redraw` field in strips.json is the live list. As of 2026-09-27:
+
+- `dead-bug`: frame 6 is drawn mirrored and is left out of the loop.
+- `split-squat`: barely changes depth.
+- The chair set: the tattoo is drawn on her shoulder, not under the collarbone.
+- The low-impact set: off-model (afro puff, headband ears) and low-res. The owner said to use them for now.
+- `glute-bridge` and `crunches` face the other way from the other floor moves. That's not an identity problem, and they must never be mirrored (the tattoo would move sides).
+
+## Meet Rae
+
+Featured loops only: one stage plays the chosen move, and the rest are small tiles grouped as "Your workout moves", "Chair and low-impact" and "More moves" (from `batch`). The hundreds of library loops live in the Library.
