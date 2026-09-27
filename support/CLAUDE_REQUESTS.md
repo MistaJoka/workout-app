@@ -73,6 +73,18 @@ Use this mailbox when implementation reaches a product/data/spec/asset/test gap 
 **Constraints already known:** the pre-filter (`level=beginner`, excludes plyometrics/powerlifting/olympic weightlifting/strongman categories, barbell/e-z-curl-bar equipment, and isolation-mechanic exercises) only narrows what's shown for review (199 of 871 as of 2026-09-26) — loosen it and re-run `npm run library:review` if something outside it should be considered too. Checking a box is the only thing that adds an exercise to the shipped library.
 **Proposed fallback if unresolved:** none — the previously-generated `libraryExercises.json` (871 exercises) keeps shipping until this is resolved; nothing regressed by leaving this open.
 
+## REQ-20260926-002 — Redraw two Rae exercise strips
+
+**Status:** OPEN
+**Blocking:** no (both loops ship; one is trimmed, one barely moves)
+**Implementation context:** `docs/RAE_EXERCISE_ANIMATION.md`, `assets/pixel-bloom/character/rae/source/exercise/strips.json`
+**Need:** new drawn-frame strips from the Rae chat (same format as the existing strips: one row, flat #FF00FF, same camera and floor line):
+- **Dead bug** (6 frames): frame 6 was drawn mirrored (head on the other side). Every frame must keep her head on the same side.
+- **Split squat** (4 frames): the frames barely change. Draw a clear descent: standing split stance, halfway, back knee just above the floor, halfway up.
+**Requested output:** the two PNGs. The owner downloads them, and Claude Code rebuilds with `npm run rae:build`.
+**Constraints already known:** do not mirror strips to fix direction (the lotus tattoo is on her anatomical left).
+**Proposed fallback if unresolved:** keep the current loops (dead bug plays frames 1-5).
+
 ## Template
 
 ```md

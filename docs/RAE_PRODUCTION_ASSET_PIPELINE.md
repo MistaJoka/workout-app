@@ -270,6 +270,8 @@ approved exercise reference
   -> sprite sheet + metadata
 ```
 
+> **Superseded 2026-09-26 (owner decision):** rigged/cutout exercise animation was tried and rejected. Exercises use whole drawn frames only. See `docs/RAE_EXERCISE_ANIMATION.md`.
+
 For repetitive exercise animation, use a layered/rigged approach where it improves consistency. Godot may be used as an offline 2D rig/render tool if needed; it is not a runtime dependency of the React app.
 
 ## 8. Gold-master workflow for each animation
@@ -389,6 +391,8 @@ Claude runs the export pipeline. A typical LibreSprite/Aseprite-style export pro
 - optional GIF preview.
 
 The sprite sheet + JSON metadata is the preferred runtime format because the app can pause, resume, choose a frame, and honor motion preferences deterministically.
+
+> **As built (2026-09-26):** exercise loops ship as animated WebP plus still PNGs for reduced motion. Featured strips also emit sprite sheet + JSON. The reasoning is in `docs/RAE_EXERCISE_ANIMATION.md` § Runtime.
 
 GIF is preview/documentation output, not the primary shipped animation format.
 

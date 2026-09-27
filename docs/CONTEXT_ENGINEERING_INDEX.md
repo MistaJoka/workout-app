@@ -56,6 +56,7 @@ Also read:
 - `docs/PIXEL_BLOOM_ANIMATION_SYSTEM.md`
 - `docs/PIXEL_BLOOM_FRONTEND_CONTEXT.md`
 - `docs/RAE_PRODUCTION_ASSET_PIPELINE.md` when producing/integrating Rae art or animation
+- `docs/RAE_EXERCISE_ANIMATION.md` for how Rae demonstrates exercises (drawn-frame strips, batch prompts, intake, runtime)
 - `assets/pixel-bloom/db/asset-db.json`
 - `assets/pixel-bloom/db/asset-db.schema.json`
 - `docs/DEFINITION_OF_DONE.md`
