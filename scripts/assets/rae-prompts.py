@@ -10,7 +10,11 @@ Writes content/rae-prompts/batch-NNN.md (to paste) and batch-NNN.json
 (for intake). Exercises Rae already demonstrates (strips.json) are
 skipped. Order: gentlest equipment first, beginner before advanced.
 
-Usage: rae-prompts.py [--force]  # write batches (--force rewrites and renumbers existing ones)
+Usage:
+  rae-prompts.py              # first run: write all batches
+  rae-prompts.py --force      # rewrite and renumber every batch
+  rae-prompts.py --from N     # keep batches 1..N-1 as they are; re-plan N onward
+                              # (e.g. after the library changes)
 """
 import json
 import re
@@ -68,6 +72,13 @@ def plan(e: dict) -> tuple[int, str]:
 def main() -> None:
     library = json.loads(LIBRARY.read_text())
     covered = {i for s in json.loads(STRIPS.read_text()) for i in s.get('exerciseIds', [])}
+    start = 1
+    if '--from' in sys.argv:
+        start = int(sys.argv[sys.argv.index('--from') + 1])
+        # Exercises in the kept batches are spoken for, drawn or not.
+        for kept in OUT.glob('batch-*.json'):
+            if int(kept.stem.split('-')[1]) < start:
+                covered |= {i['exerciseId'] for i in json.loads(kept.read_text())}
     todo = [e for e in library if e['id'] not in covered]
 
     def key(e: dict):
@@ -79,15 +90,17 @@ def main() -> None:
     todo.sort(key=key)
     OUT.mkdir(parents=True, exist_ok=True)
     existing = list(OUT.glob('batch-*.md'))
-    if existing and '--force' not in sys.argv:
+    if existing and '--force' not in sys.argv and '--from' not in sys.argv:
         # Batches are numbered once. Rewriting after some are drawn would
         # renumber the rest (the old batch 002 would become 001).
         raise SystemExit(f'{len(existing)} batches already exist; pass --force to rewrite and renumber them.')
     for old in OUT.glob('batch-*.*'):
-        old.unlink()
+        if int(old.stem.split('-')[1]) >= start:
+            old.unlink()
     batches = [todo[i:i + BATCH_SIZE] for i in range(0, len(todo), BATCH_SIZE)]
-    for n, batch in enumerate(batches, 1):
-        md = [f'# Rae batch {n:03d} of {len(batches)}\n', 'Paste everything below the line into the Rae chat, then download all images at once.\n', '---\n',
+    last = start + len(batches) - 1
+    for n, batch in enumerate(batches, start):
+        md = [f'# Rae batch {n:03d} of {last}\n', 'Paste everything below the line into the Rae chat, then download all images at once.\n', '---\n',
               HEADER.format(n=len(batch))]
         items = []
         for k, e in enumerate(batch, 1):
@@ -102,7 +115,7 @@ def main() -> None:
                           'frames': frames, 'view': view})
         (OUT / f'batch-{n:03d}.md').write_text('\n'.join(md))
         (OUT / f'batch-{n:03d}.json').write_text(json.dumps(items, indent=2) + '\n')
-    print(f'{len(todo)} exercises to draw in {len(batches)} batches of up to {BATCH_SIZE} -> {OUT.relative_to(ROOT)}')
+    print(f'{len(todo)} exercises to draw in batches {start:03d}-{last:03d} (up to {BATCH_SIZE} each) -> {OUT.relative_to(ROOT)}')
 
 
 if __name__ == '__main__':
