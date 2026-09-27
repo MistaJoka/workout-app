@@ -4,6 +4,13 @@ import { RAE_EXPRESSIONS, RaeFace, RaeFigure, type RaeExpression } from '../comp
 import { effectiveMotion, usePrefersReducedMotion } from '../components/MovementMedia'
 import { useTheme } from '../theme/ThemeContext'
 
+// Throwaway-spike renders registered as PROTOTYPE in asset-db; the real
+// rig engine replaces them.
+const MOTION_TESTS = [
+  { id: 'squat', name: 'Squat', width: 140, height: 265, stills: [['start', 'standing'], ['bottom', 'bottom of the squat']] },
+  { id: 'jumping-jack', name: 'Jumping jack', width: 120, height: 264, stills: [['start', 'start'], ['top', 'arms up']] },
+] as const
+
 export function MeetRaeScreen() {
   const [expression, setExpression] = useState<RaeExpression>('happy')
   const { motion } = useTheme()
@@ -45,24 +52,34 @@ export function MeetRaeScreen() {
         </div>
       </section>
 
-      <section className="field-info space-y-2 p-4 text-center">
-        <p className="font-bold">Jumping jack</p>
-        {animate ? (
-          <img
-            src="/rae/motion-jumping-jack.webp"
-            alt="Rae doing a jumping jack"
-            width={120}
-            height={264}
-            className="pixelated mx-auto"
-          />
-        ) : (
-          <div className="flex justify-center gap-4">
-            <img src="/rae/motion-jumping-jack-start.png" alt="Jumping jack, start" width={120} height={264} className="pixelated" />
-            <img src="/rae/motion-jumping-jack-top.png" alt="Jumping jack, arms up" width={120} height={264} className="pixelated" />
-          </div>
-        )}
-        <p className="text-sm text-ink-muted">First motion test. More moves are on the way.</p>
-      </section>
+      {MOTION_TESTS.map((test) => (
+        <section key={test.id} className="field-info space-y-2 p-4 text-center">
+          <p className="font-bold">{test.name}</p>
+          {animate ? (
+            <img
+              src={`/rae/motion-${test.id}.webp`}
+              alt={`Rae doing a ${test.name.toLowerCase()}`}
+              width={test.width}
+              height={test.height}
+              className="pixelated mx-auto"
+            />
+          ) : (
+            <div className="flex justify-center gap-4">
+              {test.stills.map(([file, label]) => (
+                <img
+                  key={file}
+                  src={`/rae/motion-${test.id}-${file}.png`}
+                  alt={`${test.name}, ${label}`}
+                  width={test.width}
+                  height={test.height}
+                  className="pixelated"
+                />
+              ))}
+            </div>
+          )}
+        </section>
+      ))}
+      <p className="text-center text-sm text-ink-muted">Early motion tests. More moves are on the way.</p>
     </div>
   )
 }

@@ -10,7 +10,7 @@
 //   deletes it, so a routine built from the library keeps its photos
 //   offline across app updates. The upstream revision is pinned, so the
 //   entries never go stale.
-const CACHE_NAME = 'workout-app-shell-v8'
+const CACHE_NAME = 'workout-app-shell-v9'
 const MEDIA_CACHE_NAME = 'workout-app-media-v1'
 
 // Movement photos are precached so a workout works fully offline even if
@@ -38,6 +38,9 @@ const RAE_URLS = [
   '/rae/motion-jumping-jack.webp',
   '/rae/motion-jumping-jack-start.png',
   '/rae/motion-jumping-jack-top.png',
+  '/rae/motion-squat.webp',
+  '/rae/motion-squat-start.png',
+  '/rae/motion-squat-bottom.png',
 ]
 const SHELL_URLS = ['/', '/manifest.json', ...MEDIA_URLS, ...RAE_URLS]
 
