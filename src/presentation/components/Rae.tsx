@@ -58,7 +58,7 @@ export function RaeFigure({ view, height = 240 }: FigureProps) {
       alt={view === 'front' ? 'Rae, front view' : 'Rae, three-quarter view'}
       height={height}
       width={Math.round(height * aspect)}
-      className="rae-bob"
+      className="rae-breathe"
       draggable={false}
     />
   )

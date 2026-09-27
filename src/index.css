@@ -254,6 +254,13 @@ input[type='range'] {
   100% { transform: scale(1) translateY(0); }
 }
 .rae-bob { animation: rae-bob 2.6s ease-in-out infinite; }
+/* Full-body Rae stands on the floor: she breathes (a tiny stretch from the
+   feet up) instead of bobbing, so her soles never leave the ground. */
+@keyframes rae-breathe {
+  0%, 100% { transform: scaleY(1); }
+  50% { transform: scaleY(1.012); }
+}
+.rae-breathe { animation: rae-breathe 3.2s ease-in-out infinite; transform-origin: 50% 100%; }
 .rae-pop { animation: rae-pop 0.55s cubic-bezier(0.2, 0.9, 0.3, 1.2) both; }
 .pixelated { image-rendering: pixelated; }
 
@@ -279,8 +286,9 @@ input[type='range'] {
 .rae-room__figure {
   position: absolute;
   left: 50%;
-  bottom: 22px;
+  bottom: 27px;
   transform: translateX(-50%);
+  line-height: 0;
 }
 .rae-room__bulb {
   animation: rae-twinkle 2.8s ease-in-out infinite;

@@ -90,6 +90,8 @@ export function RaeHero({ part }: { part: DayPart }) {
         <ellipse cx="180" cy="252" rx="112" ry="20" fill="#e9c6f2" />
         <ellipse cx="180" cy="252" rx="92" ry="15" fill="#f7cfe0" />
         <ellipse cx="180" cy="252" rx="70" ry="10" fill="#fde3ec" />
+        {/* Contact shadow under her feet */}
+        <ellipse cx="180" cy="254" rx="30" ry="5" fill="#b48aa6" opacity="0.45" />
 
         {/* Plant */}
         <ellipse cx="316" cy="196" rx="12" ry="22" fill="#7cc49a" transform="rotate(-24 316 196)" />
