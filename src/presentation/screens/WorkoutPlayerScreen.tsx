@@ -5,8 +5,10 @@ import type { SessionPlan, SessionState } from '../../domain/session/types'
 import { isRestComplete, remainingRestMs } from '../../domain/session/restTimer'
 import { getExercises } from '../../domain/content/catalog'
 import type { Exercise } from '../../domain/content/types'
-import { MovementMedia } from '../components/MovementMedia'
-import { RaeFace } from '../components/Rae'
+import { MovementMedia, effectiveMotion, usePrefersReducedMotion } from '../components/MovementMedia'
+import { RaeExerciseLoop, RaeFace } from '../components/Rae'
+import { raeLoopForExercise } from '../components/raeLoops'
+import { useTheme } from '../theme/ThemeContext'
 import { ThumbBar } from '../components/ThumbBar'
 import { getLastTimeSummary } from '../../application/lastTime'
 import { primeAudio, restEndFeedback } from '../../application/restFeedback'
@@ -121,7 +123,8 @@ export function WorkoutPlayerScreen() {
   if (state.status === 'PAUSED') {
     return (
       <div className="p-6 pt-16 pb-32 text-center space-y-4">
-        <p className="text-2xl font-bold">Paused</p>
+        <RaeFace expression="smile" size={112} motion="pop" className="mx-auto" />
+        <p className="text-2xl font-bold">Take your time</p>
         <p className="text-ink-muted">
           {plan.exercises[state.currentExerciseIndex]?.name}, set {state.currentSetNumber}
         </p>
@@ -138,6 +141,8 @@ export function WorkoutPlayerScreen() {
   if (state.status === 'RESTING' && state.restEndsAt) {
     return (
       <RestingView
+        upNext={plan.exercises[state.currentExerciseIndex]}
+        setNumber={state.currentSetNumber}
         restStartedAt={state.restStartedAt}
         restEndsAt={state.restEndsAt}
         busy={busy}
@@ -345,6 +350,8 @@ function secondsUntil(restEndsAt: string): number {
 }
 
 function RestingView({
+  upNext,
+  setNumber,
   restStartedAt,
   restEndsAt,
   busy,
@@ -354,6 +361,9 @@ function RestingView({
   onSkip,
   onPause,
 }: {
+  // During rest the session already points at the coming set.
+  upNext: { exerciseId: string; name: string } | undefined
+  setNumber: number
   restStartedAt: string | null
   restEndsAt: string
   busy: boolean
@@ -402,6 +412,7 @@ function RestingView({
         {Math.floor(seconds / 60)}:{String(seconds % 60).padStart(2, '0')}
       </p>
       <RestBar restStartedAt={restStartedAt} restEndsAt={restEndsAt} seconds={seconds} />
+      {upNext && <UpNext exerciseId={upNext.exerciseId} name={upNext.name} setNumber={setNumber} />}
       {error && <p className="text-sm text-accent">{error}</p>}
       {/* Skip rest is the tap after nearly every rest: primary, full reach.
           +15s beside it; Pause (a phone call, a doorbell) stays up top. */}
@@ -413,6 +424,34 @@ function RestingView({
           Skip rest
         </button>
       </ThumbBar>
+    </div>
+  )
+}
+
+// Rest previews what's coming: Rae's loop for the next move, small, under
+// the timer (which stays the focus). Text only when Rae doesn't demonstrate
+// that move yet.
+function UpNext({ exerciseId, name, setNumber }: { exerciseId: string; name: string; setNumber: number }) {
+  const { motion } = useTheme()
+  const osPrefersReduced = usePrefersReducedMotion()
+  const loop = raeLoopForExercise(exerciseId)
+  return (
+    <div className="space-y-1">
+      <p className="text-sm font-semibold text-ink-muted">
+        Up next: {name}
+        {setNumber > 1 ? `, set ${setNumber}` : ''}
+      </p>
+      {loop && (
+        <RaeExerciseLoop
+          id={loop.id}
+          name={name.toLowerCase()}
+          width={loop.width}
+          height={loop.height}
+          stills={loop.stills}
+          animate={effectiveMotion(motion, osPrefersReduced) === 'full'}
+          imgClassName="max-h-[20vh] w-auto"
+        />
+      )}
     </div>
   )
 }
