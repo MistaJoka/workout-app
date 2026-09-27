@@ -3,6 +3,7 @@ import { BackButton } from '../components/BackButton'
 import { RAE_EXPRESSIONS, RaeExerciseLoop, RaeFace, RaeFigure, type RaeExpression } from '../components/Rae'
 import { effectiveMotion, usePrefersReducedMotion } from '../components/MovementMedia'
 import { useTheme } from '../theme/ThemeContext'
+import RAE_LOOPS from '../components/raeLoops.generated.json'
 
 export function MeetRaeScreen() {
   const [expression, setExpression] = useState<RaeExpression>('happy')
@@ -45,10 +46,20 @@ export function MeetRaeScreen() {
         </div>
       </section>
 
-      <section className="field-info space-y-2 p-4 text-center">
-        <p className="font-bold">Squat</p>
-        <RaeExerciseLoop id="ex-squat" name="squat" width={204} height={264} stills={[0, 2]} animate={animate} />
-      </section>
+      <h2 className="pt-2 text-lg font-bold">Moves</h2>
+      {RAE_LOOPS.map((loop) => (
+        <section key={loop.id} className="field-info space-y-2 p-4 text-center">
+          <p className="font-bold">{loop.name}</p>
+          <RaeExerciseLoop
+            id={loop.id}
+            name={loop.name.toLowerCase()}
+            width={loop.width}
+            height={loop.height}
+            stills={loop.stills}
+            animate={animate}
+          />
+        </section>
+      ))}
     </div>
   )
 }

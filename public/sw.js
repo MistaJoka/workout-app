@@ -10,7 +10,7 @@
 //   deletes it, so a routine built from the library keeps its photos
 //   offline across app updates. The upstream revision is pinned, so the
 //   entries never go stale.
-const CACHE_NAME = 'workout-app-shell-v11'
+const CACHE_NAME = 'workout-app-shell-v12'
 const MEDIA_CACHE_NAME = 'workout-app-media-v1'
 
 // Movement photos are precached so a workout works fully offline even if
@@ -35,16 +35,26 @@ const RAE_URLS = [
   ...RAE_EXPRESSIONS.map((e) => `/rae/expr-${e}.png`),
   '/rae/full-front.png',
   '/rae/full-3q.png',
-  '/rae/ex-squat.webp',
-  '/rae/ex-squat-0.png',
-  '/rae/ex-squat-1.png',
-  '/rae/ex-squat-2.png',
-  '/rae/ex-squat-3.png',
+  '/rae/loops.json',
 ]
 const SHELL_URLS = ['/', '/manifest.json', ...MEDIA_URLS, ...RAE_URLS]
 
 self.addEventListener('install', (event) => {
-  event.waitUntil(caches.open(CACHE_NAME).then((cache) => cache.addAll(SHELL_URLS)))
+  // Rae's exercise loops are listed in /rae/loops.json (written by
+  // scripts/assets/build-rae-strips.py), so new moves are precached without
+  // editing this file. Still bump CACHE_NAME when loops change.
+  event.waitUntil(
+    caches.open(CACHE_NAME).then(async (cache) => {
+      await cache.addAll(SHELL_URLS)
+      const loops = await (await fetch('/rae/loops.json')).json()
+      await cache.addAll(
+        loops.flatMap((loop) => [
+          `/rae/${loop.id}.webp`,
+          ...loop.stills.map((frame) => `/rae/${loop.id}-${frame}.png`),
+        ])
+      )
+    })
+  )
   self.skipWaiting()
 })
 

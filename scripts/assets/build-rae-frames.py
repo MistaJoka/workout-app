@@ -27,6 +27,7 @@ from scipy import ndimage as nd
 ROOT = Path(__file__).resolve().parents[2]
 OUT = ROOT / 'public/rae'
 SPRITE_HEIGHT = 264  # logical px of the tallest frame (bible base scale ~256)
+SPRITE_MAX_WIDTH = 360  # floor exercises are wide and short; fit them in this box
 
 
 def key_magenta(rgb: np.ndarray) -> np.ndarray:
@@ -67,12 +68,15 @@ def main() -> None:
     ap.add_argument('--order', default='0,1,2,3', help='playback order of key frames')
     ap.add_argument('--hold', default='', help='frame:ticks pairs, e.g. 0:3,2:2')
     ap.add_argument('--fps', type=int, default=8)
-    ap.add_argument('--anchor', choices=['foot', 'center'], default='foot')
+    ap.add_argument('--anchor', choices=['foot', 'center', 'grid'], default='foot',
+                    help="grid: frames sit in N equal slots across the strip and keep the position they were drawn at (floor moves, props)")
     args = ap.parse_args()
 
     rgb = np.asarray(Image.open(args.strip).convert('RGB'))
     fg = key_magenta(rgb)
-    labels, _ = nd.label(fg)
+    if args.anchor == 'grid':
+        build(grid_frames(rgb, fg, args.frames), args)
+        return
     boxes = split_frames(fg, args.frames)
 
     frames = []
@@ -111,6 +115,50 @@ def main() -> None:
         c[y:y + f.shape[0], x:x + f.shape[1]] = f
         aligned.append(c)
 
+    build(aligned, args)
+
+
+def grid_frames(rgb: np.ndarray, fg: np.ndarray, n: int) -> list[np.ndarray]:
+    """Frames sit in n equal slots and keep the position they were drawn at.
+
+    Each connected piece belongs to the slot its centre falls in and keeps
+    its full extent, even where an outstretched limb crosses into the next
+    slot. Gaps enclosed by limbs or props (under a bench, between arms) are
+    real background, so holes are not filled here.
+    """
+    labels, count = nd.label(fg)
+    sizes = nd.sum(fg, labels, range(1, count + 1))
+    centres = nd.center_of_mass(fg, labels, range(1, count + 1))
+    ys = np.where(fg.any(1))[0]
+    y0, y1 = ys.min(), ys.max() + 1
+    slot = fg.shape[1] / n
+    margin = int(slot * 0.5)
+    out = []
+    for i in range(n):
+        ids = [k + 1 for k, (area, (_, cx)) in enumerate(zip(sizes, centres))
+               if area >= 150 and i * slot <= cx < (i + 1) * slot]
+        m = np.isin(labels, ids)
+        x0 = int(i * slot) - margin
+        x1 = x0 + int(slot) + 2 * margin  # same width for every frame
+        win = np.zeros((y1 - y0, x1 - x0), bool)
+        img = np.zeros((y1 - y0, x1 - x0, 3), np.uint8)
+        sx0, sx1 = max(0, x0), min(fg.shape[1], x1)
+        win[:, sx0 - x0:sx1 - x0] = m[y0:y1, sx0:sx1]
+        img[:, sx0 - x0:sx1 - x0] = rgb[y0:y1, sx0:sx1]
+        out.append(despill(np.dstack([img, win * 255]).astype(np.uint8)))
+    return out
+
+
+def build(aligned: list[np.ndarray], args) -> None:
+    canvas_h, canvas_w = aligned[0].shape[:2]
+    # Trim empty rows/columns shared by every frame.
+    union = np.zeros((canvas_h, canvas_w), bool)
+    for c in aligned:
+        union |= c[..., 3] > 0
+    ys, xs = np.where(union.any(1))[0], np.where(union.any(0))[0]
+    aligned = [c[ys.min():ys.max() + 1, xs.min():xs.max() + 1] for c in aligned]
+    canvas_h, canvas_w = aligned[0].shape[:2]
+
     # Centre the canvas on the first frame's body (its opaque-pixel centroid),
     # not on the union of all frames: reaching arms would otherwise push her
     # standing body off-centre wherever the loop is shown.
@@ -120,8 +168,8 @@ def main() -> None:
     canvas_w = 2 * half
     aligned = [np.pad(c, ((0, 0), (pad_left, canvas_w - c.shape[1] - pad_left), (0, 0))) for c in aligned]
 
-    scale = SPRITE_HEIGHT / canvas_h
-    size = (max(1, round(canvas_w * scale)), SPRITE_HEIGHT)
+    scale = min(SPRITE_HEIGHT / canvas_h, SPRITE_MAX_WIDTH / canvas_w)
+    size = (max(1, round(canvas_w * scale)), max(1, round(canvas_h * scale)))
     small = []
     for c in aligned:
         im = Image.fromarray(c, 'RGBA')

@@ -1,0 +1,33 @@
+{
+  "id": "ex-bird-dog",
+  "source": "bird-dog-strip-v1.png",
+  "frameWidth": 360,
+  "frameHeight": 183,
+  "frames": 6,
+  "timeline": [
+    {
+      "frame": 0,
+      "ms": 250
+    },
+    {
+      "frame": 1,
+      "ms": 125
+    },
+    {
+      "frame": 2,
+      "ms": 375
+    },
+    {
+      "frame": 3,
+      "ms": 125
+    },
+    {
+      "frame": 4,
+      "ms": 125
+    },
+    {
+      "frame": 5,
+      "ms": 250
+    }
+  ]
+}

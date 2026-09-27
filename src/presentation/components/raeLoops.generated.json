@@ -1,0 +1,170 @@
+[
+  {
+    "id": "ex-squat",
+    "name": "Squat",
+    "width": 204,
+    "height": 264,
+    "stills": [
+      0,
+      2
+    ]
+  },
+  {
+    "id": "ex-incline-push-up",
+    "name": "Incline push-up",
+    "width": 211,
+    "height": 264,
+    "stills": [
+      0,
+      3
+    ]
+  },
+  {
+    "id": "ex-single-leg-glute-bridge",
+    "name": "Single-leg glute bridge",
+    "width": 360,
+    "height": 211,
+    "stills": [
+      0,
+      3
+    ]
+  },
+  {
+    "id": "ex-dead-bug",
+    "name": "Dead bug",
+    "width": 360,
+    "height": 144,
+    "stills": [
+      0,
+      2
+    ]
+  },
+  {
+    "id": "ex-plank",
+    "name": "Plank",
+    "width": 360,
+    "height": 153,
+    "stills": [
+      0
+    ]
+  },
+  {
+    "id": "ex-walking-lunge",
+    "name": "Walking lunge",
+    "width": 215,
+    "height": 264,
+    "stills": [
+      0,
+      3
+    ]
+  },
+  {
+    "id": "ex-glute-bridge",
+    "name": "Glute bridge",
+    "width": 360,
+    "height": 145,
+    "stills": [
+      0,
+      3
+    ]
+  },
+  {
+    "id": "ex-crunches",
+    "name": "Crunches",
+    "width": 360,
+    "height": 163,
+    "stills": [
+      0,
+      2
+    ]
+  },
+  {
+    "id": "ex-superman",
+    "name": "Superman",
+    "width": 360,
+    "height": 122,
+    "stills": [
+      0,
+      2
+    ]
+  },
+  {
+    "id": "ex-bird-dog",
+    "name": "Bird dog",
+    "width": 360,
+    "height": 183,
+    "stills": [
+      0,
+      2
+    ]
+  },
+  {
+    "id": "ex-cat-cow",
+    "name": "Cat-cow",
+    "width": 353,
+    "height": 264,
+    "stills": [
+      1,
+      3
+    ]
+  },
+  {
+    "id": "ex-side-plank",
+    "name": "Side plank",
+    "width": 360,
+    "height": 228,
+    "stills": [
+      0
+    ]
+  },
+  {
+    "id": "ex-step-up",
+    "name": "Step-up",
+    "width": 172,
+    "height": 264,
+    "stills": [
+      0,
+      3
+    ]
+  },
+  {
+    "id": "ex-dumbbell-rdl",
+    "name": "Dumbbell RDL",
+    "width": 189,
+    "height": 264,
+    "stills": [
+      0,
+      3
+    ]
+  },
+  {
+    "id": "ex-seated-dumbbell-press",
+    "name": "Seated dumbbell press",
+    "width": 179,
+    "height": 264,
+    "stills": [
+      0,
+      2
+    ]
+  },
+  {
+    "id": "ex-dumbbell-row",
+    "name": "One-arm dumbbell row",
+    "width": 210,
+    "height": 264,
+    "stills": [
+      0,
+      2
+    ]
+  },
+  {
+    "id": "ex-split-squat",
+    "name": "Split squat",
+    "width": 286,
+    "height": 264,
+    "stills": [
+      0,
+      2
+    ]
+  }
+]

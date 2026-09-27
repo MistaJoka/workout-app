@@ -1,0 +1,274 @@
+[
+  {
+    "id": "squat",
+    "name": "Squat",
+    "source": "squat-strip-v1.png",
+    "downloadedAs": "ChatGPT Image Sep 26, 2026, 09_46_19 PM.png",
+    "frames": 4,
+    "anchor": "foot",
+    "order": "0,1,2,3",
+    "hold": "0:4,1:2,2:4,3:2",
+    "fps": 8,
+    "stills": [
+      0,
+      2
+    ],
+    "batch": "curated"
+  },
+  {
+    "id": "incline-push-up",
+    "name": "Incline push-up",
+    "source": "incline-push-up-strip-v1.png",
+    "downloadedAs": "ChatGPT Image Sep 26, 2026, 10_02_51 PM-1.png",
+    "frames": 6,
+    "anchor": "grid",
+    "order": "0,1,2,3,4,5",
+    "hold": "0:3,3:3",
+    "fps": 8,
+    "stills": [
+      0,
+      3
+    ],
+    "batch": "curated"
+  },
+  {
+    "id": "single-leg-glute-bridge",
+    "name": "Single-leg glute bridge",
+    "source": "single-leg-glute-bridge-strip-v1.png",
+    "downloadedAs": "ChatGPT Image Sep 26, 2026, 10_02_52 PM-2.png",
+    "frames": 5,
+    "anchor": "grid",
+    "order": "0,1,2,3,4",
+    "hold": "0:3,3:3",
+    "fps": 8,
+    "stills": [
+      0,
+      3
+    ],
+    "batch": "curated"
+  },
+  {
+    "id": "dead-bug",
+    "name": "Dead bug",
+    "source": "dead-bug-strip-v1.png",
+    "downloadedAs": "ChatGPT Image Sep 26, 2026, 10_02_53 PM-3.png",
+    "frames": 6,
+    "anchor": "grid",
+    "order": "0,1,2,3,4",
+    "hold": "0:2,2:3",
+    "fps": 8,
+    "notes": "Frame 6 (index 5) is drawn mirrored (head on the other side), so it is left out of the loop.",
+    "stills": [
+      0,
+      2
+    ],
+    "batch": "curated"
+  },
+  {
+    "id": "plank",
+    "name": "Plank",
+    "source": "plank-strip-v1.png",
+    "downloadedAs": "ChatGPT Image Sep 26, 2026, 10_02_54 PM-4.png",
+    "frames": 3,
+    "anchor": "grid",
+    "order": "0,1,2",
+    "hold": "0:5,1:5,2:5",
+    "fps": 8,
+    "stills": [
+      0
+    ],
+    "batch": "curated"
+  },
+  {
+    "id": "walking-lunge",
+    "name": "Walking lunge",
+    "source": "walking-lunge-strip-v1.png",
+    "downloadedAs": "ChatGPT Image Sep 26, 2026, 10_02_56 PM-5.png",
+    "frames": 6,
+    "anchor": "grid",
+    "order": "0,1,2,3,4,5",
+    "hold": "0:3,3:3",
+    "fps": 8,
+    "stills": [
+      0,
+      3
+    ],
+    "batch": "curated"
+  },
+  {
+    "id": "glute-bridge",
+    "name": "Glute bridge",
+    "source": "glute-bridge-strip-v1.png",
+    "downloadedAs": "ChatGPT Image Sep 26, 2026, 10_02_58 PM-6.png",
+    "frames": 5,
+    "anchor": "grid",
+    "order": "0,1,2,3,4",
+    "hold": "0:3,3:3",
+    "fps": 8,
+    "stills": [
+      0,
+      3
+    ],
+    "batch": "curated"
+  },
+  {
+    "id": "crunches",
+    "name": "Crunches",
+    "source": "crunches-strip-v1.png",
+    "downloadedAs": "ChatGPT Image Sep 26, 2026, 10_02_59 PM-7.png",
+    "frames": 4,
+    "anchor": "grid",
+    "order": "0,1,2,3",
+    "hold": "0:3,2:3",
+    "fps": 8,
+    "stills": [
+      0,
+      2
+    ],
+    "batch": "curated"
+  },
+  {
+    "id": "superman",
+    "name": "Superman",
+    "source": "superman-strip-v1.png",
+    "downloadedAs": "ChatGPT Image Sep 26, 2026, 10_03_00 PM-8.png",
+    "frames": 4,
+    "anchor": "grid",
+    "order": "0,1,2,3",
+    "hold": "0:3,2:4",
+    "fps": 8,
+    "stills": [
+      0,
+      2
+    ],
+    "batch": "curated"
+  },
+  {
+    "id": "bird-dog",
+    "name": "Bird dog",
+    "source": "bird-dog-strip-v1.png",
+    "downloadedAs": "ChatGPT Image Sep 26, 2026, 10_10_05 PM-1.png",
+    "frames": 6,
+    "anchor": "grid",
+    "order": "0,1,2,3,4,5",
+    "hold": "0:2,2:3,5:2",
+    "fps": 8,
+    "stills": [
+      0,
+      2
+    ],
+    "batch": "extra"
+  },
+  {
+    "id": "cat-cow",
+    "name": "Cat-cow",
+    "source": "cat-cow-strip-v1.png",
+    "downloadedAs": "ChatGPT Image Sep 26, 2026, 10_10_06 PM-2.png",
+    "frames": 4,
+    "anchor": "grid",
+    "order": "0,1,2,3",
+    "hold": "0:3,1:4,2:3,3:4",
+    "fps": 8,
+    "stills": [
+      1,
+      3
+    ],
+    "batch": "extra"
+  },
+  {
+    "id": "side-plank",
+    "name": "Side plank",
+    "source": "side-plank-strip-v1.png",
+    "downloadedAs": "ChatGPT Image Sep 26, 2026, 10_10_07 PM-3.png",
+    "frames": 3,
+    "anchor": "grid",
+    "order": "0,1,2",
+    "hold": "0:5,1:5,2:5",
+    "fps": 8,
+    "stills": [
+      0
+    ],
+    "batch": "extra"
+  },
+  {
+    "id": "step-up",
+    "name": "Step-up",
+    "source": "step-up-strip-v1.png",
+    "downloadedAs": "ChatGPT Image Sep 26, 2026, 10_10_08 PM-4.png",
+    "frames": 6,
+    "anchor": "grid",
+    "order": "0,1,2,3,4,5",
+    "hold": "0:3,3:3",
+    "fps": 8,
+    "stills": [
+      0,
+      3
+    ],
+    "batch": "extra"
+  },
+  {
+    "id": "dumbbell-rdl",
+    "name": "Dumbbell RDL",
+    "source": "dumbbell-rdl-strip-v1.png",
+    "downloadedAs": "ChatGPT Image Sep 26, 2026, 10_10_09 PM-5.png",
+    "frames": 5,
+    "anchor": "grid",
+    "order": "0,1,2,3,4",
+    "hold": "0:3,3:3",
+    "fps": 8,
+    "stills": [
+      0,
+      3
+    ],
+    "batch": "extra"
+  },
+  {
+    "id": "seated-dumbbell-press",
+    "name": "Seated dumbbell press",
+    "source": "seated-dumbbell-press-strip-v1.png",
+    "downloadedAs": "ChatGPT Image Sep 26, 2026, 10_10_12 PM-6.png",
+    "frames": 5,
+    "anchor": "grid",
+    "order": "0,1,2,3,4",
+    "hold": "0:3,2:3",
+    "fps": 8,
+    "stills": [
+      0,
+      2
+    ],
+    "batch": "extra"
+  },
+  {
+    "id": "dumbbell-row",
+    "name": "One-arm dumbbell row",
+    "source": "dumbbell-row-strip-v1.png",
+    "downloadedAs": "ChatGPT Image Sep 26, 2026, 10_10_13 PM-7.png",
+    "frames": 5,
+    "anchor": "grid",
+    "order": "0,1,2,3,4",
+    "hold": "0:3,2:3",
+    "fps": 8,
+    "stills": [
+      0,
+      2
+    ],
+    "batch": "extra"
+  },
+  {
+    "id": "split-squat",
+    "name": "Split squat",
+    "source": "split-squat-strip-v1.png",
+    "downloadedAs": "ChatGPT Image Sep 26, 2026, 10_10_14 PM-8.png",
+    "frames": 4,
+    "anchor": "grid",
+    "order": "0,1,2,3",
+    "hold": "0:3,2:3",
+    "fps": 8,
+    "notes": "The 4 frames barely differ, so the loop hardly moves. Needs a redraw with real depth change.",
+    "stills": [
+      0,
+      2
+    ],
+    "batch": "extra"
+  }
+]

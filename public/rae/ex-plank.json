@@ -1,0 +1,21 @@
+{
+  "id": "ex-plank",
+  "source": "plank-strip-v1.png",
+  "frameWidth": 360,
+  "frameHeight": 153,
+  "frames": 3,
+  "timeline": [
+    {
+      "frame": 0,
+      "ms": 625
+    },
+    {
+      "frame": 1,
+      "ms": 625
+    },
+    {
+      "frame": 2,
+      "ms": 625
+    }
+  ]
+}

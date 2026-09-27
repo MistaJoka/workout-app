@@ -1,0 +1,21 @@
+{
+  "id": "ex-side-plank",
+  "source": "side-plank-strip-v1.png",
+  "frameWidth": 360,
+  "frameHeight": 228,
+  "frames": 3,
+  "timeline": [
+    {
+      "frame": 0,
+      "ms": 625
+    },
+    {
+      "frame": 1,
+      "ms": 625
+    },
+    {
+      "frame": 2,
+      "ms": 625
+    }
+  ]
+}
