@@ -8,6 +8,7 @@
       0,
       2
     ],
+    "v": "bf59c4a034",
     "exerciseIds": [
       "fs.bodyweight-squat",
       "lib.Bodyweight_Squat"
@@ -24,6 +25,7 @@
       0,
       3
     ],
+    "v": "8e1908bdc6",
     "exerciseIds": [
       "fs.incline-push-up",
       "lib.Incline_Push-Up"
@@ -40,6 +42,7 @@
       0,
       3
     ],
+    "v": "7c9079a6d4",
     "exerciseIds": [
       "fs.single-leg-glute-bridge",
       "lib.Single_Leg_Glute_Bridge"
@@ -56,6 +59,7 @@
       0,
       2
     ],
+    "v": "7c16c41962",
     "exerciseIds": [
       "fs.dead-bug",
       "lib.Dead_Bug"
@@ -71,6 +75,7 @@
     "stills": [
       0
     ],
+    "v": "032147ff03",
     "exerciseIds": [
       "fs.plank",
       "lib.Plank"
@@ -87,6 +92,7 @@
       0,
       3
     ],
+    "v": "75d749b59a",
     "exerciseIds": [
       "fs.walking-lunge",
       "lib.Bodyweight_Walking_Lunge"
@@ -103,6 +109,7 @@
       0,
       3
     ],
+    "v": "2d61991d33",
     "exerciseIds": [
       "fs.glute-bridge",
       "lib.Butt_Lift_Bridge"
@@ -119,6 +126,7 @@
       0,
       2
     ],
+    "v": "adbc9de9fc",
     "exerciseIds": [
       "fs.crunches",
       "lib.Crunches"
@@ -135,6 +143,7 @@
       0,
       2
     ],
+    "v": "24efa9bbe7",
     "exerciseIds": [
       "fs.superman",
       "lib.Superman"
@@ -151,6 +160,7 @@
       0,
       2
     ],
+    "v": "16d486595f",
     "exerciseIds": [],
     "featured": true,
     "group": "More moves"
@@ -164,6 +174,7 @@
       1,
       3
     ],
+    "v": "1f8dd6aebe",
     "exerciseIds": [],
     "featured": true,
     "group": "More moves"
@@ -176,6 +187,7 @@
     "stills": [
       0
     ],
+    "v": "05129f692c",
     "exerciseIds": [],
     "featured": true,
     "group": "More moves"
@@ -189,6 +201,7 @@
       0,
       3
     ],
+    "v": "670c75bc74",
     "exerciseIds": [],
     "featured": true,
     "group": "More moves"
@@ -202,6 +215,7 @@
       0,
       3
     ],
+    "v": "db855d7642",
     "exerciseIds": [
       "lib.Stiff-Legged_Dumbbell_Deadlift"
     ],
@@ -217,6 +231,7 @@
       0,
       2
     ],
+    "v": "4fad81c323",
     "exerciseIds": [
       "lib.Seated_Dumbbell_Press"
     ],
@@ -232,6 +247,7 @@
       0,
       2
     ],
+    "v": "0dfec9cb27",
     "exerciseIds": [
       "lib.One-Arm_Dumbbell_Row"
     ],
@@ -247,6 +263,7 @@
       0,
       2
     ],
+    "v": "daeebfe2ef",
     "exerciseIds": [
       "lib.Split_Squats"
     ],
@@ -262,6 +279,7 @@
       0,
       2
     ],
+    "v": "979c7163b9",
     "exerciseIds": [
       "lib.3_4_Sit-Up"
     ],
@@ -276,6 +294,7 @@
     "stills": [
       0
     ],
+    "v": "01401ce66d",
     "exerciseIds": [
       "lib.90_90_Hamstring"
     ],
@@ -291,6 +310,7 @@
       0,
       2
     ],
+    "v": "b4facc003d",
     "exerciseIds": [
       "lib.Air_Bike"
     ],
@@ -306,6 +326,7 @@
       0,
       2
     ],
+    "v": "cd6b434f05",
     "exerciseIds": [
       "lib.Alternate_Heel_Touchers"
     ],
@@ -321,6 +342,7 @@
       0,
       2
     ],
+    "v": "70bf040137",
     "exerciseIds": [
       "lib.Bench_Dips"
     ],
@@ -336,6 +358,7 @@
       0,
       2
     ],
+    "v": "ade4350f2e",
     "exerciseIds": [
       "lib.Bent-Knee_Hip_Raise"
     ],
@@ -351,6 +374,7 @@
       0,
       2
     ],
+    "v": "f07ee68bdf",
     "exerciseIds": [
       "lib.Body_Tricep_Press"
     ],
@@ -366,6 +390,7 @@
       0,
       2
     ],
+    "v": "f4f6e3f944",
     "exerciseIds": [
       "lib.Bottoms_Up"
     ],
@@ -381,6 +406,7 @@
       0,
       3
     ],
+    "v": "73675afa62",
     "exerciseIds": [
       "rae.chair-sit-to-stand-arms-forward"
     ],
@@ -396,6 +422,7 @@
       0,
       3
     ],
+    "v": "2dd54ce1fe",
     "exerciseIds": [
       "rae.chair-sit-to-stand-hands-on-thighs"
     ],
@@ -411,6 +438,7 @@
       0,
       4
     ],
+    "v": "2d1ef8370f",
     "exerciseIds": [
       "rae.chair-sit-to-stand-overhead-reach"
     ],
@@ -426,6 +454,7 @@
       0,
       3
     ],
+    "v": "62875dd652",
     "exerciseIds": [
       "rae.chair-sit-to-stand-hands-clasped"
     ],
@@ -441,6 +470,7 @@
       0,
       3
     ],
+    "v": "9fa70378f3",
     "exerciseIds": [
       "rae.chair-sit-to-stand-arms-crossed"
     ],
@@ -456,6 +486,7 @@
       0,
       3
     ],
+    "v": "ba56c99c9f",
     "exerciseIds": [
       "rae.chair-sit-to-stand-push-off-knees"
     ],
@@ -471,6 +502,7 @@
       0,
       3
     ],
+    "v": "e3682f8d3c",
     "exerciseIds": [
       "rae.chair-squat-tap"
     ],
@@ -486,6 +518,7 @@
       0,
       2
     ],
+    "v": "597e86b94e",
     "exerciseIds": [
       "rae.mini-squat"
     ],
@@ -501,6 +534,7 @@
       0,
       2
     ],
+    "v": "523df647c0",
     "exerciseIds": [
       "rae.reverse-lunge"
     ],
@@ -516,6 +550,7 @@
       0,
       2
     ],
+    "v": "d04be2b8ce",
     "exerciseIds": [
       "rae.seated-march"
     ],
@@ -531,6 +566,7 @@
       0,
       2
     ],
+    "v": "7e128dcfc0",
     "exerciseIds": [
       "rae.seated-ankle-pumps"
     ],
@@ -546,6 +582,7 @@
       0,
       2
     ],
+    "v": "218979d0be",
     "exerciseIds": [
       "rae.seated-knee-extension"
     ],
@@ -561,6 +598,7 @@
       0,
       1
     ],
+    "v": "495d60ac89",
     "exerciseIds": [
       "rae.seated-forward-reach"
     ],
@@ -576,6 +614,7 @@
       0,
       1
     ],
+    "v": "500d5027b8",
     "exerciseIds": [
       "rae.seated-torso-rotation"
     ],
@@ -591,6 +630,7 @@
       0,
       2
     ],
+    "v": "4777a62bf0",
     "exerciseIds": [
       "rae.chair-supported-knee-lift"
     ],
