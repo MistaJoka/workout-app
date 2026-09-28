@@ -28,7 +28,7 @@
     "exerciseId": "lib.Side_Leg_Raises",
     "slug": "side-leg-raises",
     "name": "Side Leg Raises",
-    "frames": 3,
+    "frames": 4,
     "view": "Side view"
   },
   {
@@ -52,7 +52,7 @@
     "exerciseId": "lib.Standing_Hip_Circles",
     "slug": "standing-hip-circles",
     "name": "Standing Hip Circles",
-    "frames": 3,
+    "frames": 4,
     "view": "Side view"
   },
   {

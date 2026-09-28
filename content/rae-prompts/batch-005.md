@@ -26,8 +26,8 @@ Steps: Lie down on the floor with your legs fully extended and arms to the side 
 Frames: a held position: 1) settle in, 2) the hold with a tiny breath in, 3) the hold.
 Steps: To begin, lie down with your back pressed against the floor or on an exercise mat (optional). Your arms should be fully extended to the sides with your palms facing down. Note: The arms should be stationary the entire time. With a slight bend at the knees, lift your legs up so that your heels are about 6 inches off the ground. This is the starting position. Now lift your left leg up to about a 45 degree angle while your right leg is lowered until the heel is about 2-3 inches from the ground. Switch movements by raising your right leg up and lowering your left leg. Remember to breathe while performing this exercise. Repeat for the recommended amount of repetitions.
 
-**4. Side Leg Raises** (Side view, 3 frames; equipment: none)
-Frames: a held position: 1) settle in, 2) the hold with a tiny breath in, 3) the hold.
+**4. Side Leg Raises** (Side view, 4 frames; equipment: none)
+Frames: 1) start position, 2) swing forward to the top, 3) back through the middle, 4) swing back to the other end.
 Steps: Stand next to a chair, which you may hold onto as a support. Stand on one leg. This will be your starting position. Keeping your leg straight, raise it as far out to the side as possible, and swing it back down, allowing it to cross the opposite leg. Repeat this swinging motion 5-10 times, increasing the range of motion as you do so.
 
 **5. Sit-Up** (Side view, 4 frames; equipment: none)
@@ -38,8 +38,8 @@ Steps: Lie down on the floor placing your feet either under something that will 
 Frames: 1) start position, 2) halfway, 3) end of the movement (peak), 4) halfway back.
 Steps: Begin in a prone position on the floor. Support your weight on your hands and toes, with your feet together and your body straight. Your arms should be bent to 90 degrees. This will be your starting position. Initiate the movement by raising one foot off of the ground. Externally rotate the leg and bring the knee toward your elbow, as far forward as possible. Return this leg to the starting position and repeat on the opposite side.
 
-**7. Standing Hip Circles** (Side view, 3 frames; equipment: none)
-Frames: a held position: 1) settle in, 2) the hold with a tiny breath in, 3) the hold.
+**7. Standing Hip Circles** (Side view, 4 frames; equipment: none)
+Frames: one full circle in quarters: 1) top, 2) side, 3) bottom, 4) other side.
 Steps: Begin standing on one leg, holding to a vertical support. Raise the unsupported knee to 90 degrees. This will be your starting position. Open the hip as far as possible, attempting to make a big circle with your knee. Perform this movement slowly for a number of repetitions, and repeat on the other side.
 
 **8. Stomach Vacuum** (Side view, 3 frames; equipment: none)

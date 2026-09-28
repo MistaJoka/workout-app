@@ -14,8 +14,8 @@ Keep the same palette and pixel style as the exercise strips you already made. D
 - Equipment is drawn identically in every frame.
 
 
-**1. Elbow Circles** (Side view, 3 frames; equipment: none)
-Frames: a held position: 1) settle in, 2) the hold with a tiny breath in, 3) the hold.
+**1. Elbow Circles** (Side view, 4 frames; equipment: none)
+Frames: one full circle in quarters: 1) top, 2) side, 3) bottom, 4) other side.
 Steps: Sit or stand with your feet slightly apart. Place your hands on your shoulders with your elbows at shoulder level and pointing out. Slowly make a circle with your elbows. Breathe out as you start the circle and breathe in as you complete the circle.
 
 **2. Elbows Back** (Side view, 3 frames; equipment: none)

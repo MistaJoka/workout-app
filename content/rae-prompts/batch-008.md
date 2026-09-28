@@ -38,8 +38,8 @@ Steps: Get into a seated position on the floor. Place both hands at the rear of 
 Frames: a held position: 1) settle in, 2) the hold with a tiny breath in, 3) the hold.
 Steps: Sit up on the floor. Cross your right leg over your left, keeping the knee bent. Your left leg is straight and down on the floor. Place your left arm on your right leg and your right hand on the floor. Rotate your upper body to the right, and hold for 10-20 seconds. Switch sides.
 
-**7. Dynamic Back Stretch** (Side view, 3 frames; equipment: none)
-Frames: a held position: 1) settle in, 2) the hold with a tiny breath in, 3) the hold.
+**7. Dynamic Back Stretch** (Side view, 4 frames; equipment: none)
+Frames: 1) start position, 2) swing forward to the top, 3) back through the middle, 4) swing back to the other end.
 Steps: Stand with your feet shoulder width apart. This will be your starting position. Keeping your arms straight, swing them straight up in front of you 5-10 times, increasing the range of motion each time until your arms are above your head.
 
 **8. Dynamic Chest Stretch** (Side view, 3 frames; equipment: none)

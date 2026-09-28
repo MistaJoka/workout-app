@@ -86,6 +86,13 @@ def plan(e: dict) -> tuple[int, str]:
     """Frame count and what the frames show."""
     t = e['taxonomy']
     if t.get('category') == 'stretching' or t.get('force') == 'static':
+        # Swings and circles are listed as stretches upstream but move, so
+        # drawing them as a still hold teaches nothing.
+        steps = ' '.join(e.get('executionPhases') or []).lower()
+        if re.search(r'\bswing', steps):
+            return 4, '1) start position, 2) swing forward to the top, 3) back through the middle, 4) swing back to the other end'
+        if re.search(r'\b(circles?|arc)\b', steps):
+            return 4, 'one full circle in quarters: 1) top, 2) side, 3) bottom, 4) other side'
         return 3, 'a held position: 1) settle in, 2) the hold with a tiny breath in, 3) the hold'
     return 4, '1) start position, 2) halfway, 3) end of the movement (peak), 4) halfway back'
 

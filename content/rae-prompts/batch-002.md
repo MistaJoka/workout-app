@@ -34,14 +34,14 @@ Steps: Lie on the floor with your back flat and knees bent with around a 60-degr
 Frames: 1) start position, 2) halfway, 3) end of the movement (peak), 4) halfway back.
 Steps: Lie on the floor, crossing your right leg across your bent left knee. Clasp your hands behind your head, beginning with your shoulder blades on the ground. This will be your starting position. Perform the motion by flexing the spine and rotating your torso to bring the left elbow to the right knee. Return to the starting position and repeat the movement for the desired number of repetitions before switching sides.
 
-**6. Front Leg Raises** (Side view, 3 frames; equipment: none)
-Frames: a held position: 1) settle in, 2) the hold with a tiny breath in, 3) the hold.
+**6. Front Leg Raises** (Side view, 4 frames; equipment: none)
+Frames: 1) start position, 2) swing forward to the top, 3) back through the middle, 4) swing back to the other end.
 Steps: Stand next to a chair or other support, holding on with one hand. Swing your leg forward, keeping the leg straight. Continue with a downward swing, bringing the leg as far back as your flexibility allows. Repeat 5-10 times, and then switch legs.
 
 **7. Glute Kickback** (Side view, 4 frames; equipment: none)
 Frames: 1) start position, 2) halfway, 3) end of the movement (peak), 4) halfway back.
 Steps: Kneel on the floor or an exercise mat and bend at the waist with your arms extended in front of you (perpendicular to the torso) in order to get into a kneeling push-up position but with the arms spaced at shoulder width. Your head should be looking forward and the bend of the knees should create a 90-degree angle between the hamstrings and the calves. This will be your starting position. As you exhale, lift up your right leg until the hamstrings are in line with the back while maintaining the 90-degree angle bend. Contract the glutes throughout this movement and hold the contraction at the top for a second. Tip: At the end of the movement the upper leg should be parallel to the floor while the calf should be perpendicular to it. Go back to the initial position as you inhale and now repeat with the left leg. Continue to alternate legs until all of the recommended repetitions have been performed.
 
-**8. Hip Circles (prone)** (Side view, 3 frames; equipment: none)
-Frames: a held position: 1) settle in, 2) the hold with a tiny breath in, 3) the hold.
+**8. Hip Circles (prone)** (Side view, 4 frames; equipment: none)
+Frames: one full circle in quarters: 1) top, 2) side, 3) bottom, 4) other side.
 Steps: Position yourself on your hands and knees on the ground. Maintaining good posture, raise one bent knee off of the ground. This will be your starting position. Keeping the knee in a bent position, rotate the femur in an arc, attempting to make a big circle with your knee. Perform this slowly for a number of repetitions, and repeat on the other side.

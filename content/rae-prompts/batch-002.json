@@ -44,7 +44,7 @@
     "exerciseId": "lib.Front_Leg_Raises",
     "slug": "front-leg-raises",
     "name": "Front Leg Raises",
-    "frames": 3,
+    "frames": 4,
     "view": "Side view"
   },
   {
@@ -60,7 +60,7 @@
     "exerciseId": "lib.Hip_Circles_prone",
     "slug": "hip-circles-prone",
     "name": "Hip Circles (prone)",
-    "frames": 3,
+    "frames": 4,
     "view": "Side view"
   }
 ]

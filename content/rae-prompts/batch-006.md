@@ -22,8 +22,8 @@ Steps: To begin, lie down on the floor or an exercise mat with your back pressed
 Frames: 1) start position, 2) halfway, 3) end of the movement (peak), 4) halfway back.
 Steps: To begin, lie down on the floor or an exercise mat with your back pressed against the floor. Your arms should be lying across your sides with the palms facing down. Your legs should be crossed by wrapping one ankle around the other. Slowly elevate your legs up in the air until your thighs are perpendicular to the floor with a slight bend at the knees. Note: Your knees and toes should be parallel to the floor as opposed to the thighs. Move your arms from the floor and cross them so they are resting on your chest. This is the starting position. While keeping your lower back pressed against the floor, slowly lift your torso. Remember to exhale while perform this part of the exercise. Slowly begin to lower your torso back down to the starting position while inhaling. Repeat for the recommended amount of repetitions.
 
-**3. Wrist Circles** (Side view, 3 frames; equipment: none)
-Frames: a held position: 1) settle in, 2) the hold with a tiny breath in, 3) the hold.
+**3. Wrist Circles** (Side view, 4 frames; equipment: none)
+Frames: one full circle in quarters: 1) top, 2) side, 3) bottom, 4) other side.
 Steps: Start by standing straight with your feet being shoulder width apart from each other. Elevate your arms to the side of you until they are fully extended and parallel to the floor at a height that is evenly aligned with your shoulders. Tip: Your torso and arms should form the letter "T: Your palms should be facing down. This is the starting position. Keeping your entire body stationary except for the wrists, begin to rotate both wrists forward in a circular motion. Tip: Pretend that you are trying to draw circles by using your hands as the brush. Breathe normally as you perform this exercise. Repeat for the recommended amount of repetitions.
 
 **4. All Fours Quad Stretch** (Side view, 3 frames; equipment: none)

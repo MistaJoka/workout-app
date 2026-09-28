@@ -30,16 +30,16 @@ Steps: Lie down on the floor placing your feet either under something that will 
 Frames: 1) start position, 2) halfway, 3) end of the movement (peak), 4) halfway back.
 Steps: Begin laying prone on the ground. Move yourself into a position supporting your weight on your toes and one arm. Your working arm should be placed directly under the shoulder, fully extended. Your legs should be extended, and for this movement you may need a wider base, placing your feet further apart than in a normal push-up. Maintain good posture, and place your free hand behind your back. This will be your starting position. Lower yourself by allowing the elbow to flex until you touch the ground. Descend slowly, and reverse direction be extending the arm to return to the starting position.
 
-**5. Ankle Circles** (Side view, 3 frames; equipment: none)
-Frames: a held position: 1) settle in, 2) the hold with a tiny breath in, 3) the hold.
+**5. Ankle Circles** (Side view, 4 frames; equipment: none)
+Frames: one full circle in quarters: 1) top, 2) side, 3) bottom, 4) other side.
 Steps: Use a sturdy object like a squat rack to hold yourself. Lift the right leg in the air (just around 2 inches from the floor) and perform a circular motion with the big toe. Pretend that you are drawing a big circle with it. Tip: One circle equals 1 repetition. Breathe normally as you perform the movement. When you are done with the right foot, then repeat with the left leg.
 
 **6. Ankle On The Knee** (Side view, 3 frames; equipment: none)
 Frames: a held position: 1) settle in, 2) the hold with a tiny breath in, 3) the hold.
 Steps: From a lying position, bend your knees and keep your feet on the floor. Place your ankle of one foot on your opposite knee. Grasp the thigh or knee of the bottom leg and pull both of your legs into the chest. Relax your neck and shoulders. Hold for 10-20 seconds and then switch sides.
 
-**7. Arm Circles** (Front view, 3 frames; equipment: none)
-Frames: a held position: 1) settle in, 2) the hold with a tiny breath in, 3) the hold.
+**7. Arm Circles** (Front view, 4 frames; equipment: none)
+Frames: one full circle in quarters: 1) top, 2) side, 3) bottom, 4) other side.
 Steps: Stand up and extend your arms straight out by the sides. The arms should be parallel to the floor and perpendicular (90-degree angle) to your torso. This will be your starting position. Slowly start to make circles of about 1 foot in diameter with each outstretched arm. Breathe normally as you perform the movement. Continue the circular motion of the outstretched arms for about ten seconds. Then reverse the movement, going the opposite direction.
 
 **8. Calf Stretch Elbows Against Wall** (Side view, 3 frames; equipment: none)
