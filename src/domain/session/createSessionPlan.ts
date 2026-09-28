@@ -1,5 +1,5 @@
 import type { Exercise, WorkoutTemplate } from '../content/types'
-import { adaptTemplate } from '../adaptation/engine'
+import { adaptTemplate, PLACEHOLDER_RULE_VERSION } from '../adaptation/engine'
 import type { AdaptationRule, CheckInInput } from '../adaptation/types'
 import { computeReproducibilityHash } from './reproducibilityHash'
 import type { SessionPlan, SessionPlanExercise } from './types'
@@ -9,8 +9,10 @@ export type CreateSessionPlanParams = {
   createdAt: string
   template: WorkoutTemplate
   exercises: Exercise[]
-  checkIn: CheckInInput
-  ruleVersion: string
+  // Omitted when nobody was asked. ruleVersion defaults to the placeholder
+  // rules' own name, since those are what run without injected rules.
+  checkIn?: CheckInInput
+  ruleVersion?: string
   rules?: AdaptationRule[]
   // Confirmed-progression overrides for the *effective* prescribed reps.
   // The template itself is never mutated by this — authoredReps below
@@ -34,7 +36,7 @@ export function createSessionPlanFromTemplate(params: CreateSessionPlanParams): 
     template,
     exercises: exerciseRecords,
     checkIn,
-    ruleVersion,
+    ruleVersion = PLACEHOLDER_RULE_VERSION,
     rules,
     repsOverridesByExerciseId,
     weightOverridesByExerciseId,

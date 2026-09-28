@@ -8,6 +8,8 @@ export type CheckInInput = {
 
 export type AdaptationRule = {
   id: string
-  appliesWhen: (input: CheckInInput) => boolean
+  // undefined when nobody was asked: the start screen asks nothing while
+  // no rule reads the answers (owner, 2026-09-28: one-tap Start).
+  appliesWhen: (input: CheckInInput | undefined) => boolean
   decide: (exerciseId: string) => AdaptationDecision
 }

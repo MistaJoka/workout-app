@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest'
-import { adaptTemplate, PLACEHOLDER_RULES } from './engine'
+import { adaptTemplate, PLACEHOLDER_RULES, PLACEHOLDER_RULE_VERSION } from './engine'
 import type { WorkoutTemplate } from '../content/types'
 
 const template: WorkoutTemplate = {
@@ -72,5 +72,20 @@ describe('adaptTemplate', () => {
       expect(decision.detail).not.toMatch(/REQ-\d/)
       expect(decision.detail.toLowerCase()).not.toContain('placeholder')
     }
+  })
+})
+
+describe('adaptTemplate without a check-in', () => {
+  it('decides as the placeholder always does when nobody was asked', () => {
+    const decisions = adaptTemplate(template, undefined)
+    expect(decisions.map((d) => [d.exerciseId, d.reasonCode])).toEqual([
+      ['ex1', 'RETAINED'],
+      ['ex2', 'RETAINED'],
+    ])
+  })
+
+  it('names the placeholder rule set, for the plan rule version', () => {
+    expect(PLACEHOLDER_RULE_VERSION).toBe('placeholder.retain-all')
+    expect(PLACEHOLDER_RULES.map((r) => r.id)).toEqual([PLACEHOLDER_RULE_VERSION])
   })
 })
