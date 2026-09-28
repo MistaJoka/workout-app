@@ -8,7 +8,7 @@ import { getCurrentState } from '../../application/sessionService'
 import { listCustomTemplates } from '../../infrastructure/db/repositories/customTemplateRepository'
 import { getWeeklySchedule } from '../../infrastructure/db/repositories/scheduleRepository'
 import { db } from '../../infrastructure/db/schema'
-import type { WorkoutTemplate } from '../../domain/content/types'
+import type { Exercise, WorkoutTemplate } from '../../domain/content/types'
 import { WEEKDAY_LABELS, resolveToday, type Weekday } from '../../domain/schedule/weeklySchedule'
 import { buildWeek, setsDone, todayMode, workoutsToday, type WeekDay } from '../../domain/schedule/todayView'
 import { WelcomeCard } from '../components/WelcomeCard'
@@ -104,7 +104,11 @@ async function loadToday(now: Date): Promise<TodayData> {
   } else if (mode === 'rest') {
     mission = { kind: 'rest', extra }
   } else {
-    const exercises = await getExercises(primary.exercises.map((e) => e.exerciseId))
+    // Thumbnails only: a custom routine's library chunk may not be cached
+    // offline yet, and that must not blank Today.
+    const exercises = await getExercises(primary.exercises.map((e) => e.exerciseId)).catch(
+      () => new Map<string, Exercise>()
+    )
     mission = {
       kind: 'ready',
       tag: scheduled ? weekday : 'Up next',
@@ -136,16 +140,23 @@ export function TodayScreen() {
   const [profile] = useState(() => activeProfile())
   const [now] = useState(() => new Date())
   const [data, setData] = useState<TodayData | null>(null)
+  const [failed, setFailed] = useState(false)
+  const [attempt, setAttempt] = useState(0)
 
   useEffect(() => {
     let cancelled = false
-    loadToday(now).then((loaded) => {
-      if (!cancelled) setData(loaded)
-    })
+    setFailed(false)
+    loadToday(now)
+      .then((loaded) => {
+        if (!cancelled) setData(loaded)
+      })
+      .catch(() => {
+        if (!cancelled) setFailed(true)
+      })
     return () => {
       cancelled = true
     }
-  }, [now])
+  }, [now, attempt])
 
   return (
     <div className="p-4 space-y-4">
@@ -155,7 +166,18 @@ export function TodayScreen() {
           the stage reads as her presenting it. */}
       <section className="today-stage" aria-label="Today">
         <RaeHero part={dayPart(now)} />
-        {data ? <TodayMission mission={data.mission} /> : <div className="today-mission bg-field-primary h-40" />}
+        {data ? (
+          <TodayMission mission={data.mission} />
+        ) : failed ? (
+          <div className="today-mission bg-field-primary space-y-3 p-4 text-center">
+            <p className="font-bold">Couldn't load today's workout.</p>
+            <button type="button" className="btn-primary w-full" onClick={() => setAttempt((n) => n + 1)}>
+              Try again
+            </button>
+          </div>
+        ) : (
+          <div className="today-mission bg-field-primary h-40" />
+        )}
       </section>
 
       <WelcomeCard />

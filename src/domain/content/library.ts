@@ -46,6 +46,14 @@ export function searchHaystack(e: Exercise): string {
   return haystack
 }
 
+// Upstream lists nothing for most floor/wall stretches; they need no kit,
+// so they count as no equipment. "other" (a chair, a bar, a ball) doesn't.
+const NO_EQUIPMENT = ['bodyweight']
+
+export function equipmentOf(e: Exercise): readonly string[] {
+  return e.taxonomy.equipment.length > 0 ? e.taxonomy.equipment : NO_EQUIPMENT
+}
+
 export function filterExercises(exercises: readonly Exercise[], filters: LibraryFilters): Exercise[] {
   const query = filters.query ? normalize(filters.query) : ''
   const terms = query ? query.split(' ') : []
@@ -57,7 +65,7 @@ export function filterExercises(exercises: readonly Exercise[], filters: Library
       if (!terms.every((t) => haystack.includes(t))) return false
     }
     if (group && !(e.taxonomy.primaryMuscles ?? []).some((m) => group.muscles.includes(m))) return false
-    if (filters.equipment && !e.taxonomy.equipment.includes(filters.equipment)) return false
+    if (filters.equipment && !equipmentOf(e).includes(filters.equipment)) return false
     if (filters.level && e.taxonomy.level !== filters.level) return false
     return true
   })

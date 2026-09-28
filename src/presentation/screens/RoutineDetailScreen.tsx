@@ -7,6 +7,7 @@ import { formatWeight } from '../units'
 import { useWeightUnit } from '../components/useWeightUnit'
 import { BackButton } from '../components/BackButton'
 import { ExerciseThumb } from '../components/ExerciseThumb'
+import { ThumbBar } from '../components/ThumbBar'
 
 export function RoutineDetailScreen() {
   const { templateId } = useParams()
@@ -15,15 +16,44 @@ export function RoutineDetailScreen() {
   const [template, setTemplate] = useState<WorkoutTemplate | null | undefined>(undefined)
   const [exercises, setExercises] = useState<Map<string, Exercise>>(new Map())
   const [confirmingDelete, setConfirmingDelete] = useState(false)
+  const [deleting, setDeleting] = useState(false)
+  const [error, setError] = useState<string | null>(null)
+  const [loadFailed, setLoadFailed] = useState(false)
+  const [attempt, setAttempt] = useState(0)
 
   useEffect(() => {
     if (!templateId) return
-    getTemplate(templateId).then(async (t) => {
-      setTemplate(t ?? null)
-      if (t) setExercises(await getExercises(t.exercises.map((e) => e.exerciseId)))
-    })
-  }, [templateId])
+    let cancelled = false
+    setLoadFailed(false)
+    getTemplate(templateId)
+      .then(async (t) => {
+        if (cancelled) return
+        setTemplate(t ?? null)
+        // Names and thumbnails only; the routine still starts without them.
+        if (t) {
+          const loaded = await getExercises(t.exercises.map((e) => e.exerciseId)).catch(() => null)
+          if (!cancelled && loaded) setExercises(loaded)
+        }
+      })
+      .catch(() => {
+        if (!cancelled) setLoadFailed(true)
+      })
+    return () => {
+      cancelled = true
+    }
+  }, [templateId, attempt])
 
+  if (loadFailed) {
+    return (
+      <div className="p-4 space-y-4">
+        <BackButton />
+        <p className="font-bold">Couldn't load this routine.</p>
+        <button type="button" className="btn-primary w-full" onClick={() => setAttempt((n) => n + 1)}>
+          Try again
+        </button>
+      </div>
+    )
+  }
   if (template === undefined) return <div className="p-4">Loading…</div>
   if (template === null) {
     return (
@@ -40,8 +70,15 @@ export function RoutineDetailScreen() {
 
   async function handleDelete() {
     if (!template) return
-    await deleteCustomTemplate(template.id)
-    navigate('/library', { replace: true })
+    setDeleting(true)
+    setError(null)
+    try {
+      await deleteCustomTemplate(template.id)
+      navigate('/library', { replace: true })
+    } catch {
+      setError("Couldn't delete on this device. Try again.")
+      setDeleting(false)
+    }
   }
 
   return (
@@ -78,7 +115,7 @@ export function RoutineDetailScreen() {
             Edit
           </Link>
           {confirmingDelete ? (
-            <button className="btn-danger flex-1" onClick={handleDelete}>
+            <button className="btn-danger flex-1" disabled={deleting} onClick={handleDelete}>
               Yes, delete
             </button>
           ) : (
@@ -88,15 +125,16 @@ export function RoutineDetailScreen() {
           )}
         </div>
       )}
+      {error && <p className="text-sm text-accent">{error}</p>}
 
-      <div className="fixed bottom-16 left-0 right-0 border-t-2 border-edge bg-surface p-4">
+      <ThumbBar armKey="routine" aboveTabBar>
         <Link
           to={`/checkin/${template.id}`}
           className="btn-primary btn-lg w-full"
         >
           Start workout
         </Link>
-      </div>
+      </ThumbBar>
     </div>
   )
 }

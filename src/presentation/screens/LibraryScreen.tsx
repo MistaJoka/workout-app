@@ -2,7 +2,7 @@ import { countLabel } from '../format'
 import { useDeferredValue, useEffect, useMemo, useState } from 'react'
 import { Link } from 'react-router-dom'
 import { getExercises, loadLibrary } from '../../domain/content/catalog'
-import { EQUIPMENT_OPTIONS, MUSCLE_GROUPS, filterExercises, type LibraryFilters } from '../../domain/content/library'
+import { EQUIPMENT_OPTIONS, MUSCLE_GROUPS, equipmentOf, filterExercises, type LibraryFilters } from '../../domain/content/library'
 import type { Exercise } from '../../domain/content/types'
 import { foundationStrengthStarterTemplates } from '../../domain/content/fixtures/foundationStrengthStarter'
 import { listCustomTemplates } from '../../infrastructure/db/repositories/customTemplateRepository'
@@ -13,17 +13,34 @@ import { RaeNote } from '../components/RaeNote'
 import { RAE_LOOPS } from '../components/raeLoops'
 
 const PAGE = 40
+const LEVELS = ['beginner', 'intermediate', 'expert'] as const
+
+function equipmentLabel(exercise: Exercise): string {
+  const id = equipmentOf(exercise)[0]
+  return (EQUIPMENT_OPTIONS.find((o) => o.id === id)?.label ?? id).toLowerCase()
+}
 
 export function LibraryScreen() {
   const [library, setLibrary] = useState<Exercise[] | null>(null)
   const [custom, setCustom] = useState<WorkoutTemplate[]>([])
   const [filters, setFilters] = useState<LibraryFilters>({})
   const [limit, setLimit] = useState(PAGE)
+  const [loadFailed, setLoadFailed] = useState(false)
 
   useEffect(() => {
-    loadLibrary().then(setLibrary)
-    listCustomTemplates().then(setCustom)
+    loadLibrary()
+      .then(setLibrary)
+      .catch(() => setLoadFailed(true))
+    listCustomTemplates()
+      .then(setCustom)
+      .catch(() => setCustom([]))
   }, [])
+
+  // Only levels the library actually has: an empty chip is a dead end.
+  const levels = useMemo(
+    () => LEVELS.filter((l) => library?.some((e) => e.taxonomy.level === l)),
+    [library]
+  )
 
   // Filtering the library is deferred so the keystroke paints first and the
   // list catches up; the input itself stays bound to the live filters.
@@ -130,7 +147,7 @@ export function LibraryScreen() {
           <div className="space-y-2">
             <p className="text-sm font-semibold text-ink-muted">Level</p>
             <ChipRow>
-              {(['beginner', 'intermediate', 'expert'] as const).map((l) => (
+              {levels.map((l) => (
                 <Chip key={l} active={filters.level === l} onClick={() => toggle('level', l)}>
                   {l[0].toUpperCase() + l.slice(1)}
                 </Chip>
@@ -139,7 +156,10 @@ export function LibraryScreen() {
           </div>
         </FilterSheet>
 
-        {library === null && <p className="text-ink-muted">Loading library…</p>}
+        {library === null && !loadFailed && <p className="text-ink-muted">Loading library…</p>}
+        {loadFailed && (
+          <RaeNote expression="surprised">The full library isn't saved on this phone yet. Open it once while online.</RaeNote>
+        )}
         {library && (
           <p className="text-xs text-ink-muted">
             {countLabel(results.length, 'exercise')}
@@ -159,7 +179,7 @@ export function LibraryScreen() {
                 <div className="min-w-0">
                   <p className="truncate font-semibold">{exercise.name}</p>
                   <p className="truncate text-xs text-ink-muted">
-                    {[exercise.taxonomy.primaryMuscles?.[0], exercise.taxonomy.equipment[0], exercise.taxonomy.level]
+                    {[exercise.taxonomy.primaryMuscles?.[0], equipmentLabel(exercise), exercise.taxonomy.level]
                       .filter(Boolean)
                       .join(', ')}
                   </p>

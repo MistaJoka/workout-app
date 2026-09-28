@@ -86,7 +86,7 @@ export function MeetRaeScreen() {
                   aria-pressed={loop.id === selected.id}
                   onClick={() => {
                     setSelectedId(loop.id)
-                    stageRef.current?.scrollIntoView({ behavior: 'smooth', block: 'start' })
+                    stageRef.current?.scrollIntoView({ behavior: animate ? 'smooth' : 'auto', block: 'start' })
                   }}
                   className={`card flex flex-col items-center gap-1 p-2 ${loop.id === selected.id ? 'ring-2 ring-primary' : ''}`}
                 >

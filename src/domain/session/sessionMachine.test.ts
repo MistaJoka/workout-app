@@ -112,6 +112,24 @@ describe('applyEvent', () => {
     expect(state.status).toBe('COMPLETED')
   })
 
+  it('SET_COMPLETED outside an active set (resting, paused, draft, finished) changes nothing but is recorded', () => {
+    const active = applyEvent(plan, initSessionState(), event({ eventId: 'e1', type: 'SESSION_STARTED' }))
+    const resting = applyEvent(plan, active, event({ eventId: 'e2', type: 'SET_COMPLETED' }))
+    // A second tap with a fresh event id lands mid-rest: it must not skip a set.
+    const stray = applyEvent(plan, resting, event({ eventId: 'e3', type: 'SET_COMPLETED' }))
+    expect(stray).toEqual({ ...resting, appliedEventIds: ['e1', 'e2', 'e3'] })
+
+    const paused = applyEvent(plan, active, event({ eventId: 'p1', type: 'PAUSED' }))
+    expect(applyEvent(plan, paused, event({ eventId: 'p2', type: 'SET_COMPLETED' })).status).toBe('PAUSED')
+
+    const draft = applyEvent(plan, initSessionState(), event({ eventId: 'd1', type: 'SET_COMPLETED' }))
+    expect(draft.status).toBe('DRAFT')
+    expect(draft.currentSetNumber).toBe(1)
+
+    const ended = applyEvent(plan, active, event({ eventId: 'x1', type: 'SESSION_COMPLETED_SHORTENED' }))
+    expect(applyEvent(plan, ended, event({ eventId: 'x2', type: 'SET_COMPLETED' })).status).toBe('COMPLETED_SHORTENED')
+  })
+
   it('REST_ENDED and REST_SKIPPED both clear rest and move to ACTIVE', () => {
     let state = applyEvent(plan, initSessionState(), event({ eventId: 'e1', type: 'SESSION_STARTED' }))
     state = applyEvent(plan, state, event({ eventId: 'e2', type: 'SET_COMPLETED' }))
