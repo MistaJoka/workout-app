@@ -636,5 +636,133 @@
     ],
     "featured": true,
     "group": "Chair and low-impact"
+  },
+  {
+    "id": "ex-butt-ups",
+    "name": "Butt-Ups",
+    "width": 360,
+    "height": 150,
+    "stills": [
+      0,
+      2
+    ],
+    "v": "edb8f6099c",
+    "exerciseIds": [
+      "lib.Butt-Ups"
+    ],
+    "featured": false,
+    "group": "Library"
+  },
+  {
+    "id": "ex-cocoons",
+    "name": "Cocoons",
+    "width": 360,
+    "height": 132,
+    "stills": [
+      0,
+      2
+    ],
+    "v": "4274d4c608",
+    "exerciseIds": [
+      "lib.Cocoons"
+    ],
+    "featured": false,
+    "group": "Library"
+  },
+  {
+    "id": "ex-cross-body-crunch",
+    "name": "Cross-Body Crunch",
+    "width": 360,
+    "height": 151,
+    "stills": [
+      0,
+      2
+    ],
+    "v": "7091d5c701",
+    "exerciseIds": [
+      "lib.Cross-Body_Crunch"
+    ],
+    "featured": false,
+    "group": "Library"
+  },
+  {
+    "id": "ex-crunch-hands-overhead",
+    "name": "Crunch - Hands Overhead",
+    "width": 360,
+    "height": 135,
+    "stills": [
+      0,
+      2
+    ],
+    "v": "d6d6ce6ca3",
+    "exerciseIds": [
+      "lib.Crunch_-_Hands_Overhead"
+    ],
+    "featured": false,
+    "group": "Library"
+  },
+  {
+    "id": "ex-elbow-to-knee",
+    "name": "Elbow to Knee",
+    "width": 360,
+    "height": 159,
+    "stills": [
+      0,
+      2
+    ],
+    "v": "f1d7f904f0",
+    "exerciseIds": [
+      "lib.Elbow_to_Knee"
+    ],
+    "featured": false,
+    "group": "Library"
+  },
+  {
+    "id": "ex-front-leg-raises",
+    "name": "Front Leg Raises",
+    "width": 360,
+    "height": 156,
+    "stills": [
+      0,
+      2
+    ],
+    "v": "8e14279512",
+    "exerciseIds": [
+      "lib.Front_Leg_Raises"
+    ],
+    "featured": false,
+    "group": "Library"
+  },
+  {
+    "id": "ex-glute-kickback",
+    "name": "Glute Kickback",
+    "width": 360,
+    "height": 223,
+    "stills": [
+      0,
+      2
+    ],
+    "v": "dab1d291e9",
+    "exerciseIds": [
+      "lib.Glute_Kickback"
+    ],
+    "featured": false,
+    "group": "Library"
+  },
+  {
+    "id": "ex-hip-circles-prone",
+    "name": "Hip Circles (prone)",
+    "width": 360,
+    "height": 221,
+    "stills": [
+      0,
+      1
+    ],
+    "v": "6599f4cf9a",
+    "exerciseIds": [
+      "lib.Hip_Circles_prone"
+    ],
+    "featured": false,
+    "group": "Library"
   }
 ]

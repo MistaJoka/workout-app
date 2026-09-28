@@ -816,5 +816,175 @@
     ],
     "featured": true,
     "redraw": "Off-model (afro puff, headband ears, arm tattoos) and low-res (~190px source). Owner: use for now, redraw in the bible style."
+  },
+  {
+    "id": "butt-ups",
+    "name": "Butt-Ups",
+    "source": "library/butt-ups-strip-v1.png",
+    "sha256": "6f4358fd3ae9dc1906eb77d605aa6ca1dd65092c8e8bc69e383caf9ea41c7329",
+    "downloadedAs": "batch-002-1.png",
+    "batch": "library-002",
+    "frames": 4,
+    "anchor": "grid",
+    "order": "0,1,2,3",
+    "hold": "0:3,2:3",
+    "fps": 8,
+    "stills": [
+      0,
+      2
+    ],
+    "exerciseIds": [
+      "lib.Butt-Ups"
+    ],
+    "lean": true
+  },
+  {
+    "id": "cocoons",
+    "name": "Cocoons",
+    "source": "library/cocoons-strip-v1.png",
+    "sha256": "fa8088dd45004ce9f444d1f1e9595d70727ead92a663c8be36b13de61d0948d4",
+    "downloadedAs": "batch-002-2.png",
+    "batch": "library-002",
+    "frames": 4,
+    "anchor": "grid",
+    "order": "0,1,2,3",
+    "hold": "0:3,2:3",
+    "fps": 8,
+    "stills": [
+      0,
+      2
+    ],
+    "exerciseIds": [
+      "lib.Cocoons"
+    ],
+    "lean": true
+  },
+  {
+    "id": "cross-body-crunch",
+    "name": "Cross-Body Crunch",
+    "source": "library/cross-body-crunch-strip-v1.png",
+    "sha256": "c167a9951daef9b96166414b79d41c5d09b735a461c8edfa7ff6f574dd2f0e5b",
+    "downloadedAs": "batch-002-3.png",
+    "batch": "library-002",
+    "frames": 4,
+    "anchor": "grid",
+    "order": "0,1,2,3",
+    "hold": "0:3,2:3",
+    "fps": 8,
+    "stills": [
+      0,
+      2
+    ],
+    "exerciseIds": [
+      "lib.Cross-Body_Crunch"
+    ],
+    "lean": true
+  },
+  {
+    "id": "crunch-hands-overhead",
+    "name": "Crunch - Hands Overhead",
+    "source": "library/crunch-hands-overhead-strip-v1.png",
+    "sha256": "160752f42d1dacf6da956d7ad62d4903e5e3a5d9e1427aae46176bbbb9eb239c",
+    "downloadedAs": "batch-002-4.png",
+    "batch": "library-002",
+    "frames": 4,
+    "anchor": "grid",
+    "order": "0,1,2,3",
+    "hold": "0:3,2:3",
+    "fps": 8,
+    "stills": [
+      0,
+      2
+    ],
+    "exerciseIds": [
+      "lib.Crunch_-_Hands_Overhead"
+    ],
+    "lean": true
+  },
+  {
+    "id": "elbow-to-knee",
+    "name": "Elbow to Knee",
+    "source": "library/elbow-to-knee-strip-v1.png",
+    "sha256": "7b3b1cc1b8af54fe88888fc3f4ca40bb4a146f16cabdac615cff2baf02564ff8",
+    "downloadedAs": "batch-002-5.png",
+    "batch": "library-002",
+    "frames": 4,
+    "anchor": "grid",
+    "order": "0,1,2,3",
+    "hold": "0:3,2:3",
+    "fps": 8,
+    "stills": [
+      0,
+      2
+    ],
+    "exerciseIds": [
+      "lib.Elbow_to_Knee"
+    ],
+    "lean": true
+  },
+  {
+    "id": "front-leg-raises",
+    "name": "Front Leg Raises",
+    "source": "library/front-leg-raises-strip-v1.png",
+    "sha256": "f21eb696ea72fbdae0e709aa04169105a680e4da1837acef6ed96e17242e424d",
+    "downloadedAs": "batch-002-6.png",
+    "batch": "library-002",
+    "frames": 4,
+    "anchor": "grid",
+    "order": "0,1,2,3",
+    "hold": "0:3,2:3",
+    "fps": 8,
+    "stills": [
+      0,
+      2
+    ],
+    "exerciseIds": [
+      "lib.Front_Leg_Raises"
+    ],
+    "lean": true
+  },
+  {
+    "id": "glute-kickback",
+    "name": "Glute Kickback",
+    "source": "library/glute-kickback-strip-v1.png",
+    "sha256": "6b6e5bf326e75eda8698b9be031c4ceb087e6d9d0c67b64f0beb32f57977b78a",
+    "downloadedAs": "batch-002-7.png",
+    "batch": "library-002",
+    "frames": 4,
+    "anchor": "grid",
+    "order": "0,1,2,3",
+    "hold": "0:3,2:3",
+    "fps": 8,
+    "stills": [
+      0,
+      2
+    ],
+    "exerciseIds": [
+      "lib.Glute_Kickback"
+    ],
+    "lean": true
+  },
+  {
+    "id": "hip-circles-prone",
+    "name": "Hip Circles (prone)",
+    "source": "library/hip-circles-prone-strip-v1.png",
+    "sha256": "218ed7c97b476bb98264cf93d87d90669add6e2ba9cc1c2c160765f006264f13",
+    "downloadedAs": "batch-002-8.png",
+    "batch": "library-002",
+    "frames": 4,
+    "anchor": "grid",
+    "order": "0,1",
+    "hold": "0:3,1:3",
+    "fps": 8,
+    "stills": [
+      0,
+      1
+    ],
+    "exerciseIds": [
+      "lib.Hip_Circles_prone"
+    ],
+    "lean": true,
+    "notes": "Frames 3-4 (index 2-3) face screen-right, the other way, so the loop plays frames 1-2 only.",
+    "redraw": "Frames 3-4 drawn facing the other way; loop plays frames 1-2."
   }
 ]

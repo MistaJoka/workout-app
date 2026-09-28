@@ -1,0 +1,25 @@
+{
+  "id": "ex-cross-body-crunch",
+  "source": "cross-body-crunch-strip-v1.png",
+  "frameWidth": 360,
+  "frameHeight": 151,
+  "frames": 4,
+  "timeline": [
+    {
+      "frame": 0,
+      "ms": 375
+    },
+    {
+      "frame": 1,
+      "ms": 125
+    },
+    {
+      "frame": 2,
+      "ms": 375
+    },
+    {
+      "frame": 3,
+      "ms": 125
+    }
+  ]
+}

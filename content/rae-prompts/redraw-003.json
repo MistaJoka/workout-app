@@ -1,0 +1,11 @@
+[
+  {
+    "n": 1,
+    "exerciseId": "lib.Hip_Circles_prone",
+    "slug": "hip-circles-prone",
+    "name": "Hip Circles (prone)",
+    "frames": 4,
+    "view": "Side view",
+    "redraw": true
+  }
+]
