@@ -1,7 +1,7 @@
 import { useEffect, useMemo, useRef, useState } from 'react'
 import { useNavigate, useParams, useSearchParams } from 'react-router-dom'
 import { getExercises, getTemplate, loadLibrary } from '../../domain/content/catalog'
-import { filterExercises, isShownNow, MUSCLE_GROUPS, EQUIPMENT_FILTER_OPTIONS } from '../../domain/content/library'
+import { exerciseMeta, filterExercises, isShownNow, MUSCLE_GROUPS, EQUIPMENT_FILTER_OPTIONS } from '../../domain/content/library'
 import type { Exercise, WorkoutTemplate, WorkoutTemplateExercise } from '../../domain/content/types'
 import {
   isCustomTemplateId,
@@ -435,7 +435,7 @@ function ExercisePicker({
               <span className="min-w-0 flex-1">
                 <span className="block truncate font-semibold">{exercise.name}</span>
                 <span className="block truncate text-xs text-ink-muted">
-                  {[exercise.taxonomy.primaryMuscles?.[0], exercise.taxonomy.equipment[0]].filter(Boolean).join(', ')}
+                  {exerciseMeta(exercise).join(', ')}
                 </span>
               </span>
               <span className="flex-none text-primary">+</span>

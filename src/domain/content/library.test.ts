@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest'
-import { EQUIPMENT_FILTER_OPTIONS, equipmentOf, filterExercises, isShownNow, searchHaystack } from './library'
+import { EQUIPMENT_FILTER_OPTIONS, equipmentLabel, equipmentOf, exerciseMeta, filterExercises, isShownNow, searchHaystack } from './library'
 import type { Exercise } from './types'
 
 function exercise(overrides: Partial<Exercise> & { id: string; name: string }): Exercise {
@@ -95,5 +95,26 @@ describe('isShownNow (no equipment for now, owner 2026-09-28)', () => {
 
   it('offers no equipment filter while only no-equipment moves are shown', () => {
     expect(EQUIPMENT_FILTER_OPTIONS).toEqual([])
+  })
+})
+
+describe('friendly exercise labels', () => {
+  it('names the muscle group, not the raw muscle', () => {
+    expect(exerciseMeta(exercise({ id: 'lib.A', name: 'A', taxonomy: { category: 'strength', equipment: ['bodyweight'], primaryMuscles: ['quadriceps'], level: 'beginner' } }))).toEqual(['Legs', 'No equipment'])
+  })
+
+  it('calls an empty equipment list "No equipment" and Rae\'s "other" moves "Chair"', () => {
+    expect(equipmentLabel(exercise({ id: 'lib.B', name: 'B', taxonomy: { category: 'stretching', equipment: [], primaryMuscles: [] } }))).toBe('No equipment')
+    expect(equipmentLabel(exercise({ id: 'rae.seated-march', name: 'Seated March', taxonomy: { category: 'strength', equipment: ['other'], primaryMuscles: [] } }))).toBe('Chair')
+    expect(equipmentLabel(exercise({ id: 'lib.C', name: 'C', taxonomy: { category: 'strength', equipment: ['dumbbell'], primaryMuscles: [] } }))).toBe('Dumbbells')
+  })
+
+  it('shows the level only when it is not beginner, capitalized', () => {
+    expect(exerciseMeta(exercise({ id: 'lib.D', name: 'D', taxonomy: { category: 'strength', equipment: ['bodyweight'], primaryMuscles: ['abdominals'], level: 'intermediate' } }))).toEqual(['Core', 'No equipment', 'Intermediate'])
+  })
+
+  it('skips a missing muscle and capitalizes an unmapped one', () => {
+    expect(exerciseMeta(exercise({ id: 'lib.E', name: 'E', taxonomy: { category: 'strength', equipment: ['bodyweight'], primaryMuscles: [] } }))).toEqual(['No equipment'])
+    expect(exerciseMeta(exercise({ id: 'lib.F', name: 'F', taxonomy: { category: 'strength', equipment: ['bodyweight'], primaryMuscles: ['wrists'] } }))).toEqual(['Wrists', 'No equipment'])
   })
 })

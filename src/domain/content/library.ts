@@ -92,5 +92,30 @@ export function filterExercises(exercises: readonly Exercise[], filters: Library
 }
 
 export function muscleGroupLabel(muscle: string): string {
-  return MUSCLE_GROUPS.find((g) => g.muscles.includes(muscle))?.label ?? muscle
+  return MUSCLE_GROUPS.find((g) => g.muscles.includes(muscle))?.label ?? capitalize(muscle)
+}
+
+function capitalize(text: string): string {
+  return text ? text[0].toUpperCase() + text.slice(1) : text
+}
+
+// What a person needs to hold, in words: nothing, a chair (Rae's own
+// "other" moves are all chair moves), or the equipment's name.
+export function equipmentLabel(e: Exercise): string {
+  const id = equipmentOf(e)[0]
+  if (id === 'bodyweight') return 'No equipment'
+  if (id === 'other' && e.id.startsWith('rae.')) return 'Chair'
+  return EQUIPMENT_OPTIONS.find((o) => o.id === id)?.label ?? capitalize(id)
+}
+
+// Short labels for list rows and the detail header: muscle group, what you
+// need, and the level only when it isn't beginner (almost everything is).
+export function exerciseMeta(e: Exercise): string[] {
+  const muscle = e.taxonomy.primaryMuscles?.[0]
+  const level = e.taxonomy.level
+  return [
+    ...(muscle ? [muscleGroupLabel(muscle)] : []),
+    equipmentLabel(e),
+    ...(level && level !== 'beginner' ? [capitalize(level)] : []),
+  ]
 }

@@ -2,7 +2,7 @@ import { countLabel } from '../format'
 import { useDeferredValue, useEffect, useMemo, useState } from 'react'
 import { Link } from 'react-router-dom'
 import { getExercises, loadLibrary } from '../../domain/content/catalog'
-import { EQUIPMENT_FILTER_OPTIONS, EQUIPMENT_OPTIONS, MUSCLE_GROUPS, equipmentOf, filterExercises, isShownNow, type LibraryFilters } from '../../domain/content/library'
+import { EQUIPMENT_FILTER_OPTIONS, MUSCLE_GROUPS, exerciseMeta, filterExercises, isShownNow, type LibraryFilters } from '../../domain/content/library'
 import type { Exercise } from '../../domain/content/types'
 import { foundationStrengthStarterTemplates } from '../../domain/content/fixtures/foundationStrengthStarter'
 import { listCustomTemplates } from '../../infrastructure/db/repositories/customTemplateRepository'
@@ -14,11 +14,6 @@ import { RAE_LOOPS } from '../components/raeLoops'
 
 const PAGE = 40
 const LEVELS = ['beginner', 'intermediate', 'expert'] as const
-
-function equipmentLabel(exercise: Exercise): string {
-  const id = equipmentOf(exercise)[0]
-  return (EQUIPMENT_OPTIONS.find((o) => o.id === id)?.label ?? id).toLowerCase()
-}
 
 export function LibraryScreen() {
   const [library, setLibrary] = useState<Exercise[] | null>(null)
@@ -112,51 +107,55 @@ export function LibraryScreen() {
 
       <section className="space-y-2">
         <p className="text-sm font-semibold text-ink-muted">Exercises</p>
-        <input
-          type="search"
-          inputMode="search"
-          placeholder="Search exercises"
-          value={filters.query ?? ''}
-          onChange={(e) => {
-            setLimit(PAGE)
-            setFilters((f) => ({ ...f, query: e.target.value || undefined }))
-          }}
-          className="input"
-        />
-        <FilterSheet activeCount={[filters.muscle, filters.equipment, filters.level].filter(Boolean).length}>
-          <div className="space-y-2">
-            <p className="text-sm font-semibold text-ink-muted">Muscle</p>
-            <ChipRow>
-              {MUSCLE_GROUPS.map((g) => (
-                <Chip key={g.id} active={filters.muscle === g.id} onClick={() => toggle('muscle', g.id)}>
-                  {g.label}
-                </Chip>
-              ))}
-            </ChipRow>
-          </div>
-          {EQUIPMENT_FILTER_OPTIONS.length > 0 && (
+        {/* Search and filters share one row that sticks while the list
+            scrolls, so narrowing never needs a trip back to the top. */}
+        <div className="sticky top-0 z-10 -mx-4 flex items-center gap-2 bg-bg px-4 py-2">
+          <input
+            type="search"
+            inputMode="search"
+            placeholder="Search exercises"
+            value={filters.query ?? ''}
+            onChange={(e) => {
+              setLimit(PAGE)
+              setFilters((f) => ({ ...f, query: e.target.value || undefined }))
+            }}
+            className="input min-w-0 flex-1"
+          />
+          <FilterSheet inline activeCount={[filters.muscle, filters.equipment, filters.level].filter(Boolean).length}>
             <div className="space-y-2">
-              <p className="text-sm font-semibold text-ink-muted">Equipment</p>
+              <p className="text-sm font-semibold text-ink-muted">Muscle</p>
               <ChipRow>
-                {EQUIPMENT_FILTER_OPTIONS.map((o) => (
-                  <Chip key={o.id} active={filters.equipment === o.id} onClick={() => toggle('equipment', o.id)}>
-                    {o.label}
+                {MUSCLE_GROUPS.map((g) => (
+                  <Chip key={g.id} active={filters.muscle === g.id} onClick={() => toggle('muscle', g.id)}>
+                    {g.label}
                   </Chip>
                 ))}
               </ChipRow>
             </div>
-          )}
-          <div className="space-y-2">
-            <p className="text-sm font-semibold text-ink-muted">Level</p>
-            <ChipRow>
-              {levels.map((l) => (
-                <Chip key={l} active={filters.level === l} onClick={() => toggle('level', l)}>
-                  {l[0].toUpperCase() + l.slice(1)}
-                </Chip>
-              ))}
-            </ChipRow>
-          </div>
-        </FilterSheet>
+            {EQUIPMENT_FILTER_OPTIONS.length > 0 && (
+              <div className="space-y-2">
+                <p className="text-sm font-semibold text-ink-muted">Equipment</p>
+                <ChipRow>
+                  {EQUIPMENT_FILTER_OPTIONS.map((o) => (
+                    <Chip key={o.id} active={filters.equipment === o.id} onClick={() => toggle('equipment', o.id)}>
+                      {o.label}
+                    </Chip>
+                  ))}
+                </ChipRow>
+              </div>
+            )}
+            <div className="space-y-2">
+              <p className="text-sm font-semibold text-ink-muted">Level</p>
+              <ChipRow>
+                {levels.map((l) => (
+                  <Chip key={l} active={filters.level === l} onClick={() => toggle('level', l)}>
+                    {l[0].toUpperCase() + l.slice(1)}
+                  </Chip>
+                ))}
+              </ChipRow>
+            </div>
+          </FilterSheet>
+        </div>
 
         {library === null && !loadFailed && <p className="text-ink-muted">Loading library…</p>}
         {loadFailed && (
@@ -180,11 +179,7 @@ export function LibraryScreen() {
                 <ExerciseThumb exercise={exercise} className="h-14 w-20 rounded-panel" />
                 <div className="min-w-0">
                   <p className="truncate font-semibold">{exercise.name}</p>
-                  <p className="truncate text-xs text-ink-muted">
-                    {[exercise.taxonomy.primaryMuscles?.[0], equipmentLabel(exercise), exercise.taxonomy.level]
-                      .filter(Boolean)
-                      .join(', ')}
-                  </p>
+                  <p className="truncate text-xs text-ink-muted">{exerciseMeta(exercise).join(', ')}</p>
                 </div>
               </Link>
             </li>
