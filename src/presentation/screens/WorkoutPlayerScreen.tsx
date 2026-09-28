@@ -14,6 +14,9 @@ import { useTheme } from '../theme/ThemeContext'
 import { ThumbBar } from '../components/ThumbBar'
 import { ConfirmSheet } from '../components/ConfirmSheet'
 import { ExerciseThumb } from '../components/ExerciseThumb'
+import { RestRing } from '../components/RestRing'
+import { SetDots } from '../components/SetDots'
+import { WorkoutProgressBar } from '../components/WorkoutProgressBar'
 import { getLastTimeSummary } from '../../application/lastTime'
 import { primeAudio, restEndFeedback } from '../../application/restFeedback'
 import { useFeedbackSettings } from '../components/useFeedbackSettings'
@@ -247,36 +250,59 @@ export function WorkoutPlayerScreen() {
   const exerciseContent = exerciseById.get(exercise.exerciseId)
   const weighted = exercise.weightKg != null
   const setWeightKg = loggedWeightKg ?? exercise.weightKg ?? 0
+  const progress = workoutProgress(plan, state.currentExerciseIndex, state.currentSetNumber)
+  const exerciseLabel = `Exercise ${state.currentExerciseIndex + 1} of ${plan.exercises.length}`
+  const target = exercise.reps != null ? { value: exercise.reps, unit: 'reps' } : exercise.timeSeconds != null ? { value: exercise.timeSeconds, unit: 'sec hold' } : null
 
   return (
-    <div className="p-6 pb-40 space-y-4">
+    <div className="p-6 pt-4 pb-40 space-y-4">
       {/* Rare actions live up here, out of the thumb bar: End workout used
           to sit exactly where the rest screen's "Skip rest" is (a double tap
           ended the session), and mid-set there's no timer to pause, so
           Pause only crowded Complete Set. */}
-      <div className="flex items-center justify-between">
-        <div className="flex items-center gap-2">
-          <RaeFace expression="focused" size={36} motion="none" />
-          <p className="text-sm text-ink-muted">
-            Exercise {state.currentExerciseIndex + 1} of {plan.exercises.length}
-          </p>
+      <div className="space-y-2">
+        <div className="flex items-center justify-between">
+          <div className="flex items-center gap-2">
+            <RaeFace expression="focused" size={36} motion="none" />
+            <p className="text-sm font-semibold text-ink-muted">
+              {state.currentExerciseIndex + 1} of {plan.exercises.length}
+            </p>
+          </div>
+          <div className="-mr-3 flex">
+            <button className="btn-ghost min-h-11" disabled={busy} onClick={() => handleAction('PAUSED')}>
+              Pause
+            </button>
+            <button className="btn-ghost min-h-11" disabled={busy} onClick={openEndSheet}>
+              End workout
+            </button>
+          </div>
         </div>
-        <div className="-mr-3 flex">
-          <button className="btn-ghost min-h-11" disabled={busy} onClick={() => handleAction('PAUSED')}>
-            Pause
-          </button>
-          <button className="btn-ghost min-h-11" disabled={busy} onClick={openEndSheet}>
-            End workout
-          </button>
-        </div>
+        <WorkoutProgressBar done={progress.done} total={progress.total} label={exerciseLabel} />
       </div>
-      <h2 className="text-2xl font-bold">{exercise.name}</h2>
-      <p className="text-lg font-semibold">
-        Set {state.currentSetNumber} of {exercise.sets}
-        {exercise.reps ? ` — ${exercise.reps} reps` : exercise.timeSeconds ? ` — ${exercise.timeSeconds}s hold` : ''}
-        {weighted ? ` @ ${formatWeight(setWeightKg, unit)}` : ''}
-      </p>
-      {lastTime && <p className="text-sm text-ink-muted">{lastTime}</p>}
+
+      {/* The target, readable from the floor: a big number, what it counts,
+          and one dot per set. The caption says the same thing as text. */}
+      <div className="space-y-1">
+        <h2 className="text-2xl font-bold leading-tight">{exercise.name}</h2>
+        <div className="flex items-end justify-between gap-4">
+          <p className="flex items-baseline gap-2">
+            {target && (
+              <>
+                <span className="hud-num text-6xl font-extrabold leading-none text-primary">{target.value}</span>
+                <span className="text-lg font-bold text-ink-muted">{target.unit}</span>
+              </>
+            )}
+            {weighted && <span className="hud-num text-lg font-bold">@ {formatWeight(setWeightKg, unit)}</span>}
+          </p>
+          <div className="flex-none space-y-1 pb-1">
+            <SetDots total={exercise.sets} current={state.currentSetNumber} />
+            <p className="text-sm font-semibold text-ink-muted">
+              Set {state.currentSetNumber} of {exercise.sets}
+            </p>
+          </div>
+        </div>
+        {lastTime && <p className="text-sm text-ink-muted">{lastTime}</p>}
+      </div>
 
       {exerciseContent && (
         <MovementMedia
@@ -329,7 +355,7 @@ export function WorkoutPlayerScreen() {
       >
         {awaitingRepCheck ? (
           <>
-            <p className="text-sm text-center">Did you complete all {exercise.reps} reps?</p>
+            <p className="text-center text-xl font-bold">Did you complete all {exercise.reps} reps?</p>
             <div className="flex gap-2">
               <button
                 className="btn-secondary flex-1"
@@ -425,18 +451,12 @@ function StepsList({ steps, folded, onUnfold }: { steps: string[]; folded: boole
   )
 }
 
-// Decoration over the numeric timer (which stays the source of truth):
-// the share of this rest still left, from the persisted timestamps.
-function RestBar({ restStartedAt, restEndsAt, seconds }: { restStartedAt: string | null; restEndsAt: string; seconds: number }) {
-  if (!restStartedAt) return null
-  const totalMs = Date.parse(restEndsAt) - Date.parse(restStartedAt)
-  if (!(totalMs > 0)) return null
-  const left = Math.min(1, Math.max(0, (seconds * 1000) / totalMs))
-  return (
-    <div className="rest-bar mx-auto max-w-xs" aria-hidden="true">
-      <div className="rest-bar__fill" style={{ width: `${left * 100}%` }} />
-    </div>
-  )
+// Sets finished across the whole plan: every set of the exercises before
+// the current one, plus the current exercise's sets before this one.
+function workoutProgress(plan: SessionPlan, exerciseIndex: number, setNumber: number): { done: number; total: number } {
+  const total = plan.exercises.reduce((sum, e) => sum + e.sets, 0)
+  const before = plan.exercises.slice(0, exerciseIndex).reduce((sum, e) => sum + e.sets, 0)
+  return { done: Math.min(total, before + setNumber - 1), total }
 }
 
 function secondsUntil(restEndsAt: string): number {
@@ -457,7 +477,7 @@ function RestingView({
   onPause,
 }: {
   // During rest the session already points at the coming set.
-  upNext: { exerciseId: string; name: string } | undefined
+  upNext: { exerciseId: string; name: string; sets: number } | undefined
   upNextContent: Exercise | undefined
   setNumber: number
   restStartedAt: string | null
@@ -493,22 +513,28 @@ function RestingView({
   }, [restEndsAt])
 
   return (
-    <div className="field-calm min-h-screen rounded-none p-6 pt-16 pb-32 text-center space-y-6">
-      <div className="flex justify-end">
-        <button className="btn-ghost min-h-11 -mr-3 -mt-10" disabled={busy} onClick={onPause}>
+    <div className="field-calm min-h-screen rounded-none p-6 pt-4 pb-32 text-center space-y-4">
+      <div className="flex items-center justify-between">
+        <RaeFace expression="tired" size={48} />
+        <button className="btn-ghost min-h-11 -mr-3" disabled={busy} onClick={onPause}>
           Pause
         </button>
       </div>
-      <RaeFace expression="tired" size={88} className="mx-auto" />
-      <p className="text-lg font-bold">Rest</p>
-      <p
-        className="hud-num text-7xl font-extrabold tabular-nums"
-        role="timer"
-      >
-        {Math.floor(seconds / 60)}:{String(seconds % 60).padStart(2, '0')}
-      </p>
-      <RestBar restStartedAt={restStartedAt} restEndsAt={restEndsAt} seconds={seconds} />
-      {upNext && <UpNext exerciseId={upNext.exerciseId} name={upNext.name} content={upNextContent} setNumber={setNumber} />}
+      <RestRing restStartedAt={restStartedAt} restEndsAt={restEndsAt} seconds={seconds}>
+        <p className="text-lg font-bold">Rest</p>
+        <p className="hud-num text-6xl font-extrabold leading-none tabular-nums" role="timer">
+          {Math.floor(seconds / 60)}:{String(seconds % 60).padStart(2, '0')}
+        </p>
+      </RestRing>
+      {upNext && (
+        <UpNext
+          exerciseId={upNext.exerciseId}
+          name={upNext.name}
+          content={upNextContent}
+          setNumber={setNumber}
+          sets={upNext.sets}
+        />
+      )}
       {error && <p className="text-sm text-accent">{error}</p>}
       {/* Skip rest is the tap after nearly every rest: primary, full reach.
           +15s beside it; Pause (a phone call, a doorbell) stays up top. */}
@@ -524,29 +550,28 @@ function RestingView({
   )
 }
 
-// Rest previews what's coming: Rae's loop for the next move, small, under
-// the timer (which stays the focus). The exercise's photo when Rae doesn't
-// demonstrate that move yet.
+// Rest previews what's coming, as a card under the timer: Rae's loop for
+// the next move (the exercise's photo when Rae doesn't demonstrate it
+// yet), its name, and which set it will be.
 function UpNext({
   exerciseId,
   name,
   content,
   setNumber,
+  sets,
 }: {
   exerciseId: string
   name: string
   content: Exercise | undefined
   setNumber: number
+  sets: number
 }) {
   const { motion } = useTheme()
   const osPrefersReduced = usePrefersReducedMotion()
   const loop = raeLoopForExercise(exerciseId)
   return (
-    <div className="space-y-1">
-      <p className="text-sm font-semibold text-ink-muted">
-        Up next: {name}
-        {setNumber > 1 ? `, set ${setNumber}` : ''}
-      </p>
+    <div className="card space-y-2 p-3">
+      <p className="text-sm font-bold text-ink-muted">Up next</p>
       {loop && (
         <RaeExerciseLoop
           id={loop.id}
@@ -555,12 +580,18 @@ function UpNext({
           height={loop.height}
           stills={loop.stills}
           animate={effectiveMotion(motion, osPrefersReduced) === 'full'}
-          imgClassName="max-h-[20vh] w-auto"
+          imgClassName="max-h-[24vh] w-auto"
         />
       )}
       {!loop && content?.mediaManifest.start && (
-        <ExerciseThumb exercise={content} className="mx-auto h-[20vh] w-auto max-w-full rounded-panel" />
+        <ExerciseThumb exercise={content} className="mx-auto h-[24vh] w-auto max-w-full rounded-panel" />
       )}
+      <div>
+        <p className="text-lg font-bold leading-tight">{name}</p>
+        <p className="text-sm font-semibold text-ink-muted">
+          Set {setNumber} of {sets}
+        </p>
+      </div>
     </div>
   )
 }

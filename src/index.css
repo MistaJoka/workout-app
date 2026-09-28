@@ -188,19 +188,45 @@ h2 {
   outline-offset: 2px;
 }
 
-/* Rest countdown bar: pure decoration over the numeric
-   timer, width driven inline from the persisted rest end time. */
-.rest-bar {
-  height: 6px;
+/* Player visuals (RestRing, WorkoutProgressBar, SetDots): decoration over
+   numbers and captions that carry the same information as text. Motion
+   settings only stop them gliding (the global overrides below). */
+.rest-ring__track {
+  stroke: color-mix(in srgb, var(--color-text) 12%, transparent);
+}
+.rest-ring__fill {
+  stroke: var(--color-primary);
+  transition: stroke-dashoffset 1s linear;
+}
+
+.workout-progress {
+  height: 8px;
   width: 100%;
   overflow: hidden;
   border-radius: var(--radius-control);
-  background-color: color-mix(in srgb, var(--color-text) 12%, transparent);
+  background-color: color-mix(in srgb, var(--color-text) 10%, transparent);
 }
-.rest-bar__fill {
+.workout-progress__fill {
   height: 100%;
+  border-radius: var(--radius-control);
   background-color: var(--color-primary);
-  transition: width 250ms linear;
+  transition: width 400ms ease-out;
+}
+
+.set-dot {
+  width: 14px;
+  height: 14px;
+  border-radius: 9999px;
+  border: 2px solid var(--color-primary);
+}
+.set-dot--done {
+  background-color: var(--color-primary);
+}
+.set-dot--current {
+  box-shadow: 0 0 0 3px color-mix(in srgb, var(--color-primary) 30%, transparent);
+}
+.set-dot--left {
+  border-color: color-mix(in srgb, var(--color-text) 25%, transparent);
 }
 
 /* Horizontally scrolling chip rows: swipe, don't show a desktop scrollbar. */

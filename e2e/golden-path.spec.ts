@@ -148,7 +148,7 @@ test.describe('library and routines', () => {
 
     await page.getByRole('link', { name: 'Start workout' }).click()
     await page.getByRole('button', { name: 'Start workout' }).click()
-    await expect(page.getByText(/10 reps @ 50 lb/)).toBeVisible()
+    await expect(page.getByText(/@ 50 lb/)).toBeVisible()
     await page.getByRole('button', { name: 'Complete Set' }).click()
     await page.getByRole('button', { name: 'More weight' }).click()
     await expect(page.getByText(/@ 55 lb/)).toBeVisible()
