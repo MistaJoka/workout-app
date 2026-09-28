@@ -2,7 +2,10 @@ import { defineConfig, devices } from '@playwright/test'
 
 // End-to-end tests run against a production build served by `vite preview`,
 // on a phone-sized viewport, with a fresh browser context (fresh IndexedDB,
-// no service worker) per test.
+// no service worker) per test. E2E_PORT lets parallel worktrees run at once.
+const port = Number(process.env.E2E_PORT ?? 4199)
+const baseURL = `http://localhost:${port}`
+
 export default defineConfig({
   testDir: 'e2e',
   timeout: 60_000,
@@ -11,7 +14,7 @@ export default defineConfig({
   retries: process.env.CI ? 1 : 0,
   reporter: process.env.CI ? [['github'], ['list']] : 'list',
   use: {
-    baseURL: 'http://localhost:4199',
+    baseURL,
     viewport: { width: 390, height: 844 },
     isMobile: true,
     hasTouch: true,
@@ -25,12 +28,12 @@ export default defineConfig({
     { name: 'chromium' },
     {
       name: 'webkit-iphone',
-      use: { ...devices['iPhone 13'], baseURL: 'http://localhost:4199', trace: 'retain-on-failure' },
+      use: { ...devices['iPhone 13'], baseURL, trace: 'retain-on-failure' },
     },
   ],
   webServer: {
-    command: 'npm run build && npm run preview -- --port 4199 --strictPort',
-    url: 'http://localhost:4199',
+    command: `npm run build && npm run preview -- --port ${port} --strictPort`,
+    url: baseURL,
     reuseExistingServer: false,
     timeout: 120_000,
   },
