@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useRef, useState } from 'react'
-import { useNavigate, useParams } from 'react-router-dom'
+import { Link, useNavigate, useParams } from 'react-router-dom'
 import { getCurrentState, getPlan, recordEvent } from '../../application/sessionService'
 import type { SessionPlan, SessionState } from '../../domain/session/types'
 import { isRestComplete, remainingRestMs } from '../../domain/session/restTimer'
@@ -10,6 +10,8 @@ import { RaeExerciseLoop, RaeFace } from '../components/Rae'
 import { raeLoopForExercise } from '../components/raeLoops'
 import { useTheme } from '../theme/ThemeContext'
 import { ThumbBar } from '../components/ThumbBar'
+import { ConfirmSheet } from '../components/ConfirmSheet'
+import { ExerciseThumb } from '../components/ExerciseThumb'
 import { getLastTimeSummary } from '../../application/lastTime'
 import { primeAudio, restEndFeedback } from '../../application/restFeedback'
 import { useFeedbackSettings } from '../components/useFeedbackSettings'
@@ -20,6 +22,9 @@ import { formatWeight, kgToUnit, roundToStep, stepInUnit, unitToKg } from '../un
 type ActionType = 'SET_COMPLETED' | 'REST_ENDED' | 'REST_EXTENDED' | 'REST_SKIPPED' | 'PAUSED' | 'RESUMED'
 
 const REST_EXTENSION_MS = 15_000
+
+// IndexedDB failures are local: never blame the network (CLAUDE.md).
+const SAVE_ERROR = "Couldn't save on this device. Try again."
 
 export function WorkoutPlayerScreen() {
   const { sessionId } = useParams()
@@ -37,13 +42,32 @@ export function WorkoutPlayerScreen() {
   const [unit] = useWeightUnit()
   // Load actually used for the set being logged (kg); null = use the plan's.
   const [loggedWeightKg, setLoggedWeightKg] = useState<number | null>(null)
+  const [confirmingEnd, setConfirmingEnd] = useState(false)
+  const [endError, setEndError] = useState<string | null>(null)
+  const [loadFailed, setLoadFailed] = useState(false)
 
   const refresh = useCallback(async () => {
     if (!sessionId) return
-    const [loadedPlan, loadedState] = await Promise.all([getPlan(sessionId), getCurrentState(sessionId)])
-    setPlan(loadedPlan ?? null)
-    setState(loadedState)
-    if (loadedPlan) setExerciseById(await getExercises(loadedPlan.exercises.map((e) => e.exerciseId)))
+    setLoadFailed(false)
+    let loadedPlan: SessionPlan | undefined
+    try {
+      const [p, loadedState] = await Promise.all([getPlan(sessionId), getCurrentState(sessionId)])
+      loadedPlan = p
+      setPlan(p ?? null)
+      setState(loadedState)
+    } catch {
+      setLoadFailed(true)
+      return
+    }
+    // Steps and media are extras: the sets and timers work without them
+    // (e.g. the library chunk isn't cached yet and the phone is offline).
+    if (loadedPlan) {
+      try {
+        setExerciseById(await getExercises(loadedPlan.exercises.map((e) => e.exerciseId)))
+      } catch {
+        // keep the player usable; names come from the plan
+      }
+    }
   }, [sessionId])
 
   useEffect(() => {
@@ -85,7 +109,7 @@ export function WorkoutPlayerScreen() {
       setState(next)
       setAwaitingRepCheck(false)
     } catch {
-      setError('Could not save — check your connection and try again.')
+      setError(SAVE_ERROR)
     } finally {
       setBusy(false)
     }
@@ -103,17 +127,52 @@ export function WorkoutPlayerScreen() {
     setAwaitingRepCheck(true)
   }
 
+  // Ending early still finishes on the Complete screen: the "you're done"
+  // moment, and any Try Next Level offer the finished sets earned.
   async function handleEndWorkout() {
     if (!sessionId) return
     setBusy(true)
-    setError(null)
+    setEndError(null)
     try {
       await recordEvent(sessionId, 'SESSION_COMPLETED_SHORTENED', crypto.randomUUID())
-      navigate('/')
+      navigate(`/session/${sessionId}/complete`, { replace: true })
     } catch {
-      setError('Could not end the workout — please try again.')
+      setEndError(SAVE_ERROR)
       setBusy(false)
     }
+  }
+
+  function openEndSheet() {
+    setEndError(null)
+    setConfirmingEnd(true)
+  }
+
+  const endSheet = confirmingEnd ? (
+    <ConfirmSheet
+      title="End workout?"
+      confirmLabel="End workout"
+      cancelLabel="Keep going"
+      busy={busy}
+      error={endError}
+      onConfirm={handleEndWorkout}
+      onCancel={() => setConfirmingEnd(false)}
+    >
+      Your finished sets are saved.
+    </ConfirmSheet>
+  ) : null
+
+  if (loadFailed) {
+    return (
+      <div className="p-6 pt-16 text-center space-y-4">
+        <p className="text-lg font-bold">Couldn't open this workout.</p>
+        <button className="btn-primary btn-lg w-full" onClick={() => void refresh()}>
+          Try again
+        </button>
+        <Link to="/" className="btn-ghost min-h-11">
+          Back to Today
+        </Link>
+      </div>
+    )
   }
 
   if (!plan || !state) {
@@ -129,6 +188,10 @@ export function WorkoutPlayerScreen() {
           {plan.exercises[state.currentExerciseIndex]?.name}, set {state.currentSetNumber}
         </p>
         {error && <p className="text-sm text-accent">{error}</p>}
+        <button className="btn-ghost min-h-11" disabled={busy} onClick={openEndSheet}>
+          End workout
+        </button>
+        {endSheet}
         <ThumbBar armKey="paused">
           <button className="btn-primary btn-lg w-full" disabled={busy} onClick={() => handleAction('RESUMED')}>
             Resume
@@ -139,9 +202,11 @@ export function WorkoutPlayerScreen() {
   }
 
   if (state.status === 'RESTING' && state.restEndsAt) {
+    const upNext = plan.exercises[state.currentExerciseIndex]
     return (
       <RestingView
-        upNext={plan.exercises[state.currentExerciseIndex]}
+        upNext={upNext}
+        upNextContent={upNext ? exerciseById.get(upNext.exerciseId) : undefined}
         setNumber={state.currentSetNumber}
         restStartedAt={state.restStartedAt}
         restEndsAt={state.restEndsAt}
@@ -183,10 +248,10 @@ export function WorkoutPlayerScreen() {
           </p>
         </div>
         <div className="-mr-3 flex">
-          <button className="btn-ghost btn-sm" disabled={busy} onClick={() => handleAction('PAUSED')}>
+          <button className="btn-ghost min-h-11" disabled={busy} onClick={() => handleAction('PAUSED')}>
             Pause
           </button>
-          <button className="btn-ghost btn-sm" disabled={busy} onClick={handleEndWorkout}>
+          <button className="btn-ghost min-h-11" disabled={busy} onClick={openEndSheet}>
             End workout
           </button>
         </div>
@@ -213,6 +278,7 @@ export function WorkoutPlayerScreen() {
       )}
 
       {error && <p className="text-sm text-accent">{error}</p>}
+      {endSheet}
       {awaitingRepCheck && weighted && (
         <div className="flex items-center justify-center gap-6 rounded-panel bg-bg p-2">
           <button
@@ -351,6 +417,7 @@ function secondsUntil(restEndsAt: string): number {
 
 function RestingView({
   upNext,
+  upNextContent,
   setNumber,
   restStartedAt,
   restEndsAt,
@@ -363,6 +430,7 @@ function RestingView({
 }: {
   // During rest the session already points at the coming set.
   upNext: { exerciseId: string; name: string } | undefined
+  upNextContent: Exercise | undefined
   setNumber: number
   restStartedAt: string | null
   restEndsAt: string
@@ -399,7 +467,7 @@ function RestingView({
   return (
     <div className="field-calm min-h-screen rounded-none p-6 pt-16 pb-32 text-center space-y-6">
       <div className="flex justify-end">
-        <button className="btn-ghost btn-sm -mr-3 -mt-10" disabled={busy} onClick={onPause}>
+        <button className="btn-ghost min-h-11 -mr-3 -mt-10" disabled={busy} onClick={onPause}>
           Pause
         </button>
       </div>
@@ -412,7 +480,7 @@ function RestingView({
         {Math.floor(seconds / 60)}:{String(seconds % 60).padStart(2, '0')}
       </p>
       <RestBar restStartedAt={restStartedAt} restEndsAt={restEndsAt} seconds={seconds} />
-      {upNext && <UpNext exerciseId={upNext.exerciseId} name={upNext.name} setNumber={setNumber} />}
+      {upNext && <UpNext exerciseId={upNext.exerciseId} name={upNext.name} content={upNextContent} setNumber={setNumber} />}
       {error && <p className="text-sm text-accent">{error}</p>}
       {/* Skip rest is the tap after nearly every rest: primary, full reach.
           +15s beside it; Pause (a phone call, a doorbell) stays up top. */}
@@ -429,9 +497,19 @@ function RestingView({
 }
 
 // Rest previews what's coming: Rae's loop for the next move, small, under
-// the timer (which stays the focus). Text only when Rae doesn't demonstrate
-// that move yet.
-function UpNext({ exerciseId, name, setNumber }: { exerciseId: string; name: string; setNumber: number }) {
+// the timer (which stays the focus). The exercise's photo when Rae doesn't
+// demonstrate that move yet.
+function UpNext({
+  exerciseId,
+  name,
+  content,
+  setNumber,
+}: {
+  exerciseId: string
+  name: string
+  content: Exercise | undefined
+  setNumber: number
+}) {
   const { motion } = useTheme()
   const osPrefersReduced = usePrefersReducedMotion()
   const loop = raeLoopForExercise(exerciseId)
@@ -451,6 +529,9 @@ function UpNext({ exerciseId, name, setNumber }: { exerciseId: string; name: str
           animate={effectiveMotion(motion, osPrefersReduced) === 'full'}
           imgClassName="max-h-[20vh] w-auto"
         />
+      )}
+      {!loop && content?.mediaManifest.start && (
+        <ExerciseThumb exercise={content} className="mx-auto h-[20vh] w-auto max-w-full rounded-panel" />
       )}
     </div>
   )

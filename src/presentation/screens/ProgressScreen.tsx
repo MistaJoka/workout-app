@@ -20,11 +20,24 @@ type Snapshot = {
 
 export function ProgressScreen() {
   const [snapshot, setSnapshot] = useState<Snapshot | null>(null)
+  const [failed, setFailed] = useState(false)
+  const [attempt, setAttempt] = useState(0)
   const [unit] = useWeightUnit()
 
   useEffect(() => {
-    load().then(setSnapshot)
-  }, [])
+    let cancelled = false
+    setFailed(false)
+    load()
+      .then((loaded) => {
+        if (!cancelled) setSnapshot(loaded)
+      })
+      .catch(() => {
+        if (!cancelled) setFailed(true)
+      })
+    return () => {
+      cancelled = true
+    }
+  }, [attempt])
 
   async function load(): Promise<Snapshot> {
     const { plans, results, events } = await getAllSessionHistory()
@@ -47,7 +60,15 @@ export function ProgressScreen() {
     <div className="p-4 space-y-4">
       <h1 className="text-xl font-bold">Progress</h1>
 
-      {snapshot === null && <p className="text-ink-muted">Loading…</p>}
+      {snapshot === null && !failed && <p className="text-ink-muted">Loading…</p>}
+      {snapshot === null && failed && (
+        <div className="card space-y-3 p-4 text-center">
+          <p className="font-bold">Couldn't load your progress.</p>
+          <button type="button" className="btn-primary w-full" onClick={() => setAttempt((n) => n + 1)}>
+            Try again
+          </button>
+        </div>
+      )}
 
       {rows && rows.length === 0 && (
         <RaeNote expression="smile">No workouts yet. Finish your first one and I'll keep score here.</RaeNote>

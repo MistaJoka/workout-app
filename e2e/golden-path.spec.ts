@@ -104,8 +104,11 @@ test.describe('library and routines', () => {
     await page.getByRole('button', { name: /^Filters/ }).click()
     await page.getByRole('button', { name: 'No equipment' }).click()
     await page.getByRole('button', { name: 'Done' }).click()
-    // Bodyweight Squat, Rae's Mini Squat, and one more library squat.
-    await expect(page.getByText('3 exercises')).toBeVisible()
+    // Bodyweight Squat, Rae's Mini Squat, Freehand Jump Squat, and the two
+    // upstream squats that list no equipment at all (Sit Squats, Split
+    // Squats), which count as no equipment.
+    await expect(page.getByText('5 exercises')).toBeVisible()
+    await expect(page.getByText('Split Squats')).toBeVisible()
 
     await page.getByRole('link', { name: /Bodyweight Squat/ }).first().click()
     await expect(page.getByRole('heading', { name: 'Bodyweight Squat' })).toBeVisible()
@@ -133,8 +136,9 @@ test.describe('library and routines', () => {
     await page.getByPlaceholder('Search exercises').fill('dumbbell bench press')
     await page.getByRole('button', { name: /^Dumbbell Bench Press(?! with)/ }).click()
 
+    // Weighted moves start unloaded; the lifter dials in their own load.
     await expect(page.getByText('Weight (lb)')).toBeVisible()
-    await page.getByRole('button', { name: 'Increase Weight (lb)' }).click()
+    for (let i = 0; i < 10; i++) await page.getByRole('button', { name: 'Increase Weight (lb)' }).click()
     await page.getByRole('button', { name: 'Save routine' }).click()
     await expect(page.getByText(/3 × 10 @ 50 lb/)).toBeVisible()
 
@@ -144,6 +148,28 @@ test.describe('library and routines', () => {
     await page.getByRole('button', { name: 'Complete Set' }).click()
     await page.getByRole('button', { name: 'More weight' }).click()
     await expect(page.getByText(/@ 55 lb/)).toBeVisible()
+  })
+
+  test('removing an exercise can be undone, and leaving unsaved edits asks first', async ({ page }) => {
+    await page.goto('/#/library')
+    await page.getByPlaceholder('Search exercises').fill('bodyweight squat')
+    await page.getByRole('link', { name: /Bodyweight Squat/ }).first().click()
+    await page.getByRole('button', { name: 'Add to a routine' }).click()
+    await expect(page.getByText('Bodyweight Squat')).toBeVisible()
+
+    await page.getByRole('button', { name: 'Remove' }).click()
+    await expect(page.getByText('Removed Bodyweight Squat')).toBeVisible()
+    await page.getByRole('button', { name: 'Undo' }).click()
+    await expect(page.getByRole('button', { name: 'Remove' })).toBeVisible()
+
+    await page.getByRole('button', { name: /Back/ }).click()
+    const sheet = page.getByRole('dialog', { name: 'Leave without saving?' })
+    await expect(sheet).toBeVisible()
+    await sheet.getByRole('button', { name: 'Keep editing' }).click()
+    await expect(page.getByRole('heading', { name: 'New routine' })).toBeVisible()
+    await page.getByRole('button', { name: /Back/ }).click()
+    await page.getByRole('dialog', { name: 'Leave without saving?' }).getByRole('button', { name: 'Leave' }).click()
+    await expect(page.getByRole('heading', { name: 'Bodyweight Squat' })).toBeVisible()
   })
 })
 

@@ -16,7 +16,6 @@ import { RaeNote } from '../components/RaeNote'
 type Candidate = {
   exerciseId: string
   exerciseName: string
-  detail: string
   candidatePrescribedReps: number
   candidateWeightKg?: number
 }
@@ -26,12 +25,18 @@ export function SessionCompleteScreen() {
   const [result, setResult] = useState<SessionResult | null>(null)
   const [candidates, setCandidates] = useState<Candidate[]>([])
   const [busyExerciseId, setBusyExerciseId] = useState<string | null>(null)
+  const [candidateError, setCandidateError] = useState<string | null>(null)
   const [unit] = useWeightUnit()
 
   useEffect(() => {
     if (!sessionId) return
-    getResult(sessionId).then((loaded) => setResult(loaded ?? null))
-    loadCandidates(sessionId).then(setCandidates)
+    // Best effort: the finish screen itself never depends on these reads.
+    getResult(sessionId)
+      .then((loaded) => setResult(loaded ?? null))
+      .catch(() => setResult(null))
+    loadCandidates(sessionId)
+      .then(setCandidates)
+      .catch(() => setCandidates([]))
   }, [sessionId])
 
   async function loadCandidates(id: string): Promise<Candidate[]> {
@@ -43,25 +48,29 @@ export function SessionCompleteScreen() {
       .map((r) => ({
         exerciseId: r.exerciseId,
         exerciseName: plan.exercises.find((e) => e.exerciseId === r.exerciseId)?.name ?? r.exerciseId,
-        detail: r.pendingCandidate!.detail,
         candidatePrescribedReps: r.pendingCandidate!.candidatePrescribedReps,
         ...(r.pendingCandidate!.candidateWeightKg != null ? { candidateWeightKg: r.pendingCandidate!.candidateWeightKg } : {}),
       }))
   }
 
-  async function handleConfirm(exerciseId: string) {
+  // A failed write keeps the offer on screen (it's still pending in the
+  // database) with a retry-able message, instead of a stuck button.
+  async function resolveCandidate(exerciseId: string, write: (id: string) => Promise<unknown>) {
     setBusyExerciseId(exerciseId)
-    await advanceProgression(exerciseId, new Date().toISOString())
-    setCandidates((current) => current.filter((c) => c.exerciseId !== exerciseId))
-    setBusyExerciseId(null)
+    setCandidateError(null)
+    try {
+      await write(exerciseId)
+      setCandidates((current) => current.filter((c) => c.exerciseId !== exerciseId))
+    } catch {
+      setCandidateError("Couldn't save on this device. Try again.")
+    } finally {
+      setBusyExerciseId(null)
+    }
   }
 
-  async function handleDismiss(exerciseId: string) {
-    setBusyExerciseId(exerciseId)
-    await dismissProgressionCandidate(exerciseId)
-    setCandidates((current) => current.filter((c) => c.exerciseId !== exerciseId))
-    setBusyExerciseId(null)
-  }
+  const handleConfirm = (exerciseId: string) =>
+    resolveCandidate(exerciseId, (id) => advanceProgression(id, new Date().toISOString()))
+  const handleDismiss = (exerciseId: string) => resolveCandidate(exerciseId, dismissProgressionCandidate)
 
   return (
     <div className="field-success min-h-screen rounded-none p-6 pt-16 pb-28 text-center space-y-4">
@@ -88,7 +97,6 @@ export function SessionCompleteScreen() {
           {candidates.map((candidate) => (
             <div key={candidate.exerciseId} className="card p-4 space-y-2">
               <p className="font-semibold">Try Next Level? {candidate.exerciseName}</p>
-              <p className="text-sm text-ink-muted">{candidate.detail}</p>
               <p className="text-sm">
                 Next: {candidate.candidatePrescribedReps} reps
                 {candidate.candidateWeightKg != null ? ` @ ${formatWeight(candidate.candidateWeightKg, unit)}` : ''}
@@ -111,8 +119,13 @@ export function SessionCompleteScreen() {
               </div>
             </div>
           ))}
+          {candidateError && <p className="text-sm text-center text-accent">{candidateError}</p>}
         </div>
       )}
+
+      <Link to="/progress" className="btn-ghost min-h-11">
+        See your progress
+      </Link>
 
       {/* ThumbBar ignores taps briefly: this button sits where the player's
           last "Yes"/"Complete Set" was, so a double tap on the final set

@@ -10,7 +10,19 @@ export const THUMB_BAR_ARM_MS = 700
 // changes (and on mount) the bar ignores taps for a moment. It stops
 // hit-testing rather than greying out, so nothing flickers on every set;
 // keyboard and screen-reader activation are unaffected.
-export function ThumbBar({ armKey, children, className = '' }: { armKey: string; children: ReactNode; className?: string }) {
+// `aboveTabBar` lifts it over the 64px tab bar on screens inside the shell
+// (and drops the safe-area padding, which the tab bar already takes).
+export function ThumbBar({
+  armKey,
+  children,
+  className = '',
+  aboveTabBar = false,
+}: {
+  armKey: string
+  children: ReactNode
+  className?: string
+  aboveTabBar?: boolean
+}) {
   const [armedKey, setArmedKey] = useState<string | null>(null)
   useEffect(() => {
     const timer = setTimeout(() => setArmedKey(armKey), THUMB_BAR_ARM_MS)
@@ -20,8 +32,11 @@ export function ThumbBar({ armKey, children, className = '' }: { armKey: string;
   return (
     <div
       data-armed={armed}
-      className={`fixed bottom-0 left-0 right-0 border-t-2 border-edge bg-surface p-4 ${className}`}
-      style={{ paddingBottom: 'max(1rem, env(safe-area-inset-bottom))', pointerEvents: armed ? undefined : 'none' }}
+      className={`fixed ${aboveTabBar ? 'bottom-16' : 'bottom-0'} left-0 right-0 border-t-2 border-edge bg-surface p-4 ${className}`}
+      style={{
+        paddingBottom: aboveTabBar ? undefined : 'max(1rem, env(safe-area-inset-bottom))',
+        pointerEvents: armed ? undefined : 'none',
+      }}
     >
       {children}
     </div>

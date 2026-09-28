@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from 'react'
+import { useEffect, useMemo, useRef, useState } from 'react'
 import { useNavigate, useParams, useSearchParams } from 'react-router-dom'
 import { getExercises, getTemplate, loadLibrary } from '../../domain/content/catalog'
 import { filterExercises, MUSCLE_GROUPS, EQUIPMENT_OPTIONS } from '../../domain/content/library'
@@ -16,8 +16,19 @@ import { useWeightUnit } from '../components/useWeightUnit'
 import { BackButton } from '../components/BackButton'
 import { RaeNote } from '../components/RaeNote'
 import { ExerciseThumb } from '../components/ExerciseThumb'
+import { ThumbBar } from '../components/ThumbBar'
+import { ConfirmSheet } from '../components/ConfirmSheet'
 
 type Row = EditRow
+
+const PICKER_PAGE = 40
+const UNDO_MS = 5_000
+// Row control: a 44px square, the minimum comfortable tap target.
+const ROW_BTN = 'inline-flex h-11 w-11 flex-none items-center justify-center rounded-control text-lg text-ink-muted active:bg-field-primary'
+
+function snapshot(name: string, rows: Row[]): string {
+  return JSON.stringify([name.trim(), rows.map(({ exercise: _exercise, ...rest }) => rest)])
+}
 
 function defaultRow(exercise: Exercise): Row {
   const timed = !exercise.prescriptionCapabilities.reps
@@ -29,7 +40,9 @@ function defaultRow(exercise: Exercise): Row {
     reps: timed ? undefined : 10,
     timeSeconds: timed ? 30 : undefined,
     restSeconds: weighted ? 90 : 60,
-    ...(weighted ? { weightKg: 20 } : {}),
+    // Start unloaded: the library is home-friendly, and a made-up load
+    // (it used to be 20 kg) is worse than the lifter dialling in their own.
+    ...(weighted ? { weightKg: 0 } : {}),
   }
 }
 
@@ -44,31 +57,72 @@ export function RoutineBuilderScreen() {
   const [loaded, setLoaded] = useState(!editingId && !params.get('add'))
   const [picking, setPicking] = useState(false)
   const [saving, setSaving] = useState(false)
+  const [error, setError] = useState<string | null>(null)
+  const [removed, setRemoved] = useState<{ row: Row; index: number } | null>(null)
+  const [confirmingLeave, setConfirmingLeave] = useState<(() => void) | null>(null)
+  // What was on screen right after loading; anything else is unsaved.
+  const [baseline, setBaseline] = useState<string | null>(null)
+  const undoTimer = useRef<ReturnType<typeof setTimeout> | null>(null)
   const [unit] = useWeightUnit()
 
   useEffect(() => {
     let cancelled = false
     async function init() {
+      let loadedName = ''
+      let loadedRows: Row[] = []
       if (editingId) {
         const template = await getTemplate(editingId)
         if (template && !cancelled) {
           const exercises = await getExercises(template.exercises.map((e) => e.exerciseId))
-          setName(template.name)
-          setRows(buildEditRows(template, exercises))
+          loadedName = template.name
+          loadedRows = buildEditRows(template, exercises)
+          setName(loadedName)
+          setRows(loadedRows)
         }
       }
+      // The routine as stored is the baseline; an exercise added from the
+      // library (?add=) is itself an unsaved change.
+      if (!cancelled) setBaseline(snapshot(loadedName, loadedRows))
       const add = params.get('add')
       if (add) {
         const exercise = (await getExercises([add])).get(add)
         if (exercise && !cancelled) setRows((r) => (r.some((x) => x.exerciseId === add) ? r : [...r, defaultRow(exercise)]))
       }
-      if (!cancelled) setLoaded(true)
     }
-    void init()
+    init()
+      .catch(() => {
+        if (!cancelled) setError("Couldn't load this routine. Go back and try again.")
+      })
+      .finally(() => {
+        if (!cancelled) setLoaded(true)
+      })
     return () => {
       cancelled = true
     }
   }, [editingId, params])
+
+  useEffect(() => () => {
+    if (undoTimer.current) clearTimeout(undoTimer.current)
+  }, [])
+
+  function remove(index: number) {
+    setRows((r) => {
+      const row = r[index]
+      if (row) setRemoved({ row, index })
+      return r.filter((_, i) => i !== index)
+    })
+    if (undoTimer.current) clearTimeout(undoTimer.current)
+    undoTimer.current = setTimeout(() => setRemoved(null), UNDO_MS)
+  }
+
+  function undoRemove() {
+    if (!removed) return
+    setRows((r) => [...r.slice(0, removed.index), removed.row, ...r.slice(removed.index)])
+    setRemoved(null)
+    if (undoTimer.current) clearTimeout(undoTimer.current)
+  }
+
+  const dirty = baseline !== null && snapshot(name, rows) !== baseline
 
   function update(index: number, patch: Partial<Row>) {
     setRows((r) => r.map((row, i) => (i === index ? { ...row, ...patch } : row)))
@@ -87,6 +141,7 @@ export function RoutineBuilderScreen() {
   async function handleSave() {
     if (!name.trim() || rows.length === 0) return
     setSaving(true)
+    setError(null)
     const id = editingId ?? newCustomTemplateId()
     const template: WorkoutTemplate = {
       id,
@@ -107,8 +162,13 @@ export function RoutineBuilderScreen() {
         optional: false,
       })),
     }
-    await saveCustomTemplate(template)
-    navigate(`/routines/${id}`, { replace: true })
+    try {
+      await saveCustomTemplate(template)
+      navigate(`/routines/${id}`, { replace: true })
+    } catch {
+      setError("Couldn't save on this device. Try again.")
+      setSaving(false)
+    }
   }
 
   if (!loaded) return <div className="p-4">Loading…</div>
@@ -131,7 +191,7 @@ export function RoutineBuilderScreen() {
   return (
     <div className="p-4 space-y-4 pb-44">
       <div className="flex items-center justify-between">
-        <BackButton />
+        <BackButton onBeforeBack={(goBack) => (dirty ? setConfirmingLeave(() => goBack) : goBack())} />
         <h1 className="text-lg font-bold">{editingId ? 'Edit routine' : 'New routine'}</h1>
         <span className="w-12" />
       </div>
@@ -154,17 +214,13 @@ export function RoutineBuilderScreen() {
               <p className="min-w-0 flex-1 truncate font-semibold">
                 {row.exercise ? row.exercise.name : 'Exercise no longer available'}
               </p>
-              <button className="px-2 text-ink-muted" aria-label="Move up" onClick={() => move(index, -1)}>
+              <button type="button" className={ROW_BTN} aria-label="Move up" onClick={() => move(index, -1)}>
                 ↑
               </button>
-              <button className="px-2 text-ink-muted" aria-label="Move down" onClick={() => move(index, 1)}>
+              <button type="button" className={ROW_BTN} aria-label="Move down" onClick={() => move(index, 1)}>
                 ↓
               </button>
-              <button
-                className="px-2 text-ink-muted"
-                aria-label="Remove"
-                onClick={() => setRows((r) => r.filter((_, i) => i !== index))}
-              >
+              <button type="button" className={ROW_BTN} aria-label="Remove" onClick={() => remove(index)}>
                 ✕
               </button>
             </div>
@@ -210,7 +266,37 @@ export function RoutineBuilderScreen() {
         + Add exercise
       </button>
 
-      <div className="fixed bottom-16 left-0 right-0 border-t-2 border-edge bg-surface p-4">
+      {error && <p className="text-sm text-accent">{error}</p>}
+
+      {removed && (
+        <div
+          className="fixed bottom-40 left-4 right-4 z-20 flex items-center gap-3 rounded-panel bg-ink px-4 py-2 text-bg"
+          role="status"
+        >
+          <span className="min-w-0 flex-1 truncate text-sm">Removed {removed.row.exercise?.name ?? 'exercise'}</span>
+          <button type="button" className="min-h-11 px-2 font-bold" onClick={undoRemove}>
+            Undo
+          </button>
+        </div>
+      )}
+
+      {confirmingLeave && (
+        <ConfirmSheet
+          title="Leave without saving?"
+          confirmLabel="Leave"
+          cancelLabel="Keep editing"
+          onConfirm={() => {
+            const leave = confirmingLeave
+            setConfirmingLeave(null)
+            leave()
+          }}
+          onCancel={() => setConfirmingLeave(null)}
+        >
+          Your changes to this routine will be lost.
+        </ConfirmSheet>
+      )}
+
+      <ThumbBar armKey="builder" aboveTabBar>
         <button
           className="btn-primary btn-lg w-full"
           disabled={!canSave || saving}
@@ -218,7 +304,7 @@ export function RoutineBuilderScreen() {
         >
           Save routine
         </button>
-      </div>
+      </ThumbBar>
     </div>
   )
 }
@@ -282,10 +368,17 @@ function ExercisePicker({
   const [query, setQuery] = useState('')
   const [muscle, setMuscle] = useState<string | undefined>()
   const [equipment, setEquipment] = useState<string | undefined>()
+  const [limit, setLimit] = useState(PICKER_PAGE)
+  const [loadFailed, setLoadFailed] = useState(false)
 
   useEffect(() => {
-    loadLibrary().then(setLibrary)
+    loadLibrary()
+      .then(setLibrary)
+      .catch(() => setLoadFailed(true))
   }, [])
+
+  // A new search starts back at the first page.
+  useEffect(() => setLimit(PICKER_PAGE), [query, muscle, equipment])
 
   const results = useMemo(
     () => (library ? filterExercises(library, { query: query || undefined, muscle, equipment }) : []).filter((e) => !excludeIds.includes(e.id)),
@@ -325,9 +418,10 @@ function ExercisePicker({
           </div>
         </div>
       </FilterSheet>
-      {library === null && <p className="text-ink-muted">Loading library…</p>}
+      {library === null && !loadFailed && <p className="text-ink-muted">Loading library…</p>}
+      {loadFailed && <p className="text-ink-muted">Couldn't load the library. Check back when you're online.</p>}
       <ul className="space-y-2">
-        {results.slice(0, 40).map((exercise) => (
+        {results.slice(0, limit).map((exercise) => (
           <li key={exercise.id}>
             <button
               type="button"
@@ -346,14 +440,19 @@ function ExercisePicker({
           </li>
         ))}
       </ul>
+      {results.length > limit && (
+        <button type="button" className="btn-secondary w-full" onClick={() => setLimit((n) => n + PICKER_PAGE)}>
+          Show more ({results.length - limit} left)
+        </button>
+      )}
 
       {/* Fixed bottom Cancel replaces the old top-right text link, which
           required a top-corner reach. */}
-      <div className="fixed bottom-16 left-0 right-0 border-t-2 border-edge bg-surface p-4">
+      <ThumbBar armKey="picker" aboveTabBar>
         <button className="btn-secondary w-full" onClick={onClose}>
           Cancel
         </button>
-      </div>
+      </ThumbBar>
     </div>
   )
 }
