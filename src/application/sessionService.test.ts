@@ -1,6 +1,7 @@
-import { beforeEach, describe, expect, it } from 'vitest'
+import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 import { db } from '../infrastructure/db/schema'
 import * as sessionRepo from '../infrastructure/db/repositories/sessionRepository'
+import * as progressionRepo from '../infrastructure/db/repositories/familiarityProgressionRepository'
 import { getProgression } from '../infrastructure/db/repositories/familiarityProgressionRepository'
 import { getCurrentState, recordEvent, startSession } from './sessionService'
 import type { SessionPlan } from '../domain/session/types'
@@ -185,5 +186,67 @@ describe('recordEvent', () => {
     const progression = await getProgression('ex1')
     expect(progression.currentPrescribedReps).toBe(12) // not 14 — a second pass would compound
     expect(await sessionRepo.getResult(repsPlan.id)).toMatchObject({ status: 'COMPLETED' })
+  })
+})
+
+describe('only sets the session machine applied are counted', () => {
+  it('a stray set stored after the session finished inflates neither the result nor progression', async () => {
+    const twoSets: SessionPlan = {
+      ...plan,
+      id: 'session-stray',
+      exercises: [{ exerciseId: 'ex1', exerciseVersion: 1, name: 'Exercise One', sets: 2, reps: 10, restSeconds: 60, order: 0 }],
+    }
+    await startSession(twoSets)
+    await recordEvent(twoSets.id, 'SET_COMPLETED', 'set-1', { exerciseId: 'ex1', met: true })
+    await recordEvent(twoSets.id, 'REST_SKIPPED', 'skip-1')
+    // Store the finishing set and a racing duplicate tap directly, as two
+    // concurrent recordEvent calls would, before anything replays.
+    await sessionRepo.appendEvent({ eventId: 'set-2', sessionId: twoSets.id, type: 'SET_COMPLETED', timestamp: new Date().toISOString(), payload: { exerciseId: 'ex1', met: true } })
+    await sessionRepo.appendEvent({ eventId: 'set-2-again', sessionId: twoSets.id, type: 'SET_COMPLETED', timestamp: new Date().toISOString(), payload: { exerciseId: 'ex1', met: false } })
+
+    await getCurrentState(twoSets.id)
+
+    expect(await sessionRepo.getResult(twoSets.id)).toMatchObject({ totalSetsCompleted: 2, totalSetsPlanned: 2 })
+    // The stray "met: false" set must not turn a clean session into a miss.
+    expect((await getProgression('ex1')).currentPrescribedReps).toBe(12)
+  })
+})
+
+describe('atomicity', () => {
+  afterEach(() => {
+    vi.restoreAllMocks()
+  })
+
+  it('startSession leaves no orphaned plan when the start event cannot be written', async () => {
+    vi.spyOn(sessionRepo, 'appendEvent').mockRejectedValueOnce(new Error('disk full'))
+    await expect(startSession(plan)).rejects.toThrow('disk full')
+    expect(await sessionRepo.getPlan(plan.id)).toBeUndefined()
+  })
+
+  it('a failure while applying progression rolls back the result, and the next read repairs it exactly once', async () => {
+    const repsPlan: SessionPlan = {
+      ...plan,
+      id: 'session-atomic-1',
+      exercises: [{ exerciseId: 'ex1', exerciseVersion: 1, name: 'Exercise One', sets: 1, reps: 10, restSeconds: 60, order: 0 }],
+    }
+    await startSession(repsPlan)
+    vi.spyOn(progressionRepo, 'recordExposure').mockRejectedValueOnce(new Error('quota'))
+    await expect(recordEvent(repsPlan.id, 'SET_COMPLETED', 'evt-set-1', { exerciseId: 'ex1', met: true })).rejects.toThrow(
+      'quota'
+    )
+    // Nothing half-written: no result, no progression.
+    expect(await sessionRepo.getResult(repsPlan.id)).toBeUndefined()
+    expect((await getProgression('ex1')).currentPrescribedReps).toBeNull()
+
+    // Reopening the session (a plain state read) finishes the job.
+    const state = await getCurrentState(repsPlan.id)
+    expect(state.status).toBe('COMPLETED')
+    expect(await sessionRepo.getResult(repsPlan.id)).toMatchObject({ status: 'COMPLETED' })
+    expect((await getProgression('ex1')).currentPrescribedReps).toBe(12)
+
+    // And never twice.
+    await getCurrentState(repsPlan.id)
+    await recordEvent(repsPlan.id, 'SET_COMPLETED', 'evt-set-1', { exerciseId: 'ex1', met: true })
+    expect((await getProgression('ex1')).currentPrescribedReps).toBe(12)
   })
 })

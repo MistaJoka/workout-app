@@ -3,7 +3,7 @@ import { BackButton } from '../components/BackButton'
 import { RAE_EXPRESSIONS, RaeExerciseLoop, RaeFace, RaeFigure, type RaeExpression } from '../components/Rae'
 import { effectiveMotion, usePrefersReducedMotion } from '../components/MovementMedia'
 import { useTheme } from '../theme/ThemeContext'
-import { RAE_LOOPS } from '../components/raeLoops'
+import { RAE_LOOPS, raeStillUrl } from '../components/raeLoops'
 
 // Featured moves only (the library's hundreds live in the Library). One stage
 // plays the chosen move; the rest are small tiles, grouped, so the page stays
@@ -91,7 +91,7 @@ export function MeetRaeScreen() {
                   className={`card flex flex-col items-center gap-1 p-2 ${loop.id === selected.id ? 'ring-2 ring-primary' : ''}`}
                 >
                   <img
-                    src={`/rae/${loop.id}-${loop.stills[loop.stills.length - 1]}.png`}
+                    src={raeStillUrl(loop.id, loop.stills[loop.stills.length - 1])}
                     alt=""
                     className="h-16 w-full object-contain"
                     loading="lazy"

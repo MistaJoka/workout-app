@@ -1,4 +1,5 @@
 import { useEffect, useState } from 'react'
+import { newId } from '../../shared/id'
 import { useNavigate, useParams } from 'react-router-dom'
 import { startSession } from '../../application/sessionService'
 import { getExercises, getTemplate } from '../../domain/content/catalog'
@@ -32,7 +33,7 @@ type Loaded = {
 
 function buildPlan(loaded: Loaded, checkIn: { energy: number; comfort: number; availableMinutes: number }): SessionPlan {
   return createSessionPlanFromTemplate({
-    id: crypto.randomUUID(),
+    id: newId(),
     createdAt: new Date().toISOString(),
     template: loaded.template,
     exercises: loaded.exercises,

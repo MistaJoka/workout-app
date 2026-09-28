@@ -2,6 +2,8 @@
 // canonical v1 character bible by scripts/assets/derive-rae-preview.py, so
 // nothing is redrawn and she always looks like Rae.
 
+import { raeLoopUrl, raeStillUrl } from './raeLoops'
+
 export const RAE_EXPRESSIONS = [
   'neutral',
   'smile',
@@ -82,7 +84,7 @@ export function RaeExerciseLoop({ id, name, width, height, stills, animate, imgC
   if (animate) {
     return (
       <img
-        src={`/rae/${id}.webp`}
+        src={raeLoopUrl(id)}
         alt={`Rae doing a ${name}`}
         width={width}
         height={height}
@@ -95,7 +97,7 @@ export function RaeExerciseLoop({ id, name, width, height, stills, animate, imgC
       {stills.map((frame) => (
         <img
           key={frame}
-          src={`/rae/${id}-${frame}.png`}
+          src={raeStillUrl(id, frame)}
           alt={`${name}, frame ${frame + 1}`}
           width={width}
           height={height}

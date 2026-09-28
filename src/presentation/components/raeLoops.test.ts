@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest'
-import { raeLoopForExercise, raeStillFor } from './raeLoops'
+import { RAE_LOOPS, raeLoopForExercise, raeLoopUrl, raeStillFor, raeStillUrl } from './raeLoops'
 
 describe('raeLoopForExercise', () => {
   it('finds the loop for each of the 9 curated exercises', () => {
@@ -27,7 +27,8 @@ describe('raeLoopForExercise', () => {
 
 describe('raeStillFor', () => {
   it('returns the peak key frame for a move Rae demonstrates', () => {
-    expect(raeStillFor('fs.bodyweight-squat')).toEqual({ src: '/rae/ex-squat-2.png', alt: 'Rae, squat' })
+    const v = raeLoopForExercise('fs.bodyweight-squat')?.v
+    expect(raeStillFor('fs.bodyweight-squat')).toEqual({ src: `/rae/ex-squat-2.png?v=${v}`, alt: 'Rae, squat' })
   })
 
   it('returns null when there is no Rae loop, so callers fall back to photos', () => {
@@ -51,5 +52,21 @@ describe('Rae moves', () => {
     for (const move of raeMoves) {
       expect(raeLoopForExercise(move.id)?.id, move.id).toBe(`ex-${move.id.replace('rae.', '')}`)
     }
+  })
+})
+
+describe('versioned loop URLs', () => {
+  it('every loop carries a content version, so redrawn art gets a new URL', () => {
+    for (const loop of RAE_LOOPS) expect(loop.v, loop.id).toMatch(/^[0-9a-f]{10}$/)
+  })
+
+  it('builds loop and still URLs with the version', () => {
+    const loop = raeLoopForExercise('fs.bodyweight-squat')!
+    expect(raeLoopUrl(loop.id)).toBe(`/rae/ex-squat.webp?v=${loop.v}`)
+    expect(raeStillUrl(loop.id, 0)).toBe(`/rae/ex-squat-0.png?v=${loop.v}`)
+  })
+
+  it('falls back to a bare URL for an id it does not know', () => {
+    expect(raeLoopUrl('ex-nope')).toBe('/rae/ex-nope.webp')
   })
 })

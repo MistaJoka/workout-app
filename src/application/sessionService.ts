@@ -1,17 +1,22 @@
 import { replayEvents } from '../domain/session/sessionMachine'
+import { withoutIneffectiveSets } from '../domain/session/appliedEvents'
 import type { SessionEvent, SessionEventType, SessionPlan, SessionResult, SessionState } from '../domain/session/types'
 import * as sessionRepo from '../infrastructure/db/repositories/sessionRepository'
 import * as progressionRepo from '../infrastructure/db/repositories/familiarityProgressionRepository'
 import { evaluateSessionProgression } from '../domain/adaptation/evaluateSessionProgression'
 
+// Plan and start event land together: a plan without its start event would
+// be an orphan that is neither resumable nor complete.
 export async function startSession(plan: SessionPlan): Promise<SessionState> {
-  await sessionRepo.savePlan(plan)
-  await sessionRepo.appendEvent({
-    eventId: `${plan.id}:start`,
-    sessionId: plan.id,
-    type: 'SESSION_STARTED',
-    timestamp: new Date().toISOString(),
-    payload: {},
+  await sessionRepo.inSessionTransaction(async () => {
+    await sessionRepo.savePlan(plan)
+    await sessionRepo.appendEvent({
+      eventId: `${plan.id}:start`,
+      sessionId: plan.id,
+      type: 'SESSION_STARTED',
+      timestamp: new Date().toISOString(),
+      payload: {},
+    })
   })
   return getCurrentState(plan.id)
 }
@@ -20,7 +25,18 @@ export async function getPlan(sessionId: string): Promise<SessionPlan | undefine
   return sessionRepo.getPlan(sessionId)
 }
 
+// Replays the session, and if it has ended but its result was never written
+// (a write failed after the completing event landed), finishes that now —
+// so simply reopening the session repairs it.
 export async function getCurrentState(sessionId: string): Promise<SessionState> {
+  const state = await replayState(sessionId)
+  if (state.status === 'COMPLETED' || state.status === 'COMPLETED_SHORTENED') {
+    await finalizeSession(sessionId, state)
+  }
+  return state
+}
+
+async function replayState(sessionId: string): Promise<SessionState> {
   const plan = await sessionRepo.getPlan(sessionId)
   if (!plan) {
     throw new Error(`No session plan found for session ${sessionId}`)
@@ -43,22 +59,29 @@ export async function recordEvent(
     payload,
   }
   await sessionRepo.appendEvent(event)
-  const state = await getCurrentState(sessionId)
-  if (state.status === 'COMPLETED' || state.status === 'COMPLETED_SHORTENED') {
+  return getCurrentState(sessionId)
+}
+
+// Result, progression and familiarity are one transaction: either all of
+// them land or none do, and a later getCurrentState retries. Gated on
+// didPersist, not just "session is complete": this runs on every read of a
+// finished session and on double-taps that mint two different eventIds.
+// Progression outcomes are not safe to apply more than once
+// (evaluateSessionProgression reads the persisted progression state as its
+// input — a second pass would compound), so exactly one caller may win, and
+// the win is decided by the atomic result insert, not by anything checked
+// earlier. IndexedDB serializes overlapping read-write transactions, so a
+// concurrent caller sees the winner's result and does nothing.
+async function finalizeSession(sessionId: string, state: SessionState): Promise<void> {
+  if (await sessionRepo.getResult(sessionId)) {
+    return
+  }
+  await sessionRepo.inSessionTransaction(async () => {
     const didPersist = await persistResultIfMissing(sessionId, state)
-    // Gated on didPersist, not just "session is complete": recordEvent can
-    // reach this branch more than once per session — an idempotent replay of
-    // the same eventId, or a double-tap that mints two different eventIds
-    // and runs both calls concurrently. Progression outcomes are not safe to
-    // apply more than once (evaluateSessionProgression reads the persisted
-    // progression state as its input — a second pass would compound), so
-    // exactly one caller may win, and the win is decided by the atomic
-    // result insert below, not by anything checked earlier in this function.
     if (didPersist) {
       await updateProgressionAfterSession(sessionId)
     }
-  }
-  return state
+  })
 }
 
 async function persistResultIfMissing(sessionId: string, state: SessionState): Promise<boolean> {
@@ -70,7 +93,8 @@ async function persistResultIfMissing(sessionId: string, state: SessionState): P
   if (!plan) {
     throw new Error(`No session plan found for session ${sessionId}`)
   }
-  const events = await sessionRepo.getEventsForSession(sessionId)
+  // Only sets the machine applied (a racing duplicate tap is stored but ignored).
+  const events = withoutIneffectiveSets(plan, await sessionRepo.getEventsForSession(sessionId))
   const startEvent = events.find((e) => e.type === 'SESSION_STARTED')
   const completedCount = events.filter((e) => e.type === 'SET_COMPLETED').length
   const totalSetsPlanned = plan.exercises.reduce((sum, e) => sum + e.sets, 0)
@@ -105,7 +129,7 @@ async function updateProgressionAfterSession(sessionId: string): Promise<void> {
   if (!plan) {
     return
   }
-  const events = await sessionRepo.getEventsForSession(sessionId)
+  const events = withoutIneffectiveSets(plan, await sessionRepo.getEventsForSession(sessionId))
   const progressionRecords = await Promise.all(plan.exercises.map((e) => progressionRepo.getProgression(e.exerciseId)))
   const progressionByExerciseId = new Map(
     progressionRecords.map((r) => [

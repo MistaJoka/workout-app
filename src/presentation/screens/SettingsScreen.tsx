@@ -1,6 +1,6 @@
 import { Link } from 'react-router-dom'
 import { useEffect, useRef, useState } from 'react'
-import { exportAll, importAll, isValidExportBundle } from '../../infrastructure/exportImport/exportImport'
+import { exportAll, importAll, isValidExportBundle, type ExportBundle } from '../../infrastructure/exportImport/exportImport'
 import { downloadBackup } from '../../infrastructure/exportImport/downloadBackup'
 import { getSetting, setSetting } from '../../infrastructure/db/repositories/settingsRepository'
 import { db } from '../../infrastructure/db/schema'
@@ -20,6 +20,10 @@ export function SettingsScreen() {
   const [lastExportAt, setLastExportAt] = useState<string | null>(null)
   const [resetText, setResetText] = useState('')
   const [resetting, setResetting] = useState(false)
+  const [resetError, setResetError] = useState<string | null>(null)
+  // A parsed backup waiting for the user to confirm where it goes.
+  const [pendingImport, setPendingImport] = useState<ExportBundle | null>(null)
+  const [importing, setImporting] = useState(false)
   // Reset clears the active profile's database only (one Dexie DB per
   // profile), so the copy names who it affects.
   const [profile] = useState(() => activeProfile())
@@ -29,36 +33,61 @@ export function SettingsScreen() {
     getSetting<string>(LAST_EXPORT_KEY).then((value) => setLastExportAt(value ?? null))
   }, [])
 
+  // Every failure below is local (IndexedDB or the file picker), never the
+  // network, and the copy says so.
   async function handleExport() {
-    const bundle = await exportAll()
-    downloadBackup(bundle)
-    const now = new Date().toISOString()
-    await setSetting(LAST_EXPORT_KEY, now)
-    setLastExportAt(now)
-    setStatus('Backup downloaded.')
+    try {
+      const bundle = await exportAll()
+      downloadBackup(bundle)
+      const now = new Date().toISOString()
+      await setSetting(LAST_EXPORT_KEY, now)
+      setLastExportAt(now)
+      setStatus('Backup downloaded.')
+    } catch {
+      setStatus('Could not make a backup. The phone may be low on storage.')
+    }
   }
 
   async function handleImportFile(file: File) {
     try {
-      const text = await file.text()
-      const bundle = JSON.parse(text)
+      const bundle = JSON.parse(await file.text())
       if (!isValidExportBundle(bundle)) {
         setStatus('Import failed: this file is not a valid backup.')
         return
       }
-      await importAll(bundle)
-      setStatus('Import complete.')
+      setStatus(null)
+      setPendingImport(bundle)
     } catch {
       setStatus('Import failed: check the file and try again.')
     }
   }
 
+  async function confirmImport() {
+    if (!pendingImport) return
+    setImporting(true)
+    try {
+      await importAll(pendingImport)
+      // Reload so every screen and settings cache reads the merged data.
+      location.reload()
+    } catch {
+      setImporting(false)
+      setPendingImport(null)
+      setStatus('Import failed. Nothing was changed.')
+    }
+  }
+
   async function handleReset() {
     setResetting(true)
-    await db.transaction('rw', db.tables, async () => {
-      for (const table of db.tables) await table.clear()
-    })
-    location.reload()
+    setResetError(null)
+    try {
+      await db.transaction('rw', db.tables, async () => {
+        for (const table of db.tables) await table.clear()
+      })
+      location.reload()
+    } catch {
+      setResetting(false)
+      setResetError('Could not erase. Nothing was changed. Close the app and try again.')
+    }
   }
 
   return (
@@ -73,20 +102,20 @@ export function SettingsScreen() {
       <section className="space-y-2">
         <p className="font-semibold">Weight unit</p>
         <div className="flex justify-end gap-2">
-          <ThemeButton label="lb" active={unit === 'lb'} onClick={() => setUnit('lb')} />
-          <ThemeButton label="kg" active={unit === 'kg'} onClick={() => setUnit('kg')} />
+          <ChoiceChip label="lb" active={unit === 'lb'} onClick={() => setUnit('lb')} />
+          <ChoiceChip label="kg" active={unit === 'kg'} onClick={() => setUnit('kg')} />
         </div>
       </section>
 
       <section className="space-y-2">
         <p className="font-semibold">Rest timer</p>
         <div className="flex justify-end gap-2">
-          <ThemeButton
+          <ChoiceChip
             label={`Sound ${feedback.sound ? 'on' : 'off'}`}
             active={feedback.sound}
             onClick={() => updateFeedback({ sound: !feedback.sound })}
           />
-          <ThemeButton
+          <ChoiceChip
             label={`Vibration ${feedback.vibration ? 'on' : 'off'}`}
             active={feedback.vibration}
             onClick={() => updateFeedback({ vibration: !feedback.vibration })}
@@ -114,11 +143,27 @@ export function SettingsScreen() {
           className="hidden"
           onChange={(event) => {
             const file = event.target.files?.[0]
+            // Clear it so picking the same file again still fires onChange.
+            event.target.value = ''
             if (file) void handleImportFile(file)
           }}
         />
-        {status && <p className="text-sm text-ink-muted">{status}</p>}
+        {status && (
+          <p className="text-sm text-ink-muted" role="status">
+            {status}
+          </p>
+        )}
       </section>
+
+      {pendingImport && (
+        <ImportSheet
+          bundle={pendingImport}
+          intoName={profile.name}
+          busy={importing}
+          onConfirm={() => void confirmImport()}
+          onCancel={() => setPendingImport(null)}
+        />
+      )}
 
 
       <section className="space-y-2">
@@ -157,16 +202,66 @@ export function SettingsScreen() {
           <button className="btn-danger w-full" disabled={resetText !== 'DELETE' || resetting} onClick={handleReset}>
             Erase everything
           </button>
+          {resetError && (
+            <p className="text-sm text-ink-muted" role="alert">
+              {resetError}
+            </p>
+          )}
         </div>
       </details>
     </div>
   )
 }
 
-function ThemeButton({ label, active, onClick }: { label: string; active: boolean; onClick: () => void }) {
+function ChoiceChip({ label, active, onClick }: { label: string; active: boolean; onClick: () => void }) {
   return (
     <button className={`chip ${active ? 'chip-active' : ''}`} onClick={onClick}>
       {label}
     </button>
+  )
+}
+
+function ImportSheet({
+  bundle,
+  intoName,
+  busy,
+  onConfirm,
+  onCancel,
+}: {
+  bundle: ExportBundle
+  intoName: string
+  busy: boolean
+  onConfirm: () => void
+  onCancel: () => void
+}) {
+  const fromName = bundle.profile?.name
+  const madeOn = new Date(bundle.exportedAt).toLocaleDateString()
+  const otherPerson = fromName !== undefined && fromName !== intoName
+  return (
+    <div className="fixed inset-0 z-30 flex items-end bg-ink/40" onClick={busy ? undefined : onCancel}>
+      <div
+        className="w-full space-y-3 rounded-t-[var(--radius-panel)] bg-surface p-4"
+        style={{ paddingBottom: 'calc(env(safe-area-inset-bottom) + 1.5rem)' }}
+        onClick={(e) => e.stopPropagation()}
+        role="dialog"
+        aria-label="Import backup"
+      >
+        <p className="text-lg font-bold">Add this backup to {intoName}?</p>
+        <p className="text-sm text-ink-muted">
+          {fromName ? `${fromName}'s backup` : 'Backup'} from {madeOn}. Workouts already here are kept.
+        </p>
+        {otherPerson && (
+          <p className="text-sm font-semibold" role="alert">
+            This backup belongs to {fromName}, not {intoName}.
+          </p>
+        )}
+        <button type="button" className="btn-primary btn-lg w-full" disabled={busy} onClick={onConfirm}>
+          {busy ? 'Adding…' : `Add to ${intoName}`}
+        </button>
+        <button type="button" className="btn-ghost w-full" disabled={busy} onClick={onCancel}>
+          Cancel
+        </button>
+      </div>
+    </div>
   )
 }

@@ -75,8 +75,30 @@ export async function getAllSessionHistory(): Promise<{
   return { plans, results, events }
 }
 
+// Unfinished sessions, newest first. A plan with no SESSION_STARTED event is
+// not a session (a start that failed halfway, from before startSession was
+// atomic) and is never offered for resume.
 export async function getInProgressSessions(): Promise<SessionPlan[]> {
   const [plans, results] = await Promise.all([db.sessionPlans.toArray(), db.sessionResults.toArray()])
   const completedIds = new Set(results.map((r) => r.sessionId))
-  return plans.filter((p) => !completedIds.has(p.id))
+  const open = plans.filter((p) => !completedIds.has(p.id))
+  if (open.length === 0) return []
+  const events = await db.sessionEvents
+    .where('sessionId')
+    .anyOf(open.map((p) => p.id))
+    .toArray()
+  const startedIds = new Set(events.filter((e) => e.type === 'SESSION_STARTED').map((e) => e.sessionId))
+  return open.filter((p) => startedIds.has(p.id)).sort((a, b) => b.createdAt.localeCompare(a.createdAt))
+}
+
+// Runs `work` in one read-write transaction over every store a session
+// touches, so a multi-step write (plan + start event; result + progression +
+// familiarity) lands whole or not at all. Repository calls made inside
+// `work` join the transaction automatically.
+export function inSessionTransaction<T>(work: () => Promise<T>): Promise<T> {
+  return db.transaction(
+    'rw',
+    [db.sessionPlans, db.sessionEvents, db.sessionResults, db.progression, db.familiarity],
+    work
+  )
 }
