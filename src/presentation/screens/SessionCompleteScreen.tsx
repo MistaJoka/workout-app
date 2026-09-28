@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react'
 import { Link, useParams } from 'react-router-dom'
-import { getPlan, getResult } from '../../infrastructure/db/repositories/sessionRepository'
+import { getEventsForSession, getPlan, getResult } from '../../infrastructure/db/repositories/sessionRepository'
+import { completeStats, type CompleteStats } from './completeStats'
 import {
   advanceProgression,
   dismissProgressionCandidate,
@@ -23,6 +24,7 @@ type Candidate = {
 export function SessionCompleteScreen() {
   const { sessionId } = useParams()
   const [result, setResult] = useState<SessionResult | null>(null)
+  const [stats, setStats] = useState<CompleteStats | null>(null)
   const [candidates, setCandidates] = useState<Candidate[]>([])
   const [busyExerciseId, setBusyExerciseId] = useState<string | null>(null)
   const [candidateError, setCandidateError] = useState<string | null>(null)
@@ -34,10 +36,18 @@ export function SessionCompleteScreen() {
     getResult(sessionId)
       .then((loaded) => setResult(loaded ?? null))
       .catch(() => setResult(null))
+    loadStats(sessionId)
+      .then(setStats)
+      .catch(() => setStats(null))
     loadCandidates(sessionId)
       .then(setCandidates)
       .catch(() => setCandidates([]))
   }, [sessionId])
+
+  async function loadStats(id: string): Promise<CompleteStats | null> {
+    const [plan, loaded, events] = await Promise.all([getPlan(id), getResult(id), getEventsForSession(id)])
+    return plan && loaded ? completeStats(plan, loaded, events) : null
+  }
 
   async function loadCandidates(id: string): Promise<Candidate[]> {
     const plan = await getPlan(id)
@@ -81,6 +91,13 @@ export function SessionCompleteScreen() {
           {result.totalSetsCompleted} of {result.totalSetsPlanned} sets completed
           {result.status === 'COMPLETED_SHORTENED' ? ' (ended early)' : ''}
         </p>
+      )}
+      {stats && (
+        <div className="mx-auto flex max-w-sm gap-2">
+          <Stat value={stats.minutes} label={stats.minutes === 1 ? 'minute' : 'minutes'} />
+          <Stat value={stats.sets} label={stats.sets === 1 ? 'set' : 'sets'} />
+          <Stat value={stats.moves} label={stats.moves === 1 ? 'move' : 'moves'} />
+        </div>
       )}
       {result && (
         // Ties the finish to Today's week: every finished workout grows a
@@ -135,6 +152,16 @@ export function SessionCompleteScreen() {
           Back to Today
         </Link>
       </ThumbBar>
+    </div>
+  )
+}
+
+// Same tile as Progress's totals, on the mint finish field.
+function Stat({ value, label }: { value: number; label: string }) {
+  return (
+    <div className="flex-1 field-info p-3 text-center">
+      <p className="hud-num text-3xl font-bold">{value}</p>
+      <p className="text-xs text-ink-muted">{label}</p>
     </div>
   )
 }

@@ -15,7 +15,7 @@ import { WelcomeCard } from '../components/WelcomeCard'
 import { RaeHero } from '../components/RaeHero'
 import { TodayMission, type Mission } from '../components/TodayMission'
 import { WeekBlooms } from '../components/WeekBlooms'
-import { dayPart, greeting } from '../greeting'
+import { dayPart, greeting, longDate } from '../greeting'
 import { activeProfile } from '../../infrastructure/profiles'
 import { raeStillFor } from '../components/raeLoops'
 
@@ -40,6 +40,8 @@ type TodayData = {
   week: WeekDay[]
   // Everything you could start instead, primary pick excluded.
   others: { template: WorkoutTemplate; custom: boolean }[]
+  // Any workout ever finished on this profile (retires the welcome card).
+  hasFinished: boolean
 }
 
 async function loadToday(now: Date): Promise<TodayData> {
@@ -133,7 +135,7 @@ async function loadToday(now: Date): Promise<TodayData> {
     ...custom.map((template) => ({ template, custom: true })),
   ].filter(({ template }) => template.id !== hideId)
 
-  return { mission, week: buildWeek(results, schedule, now), others }
+  return { mission, week: buildWeek(results, schedule, now), others, hasFinished: results.length > 0 }
 }
 
 export function TodayScreen() {
@@ -160,7 +162,10 @@ export function TodayScreen() {
 
   return (
     <div className="p-4 space-y-4">
-      <h1 className="text-[1.375rem] font-bold leading-tight">{greeting(now, profile.name)}</h1>
+      <header className="px-1">
+        <p className="text-sm font-semibold text-ink-muted">{longDate(now)}</p>
+        <h1 className="text-[1.625rem] font-extrabold leading-tight">{greeting(now, profile.name)}</h1>
+      </header>
 
       {/* Rae's room with today's one thing to do joined underneath it, so
           the stage reads as her presenting it. */}
@@ -180,7 +185,7 @@ export function TodayScreen() {
         )}
       </section>
 
-      <WelcomeCard />
+      <WelcomeCard finished={data ? data.hasFinished : null} />
 
       {data && <WeekBlooms week={data.week} />}
 

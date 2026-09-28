@@ -5,14 +5,18 @@ const KEY = 'welcomeDismissed'
 
 // One-time first-run card on Today. Deliberately three lines, no tour:
 // the flow itself is the tutorial (feedback_workout_app_ux_principles).
-export function WelcomeCard() {
-  const [visible, setVisible] = useState(false)
+// It goes away on "Got it" or on its own once a workout has been finished
+// (`finished`; null while Today is still loading, so it never flashes).
+export function WelcomeCard({ finished }: { finished: boolean | null }) {
+  const [dismissed, setDismissed] = useState<boolean | null>(null)
 
   useEffect(() => {
-    getSetting<boolean>(KEY).then((dismissed) => setVisible(!dismissed))
+    getSetting<boolean>(KEY)
+      .then((value) => setDismissed(Boolean(value)))
+      .catch(() => setDismissed(false))
   }, [])
 
-  if (!visible) return null
+  if (dismissed !== false || finished !== false) return null
 
   return (
     <div className="field-notice p-4 space-y-2">
@@ -25,7 +29,7 @@ export function WelcomeCard() {
       <button
         className="btn-primary"
         onClick={() => {
-          setVisible(false)
+          setDismissed(true)
           void setSetting(KEY, true)
         }}
       >

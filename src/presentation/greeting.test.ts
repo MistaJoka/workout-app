@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest'
-import { dayPart, greeting } from './greeting'
+import { dayPart, greeting, longDate } from './greeting'
 
 const at = (h: number) => new Date(2026, 8, 26, h, 30)
 
@@ -26,5 +26,11 @@ describe('greeting', () => {
 
   it('says good evening late at night', () => {
     expect(greeting(at(23), 'Rae')).toBe('Good evening, Rae')
+  })
+})
+
+describe('longDate', () => {
+  it('names the weekday, month and day', () => {
+    expect(longDate(new Date(2026, 8, 28, 10))).toBe('Monday, September 28')
   })
 })
