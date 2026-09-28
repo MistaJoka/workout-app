@@ -1,3 +1,5 @@
+import { newId } from '../shared/id'
+
 // Profiles: two people share this app (and sometimes a device). Each
 // profile owns a separate IndexedDB database, so every repository keeps
 // its single `db` import and nothing is keyed by user. The active profile
@@ -59,13 +61,9 @@ export function activeProfile(store: KeyValueStore | null = browserStore()): Pro
   return state.profiles.find((p) => p.id === state.activeId) ?? state.profiles[0]
 }
 
-function newId(): string {
-  return typeof crypto !== 'undefined' && 'randomUUID' in crypto ? crypto.randomUUID().slice(0, 8) : String(Date.now())
-}
-
 export function addProfile(name: string, store: KeyValueStore | null = browserStore()): Profile {
   const state = loadProfiles(store)
-  const profile: Profile = { id: newId(), name: name.trim() || 'New person' }
+  const profile: Profile = { id: newId().slice(0, 8), name: name.trim() || 'New person' }
   saveProfiles({ ...state, profiles: [...state.profiles, profile] }, store)
   return profile
 }

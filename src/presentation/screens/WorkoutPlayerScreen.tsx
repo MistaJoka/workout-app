@@ -1,4 +1,5 @@
 import { useCallback, useEffect, useRef, useState } from 'react'
+import { newId } from '../../shared/id'
 import { useNavigate, useParams } from 'react-router-dom'
 import { getCurrentState, getPlan, recordEvent } from '../../application/sessionService'
 import type { SessionPlan, SessionState } from '../../domain/session/types'
@@ -81,7 +82,7 @@ export function WorkoutPlayerScreen() {
     setBusy(true)
     setError(null)
     try {
-      const next = await recordEvent(sessionId, type, crypto.randomUUID(), payload)
+      const next = await recordEvent(sessionId, type, newId(), payload)
       setState(next)
       setAwaitingRepCheck(false)
     } catch {
@@ -108,7 +109,7 @@ export function WorkoutPlayerScreen() {
     setBusy(true)
     setError(null)
     try {
-      await recordEvent(sessionId, 'SESSION_COMPLETED_SHORTENED', crypto.randomUUID())
+      await recordEvent(sessionId, 'SESSION_COMPLETED_SHORTENED', newId())
       navigate('/')
     } catch {
       setError('Could not end the workout — please try again.')

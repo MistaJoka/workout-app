@@ -1,4 +1,5 @@
 import { db } from '../schema'
+import { newId } from '../../../shared/id'
 import type { WorkoutTemplate } from '../../../domain/content/types'
 
 export const CUSTOM_PACK_ID = 'custom'
@@ -8,7 +9,7 @@ export function isCustomTemplateId(id: string): boolean {
 }
 
 export function newCustomTemplateId(): string {
-  return `custom.${crypto.randomUUID()}`
+  return `custom.${newId()}`
 }
 
 export async function listCustomTemplates(): Promise<WorkoutTemplate[]> {

@@ -145,6 +145,8 @@ describe('sessionRepository', () => {
     const otherPlan: SessionPlan = { ...plan, id: 'session-2' }
     await sessionRepo.savePlan(plan)
     await sessionRepo.savePlan(otherPlan)
+    await sessionRepo.appendEvent(startEvent(plan.id))
+    await sessionRepo.appendEvent(startEvent(otherPlan.id))
     await sessionRepo.saveResult({
       sessionId: otherPlan.id,
       planId: otherPlan.id,
@@ -157,4 +159,31 @@ describe('sessionRepository', () => {
     const inProgress = await sessionRepo.getInProgressSessions()
     expect(inProgress.map((p) => p.id)).toEqual([plan.id])
   })
+
+  it('getInProgressSessions skips an orphaned plan that never got a start event', async () => {
+    await sessionRepo.savePlan(plan)
+    expect(await sessionRepo.getInProgressSessions()).toEqual([])
+  })
+
+  it('getInProgressSessions lists the most recently created session first', async () => {
+    const older: SessionPlan = { ...plan, id: 'older', createdAt: '2026-09-10T00:00:00.000Z' }
+    const newer: SessionPlan = { ...plan, id: 'newer', createdAt: '2026-09-20T00:00:00.000Z' }
+    const middle: SessionPlan = { ...plan, id: 'middle', createdAt: '2026-09-15T00:00:00.000Z' }
+    for (const p of [older, newer, middle]) {
+      await sessionRepo.savePlan(p)
+      await sessionRepo.appendEvent(startEvent(p.id))
+    }
+    const inProgress = await sessionRepo.getInProgressSessions()
+    expect(inProgress.map((p) => p.id)).toEqual(['newer', 'middle', 'older'])
+  })
 })
+
+function startEvent(sessionId: string): SessionEvent {
+  return {
+    eventId: `${sessionId}:start`,
+    sessionId,
+    type: 'SESSION_STARTED',
+    timestamp: '2026-09-13T00:00:00.000Z',
+    payload: {},
+  }
+}
