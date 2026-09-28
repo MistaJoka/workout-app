@@ -115,7 +115,8 @@ Use this mailbox when implementation reaches a product/data/spec/asset/test gap 
 
 ## REQ-20260928-005 — Rae prompt canon alignment (record) and three batch-002 moves
 
-**Status:** OPEN (item 3 only; items 1–2 are a record)
+**Status:** RESOLVED (owner, 2026-09-28)
+**Resolution:** "no equitment needed for now for the workouts." Rae batches were re-planned (`rae-prompts.py --from 2`) to no-equipment moves only: 002–014, 102 moves. 34 bodyweight moves whose steps need a prop (chin-up, pull-ups, dips, decline and bench moves, among others) are out for now (`NEEDS_PROP`). Equipment moves come back with `NO_EQUIPMENT_ONLY = False` and a re-plan.
 **Blocking:** no
 **Implementation context:** `scripts/assets/rae_canon.py`, `scripts/assets/rae-prompts.py`, `scripts/assets/rae-redraw-prompts.py`, `content/rae-prompts/`
 **Need:**

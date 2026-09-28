@@ -9,14 +9,6 @@
   },
   {
     "n": 2,
-    "exerciseId": "lib.Chin-Up",
-    "slug": "chin-up",
-    "name": "Chin-Up",
-    "frames": 4,
-    "view": "Side view"
-  },
-  {
-    "n": 3,
     "exerciseId": "lib.Cocoons",
     "slug": "cocoons",
     "name": "Cocoons",
@@ -24,7 +16,7 @@
     "view": "Side view"
   },
   {
-    "n": 4,
+    "n": 3,
     "exerciseId": "lib.Cross-Body_Crunch",
     "slug": "cross-body-crunch",
     "name": "Cross-Body Crunch",
@@ -32,7 +24,7 @@
     "view": "Side view"
   },
   {
-    "n": 5,
+    "n": 4,
     "exerciseId": "lib.Crunch_-_Hands_Overhead",
     "slug": "crunch-hands-overhead",
     "name": "Crunch - Hands Overhead",
@@ -40,27 +32,35 @@
     "view": "Side view"
   },
   {
-    "n": 6,
-    "exerciseId": "lib.Crunch_-_Legs_On_Exercise_Ball",
-    "slug": "crunch-legs-on-exercise-ball",
-    "name": "Crunch - Legs On Exercise Ball",
+    "n": 5,
+    "exerciseId": "lib.Elbow_to_Knee",
+    "slug": "elbow-to-knee",
+    "name": "Elbow to Knee",
     "frames": 4,
     "view": "Side view"
   },
   {
+    "n": 6,
+    "exerciseId": "lib.Front_Leg_Raises",
+    "slug": "front-leg-raises",
+    "name": "Front Leg Raises",
+    "frames": 3,
+    "view": "Side view"
+  },
+  {
     "n": 7,
-    "exerciseId": "lib.Decline_Oblique_Crunch",
-    "slug": "decline-oblique-crunch",
-    "name": "Decline Oblique Crunch",
+    "exerciseId": "lib.Glute_Kickback",
+    "slug": "glute-kickback",
+    "name": "Glute Kickback",
     "frames": 4,
     "view": "Side view"
   },
   {
     "n": 8,
-    "exerciseId": "lib.Decline_Reverse_Crunch",
-    "slug": "decline-reverse-crunch",
-    "name": "Decline Reverse Crunch",
-    "frames": 4,
+    "exerciseId": "lib.Hip_Circles_prone",
+    "slug": "hip-circles-prone",
+    "name": "Hip Circles (prone)",
+    "frames": 3,
     "view": "Side view"
   }
 ]

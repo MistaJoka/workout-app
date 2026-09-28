@@ -30,7 +30,7 @@ One image per exercise: one row of 3 to 7 frames, evenly spaced, on flat `#FF00F
 | Asset DB | same | One `rae-ex-<id>-loop` record per loop in `assets/pixel-bloom/db/asset-db.json` (`assets` list). Existing records keep their status; new ones start at `review`. The notes carry the source, mapping, and any retired/redraw reason. |
 | Redraw | `npm run rae:redraw-prompts`, then `npm run rae:intake -- redraw-NNN` | Pastes for every strip flagged `redraw`. Numbers are stable: pending pastes are rewritten in place, new flags get new pastes. Intake swaps in the art only, as the next source version (`-v2`…), keeping hand-tuned order/hold/stills when the frame count is unchanged. |
 | Refresh text | `npm run rae:prompts -- --refresh` | Rewrites the paste text of batches not yet taken in (same numbers, same exercises), e.g. after the prompt header changes. Every paste opens with the contract's identity preamble (`scripts/assets/rae_canon.py`). |
-| Re-plan | `npm run rae:prompts -- --from N` | Keeps batches 1..N-1 as they are (pasted batches keep their numbers) and re-plans N onward, e.g. after the library changed (871 → 304 on 2026-09-27: batches 003–037). |
+| Re-plan | `npm run rae:prompts -- --from N` | Keeps batches 1..N-1 as they are (pasted batches keep their numbers) and re-plans N onward, e.g. after the library changed (871 → 304 on 2026-09-27: batches 003–037). On 2026-09-28 the owner said "no equipment needed for now": `NO_EQUIPMENT_ONLY` in `rae-prompts.py` plans only bodyweight moves whose steps need no prop (`NEEDS_PROP` is the hand-checked exclusion list; a chair, wall or couch counts as home), giving batches 002–014 (102 moves). |
 
 `assets/pixel-bloom/character/rae/source/exercise/strips.json` is the single manifest. Per strip it records:
 

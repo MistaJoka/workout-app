@@ -1,4 +1,4 @@
-# Rae batch 011 of 37
+# Rae batch 011 of 14
 
 Paste everything below the line into the Rae chat, then download all images at once.
 
@@ -14,34 +14,34 @@ Keep the same palette and pixel style as the exercise strips you already made. D
 - Equipment is drawn identically in every frame.
 
 
-**1. Arm Circles** (Front view, 3 frames; equipment: none)
+**1. Seated Floor Hamstring Stretch** (Side view, 3 frames; equipment: none)
 Frames: a held position: 1) settle in, 2) the hold with a tiny breath in, 3) the hold.
-Steps: Stand up and extend your arms straight out by the sides. The arms should be parallel to the floor and perpendicular (90-degree angle) to your torso. This will be your starting position. Slowly start to make circles of about 1 foot in diameter with each outstretched arm. Breathe normally as you perform the movement. Continue the circular motion of the outstretched arms for about ten seconds. Then reverse the movement, going the opposite direction.
+Steps: Sit on a mat with your right leg extended in front of you and your left leg bent with your foot against your right inner thigh. Lean forward from your hips and reach for your ankle until you feel a stretch in your hamstring. Hold for 15 seconds, then repeat for your other side.
 
-**2. Calf Stretch Elbows Against Wall** (Side view, 3 frames; equipment: none)
+**2. Seated Overhead Stretch** (Side view, 3 frames; equipment: none)
 Frames: a held position: 1) settle in, 2) the hold with a tiny breath in, 3) the hold.
-Steps: Stand facing a wall from a couple feet away. Lean against the wall, placing your weight on your forearms. Attempt to keep your heels on the ground. Hold for 10-20 seconds. You may move further or closer the wall, making it more or less difficult, respectively.
+Steps: Sit up straight on an exercise mat. Touch the soles of your feet together with your feet six to eight inches in front of your hips. Place one hand on the floor beside you and your other hand behind your head. Lift your elbow to the ceiling as you incline your torso to the other side. Hold for 10 to 20 seconds, then switch sides.
 
-**3. Calf Stretch Hands Against Wall** (Side view, 3 frames; equipment: none)
+**3. Shoulder Circles** (Side view, 3 frames; equipment: none)
 Frames: a held position: 1) settle in, 2) the hold with a tiny breath in, 3) the hold.
-Steps: Stand facing a wall from several feet away. Stagger your stance, placing one foot forward. Lean forward and rest your hands on the wall, keeping your heel, hip and head in a straight line. Attempt to keep your heel on the ground. Hold for 10-20 seconds and then switch sides.
+Steps: With shoulders relaxed and arms resting loosely at your sides (or in your lap if you're seated), gently roll your shoulders forward, up, back, and down. Reverse direction. You can do this exercise alternating shoulders or both at the same time.
 
-**4. Cat Stretch** (Side view, 3 frames; equipment: none)
+**4. Shoulder Raise** (Side view, 3 frames; equipment: none)
 Frames: a held position: 1) settle in, 2) the hold with a tiny breath in, 3) the hold.
-Steps: Position yourself on the floor on your hands and knees. Pull your belly in and round your spine, lower back, shoulders, and neck, letting your head drop. Hold for 15 seconds.
+Steps: Relax your arms to your sides and raise your shoulders up toward your ears, then back down.
 
-**5. Chair Lower Back Stretch** (Side view, 3 frames; equipment: none)
+**5. Shoulder Stretch** (Side view, 3 frames; equipment: none)
 Frames: a held position: 1) settle in, 2) the hold with a tiny breath in, 3) the hold.
-Steps: Sit upright on a chair. Bend to one side with your arm over your head. You can hold onto the chair with your free hand. Hold for 10 seconds, and repeat for your other side.
+Steps: Reach your left arm across your body and hold it straight.
 
-**6. Child's Pose** (Side view, 3 frames; equipment: none)
+**6. Side Lying Groin Stretch** (Side view, 3 frames; equipment: none)
 Frames: a held position: 1) settle in, 2) the hold with a tiny breath in, 3) the hold.
-Steps: Get on your hands and knees, walk your hands in front of you. Lower your buttocks down to sit on your heels. Let your arms drag along the floor as you sit back to stretch your entire spine. Once you settle onto your heels, bring your hands next to your feet and relax. "breathe" into your back. Rest your forehead on the floor. Avoid this position if you have knee problems.
+Steps: Start off by lying on your right side and bend your right knee in front of you to stabilize the torso. Rest your head on your right hand or shoulder. Lift your left leg upward and hold it by the back of the knee (easier) or the foot (harder). Pull your left knee in toward your left shoulder and simultaneously press your foot or knee down to the floor. To intensify this stretch, straighten your left leg. Switch sides.
 
-**7. Chin To Chest Stretch** (Side view, 3 frames; equipment: none)
+**7. Side Neck Stretch** (Side view, 3 frames; equipment: none)
 Frames: a held position: 1) settle in, 2) the hold with a tiny breath in, 3) the hold.
-Steps: Get into a seated position on the floor. Place both hands at the rear of your head, fingers interlocked, thumbs pointing down and elbows pointing straight ahead. Slowly pull your head down to your chest. Hold for 20-30 seconds.
+Steps: Start with your shoulders relaxed, gently tilt your head towards your shoulder. Assist stretch with a gentle pull on the side of the head.
 
-**8. Dancer's Stretch** (Side view, 3 frames; equipment: none)
+**8. Side Wrist Pull** (Side view, 3 frames; equipment: none)
 Frames: a held position: 1) settle in, 2) the hold with a tiny breath in, 3) the hold.
-Steps: Sit up on the floor. Cross your right leg over your left, keeping the knee bent. Your left leg is straight and down on the floor. Place your left arm on your right leg and your right hand on the floor. Rotate your upper body to the right, and hold for 10-20 seconds. Switch sides.
+Steps: This stretch works best standing. Cross your left arm over the midline of your body and hold the left wrist in your right hand down at the level of your hips. Start the stretch with a bent left arm. Slowly straighten, pull, and lift it up to shoulder height, as pictured. Feel this stretch originate in your back, not your shoulders, and don't pull too hard on the shoulders joint. Switch sides.

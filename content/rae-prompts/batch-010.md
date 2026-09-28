@@ -1,4 +1,4 @@
-# Rae batch 010 of 37
+# Rae batch 010 of 14
 
 Paste everything below the line into the Rae chat, then download all images at once.
 
@@ -14,34 +14,34 @@ Keep the same palette and pixel style as the exercise strips you already made. D
 - Equipment is drawn identically in every frame.
 
 
-**1. Hyperextensions With No Hyperextension Bench** (Side view, 4 frames; equipment: none)
-Frames: 1) start position, 2) halfway, 3) end of the movement (peak), 4) halfway back.
-Steps: With someone holding down your legs, slide yourself down to the edge a flat bench until your hips hang off the end of the bench. Tip: Your entire upper body should be hanging down towards the floor. Also, you will be in the same position as if you were on a hyperextension bench but the range of motion will be shorter due to the height of the flat bench vs. that of the hyperextension bench. With your body straight, cross your arms in front of you (my preference) or behind your head. This will be your starting position. Tip: You can also hold a weight plate for extra resistance in front of you under your crossed arms. Start bending forward slowly at the waist as far as you can while keeping your back flat. Inhale as you perform this movement. Keep moving forward until you almost touch the floor or you feel a nice stretch on the hamstrings (whichever comes first). Tip: Never round the back as you perform this exercise. Slowly raise your torso back to the initial position as you exhale. Tip: Avoid the temptation to arch your back past a straight line. Also, do not swing the torso at any time in order to protect the back from injury. Repeat for the recommended amount of repetitions.
-
-**2. Natural Glute Ham Raise** (Side view, 4 frames; equipment: none)
-Frames: 1) start position, 2) halfway, 3) end of the movement (peak), 4) halfway back.
-Steps: Using the leg pad of a lat pulldown machine or a preacher bench, position yourself so that your ankles are under the pads, knees on the seat, and you are facing away from the machine. You should be upright and maintaining good posture. This will be your starting position. Lower yourself under control until your knees are almost completely straight. Remaining in control, raise yourself back up to the starting position. If you are unable to complete a rep, use a band, a partner, or push off of a box to aid in completing a repetition.
-
-**3. Push-Ups - Close Triceps Position** (Side view, 4 frames; equipment: none)
-Frames: 1) start position, 2) halfway, 3) end of the movement (peak), 4) halfway back.
-Steps: Lie on the floor face down and place your hands closer than shoulder width for a close hand position. Make sure that you are holding your torso up at arms' length. Lower yourself until your chest almost touches the floor as you inhale. Using your triceps and some of your pectoral muscles, press your upper body back up to the starting position and squeeze your chest. Breathe out as you perform this step. After a second pause at the contracted position, repeat the movement for the prescribed amount of repetitions.
-
-**4. Russian Twist** (Side view, 4 frames; equipment: none)
-Frames: 1) start position, 2) halfway, 3) end of the movement (peak), 4) halfway back.
-Steps: Lie down on the floor placing your feet either under something that will not move or by having a partner hold them. Your legs should be bent at the knees. Elevate your upper body so that it creates an imaginary V-shape with your thighs. Your arms should be fully extended in front of you perpendicular to your torso and with the hands clasped. This is the starting position. Twist your torso to the right side until your arms are parallel with the floor while breathing out. Hold the contraction for a second and move back to the starting position while breathing out. Now move to the opposite side performing the same techniques you applied to the right side. Repeat for the recommended amount of repetitions.
-
-**5. Single-Arm Push-Up** (Side view, 4 frames; equipment: none)
-Frames: 1) start position, 2) halfway, 3) end of the movement (peak), 4) halfway back.
-Steps: Begin laying prone on the ground. Move yourself into a position supporting your weight on your toes and one arm. Your working arm should be placed directly under the shoulder, fully extended. Your legs should be extended, and for this movement you may need a wider base, placing your feet further apart than in a normal push-up. Maintain good posture, and place your free hand behind your back. This will be your starting position. Lower yourself by allowing the elbow to flex until you touch the ground. Descend slowly, and reverse direction be extending the arm to return to the starting position.
-
-**6. Wide-Grip Rear Pull-Up** (Side view, 4 frames; equipment: none)
-Frames: 1) start position, 2) halfway, 3) end of the movement (peak), 4) halfway back.
-Steps: Grab the pull-up bar with the palms facing forward using a wide grip. As you have both arms extended in front of you holding the bar, bring your torso forward and head so that there is an imaginary line from the pull-up bar to the back of your neck. This is your starting position. Pull your torso up until the bar is near the back of your neck. To do this, draw the shoulders and upper arms down and back while slightly leaning your head forward. Exhale as you perform this portion of the movement. Tip: Concentrate on squeezing the back muscles once you reach the full contracted position. The upper torso should remain stationary as it moves through space and only the arms should move. The forearms should do no other work other than hold the bar. After a second on the contracted position, start to inhale and slowly lower your torso back to the starting position when your arms are fully extended and the lats are fully stretched. Repeat this motion for the prescribed amount of repetitions.
-
-**7. Ankle Circles** (Side view, 3 frames; equipment: none)
+**1. Middle Back Stretch** (Side view, 3 frames; equipment: none)
 Frames: a held position: 1) settle in, 2) the hold with a tiny breath in, 3) the hold.
-Steps: Use a sturdy object like a squat rack to hold yourself. Lift the right leg in the air (just around 2 inches from the floor) and perform a circular motion with the big toe. Pretend that you are drawing a big circle with it. Tip: One circle equals 1 repetition. Breathe normally as you perform the movement. When you are done with the right foot, then repeat with the left leg.
+Steps: Stand so your feet are shoulder width apart and your hands are on your hips. Twist at your waist until you feel a stretch. Hold for 10 to 15 seconds, then twist to the other side.
 
-**8. Ankle On The Knee** (Side view, 3 frames; equipment: none)
+**2. On Your Side Quad Stretch** (Side view, 3 frames; equipment: none)
 Frames: a held position: 1) settle in, 2) the hold with a tiny breath in, 3) the hold.
-Steps: From a lying position, bend your knees and keep your feet on the floor. Place your ankle of one foot on your opposite knee. Grasp the thigh or knee of the bottom leg and pull both of your legs into the chest. Relax your neck and shoulders. Hold for 10-20 seconds and then switch sides.
+Steps: Start off by lying on your right side, with your right knee bent at a 90-degree angle resting on the floor in front of you (this stabilizes the torso). Bend your left knee behind you and hold your left foot with your left hand. To stretch your hip flexor, press your left hip forward as you push your left foot back into your hand. Switch sides.
+
+**3. One Arm Against Wall** (Side view, 3 frames; equipment: none)
+Frames: a held position: 1) settle in, 2) the hold with a tiny breath in, 3) the hold.
+Steps: From a standing position, place a bent arm against a wall or doorway. Slowly lean toward your arm until you feel a stretch in your lats.
+
+**4. One Half Locust** (Side view, 3 frames; equipment: none)
+Frames: a held position: 1) settle in, 2) the hold with a tiny breath in, 3) the hold.
+Steps: Lie facedown on the floor. Put your left hand under your left hipbone to pad your hip and pubic bone. Bend your right knee so you can hold the foot in your right hand. Lift the foot in the air and simultaneously lift your shoulders off the floor. This also stretches the right hip flexor and the chest and shoulders. Switch sides. If it doesn't bother your back, you can try it with both arms and legs at the same time.
+
+**5. One Knee To Chest** (Side view, 3 frames; equipment: none)
+Frames: a held position: 1) settle in, 2) the hold with a tiny breath in, 3) the hold.
+Steps: Start off by lying on the floor. Extend one leg straight and pull the other knee to your chest. Hold under the knee joint to protect the kneecap. Gently tug that knee toward your nose. Switch sides. This stretches the buttocks and lower back of the bent leg and the hip flexor of the straight leg.
+
+**6. Overhead Stretch** (Side view, 3 frames; equipment: none)
+Frames: a held position: 1) settle in, 2) the hold with a tiny breath in, 3) the hold.
+Steps: Standing straight up, lace your fingers together and open your palms to the ceiling. Keep your shoulders down as you extend your arms up. To create a full torso stretch, pull your tailbone down and stabilize your torso as you do this. Stretch the muscles on both the front and the back of the torso.
+
+**7. Runner's Stretch** (Side view, 3 frames; equipment: none)
+Frames: a held position: 1) settle in, 2) the hold with a tiny breath in, 3) the hold.
+Steps: It's easiest to get into this stretch if you start standing up, put one leg behind you, and slowly lower your torso down to the floor. Keep the front heel on the floor (if it lifts up, scoot your other leg further back). Place your hands on either side of your front leg. To get more out of this stretch, push your butt up toward the ceiling, and then gradually lower it back toward the floor. You'll Stretch the hip flexor of the back leg and the hamstring and buttocks of the front.
+
+**8. Seated Calf Stretch** (Side view, 3 frames; equipment: none)
+Frames: a held position: 1) settle in, 2) the hold with a tiny breath in, 3) the hold.
+Steps: Sit up straight on an exercise mat. Bend one knee and put that foot on the floor to stabilize the torso. Straighten your other leg and flex your ankle. Using a band, towel, or your hand if you can reach, pull the toes toward you. Hold for 10 to 20 seconds, then switch sides.

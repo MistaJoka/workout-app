@@ -1,4 +1,4 @@
-# Rae batch 013 of 37
+# Rae batch 013 of 14
 
 Paste everything below the line into the Rae chat, then download all images at once.
 
@@ -14,34 +14,34 @@ Keep the same palette and pixel style as the exercise strips you already made. D
 - Equipment is drawn identically in every frame.
 
 
-**1. Knee Across The Body** (Side view, 3 frames; equipment: none)
+**1. The Straddle** (Side view, 3 frames; equipment: none)
 Frames: a held position: 1) settle in, 2) the hold with a tiny breath in, 3) the hold.
-Steps: Lie down on the floor with your right leg straight. Bend your left leg and lower it across your body, holding the knee down toward the floor with your right hand. (The knee doesn't need to touch the floor if you're tight.) Place your left arm comfortably beside you and turn your head to the left. Imagine you have a weight tied to your tailbone. let your tailbone fall back toward the floor as your chest reaches in the opposite direction to stretch your lower back. Switch sides.
+Steps: Begin in a seated, upright position. Start by extending your legs in front of you in a V. With your hands on the floor, lean forward as far as possible. Hold for 10 to 20 seconds.
 
-**2. Kneeling Forearm Stretch** (Side view, 3 frames; equipment: none)
-Frames: a held position: 1) settle in, 2) the hold with a tiny breath in, 3) the hold.
-Steps: Start by kneeling on a mat with your palms flat and your fingers pointing back toward your knees. Slowly lean back keeping your palms flat on the floor until you feel a stretch in your wrists and forearms. Hold for 20-30 seconds.
+**2. Trail Running/Walking** (Side view, 4 frames; equipment: none)
+Frames: 1) start position, 2) halfway, 3) end of the movement (peak), 4) halfway back.
+Steps: Running or hiking on trails will get the blood pumping and heart beating almost immediately. Make sure you have good shoes. While you use the muscles in your calves and buttocks to pull yourself up a hill, the knees, joints and ankles absorb the bulk of the pounding coming back down. Take smaller steps as you walk downhill, keep your knees bent to reduce the impact and slow down to avoid falling. A 150 lb person can burn over 200 calories for 30 minutes walking uphill, compared to 175 on a flat surface. If running the trail, a 150 lb person can burn well over 500 calories in 30 minutes.
 
-**3. Kneeling Hip Flexor** (Side view, 3 frames; equipment: none)
+**3. Tricep Side Stretch** (Side view, 3 frames; equipment: none)
 Frames: a held position: 1) settle in, 2) the hold with a tiny breath in, 3) the hold.
-Steps: Kneel on a mat and bring your right knee up so the bottom of your foot is on the floor and extend your left leg out behind you so the top of your foot is on the floor. Shift your weight forward until you feel a stretch in your hip. Hold for 15 seconds, then repeat for your other side.
+Steps: Bring right arm across your body and over your left shoulder, holding your elbow with your left hand, until you feel a stretch in your tricep. Then repeat for your other arm.
 
-**4. Leg-Up Hamstring Stretch** (Side view, 3 frames; equipment: none)
+**4. Triceps Stretch** (Side view, 3 frames; equipment: none)
 Frames: a held position: 1) settle in, 2) the hold with a tiny breath in, 3) the hold.
-Steps: Lie flat on your back, bend one knee, and put that foot flat on the floor to stabilize your spine. Extend the other leg in the air. If you're tight, you wont be able to straighten it. That's okay. Extend the knee so that the sole of the lifted foot faces the ceiling (or as close as you can get it). Slowly straighten the legs as much as possible and then pull the leg toward your nose. Switch sides.
+Steps: Reach your hand behind your head, grasp your elbow and gently pull. Hold for 10 to 20 seconds, then switch sides.
 
-**5. Looking At Ceiling** (Side view, 3 frames; equipment: none)
+**5. Upper Back Stretch** (Side view, 3 frames; equipment: none)
 Frames: a held position: 1) settle in, 2) the hold with a tiny breath in, 3) the hold.
-Steps: Kneel on the floor, holding your heels with both hands. Lift your buttocks up and forward while bringing your head back to look up at the ceiling, to give an arch in your back.
+Steps: Clasp fingers together with your thumbs pointing down, round your shoulders as you reach your hands forward.
 
-**6. Middle Back Stretch** (Side view, 3 frames; equipment: none)
+**6. Upper Back-Leg Grab** (Side view, 3 frames; equipment: none)
 Frames: a held position: 1) settle in, 2) the hold with a tiny breath in, 3) the hold.
-Steps: Stand so your feet are shoulder width apart and your hands are on your hips. Twist at your waist until you feel a stretch. Hold for 10 to 15 seconds, then twist to the other side.
+Steps: While seated, bend forward to hug your thighs from underneath with both arms. Keep your knees together and your legs extended out as you bring your chest down to your knees. You can also stretch your middle back by pulling your back away from your knees as your hugging them.
 
-**7. On Your Side Quad Stretch** (Side view, 3 frames; equipment: none)
+**7. Upward Stretch** (Side view, 3 frames; equipment: none)
 Frames: a held position: 1) settle in, 2) the hold with a tiny breath in, 3) the hold.
-Steps: Start off by lying on your right side, with your right knee bent at a 90-degree angle resting on the floor in front of you (this stabilizes the torso). Bend your left knee behind you and hold your left foot with your left hand. To stretch your hip flexor, press your left hip forward as you push your left foot back into your hand. Switch sides.
+Steps: Extend both hands straight above your head, palms touching. Slowly push your hands up and back, keeping your back straight.
 
-**8. One Arm Against Wall** (Side view, 3 frames; equipment: none)
+**8. Crossover Reverse Lunge** (Side view, 3 frames; equipment: none)
 Frames: a held position: 1) settle in, 2) the hold with a tiny breath in, 3) the hold.
-Steps: From a standing position, place a bent arm against a wall or doorway. Slowly lean toward your arm until you feel a stretch in your lats.
+Steps: Stand with your feet shoulder width apart. This will be your starting position. Perform a rear lunge by stepping back with one foot and flexing the hips and front knee. As you do so, rotate your torso across the front leg. After a brief pause, return to the starting position and repeat on the other side, continuing in an alternating fashion.

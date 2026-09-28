@@ -1,4 +1,4 @@
-# Rae batch 006 of 37
+# Rae batch 006 of 14
 
 Paste everything below the line into the Rae chat, then download all images at once.
 
@@ -14,34 +14,34 @@ Keep the same palette and pixel style as the exercise strips you already made. D
 - Equipment is drawn identically in every frame.
 
 
-**1. Pullups** (Side view, 4 frames; equipment: none)
-Frames: 1) start position, 2) halfway, 3) end of the movement (peak), 4) halfway back.
-Steps: Grab the pull-up bar with the palms facing forward using the prescribed grip. Note on grips: For a wide grip, your hands need to be spaced out at a distance wider than your shoulder width. For a medium grip, your hands need to be spaced out at a distance equal to your shoulder width and for a close grip at a distance smaller than your shoulder width. As you have both arms extended in front of you holding the bar at the chosen grip width, bring your torso back around 30 degrees or so while creating a curvature on your lower back and sticking your chest out. This is your starting position. Pull your torso up until the bar touches your upper chest by drawing the shoulders and the upper arms down and back. Exhale as you perform this portion of the movement. Tip: Concentrate on squeezing the back muscles once you reach the full contracted position. The upper torso should remain stationary as it moves through space and only the arms should move. The forearms should do no other work other than hold the bar. After a second on the contracted position, start to inhale and slowly lower your torso back to the starting position when your arms are fully extended and the lats are fully stretched. Repeat this motion for the prescribed amount of repetitions.
-
-**2. Push Up to Side Plank** (Side view, 4 frames; equipment: none)
-Frames: 1) start position, 2) halfway, 3) end of the movement (peak), 4) halfway back.
-Steps: Get into pushup position on the toes with your hands just outside of shoulder width. Perform a pushup by allowing the elbows to flex. As you descend, keep your body straight. Do one pushup and as you come up, shift your weight on the left side of the body, twist to the side while bringing the right arm up towards the ceiling in a side plank. Lower the arm back to the floor for another pushup and then twist to the other side. Repeat the series, alternating each side, for 10 or more reps.
-
-**3. Push-Up Wide** (Side view, 4 frames; equipment: none)
-Frames: 1) start position, 2) halfway, 3) end of the movement (peak), 4) halfway back.
-Steps: With your hands wide apart, support your body on your toes and hands in a plank position. Your elbows should be extended and your body straight. Do not allow your hips to sag. This will be your starting position. To begin, allow the elbows to flex, lowering your chest to the floor as you inhale. Using your pectoral muscles, press your upper body back up to the starting position by extending the elbows. Exhale as you perform this step. After pausing at the contracted position, repeat the movement for the prescribed amount of repetitions.
-
-**4. Push-Ups With Feet Elevated** (Side view, 4 frames; equipment: none)
-Frames: 1) start position, 2) halfway, 3) end of the movement (peak), 4) halfway back.
-Steps: Lie on the floor face down and place your hands about 36 inches apart from each other holding your torso up at arms length. Place your toes on top of a flat bench. This will allow your body to be elevated. Note: The higher the elevation of the flat bench, the higher the resistance of the exercise is. Lower yourself until your chest almost touches the floor as you inhale. Using your pectoral muscles, press your upper body back up to the starting position and squeeze your chest. Breathe out as you perform this step. After a second pause at the contracted position, repeat the movement for the prescribed amount of repetitions.
-
-**5. Pushups** (Side view, 4 frames; equipment: none)
-Frames: 1) start position, 2) halfway, 3) end of the movement (peak), 4) halfway back.
-Steps: Lie on the floor face down and place your hands about 36 inches apart while holding your torso up at arms length. Next, lower yourself downward until your chest almost touches the floor as you inhale. Now breathe out and press your upper body back up to the starting position while squeezing your chest. After a brief pause at the top contracted position, you can begin to lower yourself downward again for as many repetitions as needed.
-
-**6. Pushups (Close and Wide Hand Positions)** (Side view, 4 frames; equipment: none)
-Frames: 1) start position, 2) halfway, 3) end of the movement (peak), 4) halfway back.
-Steps: Lie on the floor face down and body straight with your toes on the floor and the hands wider than shoulder width for a wide hand position and closer than shoulder width for a close hand position. Make sure you are holding your torso up at arms length. Lower yourself until your chest almost touches the floor as you inhale. Using your pectoral muscles, press your upper body back up to the starting position and squeeze your chest. Breathe out as you perform this step. After a second pause at the contracted position, repeat the movement for the prescribed amount of repetitions.
-
-**7. Rear Leg Raises** (Side view, 3 frames; equipment: none)
+**1. Toe Touchers** (Side view, 3 frames; equipment: none)
 Frames: a held position: 1) settle in, 2) the hold with a tiny breath in, 3) the hold.
-Steps: Place yourself on your hands knees on an exercise mat. Your head should be looking forward and the bend of the knees should create a 90-degree angle between the hamstrings and the calves. This will be your starting position. Extend one leg up and behind you. The knee and hip should both extend. Repeat for 5-10 repetitions, and then switch sides.
+Steps: To begin, lie down on the floor or an exercise mat with your back pressed against the floor. Your arms should be lying across your sides with the palms facing down. Your legs should be touching each other. Slowly elevate your legs up in the air until they are almost perpendicular to the floor with a slight bend at the knees. Your feet should be parallel to the floor. Move your arms so that they are fully extended at a 45 degree angle from the floor. This is the starting position. While keeping your lower back pressed against the floor, slowly lift your torso and use your hands to try and touch your toes. Remember to exhale while perform this part of the exercise. Slowly begin to lower your torso and arms back down to the starting position while inhaling. Remember to keep your arms straight out pointing towards your toes. Repeat for the recommended amount of repetitions.
 
-**8. Reverse Crunch** (Side view, 4 frames; equipment: none)
+**2. Tuck Crunch** (Side view, 4 frames; equipment: none)
 Frames: 1) start position, 2) halfway, 3) end of the movement (peak), 4) halfway back.
-Steps: Lie down on the floor with your legs fully extended and arms to the side of your torso with the palms on the floor. Your arms should be stationary for the entire exercise. Move your legs up so that your thighs are perpendicular to the floor and feet are together and parallel to the floor. This is the starting position. While inhaling, move your legs towards the torso as you roll your pelvis backwards and you raise your hips off the floor. At the end of this movement your knees will be touching your chest. Hold the contraction for a second and move your legs back to the starting position while exhaling. Repeat for the recommended amount of repetitions.
+Steps: To begin, lie down on the floor or an exercise mat with your back pressed against the floor. Your arms should be lying across your sides with the palms facing down. Your legs should be crossed by wrapping one ankle around the other. Slowly elevate your legs up in the air until your thighs are perpendicular to the floor with a slight bend at the knees. Note: Your knees and toes should be parallel to the floor as opposed to the thighs. Move your arms from the floor and cross them so they are resting on your chest. This is the starting position. While keeping your lower back pressed against the floor, slowly lift your torso. Remember to exhale while perform this part of the exercise. Slowly begin to lower your torso back down to the starting position while inhaling. Repeat for the recommended amount of repetitions.
+
+**3. Wrist Circles** (Side view, 3 frames; equipment: none)
+Frames: a held position: 1) settle in, 2) the hold with a tiny breath in, 3) the hold.
+Steps: Start by standing straight with your feet being shoulder width apart from each other. Elevate your arms to the side of you until they are fully extended and parallel to the floor at a height that is evenly aligned with your shoulders. Tip: Your torso and arms should form the letter "T: Your palms should be facing down. This is the starting position. Keeping your entire body stationary except for the wrists, begin to rotate both wrists forward in a circular motion. Tip: Pretend that you are trying to draw circles by using your hands as the brush. Breathe normally as you perform this exercise. Repeat for the recommended amount of repetitions.
+
+**4. All Fours Quad Stretch** (Side view, 3 frames; equipment: none)
+Frames: a held position: 1) settle in, 2) the hold with a tiny breath in, 3) the hold.
+Steps: Start off on your hands and knees, then lift your leg off the floor and hold the foot with your hand. Use your hand to hold the foot or ankle, keeping the knee fully flexed, stretching the quadriceps and hip flexors. Focus on extending your hips, thrusting them towards the floor. Hold for 10-20 seconds and then switch sides.
+
+**5. Body-Up** (Side view, 4 frames; equipment: none)
+Frames: 1) start position, 2) halfway, 3) end of the movement (peak), 4) halfway back.
+Steps: Assume a plank position on the ground. You should be supporting your bodyweight on your toes and forearms, keeping your torso straight. Your forearms should be shoulder-width apart. This will be your starting position. Pressing your palms firmly into the ground, extend through the elbows to raise your body from the ground. Keep your torso rigid as you perform the movement. Slowly lower your forearms back to the ground by allowing the elbows to flex. Repeat.
+
+**6. Clock Push-Up** (Side view, 4 frames; equipment: none)
+Frames: 1) start position, 2) halfway, 3) end of the movement (peak), 4) halfway back.
+Steps: Move into a prone position on the floor, supporting your weight on your hands and toes. Your arms should be fully extended with the hands around shoulder width. Keep your body straight throughout the movement. This will be your starting position. Descend by flexing at the elbow, lowering your chest toward the ground. At the bottom, reverse the motion by pushing yourself up through elbow extension as quickly as possible until you are air borne. Aim to "jump" 12-18 inches to one side. As you accelerate up, move your outside foot away from your direction of travel. Leaving the ground, shift your body about 30 degrees for the next repetition. Return to the starting position and repeat the exercise, working all the way around until you are back where you started.
+
+**7. Freehand Jump Squat** (Side view, 4 frames; equipment: none)
+Frames: 1) start position, 2) halfway, 3) end of the movement (peak), 4) halfway back.
+Steps: Cross your arms over your chest. With your head up and your back straight, position your feet at shoulder width. Keeping your back straight and chest up, squat down as you inhale until your upper thighs are parallel, or lower, to the floor. Now pressing mainly with the ball of your feet, jump straight up in the air as high as possible, using the thighs like springs. Exhale during this portion of the movement. When you touch the floor again, immediately squat down and jump again. Repeat for the recommended amount of repetitions.
+
+**8. Frog Sit-Ups** (Side view, 4 frames; equipment: none)
+Frames: 1) start position, 2) halfway, 3) end of the movement (peak), 4) halfway back.
+Steps: Lie with your back flat on the floor (or exercise mat) and your legs extended in front of you. Now bend at the knees and place your outer thighs by the floor (or mat) as you make the soles of your feet touch each other. Now try pushing both soles and bringing them up as near you as possible while you keep the outer thighs on the floor (or at least almost touching it). Tip: In this position your legs should create a diamond shape. Now, cross your arms in front of you by touching the opposite shoulders. This will be your starting position. As you exhale flatten your lower back to the floor while curling the torso upwards. Tip: This will be like performing the first 1/4 movement of a sit up. Hold at the top position for a second. As you inhale, slowly lower back to the starting position. Repeat for the recommended amount of repetitions.

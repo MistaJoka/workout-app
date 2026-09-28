@@ -1,6 +1,6 @@
 # Rae demos for every library exercise
 
-Each `batch-NNN.md` has 8 exercises for ChatGPT to draw as Rae frame strips. The batches run gentlest first: bodyweight, then bands, balls, foam roller, and light dumbbells and kettlebells (the 304-exercise home library has no barbell or machine work). Every paste opens with the Rae identity preamble from `docs/RAE_AI_GENERATION_CONTRACT.md` (kept in `scripts/assets/rae_canon.py`).
+Each `batch-NNN.md` has 8 exercises for ChatGPT to draw as Rae frame strips. For now (owner, 2026-09-28) the batches cover only moves that need no equipment: batches 002–014, 102 moves. A chair, wall or couch counts as home. Equipment moves (bands, balls, foam roller, light dumbbells and kettlebells) come back with `NO_EQUIPMENT_ONLY = False` in `scripts/assets/rae-prompts.py` and a re-plan. Every paste opens with the Rae identity preamble from `docs/RAE_AI_GENERATION_CONTRACT.md` (kept in `scripts/assets/rae_canon.py`).
 
 ## One batch, start to finish
 

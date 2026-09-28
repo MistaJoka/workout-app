@@ -1,65 +1,65 @@
 [
   {
     "n": 1,
-    "exerciseId": "lib.Pullups",
-    "slug": "pullups",
-    "name": "Pullups",
-    "frames": 4,
+    "exerciseId": "lib.Toe_Touchers",
+    "slug": "toe-touchers",
+    "name": "Toe Touchers",
+    "frames": 3,
     "view": "Side view"
   },
   {
     "n": 2,
-    "exerciseId": "lib.Push_Up_to_Side_Plank",
-    "slug": "push-up-to-side-plank",
-    "name": "Push Up to Side Plank",
+    "exerciseId": "lib.Tuck_Crunch",
+    "slug": "tuck-crunch",
+    "name": "Tuck Crunch",
     "frames": 4,
     "view": "Side view"
   },
   {
     "n": 3,
-    "exerciseId": "lib.Push-Up_Wide",
-    "slug": "push-up-wide",
-    "name": "Push-Up Wide",
-    "frames": 4,
+    "exerciseId": "lib.Wrist_Circles",
+    "slug": "wrist-circles",
+    "name": "Wrist Circles",
+    "frames": 3,
     "view": "Side view"
   },
   {
     "n": 4,
-    "exerciseId": "lib.Push-Ups_With_Feet_Elevated",
-    "slug": "push-ups-with-feet-elevated",
-    "name": "Push-Ups With Feet Elevated",
-    "frames": 4,
+    "exerciseId": "lib.All_Fours_Quad_Stretch",
+    "slug": "all-fours-quad-stretch",
+    "name": "All Fours Quad Stretch",
+    "frames": 3,
     "view": "Side view"
   },
   {
     "n": 5,
-    "exerciseId": "lib.Pushups",
-    "slug": "pushups",
-    "name": "Pushups",
+    "exerciseId": "lib.Body-Up",
+    "slug": "body-up",
+    "name": "Body-Up",
     "frames": 4,
     "view": "Side view"
   },
   {
     "n": 6,
-    "exerciseId": "lib.Pushups_Close_and_Wide_Hand_Positions",
-    "slug": "pushups-close-and-wide-hand-positions",
-    "name": "Pushups (Close and Wide Hand Positions)",
+    "exerciseId": "lib.Clock_Push-Up",
+    "slug": "clock-push-up",
+    "name": "Clock Push-Up",
     "frames": 4,
     "view": "Side view"
   },
   {
     "n": 7,
-    "exerciseId": "lib.Rear_Leg_Raises",
-    "slug": "rear-leg-raises",
-    "name": "Rear Leg Raises",
-    "frames": 3,
+    "exerciseId": "lib.Freehand_Jump_Squat",
+    "slug": "freehand-jump-squat",
+    "name": "Freehand Jump Squat",
+    "frames": 4,
     "view": "Side view"
   },
   {
     "n": 8,
-    "exerciseId": "lib.Reverse_Crunch",
-    "slug": "reverse-crunch",
-    "name": "Reverse Crunch",
+    "exerciseId": "lib.Frog_Sit-Ups",
+    "slug": "frog-sit-ups",
+    "name": "Frog Sit-Ups",
     "frames": 4,
     "view": "Side view"
   }

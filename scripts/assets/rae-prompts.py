@@ -36,6 +36,33 @@ EQUIPMENT_ORDER = ['bodyweight', 'none', 'bands', 'foam roll', 'exercise ball', 
                    'kettlebells', 'medicine ball', 'cable', 'machine', 'e-z curl bar', 'barbell', 'other']
 LEVEL_ORDER = ['beginner', 'intermediate', 'expert']
 
+# Owner, 2026-09-28: "no equipment needed for now for the workouts." Only
+# moves labelled bodyweight/none are planned, minus the ones whose steps
+# still need a prop (hand-checked: bar, bench, box/step, ball, dumbbell,
+# belt/band/towel, partner). A chair, wall or couch counts as home, not
+# equipment. Set NO_EQUIPMENT_ONLY = False and re-plan with --from N to
+# bring equipment moves back.
+NO_EQUIPMENT_ONLY = True
+NEEDS_PROP = {
+    'lib.Adductor_Groin', 'lib.Chin-Up', 'lib.Close-Grip_Push-Up_off_of_a_Dumbbell',
+    'lib.Crunch_-_Legs_On_Exercise_Ball', 'lib.Decline_Crunch', 'lib.Decline_Oblique_Crunch',
+    'lib.Decline_Push-Up', 'lib.Decline_Reverse_Crunch', 'lib.Dips_-_Triceps_Version',
+    'lib.Flat_Bench_Leg_Pull-In', 'lib.Flat_Bench_Lying_Leg_Raise', 'lib.Floor_Glute-Ham_Raise',
+    'lib.Flutter_Kicks', 'lib.Gorilla_Chin_Crunch', 'lib.Hamstring_Stretch',
+    'lib.Hyperextensions_With_No_Hyperextension_Bench', 'lib.Incline_Push-Up_Close-Grip',
+    'lib.Incline_Push-Up_Medium', 'lib.Incline_Push-Up_Reverse_Grip', 'lib.Incline_Push-Up_Wide',
+    'lib.Inverted_Row', 'lib.Natural_Glute_Ham_Raise', 'lib.Prone_Manual_Hamstring', 'lib.Pullups',
+    'lib.Push-Ups_With_Feet_Elevated', 'lib.Scapular_Pull-Up', 'lib.Seated_Flat_Bench_Leg_Pull-In',
+    'lib.Seated_Leg_Tucks', 'lib.Standing_Gastrocnemius_Calf_Stretch',
+    'lib.Standing_Towel_Triceps_Extension', 'lib.Step-up_with_Knee_Raise', 'lib.V-Bar_Pullup',
+    'lib.Wide-Grip_Rear_Pull-Up', 'lib.Wind_Sprints',
+}
+
+
+def no_equipment(e: dict) -> bool:
+    eq = [q for q in (e['taxonomy'].get('equipment') or []) if q not in ('bodyweight', 'none')]
+    return not eq and e['id'] not in NEEDS_PROP
+
 PROPS = {
     'dumbbell': 'dumbbells (one if the steps use one arm)',
     'barbell': 'a barbell with round plates',
@@ -128,6 +155,8 @@ def main() -> None:
             if int(kept.stem.split('-')[1]) < start:
                 covered |= {i['exerciseId'] for i in json.loads(kept.read_text())}
     todo = [e for e in library if e['id'] not in covered]
+    if NO_EQUIPMENT_ONLY:
+        todo = [e for e in todo if no_equipment(e)]
 
     def key(e: dict):
         eq = (e['taxonomy'].get('equipment') or ['none'])[0]

@@ -1,66 +1,66 @@
 [
   {
     "n": 1,
-    "exerciseId": "lib.Decline_Push-Up",
-    "slug": "decline-push-up",
-    "name": "Decline Push-Up",
-    "frames": 4,
+    "exerciseId": "lib.Side-Lying_Floor_Stretch",
+    "slug": "side-lying-floor-stretch",
+    "name": "Side-Lying Floor Stretch",
+    "frames": 3,
     "view": "Side view"
   },
   {
     "n": 2,
-    "exerciseId": "lib.Dynamic_Back_Stretch",
-    "slug": "dynamic-back-stretch",
-    "name": "Dynamic Back Stretch",
+    "exerciseId": "lib.Sit_Squats",
+    "slug": "sit-squats",
+    "name": "Sit Squats",
     "frames": 3,
     "view": "Side view"
   },
   {
     "n": 3,
-    "exerciseId": "lib.Dynamic_Chest_Stretch",
-    "slug": "dynamic-chest-stretch",
-    "name": "Dynamic Chest Stretch",
+    "exerciseId": "lib.Spinal_Stretch",
+    "slug": "spinal-stretch",
+    "name": "Spinal Stretch",
     "frames": 3,
     "view": "Side view"
   },
   {
     "n": 4,
-    "exerciseId": "lib.Elbow_Circles",
-    "slug": "elbow-circles",
-    "name": "Elbow Circles",
+    "exerciseId": "lib.Standing_Hip_Flexors",
+    "slug": "standing-hip-flexors",
+    "name": "Standing Hip Flexors",
     "frames": 3,
     "view": "Side view"
   },
   {
     "n": 5,
-    "exerciseId": "lib.Elbows_Back",
-    "slug": "elbows-back",
-    "name": "Elbows Back",
+    "exerciseId": "lib.Standing_Lateral_Stretch",
+    "slug": "standing-lateral-stretch",
+    "name": "Standing Lateral Stretch",
     "frames": 3,
-    "view": "Side view"
+    "view": "Front view"
   },
   {
     "n": 6,
-    "exerciseId": "lib.Hamstring_Stretch",
-    "slug": "hamstring-stretch",
-    "name": "Hamstring Stretch",
+    "exerciseId": "lib.Standing_Pelvic_Tilt",
+    "slug": "standing-pelvic-tilt",
+    "name": "Standing Pelvic Tilt",
     "frames": 3,
     "view": "Side view"
   },
   {
     "n": 7,
-    "exerciseId": "lib.Hug_Knees_To_Chest",
-    "slug": "hug-knees-to-chest",
-    "name": "Hug Knees To Chest",
+    "exerciseId": "lib.Standing_Soleus_And_Achilles_Stretch",
+    "slug": "standing-soleus-and-achilles-stretch",
+    "name": "Standing Soleus And Achilles Stretch",
     "frames": 3,
     "view": "Side view"
   },
   {
     "n": 8,
-    "exerciseId": "lib.Inverted_Row",
-    "slug": "inverted-row",
-    "name": "Inverted Row",
-    "frames": 4,
+    "exerciseId": "lib.Standing_Toe_Touches",
+    "slug": "standing-toe-touches",
+    "name": "Standing Toe Touches",
+    "frames": 3,
     "view": "Side view"
   }
 ]

@@ -1,65 +1,65 @@
 [
   {
     "n": 1,
-    "exerciseId": "lib.Arm_Circles",
-    "slug": "arm-circles",
-    "name": "Arm Circles",
+    "exerciseId": "lib.Seated_Floor_Hamstring_Stretch",
+    "slug": "seated-floor-hamstring-stretch",
+    "name": "Seated Floor Hamstring Stretch",
     "frames": 3,
-    "view": "Front view"
+    "view": "Side view"
   },
   {
     "n": 2,
-    "exerciseId": "lib.Calf_Stretch_Elbows_Against_Wall",
-    "slug": "calf-stretch-elbows-against-wall",
-    "name": "Calf Stretch Elbows Against Wall",
+    "exerciseId": "lib.Seated_Overhead_Stretch",
+    "slug": "seated-overhead-stretch",
+    "name": "Seated Overhead Stretch",
     "frames": 3,
     "view": "Side view"
   },
   {
     "n": 3,
-    "exerciseId": "lib.Calf_Stretch_Hands_Against_Wall",
-    "slug": "calf-stretch-hands-against-wall",
-    "name": "Calf Stretch Hands Against Wall",
+    "exerciseId": "lib.Shoulder_Circles",
+    "slug": "shoulder-circles",
+    "name": "Shoulder Circles",
     "frames": 3,
     "view": "Side view"
   },
   {
     "n": 4,
-    "exerciseId": "lib.Cat_Stretch",
-    "slug": "cat-stretch",
-    "name": "Cat Stretch",
+    "exerciseId": "lib.Shoulder_Raise",
+    "slug": "shoulder-raise",
+    "name": "Shoulder Raise",
     "frames": 3,
     "view": "Side view"
   },
   {
     "n": 5,
-    "exerciseId": "lib.Chair_Lower_Back_Stretch",
-    "slug": "chair-lower-back-stretch",
-    "name": "Chair Lower Back Stretch",
+    "exerciseId": "lib.Shoulder_Stretch",
+    "slug": "shoulder-stretch",
+    "name": "Shoulder Stretch",
     "frames": 3,
     "view": "Side view"
   },
   {
     "n": 6,
-    "exerciseId": "lib.Childs_Pose",
-    "slug": "childs-pose",
-    "name": "Child's Pose",
+    "exerciseId": "lib.Side_Lying_Groin_Stretch",
+    "slug": "side-lying-groin-stretch",
+    "name": "Side Lying Groin Stretch",
     "frames": 3,
     "view": "Side view"
   },
   {
     "n": 7,
-    "exerciseId": "lib.Chin_To_Chest_Stretch",
-    "slug": "chin-to-chest-stretch",
-    "name": "Chin To Chest Stretch",
+    "exerciseId": "lib.Side_Neck_Stretch",
+    "slug": "side-neck-stretch",
+    "name": "Side Neck Stretch",
     "frames": 3,
     "view": "Side view"
   },
   {
     "n": 8,
-    "exerciseId": "lib.Dancers_Stretch",
-    "slug": "dancers-stretch",
-    "name": "Dancer's Stretch",
+    "exerciseId": "lib.Side_Wrist_Pull",
+    "slug": "side-wrist-pull",
+    "name": "Side Wrist Pull",
     "frames": 3,
     "view": "Side view"
   }

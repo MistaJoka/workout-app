@@ -1,4 +1,4 @@
-# Rae batch 003 of 37
+# Rae batch 003 of 14
 
 Paste everything below the line into the Rae chat, then download all images at once.
 
@@ -14,34 +14,34 @@ Keep the same palette and pixel style as the exercise strips you already made. D
 - Equipment is drawn identically in every frame.
 
 
-**1. Dips - Triceps Version** (Side view, 4 frames; equipment: none)
-Frames: 1) start position, 2) halfway, 3) end of the movement (peak), 4) halfway back.
-Steps: To get into the starting position, hold your body at arm's length with your arms nearly locked above the bars. Now, inhale and slowly lower yourself downward. Your torso should remain upright and your elbows should stay close to your body. This helps to better focus on tricep involvement. Lower yourself until there is a 90 degree angle formed between the upper arm and forearm. Then, exhale and push your torso back up using your triceps to bring your body back to the starting position. Repeat the movement for the prescribed amount of repetitions.
-
-**2. Elbow to Knee** (Side view, 4 frames; equipment: none)
-Frames: 1) start position, 2) halfway, 3) end of the movement (peak), 4) halfway back.
-Steps: Lie on the floor, crossing your right leg across your bent left knee. Clasp your hands behind your head, beginning with your shoulder blades on the ground. This will be your starting position. Perform the motion by flexing the spine and rotating your torso to bring the left elbow to the right knee. Return to the starting position and repeat the movement for the desired number of repetitions before switching sides.
-
-**3. Flat Bench Leg Pull-In** (Side view, 4 frames; equipment: none)
-Frames: 1) start position, 2) halfway, 3) end of the movement (peak), 4) halfway back.
-Steps: Lie on an exercise mat or a flat bench with your legs off the end. Place your hands either under your glutes with your palms down or by the sides holding on to the bench (or with palms down by the side on an exercise mat). Also extend your legs straight out. This will be your starting position. Bend your knees and pull your upper thighs into your midsection as you breathe out. Continue this movement until your knees are near your chest. Hold the contracted position for a second. As you breathe in, slowly return to the starting position. Repeat for the recommended amount of repetitions.
-
-**4. Flat Bench Lying Leg Raise** (Side view, 4 frames; equipment: none)
-Frames: 1) start position, 2) halfway, 3) end of the movement (peak), 4) halfway back.
-Steps: Lie with your back flat on a bench and your legs extended in front of you off the end. Place your hands either under your glutes with your palms down or by the sides holding on to the bench. This will be your starting position. As you keep your legs extended, straight as possible with your knees slightly bent but locked raise your legs until they make a 90-degree angle with the floor. Exhale as you perform this portion of the movement and hold the contraction at the top for a second. Now, as you inhale, slowly lower your legs back down to the starting position.
-
-**5. Flutter Kicks** (Side view, 4 frames; equipment: none)
-Frames: 1) start position, 2) halfway, 3) end of the movement (peak), 4) halfway back.
-Steps: On a flat bench lie facedown with the hips on the edge of the bench, the legs straight with toes high off the floor and with the arms on top of the bench holding on to the front edge. Squeeze your glutes and hamstrings and straighten the legs until they are level with the hips. This will be your starting position. Start the movement by lifting the left leg higher than the right leg. Then lower the left leg as you lift the right leg. Continue alternating in this manner (as though you are doing a flutter kick in water) until you have done the recommended amount of repetitions for each leg. Make sure that you keep a controlled movement at all times. Tip: You will breathe normally as you perform this movement.
-
-**6. Front Leg Raises** (Side view, 3 frames; equipment: none)
+**1. Inchworm** (Side view, 3 frames; equipment: none)
 Frames: a held position: 1) settle in, 2) the hold with a tiny breath in, 3) the hold.
-Steps: Stand next to a chair or other support, holding on with one hand. Swing your leg forward, keeping the leg straight. Continue with a downward swing, bringing the leg as far back as your flexibility allows. Repeat 5-10 times, and then switch legs.
+Steps: Stand with your feet close together. Keeping your legs straight, stretch down and put your hands on the floor directly in front of you. This will be your starting position. Begin by walking your hands forward slowly, alternating your left and your right. As you do so, bend only at the hip, keeping your legs straight. Keep going until your body is parallel to the ground in a pushup position. Now, keep your hands in place and slowly take short steps with your feet, moving only a few inches at a time. Continue walking until your feet are by hour hands, keeping your legs straight as you do so.
 
-**7. Glute Kickback** (Side view, 4 frames; equipment: none)
-Frames: 1) start position, 2) halfway, 3) end of the movement (peak), 4) halfway back.
-Steps: Kneel on the floor or an exercise mat and bend at the waist with your arms extended in front of you (perpendicular to the torso) in order to get into a kneeling push-up position but with the arms spaced at shoulder width. Your head should be looking forward and the bend of the knees should create a 90-degree angle between the hamstrings and the calves. This will be your starting position. As you exhale, lift up your right leg until the hamstrings are in line with the back while maintaining the 90-degree angle bend. Contract the glutes throughout this movement and hold the contraction at the top for a second. Tip: At the end of the movement the upper leg should be parallel to the floor while the calf should be perpendicular to it. Go back to the initial position as you inhale and now repeat with the left leg. Continue to alternate legs until all of the recommended repetitions have been performed.
-
-**8. Hip Circles (prone)** (Side view, 3 frames; equipment: none)
+**2. Isometric Neck Exercise - Front And Back** (Side view, 3 frames; equipment: none)
 Frames: a held position: 1) settle in, 2) the hold with a tiny breath in, 3) the hold.
-Steps: Position yourself on your hands and knees on the ground. Maintaining good posture, raise one bent knee off of the ground. This will be your starting position. Keeping the knee in a bent position, rotate the femur in an arc, attempting to make a big circle with your knee. Perform this slowly for a number of repetitions, and repeat on the other side.
+Steps: With your head and neck in a neutral position (normal position with head erect facing forward), place both of your hands on the front side of your head. Now gently push forward as you contract the neck muscles but resisting any movement of your head. Start with slow tension and increase slowly. Keep breathing normally as you execute this contraction. Hold for the recommended number of seconds. Now release the tension slowly. Rest for the recommended amount of time and repeat with your hands placed on the back side of your head.
+
+**3. Isometric Neck Exercise - Sides** (Side view, 3 frames; equipment: none)
+Frames: a held position: 1) settle in, 2) the hold with a tiny breath in, 3) the hold.
+Steps: With your head and neck in a neutral position (normal position with head erect facing forward), place your left hand on the left side of your head. Now gently push towards the left as you contract the left neck muscles but resisting any movement of your head. Start with slow tension and increase slowly. Keep breathing normally as you execute this contraction. Hold for the recommended number of seconds. Now release the tension slowly. Rest for the recommended amount of time and repeat with your right hand placed on the right side of your head.
+
+**4. Isometric Wipers** (Side view, 4 frames; equipment: none)
+Frames: 1) start position, 2) halfway, 3) end of the movement (peak), 4) halfway back.
+Steps: Assume a push-up position, supporting your weight on your hands and toes while keeping your body straight. Your hands should be just outside of shoulder width. This will be your starting position. Begin by shifting your body weight as far to one side as possible, allowing the elbow on that side to flex as you lower your body. Reverse the motion by extending the flexed arm, pushing yourself up and then dropping to the other side. Repeat for the desired number of repetitions.
+
+**5. Jackknife Sit-Up** (Front view, 4 frames; equipment: none)
+Frames: 1) start position, 2) halfway, 3) end of the movement (peak), 4) halfway back.
+Steps: Lie flat on the floor (or exercise mat) on your back with your arms extended straight back behind your head and your legs extended also. This will be your starting position. As you exhale, bend at the waist while simultaneously raising your legs and arms to meet in a jackknife position. Tip: The legs should be extended and lifted at approximately a 35-45 degree angle from the floor and the arms should be extended and parallel to your legs. The upper torso should be off the floor. While inhaling, lower your arms and legs back to the starting position. Repeat for the recommended amount of repetitions.
+
+**6. Janda Sit-Up** (Side view, 4 frames; equipment: none)
+Frames: 1) start position, 2) halfway, 3) end of the movement (peak), 4) halfway back.
+Steps: Position your body on the floor in the basic sit-up position; knees to a ninety degree angle with feet flat on the floor and arms either crossed over your chest or to the sides. This will be your starting position. As you strongly tighten your glutes and hamstrings, fill your lungs with air and in a slow (three to six second count) ascent, slowly exhale. Tip: It is important to tighten the glutes and hamstrings as this will cause the hip flexors to be inactivated in a process called reciprocal inhibition, which basically means that opposite muscles to the contracted ones will relax. As you inhale, slowly go back in a controlled manner to the starting position. Repeat for the recommended amount of repetitions.
+
+**7. Knee Circles** (Side view, 3 frames; equipment: none)
+Frames: a held position: 1) settle in, 2) the hold with a tiny breath in, 3) the hold.
+Steps: Stand with your legs together and hands by your waist. Now move your knees in a circular motion as you breathe normally. Repeat for the recommended amount of repetitions.
+
+**8. Leg Lift** (Side view, 4 frames; equipment: none)
+Frames: 1) start position, 2) halfway, 3) end of the movement (peak), 4) halfway back.
+Steps: While standing up straight with both feet next to each other at around shoulder width, grab a sturdy surface such as the sides of a squat rack or the top of a chair to brace yourself and keep balance. With or without an ankle weight, lift one leg behind you as if performing a leg curl but standing up while keeping the other leg straight. Breathe out as you perform this movement. Slowly bring the raised leg back to the floor as you breathe in. Repeat for the recommended amount of repetitions. Repeat the movement with the opposite leg.

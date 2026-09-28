@@ -1,65 +1,65 @@
 [
   {
     "n": 1,
-    "exerciseId": "lib.Step-up_with_Knee_Raise",
-    "slug": "step-up-with-knee-raise",
-    "name": "Step-up with Knee Raise",
-    "frames": 4,
+    "exerciseId": "lib.Calf_Stretch_Hands_Against_Wall",
+    "slug": "calf-stretch-hands-against-wall",
+    "name": "Calf Stretch Hands Against Wall",
+    "frames": 3,
     "view": "Side view"
   },
   {
     "n": 2,
-    "exerciseId": "lib.Stomach_Vacuum",
-    "slug": "stomach-vacuum",
-    "name": "Stomach Vacuum",
+    "exerciseId": "lib.Cat_Stretch",
+    "slug": "cat-stretch",
+    "name": "Cat Stretch",
     "frames": 3,
     "view": "Side view"
   },
   {
     "n": 3,
-    "exerciseId": "lib.Toe_Touchers",
-    "slug": "toe-touchers",
-    "name": "Toe Touchers",
+    "exerciseId": "lib.Chair_Lower_Back_Stretch",
+    "slug": "chair-lower-back-stretch",
+    "name": "Chair Lower Back Stretch",
     "frames": 3,
     "view": "Side view"
   },
   {
     "n": 4,
-    "exerciseId": "lib.Tuck_Crunch",
-    "slug": "tuck-crunch",
-    "name": "Tuck Crunch",
-    "frames": 4,
+    "exerciseId": "lib.Childs_Pose",
+    "slug": "childs-pose",
+    "name": "Child's Pose",
+    "frames": 3,
     "view": "Side view"
   },
   {
     "n": 5,
-    "exerciseId": "lib.V-Bar_Pullup",
-    "slug": "v-bar-pullup",
-    "name": "V-Bar Pullup",
-    "frames": 4,
+    "exerciseId": "lib.Chin_To_Chest_Stretch",
+    "slug": "chin-to-chest-stretch",
+    "name": "Chin To Chest Stretch",
+    "frames": 3,
     "view": "Side view"
   },
   {
     "n": 6,
-    "exerciseId": "lib.Wind_Sprints",
-    "slug": "wind-sprints",
-    "name": "Wind Sprints",
-    "frames": 4,
+    "exerciseId": "lib.Dancers_Stretch",
+    "slug": "dancers-stretch",
+    "name": "Dancer's Stretch",
+    "frames": 3,
     "view": "Side view"
   },
   {
     "n": 7,
-    "exerciseId": "lib.Wrist_Circles",
-    "slug": "wrist-circles",
-    "name": "Wrist Circles",
+    "exerciseId": "lib.Dynamic_Back_Stretch",
+    "slug": "dynamic-back-stretch",
+    "name": "Dynamic Back Stretch",
     "frames": 3,
     "view": "Side view"
   },
   {
     "n": 8,
-    "exerciseId": "lib.All_Fours_Quad_Stretch",
-    "slug": "all-fours-quad-stretch",
-    "name": "All Fours Quad Stretch",
+    "exerciseId": "lib.Dynamic_Chest_Stretch",
+    "slug": "dynamic-chest-stretch",
+    "name": "Dynamic Chest Stretch",
     "frames": 3,
     "view": "Side view"
   }
