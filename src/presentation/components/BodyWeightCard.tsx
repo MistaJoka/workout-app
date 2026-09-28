@@ -1,8 +1,14 @@
 import { useEffect, useState } from 'react'
-import { listBodyWeight, logBodyWeight } from '../../infrastructure/db/repositories/bodyWeightRepository'
+import { deleteBodyWeight, listBodyWeight, logBodyWeight } from '../../infrastructure/db/repositories/bodyWeightRepository'
+import type { BodyWeightRecord } from '../../infrastructure/db/schema'
 import { summarizeBodyWeight, type BodyWeightSummary } from '../../domain/progress/bodyWeight'
 import { formatWeight, kgToUnit, unitToKg } from '../units'
 import { useWeightUnit } from './useWeightUnit'
+import { ConfirmSheet } from './ConfirmSheet'
+
+// Newest entries listed under "Past entries", each deletable (a mistyped
+// weigh-in otherwise skews the trend forever).
+const RECENT = 7
 
 // Body weight: latest value, 30-day trend, sparkline, and a one-tap log
 // with a +/- stepper (0.5 kg or 1 lb) pre-filled from the last entry.
@@ -11,12 +17,32 @@ export function BodyWeightCard() {
   const [summary, setSummary] = useState<BodyWeightSummary | null | undefined>(undefined)
   const [logging, setLogging] = useState(false)
   const [draftKg, setDraftKg] = useState<number>(70)
+  const [entries, setEntries] = useState<BodyWeightRecord[]>([])
+  const [deleting, setDeleting] = useState<BodyWeightRecord | null>(null)
+  const [busy, setBusy] = useState(false)
+  const [error, setError] = useState<string | null>(null)
 
   async function refresh() {
-    const entries = await listBodyWeight()
-    const next = summarizeBodyWeight(entries, new Date())
+    const all = await listBodyWeight()
+    const next = summarizeBodyWeight(all, new Date())
+    setEntries(all)
     setSummary(next)
     if (next) setDraftKg(next.latest.kg)
+  }
+
+  async function confirmDelete() {
+    if (!deleting) return
+    setBusy(true)
+    setError(null)
+    try {
+      await deleteBodyWeight(deleting.day)
+      setDeleting(null)
+      await refresh()
+    } catch {
+      setError("Couldn't delete on this device. Try again.")
+    } finally {
+      setBusy(false)
+    }
   }
 
   useEffect(() => {
@@ -90,6 +116,50 @@ export function BodyWeightCard() {
           {summary ? 'Log today' : 'Log body weight'}
         </button>
       )}
+
+      {entries.length > 0 && !logging && (
+        <details className="text-sm">
+          <summary className="flex min-h-11 cursor-pointer items-center text-ink-muted">Past entries</summary>
+          <ul className="divide-y divide-edge">
+            {[...entries]
+              .reverse()
+              .slice(0, RECENT)
+              .map((entry) => (
+                <li key={entry.day} className="flex items-center justify-between gap-2">
+                  <span className="text-ink-muted">{formatDay(entry.day)}</span>
+                  <span className="flex items-center gap-1">
+                    <span className="font-semibold tabular-nums">{formatWeight(entry.kg, unit)}</span>
+                    <button
+                      type="button"
+                      className="inline-flex h-11 w-11 items-center justify-center rounded-control text-ink-muted active:bg-field-primary"
+                      aria-label={`Delete ${formatDay(entry.day)}`}
+                      onClick={() => setDeleting(entry)}
+                    >
+                      ✕
+                    </button>
+                  </span>
+                </li>
+              ))}
+          </ul>
+        </details>
+      )}
+
+      {deleting && (
+        <ConfirmSheet
+          title="Delete this weigh-in?"
+          confirmLabel="Delete"
+          cancelLabel="Keep it"
+          busy={busy}
+          error={error}
+          onConfirm={confirmDelete}
+          onCancel={() => {
+            setDeleting(null)
+            setError(null)
+          }}
+        >
+          {formatWeight(deleting.kg, unit)} on {formatDay(deleting.day)}
+        </ConfirmSheet>
+      )}
     </section>
   )
 }
@@ -110,4 +180,10 @@ function BodyWeightSparkline({ points }: { points: number[] }) {
       <path d={path} fill="none" stroke="var(--color-primary)" strokeWidth="2" />
     </svg>
   )
+}
+
+// 'YYYY-MM-DD' as a short local date, without the UTC shift new Date(day) has.
+function formatDay(day: string): string {
+  const [y, m, d] = day.split('-').map(Number)
+  return new Date(y, m - 1, d).toLocaleDateString(undefined, { month: 'short', day: 'numeric' })
 }
