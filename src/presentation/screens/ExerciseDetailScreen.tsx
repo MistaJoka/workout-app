@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react'
 import { useNavigate, useParams } from 'react-router-dom'
 import { getExercise } from '../../domain/content/catalog'
-import { muscleGroupLabel } from '../../domain/content/library'
+import { exerciseMeta } from '../../domain/content/library'
 import type { Exercise, WorkoutTemplate } from '../../domain/content/types'
 import {
   addExerciseToCustomTemplate,
@@ -66,17 +66,21 @@ export function ExerciseDetailScreen() {
     }
   }
 
-  const meta = [
-    exercise.taxonomy.primaryMuscles?.map(muscleGroupLabel).filter((v, i, a) => a.indexOf(v) === i).join(', '),
-    exercise.taxonomy.equipment[0] === 'bodyweight' ? 'No equipment' : exercise.taxonomy.equipment[0],
-    exercise.taxonomy.level,
-  ].filter(Boolean)
+  const meta = exerciseMeta(exercise)
 
   return (
     <div className="p-4 space-y-4 pb-24">
       <BackButton />
-      <h1 className="text-2xl font-bold">{exercise.name}</h1>
-      <p className="text-sm capitalize text-ink-muted">{meta.join(', ')}</p>
+      <div className="space-y-2">
+        <h1 className="text-2xl font-bold">{exercise.name}</h1>
+        <ul className="flex flex-wrap gap-1.5" aria-label="About this move">
+          {meta.map((label) => (
+            <li key={label} className="rounded-full bg-field-info px-3 py-1 text-xs font-bold">
+              {label}
+            </li>
+          ))}
+        </ul>
+      </div>
 
       <MovementMedia name={exercise.name} exerciseId={exercise.id} start={exercise.mediaManifest.start} finish={exercise.mediaManifest.finish} />
 
