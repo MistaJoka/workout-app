@@ -131,15 +131,17 @@ export function ProgressScreen() {
           <p className="text-sm font-semibold text-ink-muted">History</p>
           <ul className="space-y-2">
             {rows.map((row) => (
-              <li key={row.sessionId} className="card p-3">
-                <div className="flex items-baseline justify-between gap-2">
-                  <p className="font-semibold">{row.workoutName}</p>
-                  <p className="text-xs text-ink-muted">{formatDate(row.endedAt)}</p>
-                </div>
-                <p className="text-sm text-ink-muted">
-                  {row.totalSetsCompleted}/{row.totalSetsPlanned} sets
-                  {row.status === 'COMPLETED_SHORTENED' ? ', ended early' : ''}
-                </p>
+              <li key={row.sessionId}>
+                <Link to={`/history/${encodeURIComponent(row.sessionId)}`} className="block card p-3">
+                  <div className="flex items-baseline justify-between gap-2">
+                    <p className="font-semibold">{row.workoutName}</p>
+                    <p className="text-xs text-ink-muted">{formatDate(row.endedAt)}</p>
+                  </div>
+                  <p className="text-sm text-ink-muted">
+                    {row.totalSetsCompleted}/{row.totalSetsPlanned} sets
+                    {row.status === 'COMPLETED_SHORTENED' ? ', ended early' : ''}
+                  </p>
+                </Link>
               </li>
             ))}
           </ul>

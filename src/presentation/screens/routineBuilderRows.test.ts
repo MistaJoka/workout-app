@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest'
-import { buildEditRows } from './routineBuilderRows'
+import { buildEditRows, defaultPrescription } from './routineBuilderRows'
 import type { Exercise, WorkoutTemplate } from '../../domain/content/types'
 
 const exercise = (id: string, name: string): Exercise => ({ id, name } as unknown as Exercise)
@@ -53,5 +53,26 @@ describe('buildEditRows', () => {
     const rows = buildEditRows(t, exercises)
 
     expect(rows.map((r) => r.exerciseId)).toEqual(['lib.c', 'lib.a', 'lib.b'])
+  })
+})
+
+describe('defaultPrescription', () => {
+  const caps = (c: Exercise['prescriptionCapabilities']) => ({ prescriptionCapabilities: c }) as unknown as Exercise
+
+  it('reps moves start at 3 x 10 with 60s rest', () => {
+    expect(defaultPrescription(caps({ reps: true, time: false, hold: false }))).toEqual({ sets: 3, reps: 10, restSeconds: 60 })
+  })
+
+  it('timed moves start at 3 x 30s', () => {
+    expect(defaultPrescription(caps({ reps: false, time: true, hold: false }))).toEqual({ sets: 3, timeSeconds: 30, restSeconds: 60 })
+  })
+
+  it('weighted moves start unloaded with 90s rest', () => {
+    expect(defaultPrescription(caps({ reps: true, time: false, hold: false, weight: true }))).toEqual({
+      sets: 3,
+      reps: 10,
+      restSeconds: 90,
+      weightKg: 0,
+    })
   })
 })

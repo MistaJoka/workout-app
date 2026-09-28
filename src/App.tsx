@@ -12,6 +12,7 @@ import { RoutineBuilderScreen } from './presentation/screens/RoutineBuilderScree
 import { RoutineDetailScreen } from './presentation/screens/RoutineDetailScreen'
 import { ProgressScreen } from './presentation/screens/ProgressScreen'
 import { ExerciseHistoryScreen } from './presentation/screens/ExerciseHistoryScreen'
+import { SessionDetailScreen } from './presentation/screens/SessionDetailScreen'
 import { SettingsScreen } from './presentation/screens/SettingsScreen'
 import { AboutScreen } from './presentation/screens/AboutScreen'
 import { MeetRaeScreen } from './presentation/screens/MeetRaeScreen'
@@ -31,6 +32,7 @@ export default function App() {
             <Route path="/routines/:templateId" element={<RoutineDetailScreen />} />
             <Route path="/progress" element={<ProgressScreen />} />
             <Route path="/progress/:exerciseId" element={<ExerciseHistoryScreen />} />
+            <Route path="/history/:sessionId" element={<SessionDetailScreen />} />
             <Route path="/settings" element={<SettingsScreen />} />
             <Route path="/about" element={<AboutScreen />} />
             <Route path="/rae" element={<MeetRaeScreen />} />

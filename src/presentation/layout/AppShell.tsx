@@ -1,4 +1,5 @@
-import { NavLink, Outlet } from 'react-router-dom'
+import { NavLink, Outlet, useNavigate } from 'react-router-dom'
+import { guardNavigation } from '../components/unsavedGuard'
 
 export function AppShell() {
   return (
@@ -24,10 +25,16 @@ export function AppShell() {
 }
 
 function NavItem({ to, label, end, icon }: { to: string; label: string; end?: boolean; icon: React.ReactNode }) {
+  const navigate = useNavigate()
   return (
     <NavLink
       to={to}
       end={end}
+      // A screen with unsaved edits (the routine builder) gets to ask first.
+      onClick={(e) => {
+        e.preventDefault()
+        guardNavigation(() => navigate(to))
+      }}
       className={({ isActive }) =>
         `flex flex-1 flex-col items-center justify-center gap-0.5 text-xs font-bold ${
           isActive ? 'text-primary' : 'text-ink-muted'

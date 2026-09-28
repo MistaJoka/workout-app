@@ -9,7 +9,8 @@ import {
   saveCustomTemplate,
 } from '../../infrastructure/db/repositories/customTemplateRepository'
 import { Chip } from './LibraryScreen'
-import { buildEditRows, type EditRow } from './routineBuilderRows'
+import { buildEditRows, defaultPrescription, type EditRow } from './routineBuilderRows'
+import { setUnsavedGuard } from '../components/unsavedGuard'
 import { FilterSheet } from '../components/FilterSheet'
 import { kgToUnit, roundToStep, stepInUnit, unitToKg } from '../units'
 import { useWeightUnit } from '../components/useWeightUnit'
@@ -31,19 +32,7 @@ function snapshot(name: string, rows: Row[]): string {
 }
 
 function defaultRow(exercise: Exercise): Row {
-  const timed = !exercise.prescriptionCapabilities.reps
-  const weighted = exercise.prescriptionCapabilities.weight === true
-  return {
-    exerciseId: exercise.id,
-    exercise,
-    sets: 3,
-    reps: timed ? undefined : 10,
-    timeSeconds: timed ? 30 : undefined,
-    restSeconds: weighted ? 90 : 60,
-    // Start unloaded: the library is home-friendly, and a made-up load
-    // (it used to be 20 kg) is worse than the lifter dialling in their own.
-    ...(weighted ? { weightKg: 0 } : {}),
-  }
+  return { exerciseId: exercise.id, exercise, ...defaultPrescription(exercise) }
 }
 
 export function RoutineBuilderScreen() {
@@ -123,6 +112,17 @@ export function RoutineBuilderScreen() {
   }
 
   const dirty = baseline !== null && snapshot(name, rows) !== baseline
+
+  // Leaving through the tab bar asks too, not just Back. Saving navigates
+  // away on purpose, so the guard stands down while a save is in flight.
+  // The question lives on the builder view, so close the picker to show it.
+  useEffect(() => {
+    if (!dirty || saving) return
+    return setUnsavedGuard((proceed) => {
+      setPicking(false)
+      setConfirmingLeave(() => proceed)
+    })
+  }, [dirty, saving])
 
   function update(index: number, patch: Partial<Row>) {
     setRows((r) => r.map((row, i) => (i === index ? { ...row, ...patch } : row)))
@@ -224,7 +224,8 @@ export function RoutineBuilderScreen() {
                 ✕
               </button>
             </div>
-            <div className="grid grid-cols-3 gap-2">
+            {/* Two across: at 390px, three steppers with 44px buttons leave no room for the number. */}
+            <div className="grid grid-cols-2 gap-2">
               <Stepper label="Sets" value={row.sets} min={1} max={8} step={1} onChange={(v) => update(index, { sets: v })} />
               {row.reps != null ? (
                 <Stepper label="Reps" value={row.reps} min={1} max={50} step={1} onChange={(v) => update(index, { reps: v })} />
@@ -247,17 +248,17 @@ export function RoutineBuilderScreen() {
                 unit="s"
                 onChange={(v) => update(index, { restSeconds: v })}
               />
+              {row.weightKg != null && (
+                <Stepper
+                  label={`Weight (${unit})`}
+                  value={roundToStep(kgToUnit(row.weightKg, unit), unit)}
+                  min={0}
+                  max={unit === 'kg' ? 300 : 660}
+                  step={stepInUnit(unit)}
+                  onChange={(v) => update(index, { weightKg: unitToKg(v, unit) })}
+                />
+              )}
             </div>
-            {row.weightKg != null && (
-              <Stepper
-                label={`Weight (${unit})`}
-                value={roundToStep(kgToUnit(row.weightKg, unit), unit)}
-                min={0}
-                max={unit === 'kg' ? 300 : 660}
-                step={stepInUnit(unit)}
-                onChange={(v) => update(index, { weightKg: unitToKg(v, unit) })}
-              />
-            )}
           </li>
         ))}
       </ul>
@@ -332,7 +333,7 @@ function Stepper({
       <div className="flex items-center justify-between">
         <button
           type="button"
-          className="stepper-btn h-10 w-10 text-lg"
+          className="stepper-btn h-11 w-11 text-lg"
           aria-label={`Decrease ${label}`}
           onClick={() => onChange(Math.max(min, value - step))}
         >
@@ -344,7 +345,7 @@ function Stepper({
         </span>
         <button
           type="button"
-          className="stepper-btn h-10 w-10 text-lg"
+          className="stepper-btn h-11 w-11 text-lg"
           aria-label={`Increase ${label}`}
           onClick={() => onChange(Math.min(max, value + step))}
         >

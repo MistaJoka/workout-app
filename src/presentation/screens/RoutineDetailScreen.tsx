@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react'
-import { Link, useNavigate, useParams } from 'react-router-dom'
+import { Link, useLocation, useNavigate, useParams } from 'react-router-dom'
 import { getExercises, getTemplate } from '../../domain/content/catalog'
 import type { Exercise, WorkoutTemplate } from '../../domain/content/types'
 import { deleteCustomTemplate, isCustomTemplateId } from '../../infrastructure/db/repositories/customTemplateRepository'
@@ -12,6 +12,8 @@ import { ThumbBar } from '../components/ThumbBar'
 export function RoutineDetailScreen() {
   const { templateId } = useParams()
   const navigate = useNavigate()
+  // Set by "Add to a routine" on an exercise page.
+  const added = (useLocation().state as { added?: string } | null)?.added
   const [unit] = useWeightUnit()
   const [template, setTemplate] = useState<WorkoutTemplate | null | undefined>(undefined)
   const [exercises, setExercises] = useState<Map<string, Exercise>>(new Map())
@@ -85,6 +87,11 @@ export function RoutineDetailScreen() {
     <div className="p-4 space-y-4 pb-44">
       <BackButton />
       <h1 className="text-2xl font-bold">{template.name}</h1>
+      {added && (
+        <p className="field-success px-3 py-2 text-sm font-semibold" role="status">
+          Added {added}
+        </p>
+      )}
 
       <ul className="space-y-2">
         {template.exercises.map((te) => {

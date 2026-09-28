@@ -1,6 +1,7 @@
 import { beforeEach, describe, expect, it } from 'vitest'
 import { db } from '../schema'
 import {
+  addExerciseToCustomTemplate,
   deleteCustomTemplate,
   getCustomTemplate,
   listCustomTemplates,
@@ -60,5 +61,33 @@ describe('customTemplateRepository', () => {
     await saveCustomTemplate(template(id, 'Gone'))
     await deleteCustomTemplate(id)
     expect(await getCustomTemplate(id)).toBeUndefined()
+  })
+})
+
+describe('addExerciseToCustomTemplate', () => {
+  const entry = { sets: 3, reps: 10, restSeconds: 60 }
+
+  it('appends the exercise at the end with the next order', async () => {
+    const id = newCustomTemplateId()
+    await saveCustomTemplate(template(id, 'Leg day'))
+    expect(await addExerciseToCustomTemplate(id, 'lib.Pushups', entry)).toBe('added')
+    const loaded = await getCustomTemplate(id)
+    expect(loaded?.exercises.map((e) => [e.exerciseId, e.order])).toEqual([
+      ['lib.Barbell_Squat', 0],
+      ['lib.Pushups', 1],
+    ])
+    expect(loaded?.exercises[1]).toEqual({ exerciseId: 'lib.Pushups', exerciseVersion: 1, prescription: entry, order: 1, optional: false })
+  })
+
+  it('leaves the routine alone when the exercise is already in it', async () => {
+    const id = newCustomTemplateId()
+    await saveCustomTemplate(template(id, 'Leg day'))
+    expect(await addExerciseToCustomTemplate(id, 'lib.Barbell_Squat', entry)).toBe('already-in')
+    expect((await getCustomTemplate(id))?.exercises).toHaveLength(1)
+  })
+
+  it('reports a routine that no longer exists instead of creating one', async () => {
+    expect(await addExerciseToCustomTemplate('custom.gone', 'lib.Pushups', entry)).toBe('missing')
+    expect(await getCustomTemplate('custom.gone')).toBeUndefined()
   })
 })
