@@ -7,6 +7,11 @@ export async function getFamiliarity(exerciseId: string): Promise<FamiliarityRec
   return existing ?? { exerciseId, exposureCount: 0, lastSeenAt: null }
 }
 
+// One read for a whole session's moves; undefined where a move was never done.
+export async function getFamiliarities(exerciseIds: readonly string[]): Promise<(FamiliarityRecord | undefined)[]> {
+  return db.familiarity.bulkGet([...exerciseIds])
+}
+
 export async function recordExposure(exerciseId: string, timestamp: string): Promise<void> {
   const existing = await db.familiarity.get(exerciseId)
   const next: FamiliarityRecord = {
