@@ -5,6 +5,7 @@ import { getCurrentState, getPlan, recordEvent } from '../../application/session
 import type { SessionPlan, SessionState } from '../../domain/session/types'
 import { isRestComplete, remainingRestMs } from '../../domain/session/restTimer'
 import { getExercises } from '../../domain/content/catalog'
+import { getFamiliarExerciseIds } from '../../application/familiarity'
 import type { Exercise } from '../../domain/content/types'
 import { MovementMedia, effectiveMotion, usePrefersReducedMotion } from '../components/MovementMedia'
 import { RaeExerciseLoop, RaeFace } from '../components/Rae'
@@ -46,6 +47,10 @@ export function WorkoutPlayerScreen() {
   const [confirmingEnd, setConfirmingEnd] = useState(false)
   const [endError, setEndError] = useState<string | null>(null)
   const [loadFailed, setLoadFailed] = useState(false)
+  // Familiar moves start with their steps folded away; opening one keeps it
+  // open for the rest of this session (not persisted).
+  const [familiarIds, setFamiliarIds] = useState<ReadonlySet<string>>(new Set())
+  const [openedIds, setOpenedIds] = useState<ReadonlySet<string>>(new Set())
 
   const refresh = useCallback(async () => {
     if (!sessionId) return
@@ -63,8 +68,16 @@ export function WorkoutPlayerScreen() {
     // Steps and media are extras: the sets and timers work without them
     // (e.g. the library chunk isn't cached yet and the phone is offline).
     if (loadedPlan) {
+      const ids = loadedPlan.exercises.map((e) => e.exerciseId)
       try {
-        setExerciseById(await getExercises(loadedPlan.exercises.map((e) => e.exerciseId)))
+        // Loaded together so the steps first paint already collapsed or
+        // open; a failed familiarity read just means every move shows steps.
+        const [exercises, familiar] = await Promise.all([
+          getExercises(ids),
+          getFamiliarExerciseIds(ids).catch(() => new Set<string>()),
+        ])
+        setFamiliarIds(familiar)
+        setExerciseById(exercises)
       } catch {
         // keep the player usable; names come from the plan
       }
@@ -275,7 +288,12 @@ export function WorkoutPlayerScreen() {
       )}
 
       {exerciseContent && (exerciseContent.setup || exerciseContent.executionPhases.length > 0) && (
-        <StepsList key={exercise.exerciseId} steps={[exerciseContent.setup, ...exerciseContent.executionPhases].filter(Boolean)} />
+        <StepsList
+          key={exercise.exerciseId}
+          steps={[exerciseContent.setup, ...exerciseContent.executionPhases].filter(Boolean)}
+          folded={familiarIds.has(exercise.exerciseId) && !openedIds.has(exercise.exerciseId)}
+          onUnfold={() => setOpenedIds((ids) => new Set(ids).add(exercise.exerciseId))}
+        />
       )}
 
       {error && <p className="text-sm text-accent">{error}</p>}
@@ -375,8 +393,17 @@ function initialStepCount(steps: string[]): number {
   return Math.max(1, count)
 }
 
-function StepsList({ steps }: { steps: string[] }) {
+// A familiar move (FAMILIAR_AFTER_SESSIONS) folds its steps behind one tap,
+// so the screen is Rae and the reps; the steps are never removed.
+function StepsList({ steps, folded, onUnfold }: { steps: string[]; folded: boolean; onUnfold: () => void }) {
   const [expanded, setExpanded] = useState(false)
+  if (folded) {
+    return (
+      <button type="button" className="btn-ghost min-h-11 w-full" onClick={onUnfold}>
+        Show steps
+      </button>
+    )
+  }
   const visible = expanded ? steps : steps.slice(0, initialStepCount(steps))
   const hidden = steps.length - visible.length
   return (

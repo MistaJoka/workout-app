@@ -5,6 +5,7 @@ import {
   advanceProgression,
   applyProgressionOutcome,
   dismissProgressionCandidate,
+  getFamiliarities,
   getFamiliarity,
   getProgression,
   recordExposure,
@@ -17,6 +18,14 @@ beforeEach(async () => {
 })
 
 describe('familiarity', () => {
+  it('reads several exposure records at once, undefined for moves never done', async () => {
+    await recordExposure('fam-a', '2026-09-28T00:00:00.000Z')
+    await recordExposure('fam-a', '2026-09-28T01:00:00.000Z')
+    const [a, missing] = await getFamiliarities(['fam-a', 'fam-never'])
+    expect(a?.exposureCount).toBe(2)
+    expect(missing).toBeUndefined()
+  })
+
   it('starts at zero exposures for an unseen exercise', async () => {
     const familiarity = await getFamiliarity('ex1')
     expect(familiarity).toEqual({ exerciseId: 'ex1', exposureCount: 0, lastSeenAt: null })
