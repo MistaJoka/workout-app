@@ -80,21 +80,22 @@ Always `git fetch origin` before pushing: the ChatGPT support agent commits dire
 - Double taps/retries must not duplicate completed-set/session/progression effects.
 - Completed historical truth is immutable.
 - Material deterministic decisions carry inspectable reason codes/details.
-- Familiarity is separate from progression. Progression candidates are staged as `pendingCandidate` and confirmed on Session Complete; an early-ended session preserves a pending offer. Bodyweight candidates step the rep bracket (owner override, 2026-09-19 — no authored harder-variant edges exist yet).
+- Familiarity is separate from progression. It folds a move's steps behind "Show steps" in the player after `FAMILIAR_AFTER_SESSIONS` (3) finished sessions (`src/domain/session/familiarity.ts`). Check-in inputs aren't collected while no adaptation rule reads them (`checkIn` is optional on plans; `ruleVersion` is the rule that actually ran). Progression candidates are staged as `pendingCandidate` and confirmed on Session Complete; an early-ended session preserves a pending offer. Bodyweight candidates step the rep bracket (owner override, 2026-09-19 — no authored harder-variant edges exist yet).
 - Cache Storage is for application/media resources; IndexedDB is the workout-data source of truth.
 
 ## Navigation
 
 Exactly four persistent primary tabs: Today, Library, Progress, Settings.
 
-Secondary routes such as Schedule, Routine Builder/Detail, Exercise Detail/History, About, Check-In (which includes the session preview) and active-session screens do not become new persistent tabs without an explicit product decision.
+Secondary routes such as Schedule, Routine Builder/Detail, Exercise Detail/History, About, the Start screen (`/checkin/:id`, the session preview; asks nothing), Session Detail (`/history/:sessionId`) and active-session screens do not become new persistent tabs without an explicit product decision.
 
-Primary guided flow: `Today -> Check-In + preview (one screen) -> Workout Player -> Rest/Pause -> Complete -> Progress`
+Primary guided flow: `Today -> Start (preview, one tap) -> Workout Player -> Rest/Pause -> Complete -> Progress`
 
 Placement rules (owner-approved button pass, 2026-09-26):
 - Every screen outside the tab bar has a way out (`components/BackButton.tsx`, falls back to Today on a deep link) — a home-screen PWA has no browser back.
 - Fixed bottom action bars use `components/ThumbBar.tsx`: it ignores taps for 700ms whenever its content changes, so a double tap can't land on the button that replaced the first one. Give it an `armKey` that changes with the bar's content. E2E helpers wait for `[data-armed="true"]`.
 - Rare/destructive actions (Pause, End workout, Erase everything) stay out of the thumb bar. Profile switching lives in Settings, not a corner of every screen.
+- A screen with unsaved edits registers `components/unsavedGuard.ts`; AppShell's tabs call `guardNavigation()` (HashRouter can't block routes).
 - Destructive or data-changing confirmations use `components/ConfirmSheet.tsx` (in-page, never `window.confirm`). Ending a workout early asks first, is also offered from Pause, and lands on Complete so a pending next-level offer still shows.
 
 ## Platform quality rules
