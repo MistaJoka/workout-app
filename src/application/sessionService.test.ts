@@ -189,6 +189,29 @@ describe('recordEvent', () => {
   })
 })
 
+describe('only sets the session machine applied are counted', () => {
+  it('a stray set stored after the session finished inflates neither the result nor progression', async () => {
+    const twoSets: SessionPlan = {
+      ...plan,
+      id: 'session-stray',
+      exercises: [{ exerciseId: 'ex1', exerciseVersion: 1, name: 'Exercise One', sets: 2, reps: 10, restSeconds: 60, order: 0 }],
+    }
+    await startSession(twoSets)
+    await recordEvent(twoSets.id, 'SET_COMPLETED', 'set-1', { exerciseId: 'ex1', met: true })
+    await recordEvent(twoSets.id, 'REST_SKIPPED', 'skip-1')
+    // Store the finishing set and a racing duplicate tap directly, as two
+    // concurrent recordEvent calls would, before anything replays.
+    await sessionRepo.appendEvent({ eventId: 'set-2', sessionId: twoSets.id, type: 'SET_COMPLETED', timestamp: new Date().toISOString(), payload: { exerciseId: 'ex1', met: true } })
+    await sessionRepo.appendEvent({ eventId: 'set-2-again', sessionId: twoSets.id, type: 'SET_COMPLETED', timestamp: new Date().toISOString(), payload: { exerciseId: 'ex1', met: false } })
+
+    await getCurrentState(twoSets.id)
+
+    expect(await sessionRepo.getResult(twoSets.id)).toMatchObject({ totalSetsCompleted: 2, totalSetsPlanned: 2 })
+    // The stray "met: false" set must not turn a clean session into a miss.
+    expect((await getProgression('ex1')).currentPrescribedReps).toBe(12)
+  })
+})
+
 describe('atomicity', () => {
   afterEach(() => {
     vi.restoreAllMocks()

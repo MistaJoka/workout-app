@@ -1,4 +1,5 @@
 import { replayEvents } from '../domain/session/sessionMachine'
+import { withoutIneffectiveSets } from '../domain/session/appliedEvents'
 import type { SessionEvent, SessionEventType, SessionPlan, SessionResult, SessionState } from '../domain/session/types'
 import * as sessionRepo from '../infrastructure/db/repositories/sessionRepository'
 import * as progressionRepo from '../infrastructure/db/repositories/familiarityProgressionRepository'
@@ -92,7 +93,8 @@ async function persistResultIfMissing(sessionId: string, state: SessionState): P
   if (!plan) {
     throw new Error(`No session plan found for session ${sessionId}`)
   }
-  const events = await sessionRepo.getEventsForSession(sessionId)
+  // Only sets the machine applied (a racing duplicate tap is stored but ignored).
+  const events = withoutIneffectiveSets(plan, await sessionRepo.getEventsForSession(sessionId))
   const startEvent = events.find((e) => e.type === 'SESSION_STARTED')
   const completedCount = events.filter((e) => e.type === 'SET_COMPLETED').length
   const totalSetsPlanned = plan.exercises.reduce((sum, e) => sum + e.sets, 0)
@@ -127,7 +129,7 @@ async function updateProgressionAfterSession(sessionId: string): Promise<void> {
   if (!plan) {
     return
   }
-  const events = await sessionRepo.getEventsForSession(sessionId)
+  const events = withoutIneffectiveSets(plan, await sessionRepo.getEventsForSession(sessionId))
   const progressionRecords = await Promise.all(plan.exercises.map((e) => progressionRepo.getProgression(e.exerciseId)))
   const progressionByExerciseId = new Map(
     progressionRecords.map((r) => [
