@@ -75,7 +75,8 @@ Use this mailbox when implementation reaches a product/data/spec/asset/test gap 
 
 ## REQ-20260926-002 — Redraw two Rae exercise strips
 
-**Status:** OPEN
+**Status:** DEFERRED (owner)
+**Owner decision 2026-09-28:** "lets continue past the redraws, we'll use them for now." Redraws are deferred, not cancelled: the flagged loops keep shipping, and `redraw-001/002` stay ready to paste. New library batches (002+) go first.
 **Blocking:** no (both loops ship; one is trimmed, one barely moves)
 **Implementation context:** `docs/RAE_EXERCISE_ANIMATION.md`, `assets/pixel-bloom/character/rae/source/exercise/strips.json`
 **Need:** new drawn-frame strips from the Rae chat (same format as the existing strips: one row, flat #FF00FF, same camera and floor line):
@@ -87,7 +88,8 @@ Use this mailbox when implementation reaches a product/data/spec/asset/test gap 
 
 ## REQ-20260926-003 — Review the Rae chair-move steps (and a tattoo drift)
 
-**Status:** OPEN
+**Status:** DEFERRED (owner)
+**Owner decision 2026-09-28:** "lets continue past the redraws, we'll use them for now." Redraws are deferred, not cancelled: the flagged loops keep shipping, and `redraw-001/002` stay ready to paste. New library batches (002+) go first.
 **Blocking:** no (the moves ship as provenance 'draft')
 **Implementation context:** `src/domain/content/fixtures/raeMoves.ts`, strips in `assets/pixel-bloom/character/rae/source/exercise/strips.json` (batch `chair-moves`)
 **Need:**
@@ -100,7 +102,8 @@ Use this mailbox when implementation reaches a product/data/spec/asset/test gap 
 
 ## REQ-20260927-004 — Redraw the low-impact set in the bible style; review steps
 
-**Status:** OPEN
+**Status:** DEFERRED (owner)
+**Owner decision 2026-09-28:** "lets continue past the redraws, we'll use them for now." Redraws are deferred, not cancelled: the flagged loops keep shipping, and `redraw-001/002` stay ready to paste. New library batches (002+) go first.
 **Blocking:** no (the owner said "use them for now")
 **Implementation context:** `src/domain/content/fixtures/raeMoves.ts` (low-impact section), strips.json batch `low-impact-15`
 **Need:**
