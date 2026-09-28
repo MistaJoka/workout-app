@@ -2,7 +2,7 @@ import { countLabel } from '../format'
 import { useDeferredValue, useEffect, useMemo, useState } from 'react'
 import { Link } from 'react-router-dom'
 import { getExercises, loadLibrary } from '../../domain/content/catalog'
-import { EQUIPMENT_OPTIONS, MUSCLE_GROUPS, equipmentOf, filterExercises, type LibraryFilters } from '../../domain/content/library'
+import { EQUIPMENT_FILTER_OPTIONS, EQUIPMENT_OPTIONS, MUSCLE_GROUPS, equipmentOf, filterExercises, isShownNow, type LibraryFilters } from '../../domain/content/library'
 import type { Exercise } from '../../domain/content/types'
 import { foundationStrengthStarterTemplates } from '../../domain/content/fixtures/foundationStrengthStarter'
 import { listCustomTemplates } from '../../infrastructure/db/repositories/customTemplateRepository'
@@ -29,7 +29,7 @@ export function LibraryScreen() {
 
   useEffect(() => {
     loadLibrary()
-      .then(setLibrary)
+      .then((all) => setLibrary(all.filter(isShownNow)))
       .catch(() => setLoadFailed(true))
     listCustomTemplates()
       .then(setCustom)
@@ -134,16 +134,18 @@ export function LibraryScreen() {
               ))}
             </ChipRow>
           </div>
-          <div className="space-y-2">
-            <p className="text-sm font-semibold text-ink-muted">Equipment</p>
-            <ChipRow>
-              {EQUIPMENT_OPTIONS.map((o) => (
-                <Chip key={o.id} active={filters.equipment === o.id} onClick={() => toggle('equipment', o.id)}>
-                  {o.label}
-                </Chip>
-              ))}
-            </ChipRow>
-          </div>
+          {EQUIPMENT_FILTER_OPTIONS.length > 0 && (
+            <div className="space-y-2">
+              <p className="text-sm font-semibold text-ink-muted">Equipment</p>
+              <ChipRow>
+                {EQUIPMENT_FILTER_OPTIONS.map((o) => (
+                  <Chip key={o.id} active={filters.equipment === o.id} onClick={() => toggle('equipment', o.id)}>
+                    {o.label}
+                  </Chip>
+                ))}
+              </ChipRow>
+            </div>
+          )}
           <div className="space-y-2">
             <p className="text-sm font-semibold text-ink-muted">Level</p>
             <ChipRow>

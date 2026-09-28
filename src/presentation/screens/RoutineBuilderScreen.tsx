@@ -1,7 +1,7 @@
 import { useEffect, useMemo, useRef, useState } from 'react'
 import { useNavigate, useParams, useSearchParams } from 'react-router-dom'
 import { getExercises, getTemplate, loadLibrary } from '../../domain/content/catalog'
-import { filterExercises, MUSCLE_GROUPS, EQUIPMENT_OPTIONS } from '../../domain/content/library'
+import { filterExercises, isShownNow, MUSCLE_GROUPS, EQUIPMENT_FILTER_OPTIONS } from '../../domain/content/library'
 import type { Exercise, WorkoutTemplate, WorkoutTemplateExercise } from '../../domain/content/types'
 import {
   isCustomTemplateId,
@@ -373,7 +373,7 @@ function ExercisePicker({
 
   useEffect(() => {
     loadLibrary()
-      .then(setLibrary)
+      .then((all) => setLibrary(all.filter(isShownNow)))
       .catch(() => setLoadFailed(true))
   }, [])
 
@@ -407,16 +407,18 @@ function ExercisePicker({
             ))}
           </div>
         </div>
-        <div className="space-y-2">
-          <p className="text-sm font-semibold text-ink-muted">Equipment</p>
-          <div className="flex gap-2 overflow-x-auto pb-1">
-            {EQUIPMENT_OPTIONS.map((o) => (
-              <Chip key={o.id} active={equipment === o.id} onClick={() => setEquipment(equipment === o.id ? undefined : o.id)}>
-                {o.label}
-              </Chip>
-            ))}
+        {EQUIPMENT_FILTER_OPTIONS.length > 0 && (
+          <div className="space-y-2">
+            <p className="text-sm font-semibold text-ink-muted">Equipment</p>
+            <div className="flex gap-2 overflow-x-auto pb-1">
+              {EQUIPMENT_FILTER_OPTIONS.map((o) => (
+                <Chip key={o.id} active={equipment === o.id} onClick={() => setEquipment(equipment === o.id ? undefined : o.id)}>
+                  {o.label}
+                </Chip>
+              ))}
+            </div>
           </div>
-        </div>
+        )}
       </FilterSheet>
       {library === null && !loadFailed && <p className="text-ink-muted">Loading library…</p>}
       {loadFailed && <p className="text-ink-muted">Couldn't load the library. Check back when you're online.</p>}

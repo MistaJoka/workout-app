@@ -1,4 +1,5 @@
 import type { Exercise } from './types'
+import needsProp from './needsProp.json'
 
 export type LibraryFilters = {
   query?: string
@@ -53,6 +54,25 @@ const NO_EQUIPMENT = ['bodyweight']
 export function equipmentOf(e: Exercise): readonly string[] {
   return e.taxonomy.equipment.length > 0 ? e.taxonomy.equipment : NO_EQUIPMENT
 }
+
+// Owner, 2026-09-28: "hide them for now... we'll focus on the no equipment
+// and body weight stuff." Browsing (Library, routine picker) shows only
+// library moves that need nothing, minus bodyweight moves whose steps need
+// a prop (needsProp.json, hand-checked; shared with rae-prompts.py).
+// Curated and Rae's own moves always show (a chair counts as home). Lookup
+// is untouched, so routines and history holding a hidden move still work.
+// Set false to bring equipment moves back.
+export const NO_EQUIPMENT_ONLY = true
+
+const NEEDS_PROP: ReadonlySet<string> = new Set(needsProp)
+
+export function isShownNow(e: Exercise): boolean {
+  if (!NO_EQUIPMENT_ONLY || !e.id.startsWith('lib.')) return true
+  const equipment = equipmentOf(e)
+  return equipment.length === 1 && equipment[0] === 'bodyweight' && !NEEDS_PROP.has(e.id)
+}
+
+export const EQUIPMENT_FILTER_OPTIONS: readonly { id: string; label: string }[] = NO_EQUIPMENT_ONLY ? [] : EQUIPMENT_OPTIONS
 
 export function filterExercises(exercises: readonly Exercise[], filters: LibraryFilters): Exercise[] {
   const query = filters.query ? normalize(filters.query) : ''

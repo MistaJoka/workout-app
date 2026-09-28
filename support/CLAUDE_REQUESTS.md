@@ -117,6 +117,7 @@ Use this mailbox when implementation reaches a product/data/spec/asset/test gap 
 
 **Status:** RESOLVED (owner, 2026-09-28)
 **Resolution:** "no equitment needed for now for the workouts." Rae batches were re-planned (`rae-prompts.py --from 2`) to no-equipment moves only: 002–014, 102 moves. 34 bodyweight moves whose steps need a prop (chin-up, pull-ups, dips, decline and bench moves, among others) are out for now (`NEEDS_PROP`). Equipment moves come back with `NO_EQUIPMENT_ONLY = False` and a re-plan.
+**Follow-up (owner, same day):** "hide them for now. filtered out in the app. we'll focus on the no equipment and body weight stuff." The Library and routine picker now show only no-equipment moves (`NO_EQUIPMENT_ONLY` in `src/domain/content/library.ts`, same `needsProp.json` list); the equipment filter is hidden.
 **Blocking:** no
 **Implementation context:** `scripts/assets/rae_canon.py`, `scripts/assets/rae-prompts.py`, `scripts/assets/rae-redraw-prompts.py`, `content/rae-prompts/`
 **Need:**

@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest'
-import { equipmentOf, filterExercises, searchHaystack } from './library'
+import { EQUIPMENT_FILTER_OPTIONS, equipmentOf, filterExercises, isShownNow, searchHaystack } from './library'
 import type { Exercise } from './types'
 
 function exercise(overrides: Partial<Exercise> & { id: string; name: string }): Exercise {
@@ -68,5 +68,32 @@ describe('searchHaystack', () => {
     // if the object were mutated afterwards.
     e.aliases.push('Front Hold')
     expect(searchHaystack(e)).toBe(first)
+  })
+})
+
+describe('isShownNow (no equipment for now, owner 2026-09-28)', () => {
+  it('shows bodyweight library moves and ones that list no equipment', () => {
+    expect(isShownNow(exercise({ id: 'lib.Pushups', name: 'Pushups' }))).toBe(true)
+    expect(isShownNow(exercise({ id: 'lib.Cat_Stretch', name: 'Cat Stretch', taxonomy: { category: 'stretching', equipment: [], primaryMuscles: [] } }))).toBe(true)
+  })
+
+  it('hides library moves that need equipment, including "other"', () => {
+    for (const equipment of [['dumbbell'], ['bands'], ['exercise ball'], ['foam roll'], ['kettlebells'], ['other']]) {
+      expect(isShownNow(exercise({ id: 'lib.X', name: 'X', taxonomy: { category: 'strength', equipment, primaryMuscles: [] } }))).toBe(false)
+    }
+  })
+
+  it('hides bodyweight library moves whose steps need a prop', () => {
+    expect(isShownNow(exercise({ id: 'lib.Chin-Up', name: 'Chin-Up' }))).toBe(false)
+    expect(isShownNow(exercise({ id: 'lib.Decline_Push-Up', name: 'Decline Push-Up' }))).toBe(false)
+  })
+
+  it("always shows curated and Rae's own moves (a chair counts as home)", () => {
+    expect(isShownNow(exercise({ id: 'fs.bodyweight-squat', name: 'Bodyweight Squat' }))).toBe(true)
+    expect(isShownNow(exercise({ id: 'rae.seated-march', name: 'Seated March', taxonomy: { category: 'strength', equipment: ['other'], primaryMuscles: [] } }))).toBe(true)
+  })
+
+  it('offers no equipment filter while only no-equipment moves are shown', () => {
+    expect(EQUIPMENT_FILTER_OPTIONS).toEqual([])
   })
 })

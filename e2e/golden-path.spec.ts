@@ -101,13 +101,14 @@ test.describe('library and routines', () => {
     await expect(page.getByText(/\d+ exercises/).first()).toBeVisible()
 
     await page.getByPlaceholder('Search exercises').fill('squat')
+    // No equipment for now (owner, 2026-09-28): the library shows only moves
+    // that need nothing, so there is no equipment filter. Bodyweight Squat,
+    // Rae's Mini Squat and Chair Squat Tap, Freehand Jump Squat, and the two
+    // upstream squats that list no equipment (Sit Squats, Split Squats).
+    await expect(page.getByText('6 exercises')).toBeVisible()
     await page.getByRole('button', { name: /^Filters/ }).click()
-    await page.getByRole('button', { name: 'No equipment' }).click()
+    await expect(page.getByText('Equipment', { exact: true })).toBeHidden()
     await page.getByRole('button', { name: 'Done' }).click()
-    // Bodyweight Squat, Rae's Mini Squat, Freehand Jump Squat, and the two
-    // upstream squats that list no equipment at all (Sit Squats, Split
-    // Squats), which count as no equipment.
-    await expect(page.getByText('5 exercises')).toBeVisible()
     await expect(page.getByText('Split Squats')).toBeVisible()
 
     await page.getByRole('link', { name: /Bodyweight Squat/ }).first().click()
@@ -129,7 +130,10 @@ test.describe('library and routines', () => {
     await expect(page.getByRole('link', { name: /Leg Day/ })).toBeVisible()
   })
 
-  test('a weighted exercise gets a weight stepper and logs the load', async ({ page }) => {
+  // Weighted moves are hidden while the library is no-equipment only
+  // (NO_EQUIPMENT_ONLY in src/domain/content/library.ts). Weight logging
+  // itself is unchanged; re-enable this with the flag.
+  test.skip('a weighted exercise gets a weight stepper and logs the load', async ({ page }) => {
     await page.goto('/#/routines/new')
     await page.getByPlaceholder('Routine name').fill('Push Day')
     await page.getByRole('button', { name: '+ Add exercise' }).click()
