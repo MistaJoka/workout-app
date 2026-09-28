@@ -191,13 +191,13 @@ These are documented gaps, not permission for broad rewrites.
 Current session start persists the plan and start event as separate operations. A failure between them can leave a plan with no `SESSION_STARTED` event. Preferred future hardening: one Dexie transaction or an explicit recovery invariant.
 
 ### B. Rest extension durability
-The current `+15s` extension is UI-local and disappears on refresh. If the product promises exact rest recovery, represent extension durably (for example as an event) rather than component state.
+Done: `+15s` persists as a `REST_EXTENDED` event (`src/domain/session/sessionMachine.ts`), so the extended rest end survives refresh.
 
 ### C. Offline acceptance
-Current service-worker design exists, but actual network-disabled reload/execution must be tested.
+Partly done: `e2e/offline.spec.ts` does a real network-disabled reload and runs a full workout (Chromium only). Still missing: going offline mid-session, reloading and resuming.
 
 ### D. WebKit parity
-Phone-sized Chromium is not enough for an iPhone-first product. Add WebKit/iPhone-like execution to the release gate.
+Partly done: `npm run e2e:webkit` runs the journeys in WebKit (iPhone 13 profile) inside Playwright's Docker image. CI (`.github/workflows/ci.yml`) still runs Chromium only.
 
 ### E. Imported library size/media
 The generated catalog is large and remote library media may only become offline after first view. Curated workout media needed for guaranteed offline workouts should be pinned/precached explicitly.

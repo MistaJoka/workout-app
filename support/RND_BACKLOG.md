@@ -64,7 +64,7 @@ These documents define what needs to be proven; the focused corpora/assets below
 
 6. **Theme component-state matrix**
    - active/rest/completed/disabled/warning/success/focus/error states;
-   - Pixel Bloom + Savage Core;
+   - Pixel Bloom (the only theme; Savage Core retired 2026-09-26);
    - Full/Reduced/Off;
    - contrast/focus/touch review.
 

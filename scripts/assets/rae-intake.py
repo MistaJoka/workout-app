@@ -12,9 +12,20 @@ also pass the files explicitly, in batch order. For each image it:
 - adds or updates its strips.json entry, mapped to the library exercise;
 - rebuilds those loops and writes a QA sheet to content/rae-prompts/qa/.
 
+A redraw (`redraw-NNN`) keeps the strip's hand-tuned order, hold and stills
+when the frame count is unchanged, and writes the new art as the next source
+version (-v2, -v3...) so the old art stays on disk.
+
+Intake refuses images whose SHA-256 is already in strips.json (the usual
+cause: the new batch wasn't downloaded, so the previous one was picked up)
+and warns when the images are older than the prompt paste. --force takes
+them in anyway.
+
 Usage:
   rae-intake.py 001                      # newest -1..-N group in Downloads
   rae-intake.py 001 img1.png img2.png    # explicit files, batch order
+  rae-intake.py 001 --dry-run            # show what would happen; write nothing
+  rae-intake.py 001 --force              # take in images already seen
 """
 import hashlib
 import json
@@ -22,6 +33,7 @@ import re
 import shutil
 import subprocess
 import sys
+from datetime import datetime
 from pathlib import Path
 
 import numpy as np
@@ -64,35 +76,83 @@ def frame_ratio(path: Path) -> float:
     return w / lags[np.argmax(ac[lags])]
 
 
-def find_downloads(count: int) -> list[Path]:
-    groups: dict[str, dict[int, Path]] = {}
-    for p in DOWNLOADS.glob('ChatGPT Image *-*.png'):
-        m = re.match(r'(ChatGPT Image .+? \d\d_\d\d)_\d\d (AM|PM)-(\d+)\.png$', p.name)
+# ChatGPT names downloads 'ChatGPT Image Sep 26, 2026, 10_50_14 PM-1.png'.
+DOWNLOAD_NAME = re.compile(r'ChatGPT Image (.+?, \d{4}), (\d{1,2})_(\d\d)_(\d\d) (AM|PM)-(\d+)\.png$')
+# Images of one download land within seconds of each other; a batch can
+# still straddle a minute boundary, so group by gaps, not by minute.
+GROUP_GAP_S = 90
+
+
+def download_time(m: re.Match) -> datetime:
+    return datetime.strptime(f'{m.group(1)} {m.group(2)}:{m.group(3)}:{m.group(4)} {m.group(5)}',
+                             '%b %d, %Y %I:%M:%S %p')
+
+
+def group_downloads(names: list[Path], count: int) -> list[Path]:
+    found = []
+    for p in names:
+        m = DOWNLOAD_NAME.match(p.name)
         if m:
-            groups.setdefault(m.group(1) + m.group(2), {})[int(m.group(3))] = p
-    complete = [g for g in groups.values() if sorted(g) == list(range(1, count + 1))]
+            found.append((download_time(m), int(m.group(6)), p))
+    found.sort(key=lambda t: (t[0], t[1]))
+    # A new group starts at a time gap or when the -N numbering restarts.
+    groups: list[dict[int, Path]] = []
+    prev = None
+    for t, n, p in found:
+        if prev is None or (t - prev[0]).total_seconds() > GROUP_GAP_S or n <= prev[1]:
+            groups.append({})
+        groups[-1][n] = p
+        prev = (t, n)
+    complete = [g for g in groups if sorted(g) == list(range(1, count + 1))]
     if not complete:
         raise SystemExit(f'No group of ChatGPT downloads numbered -1..-{count} in {DOWNLOADS}. Pass the files explicitly.')
-    newest = max(complete, key=lambda g: max(p.stat().st_mtime for p in g.values()))
-    return [newest[i] for i in range(1, count + 1)]
+    return [complete[-1][i] for i in range(1, count + 1)]
+
+
+def find_downloads(count: int) -> list[Path]:
+    return group_downloads(list(DOWNLOADS.glob('ChatGPT Image *-*.png')), count)
+
+
+def next_source(slug: str, current: str) -> Path:
+    """library/<slug>-strip-vN.png, one version past the strip's current source."""
+    m = re.search(r'-v(\d+)\.png$', current)
+    return LIB_SRC / f'{slug}-strip-v{int(m.group(1)) + 1 if m else 2}.png'
 
 
 def main() -> None:
     if len(sys.argv) < 2:
         raise SystemExit(__doc__)
+    flags = {a for a in sys.argv[2:] if a.startswith('--')}
+    dry, force = '--dry-run' in flags, '--force' in flags
     arg = sys.argv[1]
     # 'redraw-001' takes in a redraw paste (rae-redraw-prompts.py); a bare
     # number is a library batch.
     batch_no = arg if arg.startswith('redraw-') else arg.zfill(3)
     batch_file = f'{batch_no}.json' if arg.startswith('redraw-') else f'batch-{batch_no}.json'
     items = json.loads((PROMPTS / batch_file).read_text())
-    files = [Path(p) for p in sys.argv[2:]] or find_downloads(len(items))
+    files = [Path(p) for p in sys.argv[2:] if not p.startswith('--')] or find_downloads(len(items))
     if len(files) != len(items):
         raise SystemExit(f'batch {batch_no} has {len(items)} exercises but {len(files)} images were given')
 
-    LIB_SRC.mkdir(parents=True, exist_ok=True)
     manifest = json.loads((SRC / 'strips.json').read_text())
     by_id = {s['id']: s for s in manifest}
+    # Guard against taking in the wrong images, which would silently attach
+    # old art to new exercises.
+    seen = {s['sha256']: s['id'] for s in manifest if s.get('sha256')}
+    hashes = [hashlib.sha256(f.read_bytes()).hexdigest() for f in files]
+    dupes = [f"{f.name} (already '{seen[h]}')" for f, h in zip(files, hashes) if h in seen]
+    if dupes and not force:
+        raise SystemExit('These images are already taken in:\n  ' + '\n  '.join(dupes) +
+                         '\nDownload the new batch first, or pass --force if this is on purpose.')
+    prompt_md = PROMPTS / batch_file.replace('.json', '.md')
+    stale = [f.name for f in files if prompt_md.exists() and f.stat().st_mtime < prompt_md.stat().st_mtime]
+    if stale and not force:
+        print(f'WARNING: {len(stale)} image(s) are older than {prompt_md.name}; they may be from an earlier paste:')
+        for name in stale:
+            print('  ', name)
+
+    if not dry:
+        LIB_SRC.mkdir(parents=True, exist_ok=True)
     built, warnings = [], []
     for item, f in zip(items, files):
         ratio = frame_ratio(f)
@@ -103,14 +163,17 @@ def main() -> None:
             frames = max(2, min(8, round(ratio + 0.35)))
             warnings.append(f"{item['n']}. {item['name']}: asked for {item['frames']} frames, "
                             f"the strip looks like {frames}; using {frames}. Check it on the QA sheet.")
-        dest = LIB_SRC / f"{item['slug']}-strip-v1.png"
-        shutil.copy2(f, dest)
+        old = by_id.get(item['slug'])
+        # New art for an existing strip goes to the next version; the old file stays.
+        dest = next_source(item['slug'], old['source']) if old else LIB_SRC / f"{item['slug']}-strip-v1.png"
+        if not dry:
+            shutil.copy2(f, dest)
         peak = 2 if frames >= 4 else (1 if frames == 2 else 0)
         entry = {
             'id': item['slug'],
             'name': item['name'],
             'source': f"library/{dest.name}",
-            'sha256': hashlib.sha256(dest.read_bytes()).hexdigest(),
+            'sha256': hashlib.sha256(f.read_bytes()).hexdigest(),
             'downloadedAs': f.name,
             'batch': f'library-{batch_no}',
             'frames': frames,
@@ -124,7 +187,10 @@ def main() -> None:
         }
         if item.get('redraw') and item['slug'] in by_id:
             # New art only: name, mapping, batch/group, featured and lean stay.
-            art = {k: entry[k] for k in ('source', 'sha256', 'downloadedAs', 'frames', 'anchor', 'order', 'hold', 'fps', 'stills')}
+            # Hand-tuned timing (order, hold, stills) stays unless the frame count changed.
+            keep_timing = by_id[item['slug']].get('frames') == frames
+            art = {k: entry[k] for k in ('source', 'sha256', 'downloadedAs', 'frames', 'anchor', 'fps')
+                   + (() if keep_timing else ('order', 'hold', 'stills'))}
             by_id[item['slug']].update(art)
             by_id[item['slug']].pop('redraw', None)
             by_id[item['slug']]['redrawnFrom'] = batch_no
@@ -134,7 +200,13 @@ def main() -> None:
             manifest.append(entry)
             by_id[item['slug']] = entry
         built.append(item['slug'])
+        print(f"{item['n']}. {item['name']} <- {f.name} -> {entry['source']} ({frames} frames)")
 
+    if dry:
+        print(f'dry run: {len(built)} strips; nothing written')
+        for w in warnings:
+            print('  check:', w)
+        return
     (SRC / 'strips.json').write_text(json.dumps(manifest, indent=2) + '\n')
     subprocess.run([sys.executable, str(ROOT / 'scripts/assets/build-rae-strips.py'), *built], check=True)
 

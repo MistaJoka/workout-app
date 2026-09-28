@@ -87,7 +87,7 @@ h2 {
   }
   /* Destructive confirm ("Yes, delete", "Erase everything"): accent fill
      with its own on-color token — never hardcoded white, which fails AA on
-     both themes' accents. */
+     the accent. */
   .btn-danger {
     @apply btn;
     color: var(--color-on-accent);

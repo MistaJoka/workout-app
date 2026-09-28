@@ -36,8 +36,8 @@ function normalizeEquipment(equipment: string | null): { equipment: string[]; wa
   if (!KNOWN_EQUIPMENT.has(equipment)) {
     throw new Error(`normalizeExercise: unrecognized equipment value "${equipment}" — extend KNOWN_EQUIPMENT or fix the source data`)
   }
-  // Matches this app's existing bodyweight-exercise convention (see
-  // src/domain/content/fixtures/placeholderPack.ts).
+  // Matches this app's bodyweight-exercise convention (see
+  // src/domain/content/fixtures/foundationStrengthStarter.ts).
   const normalized = equipment === 'body only' ? 'bodyweight' : equipment
   return { equipment: [normalized], warning: null }
 }

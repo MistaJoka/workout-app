@@ -143,8 +143,8 @@ Primary references were reviewed for:
 - browser storage is durable but can fail/be evicted, so export and write-failure behavior are core reliability concerns;
 - wake lock/audio/motion are progressive enhancement and may fail without breaking workout truth;
 - current session startup has a documented atomicity risk (plan write then start-event write);
-- current `+15s` rest extension is UI-local and not exact-recovery durable;
-- current two-frame movement crossfade is a temporary fallback, not the final Pixel Bloom exercise-animation system;
+- current `+15s` rest extension is UI-local and not exact-recovery durable (since fixed: durable `REST_EXTENDED` event);
+- current two-frame movement crossfade is a temporary fallback, not the final Pixel Bloom exercise-animation system (since superseded by Rae drawn-frame loops where one exists; photos remain the fallback);
 - runtime Pixel Bloom should prefer SVG/CSS for UI motion and controlled frames/sprites/animated WebP for character/exercise motion, with GIF primarily for preview/small intentional loops;
 - local profiles are not authentication and export files should be treated as sensitive data.
 

@@ -21,7 +21,7 @@ The repository is a functional v0.7 foundation/product, not a UI-less prototype.
 - Full / Reduced / Off motion preferences;
 - unit/infrastructure tests, phone-viewport Playwright E2E and GitHub Actions CI.
 
-Pixel Bloom creative production is in progress. The functional frontend currently uses the shared semantic theme foundation plus temporary/legacy exercise media while approved mascot/world/exercise animation assets are produced and integrated.
+Pixel Bloom creative production is in progress. Rae, the Pixel Bloom avatar, demonstrates exercises as drawn-frame loops (`docs/RAE_EXERCISE_ANIMATION.md`); moves she doesn't demo yet fall back to free-exercise-db photos. More loops arrive in owner-pasted batches (`content/rae-prompts/`).
 
 ## Start here
 
@@ -103,9 +103,8 @@ Missing product truth belongs in `support/CLAUDE_REQUESTS.md`; implementation ag
 
 ## Current high-value hardening work
 
-- add WebKit/iPhone-like Playwright project;
-- prove real network-disabled offline relaunch/execution;
+- run the WebKit journeys (`npm run e2e:webkit`) in CI, not only locally;
+- extend the offline journey to going offline mid-session and resuming;
 - harden session-start atomicity;
-- make user-visible rest extensions durable if exact recovery is promised;
 - expand export/import corruption tests;
 - integrate approved Pixel Bloom assets/animation in controlled batches.

@@ -56,6 +56,6 @@ The creative manifest defines 30 workout-cover targets, 25 P0 exercise-media tar
 - canonical content is not silently overwritten;
 - imported provenance remains inspectable;
 - offline workout flow remains functional;
-- both themes preserve behavior;
+- the theme preserves behavior (Pixel Bloom is the only theme since 2026-09-26);
 - missing raster assets degrade through documented fallback paths;
 - active `SessionPlan` immutability and explicit progression confirmation remain intact.
