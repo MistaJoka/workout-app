@@ -37,6 +37,10 @@ export function applyEvent(plan: SessionPlan, state: SessionState, event: Sessio
       return { ...state, status: 'ACTIVE', appliedEventIds }
 
     case 'SET_COMPLETED': {
+      // Only a set being worked on can complete. Each tap mints a fresh
+      // event id, so a stray second tap that lands mid-rest (or after the
+      // end) must be recorded but must not skip the next set.
+      if (state.status !== 'ACTIVE') return { ...state, appliedEventIds }
       const next = nextPointer(plan, state.currentExerciseIndex, state.currentSetNumber)
       if (next === null) {
         return { ...state, status: 'COMPLETED', restStartedAt: null, restEndsAt: null, appliedEventIds }
