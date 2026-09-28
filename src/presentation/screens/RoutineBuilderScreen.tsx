@@ -389,15 +389,16 @@ function ExercisePicker({
   return (
     <div className="p-4 pb-24 space-y-3">
       <h1 className="text-lg font-bold">Add exercise</h1>
+      <div className="sticky top-0 z-10 -mx-4 flex items-center gap-2 bg-bg px-4 py-2">
       <input
         type="search"
         autoFocus
         placeholder="Search exercises"
         value={query}
         onChange={(e) => setQuery(e.target.value)}
-        className="input"
+        className="input min-w-0 flex-1"
       />
-      <FilterSheet activeCount={[muscle, equipment].filter(Boolean).length} triggerBottomClassName="bottom-40">
+      <FilterSheet inline activeCount={[muscle, equipment].filter(Boolean).length}>
         <div className="space-y-2">
           <p className="text-sm font-semibold text-ink-muted">Muscle</p>
           <div className="flex gap-2 overflow-x-auto pb-1">
@@ -421,6 +422,7 @@ function ExercisePicker({
           </div>
         )}
       </FilterSheet>
+      </div>
       {library === null && !loadFailed && <p className="text-ink-muted">Loading library…</p>}
       {loadFailed && <p className="text-ink-muted">Couldn't load the library. Check back when you're online.</p>}
       <ul className="space-y-2">
