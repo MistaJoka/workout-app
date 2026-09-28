@@ -35,8 +35,8 @@ export function raeLoopForExercise(exerciseId: string | undefined): RaeLoop | un
 }
 
 // One representative still (the move's peak key frame) for list thumbnails,
-// or null so the caller falls back to the exercise photo. Featured loops'
-// stills are precached by the service worker; the rest are cached once seen.
+// or null so the caller falls back to the exercise photo. Featured loops are
+// precached by the service worker; other loops and stills are cached once seen.
 export function raeStillFor(exerciseId: string | undefined): { src: string; alt: string } | null {
   const loop = raeLoopForExercise(exerciseId)
   if (!loop) return null

@@ -158,8 +158,7 @@ function Stat({ value, label }: { value: number; label: string }) {
   )
 }
 
-// Inline SVG, no chart library; colors come from the theme's CSS variables
-// so both themes render it without duplicated logic.
+// Inline SVG, no chart library; colors come from the theme's CSS variables.
 function WeekBars({ weeks }: { weeks: WeekTotal[] }) {
   const width = 320
   const height = 72

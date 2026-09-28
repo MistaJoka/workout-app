@@ -28,3 +28,15 @@ function moved(before: SessionState, after: SessionState): boolean {
     before.currentSetNumber !== after.currentSetNumber
   )
 }
+
+// The SET_COMPLETED events that counted, in order, for one session's
+// events. Sessions stored without a SESSION_STARTED (hand-built history)
+// can't be replayed, so their sets are taken as recorded.
+export function effectiveSets(plan: SessionPlan, sessionEvents: readonly SessionEvent[]): SessionEvent[] {
+  const ordered = [...sessionEvents].sort(
+    (a, b) => (a.seq ?? 0) - (b.seq ?? 0) || a.timestamp.localeCompare(b.timestamp)
+  )
+  const replayable = ordered.some((e) => e.type === 'SESSION_STARTED')
+  const kept = replayable ? withoutIneffectiveSets(plan, ordered) : ordered
+  return kept.filter((e) => e.type === 'SET_COMPLETED')
+}

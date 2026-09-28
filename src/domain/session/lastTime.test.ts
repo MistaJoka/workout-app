@@ -71,3 +71,29 @@ describe('summarizeLastTime', () => {
     expect(summarizeLastTime(plans, results, events, 'ex')).toBe('Last time: 12 ✗')
   })
 })
+
+describe('summarizeLastTime with stray sets', () => {
+  it('ignores a stray tap stored mid-rest', () => {
+    const ev = (seq: number, type: SessionEvent['type'], payload: Record<string, unknown> = {}): SessionEvent => ({
+      seq,
+      eventId: `s1-${seq}`,
+      sessionId: 's1',
+      type,
+      timestamp: `2026-09-18T00:00:${String(seq).padStart(2, '0')}.000Z`,
+      payload,
+    })
+    const summary = summarizeLastTime(
+      [plan('s1', [{ reps: 10 }])],
+      [result('s1', '2026-09-18T10:00:00.000Z')],
+      [
+        ev(1, 'SESSION_STARTED'),
+        ev(2, 'SET_COMPLETED', { exerciseId: 'ex', met: true }),
+        ev(3, 'SET_COMPLETED', { exerciseId: 'ex', met: false }),
+        ev(4, 'REST_SKIPPED'),
+        ev(5, 'SET_COMPLETED', { exerciseId: 'ex', met: true }),
+      ],
+      'ex'
+    )
+    expect(summary).toBe('Last time: 10 · 10 ✓')
+  })
+})

@@ -1,4 +1,5 @@
 import type { SessionEvent, SessionPlan, SessionResult } from './types'
+import { effectiveSets } from './appliedEvents'
 
 // One-line summary of the most recent completed session that actually
 // performed this exercise, e.g. "Last time: 10 · 10 ✓" (all sets met),
@@ -20,9 +21,10 @@ export function summarizeLastTime(
     const exercise = plan?.exercises.find((e) => e.exerciseId === exerciseId)
     if (!plan || !exercise) continue
 
-    const sets = events
-      .filter((e) => e.sessionId === result.sessionId && e.type === 'SET_COMPLETED' && e.payload.exerciseId === exerciseId)
-      .sort((a, b) => (a.seq ?? 0) - (b.seq ?? 0))
+    const sets = effectiveSets(
+      plan,
+      events.filter((e) => e.sessionId === result.sessionId)
+    ).filter((e) => e.payload.exerciseId === exerciseId)
     if (sets.length === 0) continue
 
     if (exercise.reps == null) {

@@ -95,6 +95,7 @@ Placement rules (owner-approved button pass, 2026-09-26):
 - Every screen outside the tab bar has a way out (`components/BackButton.tsx`, falls back to Today on a deep link) — a home-screen PWA has no browser back.
 - Fixed bottom action bars use `components/ThumbBar.tsx`: it ignores taps for 700ms whenever its content changes, so a double tap can't land on the button that replaced the first one. Give it an `armKey` that changes with the bar's content. E2E helpers wait for `[data-armed="true"]`.
 - Rare/destructive actions (Pause, End workout, Erase everything) stay out of the thumb bar. Profile switching lives in Settings, not a corner of every screen.
+- Destructive or data-changing confirmations use `components/ConfirmSheet.tsx` (in-page, never `window.confirm`). Ending a workout early asks first, is also offered from Pause, and lands on Complete so a pending next-level offer still shows.
 
 ## Platform quality rules
 
@@ -107,7 +108,8 @@ Placement rules (owner-approved button pass, 2026-09-26):
 
 ## Gotchas
 
-- `public/sw.js`: bump `CACHE_NAME` whenever anything in `SHELL_URLS` changes (including `manifest.json`). Library photos live in the separate long-lived `MEDIA_CACHE_NAME`; never put long-lived media in the versioned shell cache.
+- `public/sw.js` is stamped at build time (`sw-build-manifest` plugin in `vite.config.ts`): the shell cache is named per build and every built chunk is precached, so there is no manual `CACHE_NAME` bump. Rae loop and still URLs carry `?v=<content hash>` from `loops.json`, so a redraw is a new URL; long-lived media stays in the media cache, never the shell cache. After changing Rae art without the sources, `npm run rae:build -- --index-only` refreshes the versions.
+- Backup import merges into the active profile (new eventIds only, never overwriting plans/results), after an in-page confirmation, then reloads. Exports carry the profile.
 - Playwright: a hash-only `goto` does not reload the document; bounce via `about:blank` for a fresh load. Player buttons are briefly `disabled` while an action persists — drive workouts with short-timeout force clicks in a loop (`e2e/helpers.ts`).
 - `.claude/` is gitignored and excluded from vitest. Never `git add -A` with a fork worktree present.
 - Settings hooks (`useWeightUnit`, `useFeedbackSettings`) are seeded from module-level caches; a profile switch reloads the page, which is what makes those caches safe. The motion setting has no cache and starts as `full` until the stored value loads.

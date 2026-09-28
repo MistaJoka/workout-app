@@ -82,3 +82,34 @@ describe('projectSetRecords', () => {
     expect(records[0].met).toBe(true)
   })
 })
+
+describe('projectSetRecords with stray sets', () => {
+  it('a stray tap stored mid-rest does not shift later sets into the wrong slot', () => {
+    const ev = (seq: number, type: SessionEvent['type'], payload: Record<string, unknown> = {}): SessionEvent => ({
+      seq,
+      eventId: `s1-${seq}`,
+      sessionId: 's1',
+      type,
+      timestamp: `2026-09-01T00:00:${String(seq).padStart(2, '0')}.000Z`,
+      payload,
+    })
+    const records = projectSetRecords(
+      [plan('s1', [squat, plank])],
+      [result('s1', '2026-09-02T10:00:00.000Z')],
+      [
+        ev(1, 'SESSION_STARTED'),
+        ev(2, 'SET_COMPLETED', { exerciseId: 'squat', met: true }),
+        ev(3, 'SET_COMPLETED', { exerciseId: 'squat', met: false }), // stray, during rest
+        ev(4, 'REST_SKIPPED'),
+        ev(5, 'SET_COMPLETED', { exerciseId: 'squat', met: true }),
+        ev(6, 'REST_SKIPPED'),
+        ev(7, 'SET_COMPLETED', { exerciseId: 'plank' }),
+      ]
+    )
+    expect(records.map((r) => [r.exerciseId, r.setNumber, r.met])).toEqual([
+      ['squat', 1, true],
+      ['squat', 2, true],
+      ['plank', 1, true],
+    ])
+  })
+})
