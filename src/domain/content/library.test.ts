@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest'
-import { filterExercises, searchHaystack } from './library'
+import { equipmentOf, filterExercises, searchHaystack } from './library'
 import type { Exercise } from './types'
 
 function exercise(overrides: Partial<Exercise> & { id: string; name: string }): Exercise {
@@ -40,6 +40,14 @@ describe('filterExercises', () => {
     expect(filterExercises(all, { equipment: 'barbell' }).map((e) => e.id)).toEqual(['b'])
     expect(filterExercises(all, { level: 'beginner' }).map((e) => e.id)).toEqual(['a', 'c'])
     expect(filterExercises(all, { level: 'beginner', equipment: 'cable' }).map((e) => e.id)).toEqual(['c'])
+  })
+
+  it('counts an exercise with no listed equipment (upstream stretches) as no equipment, but not "other"', () => {
+    const stretch = exercise({ id: 's', name: "Child's Pose", taxonomy: { category: 'stretching', equipment: [], level: 'beginner' } })
+    const chair = exercise({ id: 'o', name: 'Chair Stretch', taxonomy: { category: 'stretching', equipment: ['other'], level: 'beginner' } })
+    expect(filterExercises([...all, stretch, chair], { equipment: 'bodyweight' }).map((e) => e.id)).toEqual(['a', 's'])
+    expect(equipmentOf(stretch)).toEqual(['bodyweight'])
+    expect(equipmentOf(chair)).toEqual(['other'])
   })
 
   it('returns everything for empty filters', () => {
