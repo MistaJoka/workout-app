@@ -55,7 +55,7 @@ Use this mailbox when implementation reaches a product/data/spec/asset/test gap 
 **Status:** PARTIALLY RESOLVED — Savage Core is out of scope: built 2026-09-26, then removed the same day by owner decision (Pixel Bloom is the only theme; no theme picker). Pixel Bloom tokens remain the v0 candidate palette; its art integration stays open.
 **Blocking:** no
 **Implementation context:** reconciliation step 12 (shared semantic theme engine), §11 of SOURCE_OF_TRUTH_V06.md
-**Need:** actual design tokens (color values, typography scale, spacing, motion durations/easing for full/reduced/off) for both themes — §11 only gives a narrative description ("pastel foundations," "near-black/graphite surfaces," "electric accents").
+**Need:** actual design tokens (color values, typography scale, spacing, motion durations/easing for full/reduced/off) for Pixel Bloom, the only theme (originally asked for both themes) — §11 only gives a narrative description ("pastel foundations," "near-black/graphite surfaces," "electric accents").
 **Why it matters:** without concrete values I'd be inventing the visual design myself. That's acceptable as a placeholder (the human owner already said an ugly-but-functional app is fine for now) but not as the final "first-class theme" the source of truth describes.
 **Requested output:** data (token set) — a design-tokens JSON/TS file per theme is ideal, referencing RND_BACKLOG.md P1 #5 and P0 #4 (theme component-state matrix)
 **Constraints already known:** one shared component tree, themes control semantic tokens only, exercise content/behavior does not change by theme, must respect `prefers-reduced-motion`.
@@ -67,11 +67,11 @@ Use this mailbox when implementation reaches a product/data/spec/asset/test gap 
 **Blocking:** no (the app runs fine on the existing generated library until this is resolved; `npm run generate:library` will refuse to run once a checklist exists but has nothing checked, so this only blocks a *future* regeneration, not current behavior)
 **Implementation context:** `scripts/content/list-library-candidates.ts` (generates `content/staging/library-curation-checklist.md`), `scripts/content/curationChecklist.ts` (parses it), `scripts/content/generate-library.ts` (consumes it, refuses to run on an empty checklist)
 **Need:** a human to open `content/staging/library-curation-checklist.md` and check every exercise that's appropriate to ship, then run `npm run generate:library`.
-**Why it matters:** the app's second real user is 300 lb, 36F, with right ankle pronation and occasional joint achiness, and wants an introductory/caring/supportive experience — not a wall of 871 exercises including barbell/olympic-lifting/plyometric content. `CLAUDE.md` explicitly forbids inventing exercise equivalence edges or safety rules, so deciding which of the ~399 pre-filtered candidates are actually appropriate for her body is a real human judgment, not something to infer from metadata.
+**Why it matters:** the app's second real user is 300 lb, 36F, with right ankle pronation and occasional joint achiness, and wants an introductory/caring/supportive experience — not a wall of 871 exercises including barbell/olympic-lifting/plyometric content. `CLAUDE.md` explicitly forbids inventing exercise equivalence edges or safety rules, so deciding which upstream exercises are actually appropriate for her body is a real human judgment, not something to infer from metadata.
 **This is specifically an owner task, not a ChatGPT support-agent task.** Per `CLAUDE.md`'s support-agent boundary, ChatGPT is the R&D/spec/data/asset layer — but this isn't a data-gathering gap, it's a safety judgment about a real person's actual body, so it should not be delegated to any AI, ChatGPT included.
 **Requested output:** decision (checked boxes in the checklist file, committed)
-**Constraints already known:** the pre-filter (`level=beginner`, excludes plyometrics/powerlifting/olympic weightlifting/strongman categories, barbell/e-z-curl-bar equipment, and isolation-mechanic exercises) only narrows what's shown for review (199 of 871 as of 2026-09-26) — loosen it and re-run `npm run library:review` if something outside it should be considered too. Checking a box is the only thing that adds an exercise to the shipped library.
-**Proposed fallback if unresolved:** none — the previously-generated `libraryExercises.json` (871 exercises) keeps shipping until this is resolved; nothing regressed by leaving this open.
+**Constraints already known:** superseded by the owner rule in the status line — the checklist lists all 871 upstream records with no pre-filter (the earlier `level=beginner` pre-filter that showed 199 is gone). Checking a box is the only thing that adds an exercise to the shipped library.
+**Proposed fallback if unresolved:** n/a — resolved; the 304-exercise home library ships.
 
 ## REQ-20260926-002 — Redraw two Rae exercise strips
 
@@ -89,7 +89,7 @@ Use this mailbox when implementation reaches a product/data/spec/asset/test gap 
 
 **Status:** OPEN
 **Blocking:** no (the moves ship as provenance 'draft')
-**Implementation context:** `src/domain/content/fixtures/raeChairMoves.ts`, strips in `assets/pixel-bloom/character/rae/source/exercise/strips.json` (batch `chair-moves`)
+**Implementation context:** `src/domain/content/fixtures/raeMoves.ts`, strips in `assets/pixel-bloom/character/rae/source/exercise/strips.json` (batch `chair-moves`)
 **Need:**
 1. Review the setup and steps of the 7 chair sit-to-stand moves the owner added on 2026-09-26. Claude Code drafted them to describe the drawings; they are not from a reviewed source. Add cues and common errors if appropriate.
 2. ~~Near-duplicate pairs~~. Decided by the owner on 2026-09-26: Hands Clasped and Hands on Thighs are retired (unlisted but still resolvable); Arms Crossed and Push Off Knees stay.
@@ -109,6 +109,19 @@ Use this mailbox when implementation reaches a product/data/spec/asset/test gap 
 3. The 14-move sheet `ChatGPT Image Sep 26, 2026, 11_42_00 PM.png` (bike, treadmill, cable, lat pulldown, dumbbell moves) has the same off-model look and was not imported. Most of its equipment is outside the 304-move home library.
 4. Review the drafted step text for the 8 moves, as in REQ-20260926-003.
 **Proposed fallback if unresolved:** keep the current off-model loops.
+
+## REQ-20260928-005 — Rae prompt canon alignment (record) and three batch-002 moves
+
+**Status:** OPEN (item 3 only; items 1–2 are a record)
+**Blocking:** no
+**Implementation context:** `scripts/assets/rae_canon.py`, `scripts/assets/rae-prompts.py`, `scripts/assets/rae-redraw-prompts.py`, `content/rae-prompts/`
+**Need:**
+1. *Record.* The Rae prompts did not open with the contract's identity preamble (`docs/RAE_AI_GENERATION_CONTRACT.md` §2) and got canon wrong in two places: the redraw paste said "black 4C hair (NOT an afro puff)", but the lock's hair silhouette is `voluminous-natural-updo-puff-with-tight-coils-and-selected-tendrils`; both pastes asked for "white socks", which neither the lock nor the bible specifies. Both scripts now open with the §2 preamble (hair per the lock) plus a short §3 forbidden list, from `rae_canon.py`. Pending pastes (batch 002–037, redraw 001–002) were rewritten in place with the same numbers and exercises; batch 001 (taken in) was left alone. "Off-model" in REQ-20260927-004 means drift from the bible raster (a round afro silhouette, headband ears, arm tattoos), not the canonical updo/puff.
+2. *Record.* Every Rae exercise loop in the app is `review` status in `asset-db.json`, not `approved`, and the 13 chair/low-impact loops carry known identity defects (tattoo location/count). They ship on the owner's explicit "use them for now" (REQ-20260926-003, REQ-20260927-004), pending the redraw pastes. This is an owner exception to the QA gate, not an approval.
+3. *Decision.* Batch 002 includes `lib.Chin-Up` (needs a pull-up bar) and two `Decline_*` moves (need a decline bench). The home-friendly rule checks them because they're bodyweight. Keep them in the library and draw them, or untick them in the curation checklist before batch 002 is pasted?
+**Requested output:** decision (item 3)
+**Constraints already known:** the owner's home-friendly rule is equipment-based; bar/bench needs aren't in the upstream equipment field.
+**Proposed fallback if unresolved:** keep them; batch 002 is drawn as written.
 
 ## Template
 

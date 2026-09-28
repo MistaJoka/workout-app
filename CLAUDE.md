@@ -110,7 +110,7 @@ Placement rules (owner-approved button pass, 2026-09-26):
 - `public/sw.js`: bump `CACHE_NAME` whenever anything in `SHELL_URLS` changes (including `manifest.json`). Library photos live in the separate long-lived `MEDIA_CACHE_NAME`; never put long-lived media in the versioned shell cache.
 - Playwright: a hash-only `goto` does not reload the document; bounce via `about:blank` for a fresh load. Player buttons are briefly `disabled` while an action persists — drive workouts with short-timeout force clicks in a loop (`e2e/helpers.ts`).
 - `.claude/` is gitignored and excluded from vitest. Never `git add -A` with a fork worktree present.
-- Settings hooks (`useWeightUnit`, `useFeedbackSettings`, theme) are seeded from module/localStorage caches; a profile switch reloads the page, which is what makes those caches safe.
+- Settings hooks (`useWeightUnit`, `useFeedbackSettings`) are seeded from module-level caches; a profile switch reloads the page, which is what makes those caches safe. The motion setting has no cache and starts as `full` until the stored value loads.
 
 ## Creative/frontend boundary
 

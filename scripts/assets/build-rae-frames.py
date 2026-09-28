@@ -46,8 +46,8 @@ def split_frames(fg: np.ndarray, expected: int) -> list[tuple[slice, slice]]:
     big = [i + 1 for i in np.argsort(sizes)[::-1][:expected]]
     boxes = [nd.find_objects((labels == i).astype(int))[0] for i in big]
     boxes.sort(key=lambda s: s[1].start)
-    # Pull in small detached bits (hair curls, ear tips) whose box lies
-    # within a frame's horizontal span.
+    # Only the `expected` largest blobs are kept; small detached bits (hair
+    # curls, ear tips) outside them are dropped, not merged back in.
     return boxes
 
 

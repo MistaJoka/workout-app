@@ -15,11 +15,16 @@ Usage:
   rae-prompts.py --force      # rewrite and renumber every batch
   rae-prompts.py --from N     # keep batches 1..N-1 as they are; re-plan N onward
                               # (e.g. after the library changes)
+  rae-prompts.py --refresh    # rewrite the paste text of batches not yet taken in,
+                              # keeping their numbers and exercises (e.g. after the
+                              # header changes)
 """
 import json
 import re
 import sys
 from pathlib import Path
+
+from rae_canon import AVOID, PREAMBLE
 
 ROOT = Path(__file__).resolve().parents[2]
 LIBRARY = ROOT / 'src/domain/content/generated/libraryExercises.json'
@@ -47,7 +52,9 @@ PROPS = {
 
 FRONT_VIEW = re.compile(r'lateral|side (lunge|bend|raise|to side)|jumping jack|jack|shrug|fly|flye|butterfly|windmill|arm circle', re.I)
 
-HEADER = """Using the approved Rae v1 character bible exactly (same face, black 4C hair, two bunny ears, glasses, lotus tattoo on her anatomical left, A necklace, pink top, lavender leggings, white socks, black-and-white sneakers, same palette and pixel style as the exercise strips you already made), draw **{n} separate images, one per exercise below, in this exact order**. Each image is one exercise animation strip:
+HEADER = PREAMBLE + ' ' + AVOID + """
+
+Keep the same palette and pixel style as the exercise strips you already made. Draw **{n} separate images, one per exercise below, in this exact order**. Each image is one exercise animation strip:
 - One row of frames, evenly spaced left to right, on flat #FF00FF magenta. No text, labels, borders, floor, mat or shadows.
 - Same scale, same camera, same floor line in every frame. Whatever touches the floor (feet, hands, back) stays in the exact same spot in every frame.
 - Use the view named for each exercise. "Side view" means true side profile facing screen-left.
@@ -69,8 +76,49 @@ def plan(e: dict) -> tuple[int, str]:
     return 4, '1) start position, 2) halfway, 3) end of the movement (peak), 4) halfway back'
 
 
+def write_batch(n: int, last: int, batch: list[dict]) -> None:
+    md = [f'# Rae batch {n:03d} of {last}\n', 'Paste everything below the line into the Rae chat, then download all images at once.\n', '---\n',
+          HEADER.format(n=len(batch))]
+    items = []
+    for k, e in enumerate(batch, 1):
+        frames, shows = plan(e)
+        eq = [q for q in (e['taxonomy'].get('equipment') or []) if q not in ('bodyweight', 'none')]
+        props = ', '.join(PROPS.get(q, q) for q in eq) or 'none'
+        view = 'Front view' if FRONT_VIEW.search(e['name']) else 'Side view'
+        steps = ' '.join([e.get('setup') or '', *e.get('executionPhases', [])]).strip()
+        md.append(f"**{k}. {e['name']}** ({view}, {frames} frames; equipment: {props})\n"
+                  f"Frames: {shows}.\nSteps: {steps}\n")
+        items.append({'n': k, 'exerciseId': e['id'], 'slug': slug(e['id']), 'name': e['name'],
+                      'frames': frames, 'view': view})
+    (OUT / f'batch-{n:03d}.md').write_text('\n'.join(md))
+    (OUT / f'batch-{n:03d}.json').write_text(json.dumps(items, indent=2) + '\n')
+
+
+def refresh(library: list[dict]) -> None:
+    """Rewrite pending batches' text in place: same numbers, same exercises."""
+    taken = {s.get('batch') for s in json.loads(STRIPS.read_text())}
+    by_id = {e['id']: e for e in library}
+    files = sorted(OUT.glob('batch-*.json'))
+    last = max(int(f.stem.split('-')[1]) for f in files)
+    done = []
+    for f in files:
+        n = int(f.stem.split('-')[1])
+        if f'library-{n:03d}' in taken:
+            continue
+        items = json.loads(f.read_text())
+        missing = [i['exerciseId'] for i in items if i['exerciseId'] not in by_id]
+        if missing:
+            raise SystemExit(f'batch {n:03d}: {missing} left the library; re-plan with --from {n}')
+        write_batch(n, last, [by_id[i['exerciseId']] for i in items])
+        done.append(n)
+    print(f'refreshed {len(done)} pending batches ({done[0]:03d}-{done[-1]:03d}); batches already taken in were left alone')
+
+
 def main() -> None:
     library = json.loads(LIBRARY.read_text())
+    if '--refresh' in sys.argv:
+        refresh(library)
+        return
     covered = {i for s in json.loads(STRIPS.read_text()) for i in s.get('exerciseIds', [])}
     start = 1
     if '--from' in sys.argv:
@@ -100,21 +148,7 @@ def main() -> None:
     batches = [todo[i:i + BATCH_SIZE] for i in range(0, len(todo), BATCH_SIZE)]
     last = start + len(batches) - 1
     for n, batch in enumerate(batches, start):
-        md = [f'# Rae batch {n:03d} of {last}\n', 'Paste everything below the line into the Rae chat, then download all images at once.\n', '---\n',
-              HEADER.format(n=len(batch))]
-        items = []
-        for k, e in enumerate(batch, 1):
-            frames, shows = plan(e)
-            eq = [q for q in (e['taxonomy'].get('equipment') or []) if q not in ('bodyweight', 'none')]
-            props = ', '.join(PROPS.get(q, q) for q in eq) or 'none'
-            view = 'Front view' if FRONT_VIEW.search(e['name']) else 'Side view'
-            steps = ' '.join([e.get('setup') or '', *e.get('executionPhases', [])]).strip()
-            md.append(f"**{k}. {e['name']}** ({view}, {frames} frames; equipment: {props})\n"
-                      f"Frames: {shows}.\nSteps: {steps}\n")
-            items.append({'n': k, 'exerciseId': e['id'], 'slug': slug(e['id']), 'name': e['name'],
-                          'frames': frames, 'view': view})
-        (OUT / f'batch-{n:03d}.md').write_text('\n'.join(md))
-        (OUT / f'batch-{n:03d}.json').write_text(json.dumps(items, indent=2) + '\n')
+        write_batch(n, last, batch)
     print(f'{len(todo)} exercises to draw in batches {start:03d}-{last:03d} (up to {BATCH_SIZE} each) -> {OUT.relative_to(ROOT)}')
 
 

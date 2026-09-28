@@ -17,17 +17,19 @@ Rejected, and why:
 
 ## Strip format (what ChatGPT draws)
 
-One image per exercise: one row of 3 to 6 frames, evenly spaced, on flat `#FF00FF`. Same scale, camera and floor line in every frame, and whatever touches the floor stays put. Side view facing screen-left, or front view for lateral moves. Equipment is drawn identically in every frame. Reps use 4 frames (start, halfway, peak, halfway back); holds and stretches use 3 (settle, breath, hold).
+One image per exercise: one row of 3 to 7 frames, evenly spaced, on flat `#FF00FF`. Same scale, camera and floor line in every frame, and whatever touches the floor stays put. Side view facing screen-left, or front view for lateral moves. Equipment is drawn identically in every frame. Reps use 4 frames (start, halfway, peak, halfway back); holds and stretches use 3 (settle, breath, hold).
 
 ## Pipeline
 
 | Step | Tool | Output |
 |---|---|---|
 | Prompts | `npm run rae:prompts` → `scripts/assets/rae-prompts.py` | `content/rae-prompts/batch-NNN.md` (paste) + `.json` (intake). There are 8 exercises per batch, each with its library steps, ordered by gentlest equipment. |
-| Intake | `npm run rae:intake -- NNN [files]` → `scripts/assets/rae-intake.py` | Takes the newest ChatGPT `-1..-N` download group in batch order. It confirms the frame count from the strip's repeat spacing (autocorrelation) and flags mismatches. It copies sources to `source/exercise/library/` (gitignored, SHA-256 in the manifest), updates `strips.json` and writes a QA sheet (`content/rae-prompts/qa/`). |
+| Intake | `npm run rae:intake -- NNN [files] [--dry-run] [--force]` → `scripts/assets/rae-intake.py` | Takes the newest ChatGPT `-1..-N` download group in batch order (grouped by download time, ≤ 90 s apart, so a batch may straddle a minute). It refuses images whose SHA-256 is already in `strips.json` (usually: the new batch wasn't downloaded) and warns when images predate the paste; `--force` overrides. It confirms the frame count from the strip's repeat spacing (autocorrelation) and flags mismatches. It copies sources to `source/exercise/library/` (gitignored, SHA-256 in the manifest), updates `strips.json` and writes a QA sheet (`content/rae-prompts/qa/`). |
 | Build | `npm run rae:build` → `scripts/assets/build-rae-strips.py` → `build-rae-frames.py` | Per strip: key magenta, place frames (`foot` = align on the planted toe; `grid` = frames keep their drawn slot position, each piece assigned by its centre, enclosed gaps stay transparent), centre on the first frame's body, fit a 264×360 box, share one 64-colour palette. Writes `public/rae/ex-<id>.webp` (loop), `ex-<id>-<n>.png` (stills) and `ex-<id>.json` (timing). |
 | Index | same | `public/rae/loops.json` + `src/presentation/components/raeLoops.generated.json` (id, name, size, stills, `exerciseIds`, `featured`, `group`) |
 | Asset DB | same | One `rae-ex-<id>-loop` record per loop in `assets/pixel-bloom/db/asset-db.json` (`assets` list). Existing records keep their status; new ones start at `review`. The notes carry the source, mapping, and any retired/redraw reason. |
+| Redraw | `npm run rae:redraw-prompts`, then `npm run rae:intake -- redraw-NNN` | Pastes for every strip flagged `redraw`. Numbers are stable: pending pastes are rewritten in place, new flags get new pastes. Intake swaps in the art only, as the next source version (`-v2`…), keeping hand-tuned order/hold/stills when the frame count is unchanged. |
+| Refresh text | `npm run rae:prompts -- --refresh` | Rewrites the paste text of batches not yet taken in (same numbers, same exercises), e.g. after the prompt header changes. Every paste opens with the contract's identity preamble (`scripts/assets/rae_canon.py`). |
 | Re-plan | `npm run rae:prompts -- --from N` | Keeps batches 1..N-1 as they are (pasted batches keep their numbers) and re-plans N onward, e.g. after the library changed (871 → 304 on 2026-09-27: batches 003–037). |
 
 `assets/pixel-bloom/character/rae/source/exercise/strips.json` is the single manifest. Per strip it records:
@@ -53,7 +55,7 @@ Keying: the ChatGPT background measures g ≤ 8 and r,b ≥ 244, so the key is t
 
 **Format decision:** the runtime uses animated WebP plus still PNGs, not the sprite sheet + JSON that `RAE_PRODUCTION_ASSET_PIPELINE.md` prefers. The player never needs to pause on or pick a frame: reduced motion shows fixed stills, and the loops are short. WebP is smaller and needs no player code. Featured strips still emit a sprite sheet and timing JSON, so a sheet-driven player remains possible.
 
-**Caching:** featured loops (the first 17, including every curated workout move) are precached by the service worker from `loops.json`. Library loops are cache-first in the long-lived media cache on first view, because precaching ~870 × ~130 KB is too much. Bump `CACHE_NAME` in `public/sw.js` when featured loops change.
+**Caching:** featured loops (30 as of 2026-09-27, including every curated workout move) are precached by the service worker from `loops.json`. Library loops are cache-first in the long-lived media cache on first view, because precaching the 304-exercise library's loops is too much. Bump `CACHE_NAME` in `public/sw.js` when featured loops change.
 
 ## Rae's own moves
 

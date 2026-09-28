@@ -1,6 +1,6 @@
 {
   "name": "workout-app",
-  "version": "0.6.0",
+  "version": "0.7.0",
   "private": true,
   "type": "module",
   "scripts": {
@@ -24,6 +24,9 @@
     "rae:prompts": "python3 scripts/assets/rae-prompts.py",
     "rae:intake": "python3 scripts/assets/rae-intake.py",
     "rae:build": "python3 scripts/assets/build-rae-strips.py",
+    "rae:redraw-prompts": "python3 scripts/assets/rae-redraw-prompts.py",
+    "rae:preview": "python3 scripts/assets/derive-rae-preview.py",
+    "rae:dump": "tsx scripts/assets/dump-exercises.ts",
     "routine:generate": "node scripts/content/generate-routine-intelligence.mjs",
     "routine:validate": "node scripts/content/validate-routine-intelligence.mjs"
   },

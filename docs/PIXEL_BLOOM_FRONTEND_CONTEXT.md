@@ -161,11 +161,11 @@ For each production exercise consider:
 - runtime loop;
 - static fallback.
 
-## 6. Current temporary workout-media behavior
+## 6. Current workout-media behavior
 
-The live `MovementMedia` currently alternates/crossfades start and finish photographs. Treat this as a valid temporary fallback, not the finished Pixel Bloom animation system.
+The live `MovementMedia` plays Rae's drawn-frame loop (animated WebP, stills under reduced/off motion) whenever one exists for the exercise — every curated move and a growing share of the library (`docs/RAE_EXERCISE_ANIMATION.md`). Exercises without a loop still crossfade their start and finish photographs, a valid temporary fallback.
 
-Migration path:
+Migration path (the last step is live for exercises with a Rae loop):
 
 ```text
 current start/finish crossfade
