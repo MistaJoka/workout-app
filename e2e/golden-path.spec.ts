@@ -2,20 +2,20 @@ import { expect, test } from '@playwright/test'
 import { dismissWelcome, finishWorkout } from './helpers'
 
 test.describe('golden path', () => {
-  test('first run: welcome, check-in, a full workout, and it shows up in Progress', async ({ page }) => {
+  test('first run: welcome, one-tap start, a full workout, and it shows up in Progress', async ({ page }) => {
     test.setTimeout(180_000) // ten sets with rests to skip
     await page.goto('/')
     await expect(page.getByText('Welcome')).toBeVisible()
     await page.getByRole('button', { name: 'Got it' }).click()
     await expect(page.getByText('Welcome')).toBeHidden()
 
-    // Today leads with one workout under Rae; check-in and the preview are
-    // one screen, with one Start.
+    // Today leads with one workout under Rae; the start screen shows what
+    // you're about to do and asks nothing: one tap starts.
     await expect(page.locator('.today-mission')).toContainText('Full-Body A')
     await page.getByRole('link', { name: 'Start workout' }).click()
-    await expect(page.getByText('How are you feeling?')).toBeVisible()
-    await expect(page.getByText('Bodyweight Squat')).toBeVisible()
-    await page.getByRole('radio', { name: '4' }).first().click()
+    await expect(page.getByRole('list', { name: 'Your workout' })).toContainText('Bodyweight Squat')
+    await expect(page.getByText(/\d+ moves, \d+ sets/)).toBeVisible()
+    await expect(page.getByRole('radio')).toHaveCount(0)
     await page.getByRole('button', { name: 'Start workout' }).click()
 
     // The player shows the movement and its steps, not just a name.
@@ -123,7 +123,7 @@ test.describe('library and routines', () => {
     await expect(page.getByText('4 × 10')).toBeVisible()
 
     await page.getByRole('link', { name: 'Start workout' }).click()
-    await expect(page.getByText('4 sets × 10 reps')).toBeVisible()
+    await expect(page.getByText('4 × 10 reps')).toBeVisible()
 
     await page.goto('/#/')
     await expect(page.getByText(/Your routine,/)).toBeVisible()

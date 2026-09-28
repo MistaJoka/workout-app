@@ -211,3 +211,14 @@ describe('readableId', () => {
     expect(readableId('lib.Close-Grip_Barbell_Bench_Press')).toBe('Close Grip Barbell Bench Press')
   })
 })
+
+describe('createSessionPlanFromTemplate without a check-in', () => {
+  it('builds the same prescription when nobody was asked, labelled with the rules actually used', () => {
+    const createdAt = '2026-09-28T00:00:00.000Z'
+    const asked = createSessionPlanFromTemplate({ id: 's', createdAt, template, exercises, checkIn, ruleVersion: 'x' })
+    const notAsked = createSessionPlanFromTemplate({ id: 's', createdAt, template, exercises })
+    expect(notAsked.exercises).toEqual(asked.exercises)
+    expect(notAsked.adaptations).toEqual(asked.adaptations)
+    expect(notAsked.ruleVersion).toBe('placeholder.retain-all')
+  })
+})

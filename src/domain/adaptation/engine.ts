@@ -7,9 +7,13 @@ import type { AdaptationRule, CheckInInput } from './types'
 // This exists only to prove the engine's seam (inject rules, get
 // reason-coded decisions back) works before real rule data is promoted
 // from the ChatGPT-side R&D reservoir into this repo.
+// The plan's ruleVersion names the rule set that produced it, so plans made
+// by these placeholder rules say so rather than claiming a real rule set.
+export const PLACEHOLDER_RULE_VERSION = 'placeholder.retain-all'
+
 export const PLACEHOLDER_RULES: AdaptationRule[] = [
   {
-    id: 'placeholder.retain-all',
+    id: PLACEHOLDER_RULE_VERSION,
     appliesWhen: () => true,
     decide: (exerciseId) => ({
       exerciseId,
@@ -21,7 +25,7 @@ export const PLACEHOLDER_RULES: AdaptationRule[] = [
 
 export function adaptTemplate(
   template: WorkoutTemplate,
-  checkIn: CheckInInput,
+  checkIn: CheckInInput | undefined,
   rules: AdaptationRule[] = PLACEHOLDER_RULES
 ): AdaptationDecision[] {
   return template.exercises.map((exercise) => {

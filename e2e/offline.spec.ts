@@ -28,10 +28,10 @@ test('a curated workout runs start to finish with the network off', async ({ pag
   await context.setOffline(true)
   await page.reload()
 
-  // Today, check-in and the player all render from the cache.
+  // Today, the start screen and the player all render from the cache.
   await expect(page.getByRole('link', { name: 'Start workout' })).toBeVisible()
   await page.getByRole('link', { name: 'Start workout' }).click()
-  await expect(page.getByText('How are you feeling?')).toBeVisible()
+  await expect(page.getByRole('list', { name: 'Your workout' })).toBeVisible()
   await page.getByRole('button', { name: 'Start workout' }).click()
   await expect(page.getByText(/Set 1 of/)).toBeVisible()
 
