@@ -19,21 +19,29 @@ export async function listAllTemplates(): Promise<{ curated: WorkoutTemplate[]; 
 // moves (which have no library record of their own).
 const curatedById: ReadonlyMap<string, Exercise> = new Map([...starterById, ...raeMoveById])
 
-let libraryPromise: Promise<Exercise[]> | null = null
+// Shares one in-flight/settled load, but forgets a rejected one: a failed
+// chunk load (offline, or an old build's hash gone after an update) must not
+// be replayed forever — the next call (e.g. a Retry button) loads again.
+export function memoizeUntilRejected<T>(load: () => Promise<T>): () => Promise<T> {
+  let promise: Promise<T> | null = null
+  return () => {
+    if (!promise) {
+      promise = load().catch((error: unknown) => {
+        promise = null
+        throw error
+      })
+    }
+    return promise
+  }
+}
 
 // The full library is loaded on demand so the Today/Workout paths never pay
 // for it; curated exercises resolve synchronously from the bundled pack.
-export function loadLibrary(): Promise<Exercise[]> {
-  if (!libraryPromise) {
-    // Rae's own moves lead the list so they are searchable and usable in
-    // the routine builder like any library exercise.
-    libraryPromise = import('./generated/libraryExercises.json').then((m) => [
-      ...listedRaeMoves,
-      ...(m.default as Exercise[]),
-    ])
-  }
-  return libraryPromise
-}
+// Rae's own moves lead the list so they are searchable and usable in the
+// routine builder like any library exercise.
+export const loadLibrary: () => Promise<Exercise[]> = memoizeUntilRejected(() =>
+  import('./generated/libraryExercises.json').then((m) => [...listedRaeMoves, ...(m.default as Exercise[])])
+)
 
 export async function getExercise(id: string): Promise<Exercise | undefined> {
   const curated = curatedById.get(id)
