@@ -1,4 +1,5 @@
-import type { ReactNode } from 'react'
+import { useRef, type ReactNode } from 'react'
+import { useSheetFocus } from './useSheetFocus'
 
 // An in-page yes/no for actions that can't be undone mid-flow (ending a
 // workout, leaving unsaved edits). A bottom sheet like FilterSheet and
@@ -24,9 +25,18 @@ export function ConfirmSheet({
   onConfirm: () => void
   onCancel: () => void
 }) {
+  const sheetRef = useRef<HTMLDivElement>(null)
+  const cancelRef = useRef<HTMLButtonElement>(null)
+  // Focus lands on the safe choice; Escape means "cancel" unless a
+  // confirm is already in flight.
+  useSheetFocus(sheetRef, () => {
+    if (!busy) onCancel()
+  }, { initialFocus: cancelRef })
+
   return (
     <div className="fixed inset-0 z-40 flex items-end bg-ink/40" onClick={busy ? undefined : onCancel}>
       <div
+        ref={sheetRef}
         className="w-full space-y-3 rounded-t-[var(--radius-panel)] bg-surface p-4 text-center"
         style={{ paddingBottom: 'calc(env(safe-area-inset-bottom) + 1.5rem)' }}
         onClick={(e) => e.stopPropagation()}
@@ -40,7 +50,7 @@ export function ConfirmSheet({
         <button type="button" className="btn-danger w-full" disabled={busy} onClick={onConfirm}>
           {confirmLabel}
         </button>
-        <button type="button" className="btn-primary btn-lg w-full" disabled={busy} onClick={onCancel}>
+        <button ref={cancelRef} type="button" className="btn-primary btn-lg w-full" disabled={busy} onClick={onCancel}>
           {cancelLabel}
         </button>
       </div>

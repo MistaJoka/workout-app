@@ -1,5 +1,6 @@
-import { useState } from 'react'
+import { useRef, useState } from 'react'
 import { createPortal } from 'react-dom'
+import { useSheetFocus } from './useSheetFocus'
 
 // Filter chips are tapped repeatedly while narrowing a list, unlike a
 // one-time search-input tap, so they live in a reachable bottom sheet
@@ -21,6 +22,8 @@ export function FilterSheet({
   inline?: boolean
 }) {
   const [open, setOpen] = useState(false)
+  const sheetRef = useRef<HTMLDivElement>(null)
+  useSheetFocus(sheetRef, () => setOpen(false), { enabled: open })
   const label = `Filters${activeCount > 0 ? ` (${activeCount})` : ''}`
 
   return (
@@ -41,7 +44,7 @@ export function FilterSheet({
         <button
           type="button"
           onClick={() => setOpen(true)}
-          className={`fixed ${triggerBottomClassName} right-4 z-20 rounded-full bg-field-primary px-4 py-2 text-sm font-bold shadow-lg`}
+          className={`fixed ${triggerBottomClassName} right-4 z-20 min-h-11 rounded-full bg-field-primary px-4 py-2 text-sm font-bold shadow-lg`}
         >
           {label}
         </button>
@@ -53,10 +56,12 @@ export function FilterSheet({
         createPortal(
           <div className="fixed inset-0 z-30 flex items-end bg-ink/40" onClick={() => setOpen(false)}>
             <div
+              ref={sheetRef}
               className="max-h-[75vh] w-full space-y-3 overflow-y-auto rounded-t-[var(--radius-panel)] bg-surface p-4"
               style={{ paddingBottom: 'calc(env(safe-area-inset-bottom) + 1.5rem)' }}
               onClick={(e) => e.stopPropagation()}
               role="dialog"
+              aria-modal="true"
               aria-label="Filters"
             >
               <p className="text-lg font-bold">Filters</p>

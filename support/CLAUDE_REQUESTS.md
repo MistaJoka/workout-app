@@ -128,6 +128,20 @@ Use this mailbox when implementation reaches a product/data/spec/asset/test gap 
 **Constraints already known:** the owner's home-friendly rule is equipment-based; bar/bench needs aren't in the upstream equipment field.
 **Proposed fallback if unresolved:** keep them; batch 002 is drawn as written.
 
+## REQ-20260929-006 — Review three draft workouts built from Rae's moves
+
+**Status:** OPEN (shipped as draft on the owner's "Go for all", 2026-09-29)
+**Blocking:** no
+**Implementation context:** `src/domain/content/fixtures/raeDraftTemplates.ts` (`DRAFT_TEMPLATE_IDS`), listed with the curated templates via `foundationStrengthStarterTemplates`; never in the A/B `ROTATION`.
+**Need:** confirm, change or drop each draft:
+1. **Warm-up** (`draft.warm-up`), 1 set each, 10 reps, 30s rest: Seated March, Seated Ankle Pumps, Hip Circles (prone), Mini Squat, Front Leg Raises.
+2. **Cool-down** (`draft.cool-down`), 1 set each, 10 reps, 30s rest: Seated Forward Reach, Seated Torso Rotation, 90/90 Hamstring.
+3. **Chair day** (`draft.chair-day`), 2 sets each, 10 reps, 45s rest: Chair Sit-to-Stand (Arms Forward), Seated Knee Extension, Chair Squat Tap, Chair-Supported Knee Lift, Seated March.
+**Why it matters:** SOURCE_OF_TRUTH_V07 §10 says curated program content must be reviewed. These use only existing exercises that Rae demonstrates (no invented moves) and the app's default doses, but which moves go together, their order and dose are programming decisions.
+**Known limits:** no warm-up/main/cool-down sections exist in the template type, so the warm-up and cool-down are separate short workouts. Cat-cow (drawn) has no exercise record and could not be used (mapping it to `lib.Cat_Stretch` needs the owner's OK). The stretches are prescribed as reps because their records are rep-based (no hold capability). Hip Circles (prone) currently loops 2 frames (flagged redraw).
+**Requested output:** decision per template
+**Proposed fallback if unresolved:** keep shipping them as drafts.
+
 ## Template
 
 ```md

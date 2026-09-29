@@ -33,7 +33,7 @@ The following are first-class v0.7 behaviors because they exist in the reconcile
 - exercise detail and exercise history;
 - user-created local workout routines;
 - weekly routine scheduling;
-- guided check-in -> preview -> workout flow;
+- guided start (session preview, one tap; no check-in questions while no adaptation rule reads them) -> workout flow;
 - durable in-progress session resume;
 - reps, timed holds and weighted prescriptions;
 - per-set weight logging where applicable;
@@ -280,7 +280,7 @@ Core local truth is IndexedDB/Dexie.
 
 Persist at minimum:
 - settings;
-- check-ins;
+- check-ins (the table exists and is exported, but nothing writes it while no adaptation rule reads check-in inputs);
 - schedules;
 - custom routines;
 - immutable SessionPlans;

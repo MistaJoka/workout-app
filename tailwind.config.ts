@@ -8,6 +8,7 @@ const config: Config = {
         bg: 'var(--color-background)',
         surface: 'var(--color-surface)',
         primary: 'var(--color-primary)',
+        'primary-ink': 'var(--color-primary-ink)',
         'on-primary': 'var(--color-on-primary)',
         accent: 'var(--color-accent)',
         'on-accent': 'var(--color-on-accent)',

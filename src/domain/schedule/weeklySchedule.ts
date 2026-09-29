@@ -33,3 +33,26 @@ export function resolveToday(schedule: WeeklySchedule | null, now: Date, rotatio
 export function isScheduleSet(schedule: WeeklySchedule | null): boolean {
   return schedule != null && Object.values(schedule).some((plan) => plan != null)
 }
+
+const WEEKDAYS: Weekday[] = [0, 1, 2, 3, 4, 5, 6]
+
+// Clears any day holding a template id that no longer exists (a deleted
+// routine), keeping rest days and known ids. Returns the same object when
+// nothing is stale, so callers can skip a pointless save.
+export function pruneSchedule(schedule: WeeklySchedule, knownTemplateIds: ReadonlySet<string>): WeeklySchedule {
+  const stale = WEEKDAYS.filter((d) => {
+    const plan = schedule[d]
+    return plan != null && plan !== 'rest' && !knownTemplateIds.has(plan)
+  })
+  if (stale.length === 0) return schedule
+  const next = { ...schedule }
+  for (const d of stale) next[d] = null
+  return next
+}
+
+// Clears one routine from every day it was planned on.
+export function withoutTemplate(schedule: WeeklySchedule, templateId: string): WeeklySchedule {
+  const next = { ...schedule }
+  for (const d of WEEKDAYS) if (next[d] === templateId) next[d] = null
+  return next
+}

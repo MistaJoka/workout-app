@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest'
-import { EMPTY_SCHEDULE, isScheduleSet, resolveToday, type WeeklySchedule } from './weeklySchedule'
+import { EMPTY_SCHEDULE, isScheduleSet, pruneSchedule, resolveToday, withoutTemplate, type WeeklySchedule } from './weeklySchedule'
 
 // 2026-09-19 is a Saturday (getDay() === 6); 2026-09-21 is a Monday (1).
 const saturday = new Date(2026, 8, 19, 9, 0)
@@ -31,5 +31,22 @@ describe('isScheduleSet', () => {
     expect(isScheduleSet(null)).toBe(false)
     expect(isScheduleSet(EMPTY_SCHEDULE)).toBe(false)
     expect(isScheduleSet({ ...EMPTY_SCHEDULE, 3: 'rest' })).toBe(true)
+  })
+})
+
+describe('pruneSchedule', () => {
+  it('clears days holding a template id that no longer exists, keeping rest and known ids', () => {
+    const schedule: WeeklySchedule = { ...EMPTY_SCHEDULE, 1: 'fs.full-body-a', 2: 'custom.deleted', 3: 'rest' }
+    expect(pruneSchedule(schedule, new Set(['fs.full-body-a']))).toEqual({ ...EMPTY_SCHEDULE, 1: 'fs.full-body-a', 3: 'rest' })
+  })
+
+  it('returns the same object when nothing is stale', () => {
+    const schedule: WeeklySchedule = { ...EMPTY_SCHEDULE, 1: 'fs.full-body-a' }
+    expect(pruneSchedule(schedule, new Set(['fs.full-body-a']))).toBe(schedule)
+  })
+
+  it('clears one removed routine everywhere it was planned', () => {
+    const schedule: WeeklySchedule = { ...EMPTY_SCHEDULE, 1: 'custom.x', 4: 'custom.x', 5: 'fs.quick-10' }
+    expect(withoutTemplate(schedule, 'custom.x')).toEqual({ ...EMPTY_SCHEDULE, 5: 'fs.quick-10' })
   })
 })

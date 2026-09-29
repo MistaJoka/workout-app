@@ -36,6 +36,14 @@ describe('theme token contrast', () => {
     expect(contrastRatio(t.colorTextMuted, t.colorSurface)).toBeGreaterThanOrEqual(AA_NORMAL_TEXT)
   })
 
+  // Pink used as text (active tab label, links, selected values) must read
+  // on the page and on every field; the fill pink can't (4.4:1 on bg).
+  it('primary-ink text reaches AA on background, surface and every field', () => {
+    for (const bg of [t.colorBackground, t.colorSurface, t.colorFieldPrimary, t.colorFieldCalm, t.colorFieldSuccess, t.colorFieldInfo, t.colorFieldNotice]) {
+      expect(contrastRatio(t.colorPrimaryInk, bg), bg).toBeGreaterThanOrEqual(AA_NORMAL_TEXT)
+    }
+  })
+
   // Fields hold real copy (up next, rest timer, done, stats, notices).
   it('body and muted text on every field reaches AA', () => {
     for (const field of [t.colorFieldPrimary, t.colorFieldCalm, t.colorFieldSuccess, t.colorFieldInfo, t.colorFieldNotice]) {
