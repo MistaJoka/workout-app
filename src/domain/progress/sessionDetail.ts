@@ -1,5 +1,6 @@
 import type { SessionEvent, SessionPlan, SessionResult } from '../session/types'
 import { projectSetRecords } from './history'
+import { applyEvent, initSessionState } from '../session/sessionMachine'
 
 export type SessionDetailSet = {
   setNumber: number
@@ -14,6 +15,8 @@ export type SessionDetailExercise = {
   name: string
   plannedSets: number
   sets: SessionDetailSet[]
+  // The user chose "Skip this move" while on it (EXERCISE_SKIPPED).
+  skipped: boolean
 }
 
 export type SessionDetail = {
@@ -29,6 +32,7 @@ export type SessionDetail = {
 // reached, so the page matches what the workout asked for.
 export function summarizeSession(plan: SessionPlan, result: SessionResult, events: readonly SessionEvent[]): SessionDetail {
   const records = projectSetRecords([plan], [result], events)
+  const skipped = skippedExerciseIndexes(plan, events)
   const elapsedMs = new Date(result.endedAt).getTime() - new Date(result.startedAt).getTime()
   return {
     durationMinutes: Math.max(1, Math.round(elapsedMs / 60_000)),
@@ -36,6 +40,7 @@ export function summarizeSession(plan: SessionPlan, result: SessionResult, event
     exercises: [...plan.exercises]
       .sort((a, b) => a.order - b.order)
       .map((exercise) => ({
+        skipped: skipped.has(plan.exercises.indexOf(exercise)),
         exerciseId: exercise.exerciseId,
         name: exercise.name,
         plannedSets: exercise.sets,
@@ -53,4 +58,21 @@ export function summarizeSession(plan: SessionPlan, result: SessionResult, event
           }),
       })),
   }
+}
+
+// Plan indexes of the moves the machine was on when an EXERCISE_SKIPPED was
+// applied, found by replaying the session's events in order.
+function skippedExerciseIndexes(plan: SessionPlan, events: readonly SessionEvent[]): Set<number> {
+  const ordered = [...events].sort((a, b) => (a.seq ?? 0) - (b.seq ?? 0) || a.timestamp.localeCompare(b.timestamp))
+  const indexes = new Set<number>()
+  let state = initSessionState()
+  for (const event of ordered) {
+    const next = applyEvent(plan, state, event)
+    const moved = next.currentExerciseIndex !== state.currentExerciseIndex || next.status !== state.status
+    if (event.type === 'EXERCISE_SKIPPED' && moved) {
+      indexes.add(state.currentExerciseIndex)
+    }
+    state = next
+  }
+  return indexes
 }

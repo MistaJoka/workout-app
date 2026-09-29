@@ -58,13 +58,14 @@ describe('summarizeSession', () => {
         exerciseId: 'squat',
         name: 'Squat',
         plannedSets: 2,
+        skipped: false,
         sets: [
           { setNumber: 1, reps: 10, met: true },
           { setNumber: 2, reps: 10, met: false },
         ],
       },
-      { exerciseId: 'plank', name: 'Plank', plannedSets: 1, sets: [{ setNumber: 1, seconds: 20, met: true }] },
-      { exerciseId: 'press', name: 'Press', plannedSets: 1, sets: [{ setNumber: 1, reps: 7, weightKg: 12.5, met: true }] },
+      { exerciseId: 'plank', name: 'Plank', plannedSets: 1, skipped: false, sets: [{ setNumber: 1, seconds: 20, met: true }] },
+      { exerciseId: 'press', name: 'Press', plannedSets: 1, skipped: false, sets: [{ setNumber: 1, reps: 7, weightKg: 12.5, met: true }] },
     ])
   })
 
@@ -100,5 +101,25 @@ describe('summarizeSession', () => {
     seq = 0
     const detail = summarizeSession(plan, result({ endedAt: '2026-09-01T10:00:20.000Z' }), [ev('SESSION_STARTED')])
     expect(detail.durationMinutes).toBe(1)
+  })
+})
+
+describe('summarizeSession with a skipped move', () => {
+  it('marks a move skipped mid-workout, not merely not reached', () => {
+    const events = [
+      ev('SESSION_STARTED'),
+      ev('SET_COMPLETED', { exerciseId: 'squat', met: true }),
+      ev('REST_SKIPPED'),
+      ev('EXERCISE_SKIPPED'),
+      ev('SET_COMPLETED', { exerciseId: 'plank' }),
+      ev('REST_SKIPPED'),
+      ev('SESSION_COMPLETED_SHORTENED'),
+    ]
+    const detail = summarizeSession(plan, result({ status: 'COMPLETED_SHORTENED' }), events)
+    expect(detail.exercises.map((e) => [e.exerciseId, e.skipped])).toEqual([
+      ['squat', true],
+      ['plank', false],
+      ['press', false],
+    ])
   })
 })

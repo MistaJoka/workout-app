@@ -569,7 +569,7 @@ function StepsList({ steps, folded, onUnfold }: { steps: string[]; folded: boole
         ))}
       </ol>
       {hidden > 0 && (
-        <button type="button" className="min-h-11 text-sm text-primary" onClick={() => setExpanded(true)}>
+        <button type="button" className="min-h-11 text-sm text-primary-ink" onClick={() => setExpanded(true)}>
           Show {hidden} more {hidden === 1 ? 'step' : 'steps'}
         </button>
       )}

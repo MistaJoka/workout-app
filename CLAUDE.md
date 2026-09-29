@@ -44,7 +44,7 @@ The pre-reconciliation prototype remains preserved on branch `legacy-mvp-2026-09
 ```bash
 npm run check                 # tsc -b --force && vitest run && vite build — run before every commit
 npm run e2e                   # Playwright: phone-viewport journeys against a production build (first time: npm run e2e:install)
-npm run e2e:webkit            # same journeys in WebKit (iPhone 13 profile) inside Playwright's Ubuntu Docker image — WebKit can't run natively on this Arch host
+npm run e2e:webkit            # same journeys in WebKit (iPhone 13 profile) inside Playwright's Ubuntu Docker image — WebKit can't run natively on this Arch host; CI runs it too (e2e-webkit job)
 npm run generate:library      # regenerate src/domain/content/generated/libraryExercises.json from the pinned free-exercise-db revision
 npm run build && systemctl --user restart workout-app.service   # deploy: tailnet https://nomad.tailed9e33.ts.net:8443 (stable); LAN http://<this machine's DHCP IP>:4173 — `ip -4 -br addr`, was 192.168.1.130 on 2026-09-19
 ```
@@ -60,7 +60,7 @@ Always `git fetch origin` before pushing: the ChatGPT support agent commits dire
 - Multiple **local profiles** may exist on one device (`src/infrastructure/profiles.ts`: one Dexie database per profile, switching reloads the page); they are not authenticated users and their local data must remain isolated.
 - Local persistence uses IndexedDB/Dexie. Schema versions are additive only (`src/infrastructure/db/schema.ts`).
 - Curated starter content (`src/domain/content/fixtures/`) and a discovery library (free-exercise-db, Unlicense, pinned revision in `scripts/content/`, imported by script, never hand-edited) coexist, with provenance/review status kept distinct. The discovery library is owner-curated, not the full upstream set: `npm run library:review` generates a pre-filtered candidate checklist (`content/staging/library-curation-checklist.md`), the owner hand-checks which exercises to include (this is a real safety/appropriateness judgment per the "never invent safety rules" rule above, not automatable), and `npm run generate:library` only ships checked exercises. The owner's standing rule (2026-09-26, `isHomeFriendly`) pre-checks home-friendly moves only — bodyweight/no equipment, bands, foam roller, exercise ball, chair/wall/floor stretches, beginner-level light dumbbell/kettlebell/medicine ball — and anything Rae demonstrates; no barbell/EZ bar/cable/machine, expert, heavy-lifting or jump work. See REQ-20260926-001. **For now (owner, 2026-09-28) the app browses no-equipment moves only**: `NO_EQUIPMENT_ONLY` + `isShownNow` in `src/domain/content/library.ts` hide library moves with any equipment or a prop listed in `src/domain/content/needsProp.json` (shared with `rae-prompts.py`). Lookup is unfiltered, so saved routines and history keep working. The weighted e2e journey is skipped while the flag is on.
-- User-created local routines (`customTemplates`) and weekly scheduling are supported secondary flows.
+- User-created local routines (`customTemplates`) and weekly scheduling are supported secondary flows. The streak is weekly against `weeklyGoal` (planned days, or 2). Schedule exports reminders as `.ics`. Draft Rae workouts (Warm-up, Cool-down, Chair day) live in `fixtures/raeDraftTemplates.ts`, show a Draft tag, stay out of `ROTATION`, and await owner review (REQ-20260929-006).
 - Weights: kg internally, lb/kg is a display setting (`src/presentation/units.ts`). Never store lb.
 - Starting a workout creates an immutable SessionPlan snapshot.
 - Deterministic adaptation/progression only. Progression requires explicit user confirmation.
@@ -76,7 +76,8 @@ Always `git fetch origin` before pushing: the ChatGPT support agent commits dire
 - Canonical authored templates are immutable content. User-created routines may change, but only future SessionPlans see those changes.
 - A started SessionPlan is immutable and must never be reconstructed from later mutable template data.
 - Session actions persist as durable, idempotent events (`sessionEvents`/`sessionResults` use `add`; duplicates are ConstraintErrors). Active workout state survives refresh and close/reopen.
-- Rest timers reconstruct from persisted timestamps, never decrement-only memory state. Anything that changes the rest end time (e.g. `REST_EXTENDED`) is an event.
+- Rest timers reconstruct from persisted timestamps, never decrement-only memory state. Anything that changes the rest end time (e.g. `REST_EXTENDED`) is an event. Timed holds start with `HOLD_STARTED` and auto-complete at zero; pausing freezes rest and hold clocks. `EXERCISE_SKIPPED` moves to the next move; history maps each set by the session's own position (`effectiveSetSlots`), never by order.
+- A workout idle 12h (`ABANDON_AFTER_MS`, owner default 2026-09-29) is finished as ended-early at its last action. Today's Resume offers Finish and Discard; Discard (`deleteUnfinishedSession`, only for a session with no result) is the one deletion of session data. `endedAt` is the completing event's time.
 - Double taps/retries must not duplicate completed-set/session/progression effects.
 - Completed historical truth is immutable.
 - Material deterministic decisions carry inspectable reason codes/details.
@@ -96,6 +97,7 @@ Placement rules (owner-approved button pass, 2026-09-26):
 - Fixed bottom action bars use `components/ThumbBar.tsx`: it ignores taps for 700ms whenever its content changes, so a double tap can't land on the button that replaced the first one. Give it an `armKey` that changes with the bar's content. E2E helpers wait for `[data-armed="true"]`.
 - Rare/destructive actions (Pause, End workout, Erase everything) stay out of the thumb bar. Profile switching lives in Settings, not a corner of every screen.
 - A screen with unsaved edits registers `components/unsavedGuard.ts`; AppShell's tabs call `guardNavigation()` (HashRouter can't block routes).
+- Bottom sheets use `components/useSheetFocus.ts` (focus in, trap, Escape, restore); ConfirmSheet focuses the safe choice. Backdrops use `bg-black/40` (`bg-ink/40` generates nothing: CSS-var colors take no opacity).
 - Destructive or data-changing confirmations use `components/ConfirmSheet.tsx` (in-page, never `window.confirm`). Ending a workout early asks first, is also offered from Pause, and lands on Complete so a pending next-level offer still shows.
 
 ## Platform quality rules
@@ -104,13 +106,14 @@ Placement rules (owner-approved button pass, 2026-09-26):
 - An Offline banner is not proof of offline function; test an actually network-disabled reload/execution path.
 - Wake lock/audio/animation are progressive enhancement and must fail safely.
 - Storage quota/eviction/write failures are real local failure modes; do not mislabel them as network failures.
-- Text on colored fills uses `--color-on-primary` / `--color-on-accent` (never hardcoded white); `tokens.test.ts` enforces ≥ 4.5:1, including body and muted text on every field.
+- Pink used as small text is `text-primary-ink`, never `text-primary` (4.4:1 fails AA; large numerals are fine). Text on colored fills uses `--color-on-primary` / `--color-on-accent` (never hardcoded white); `tokens.test.ts` enforces ≥ 4.5:1, including body and muted text on every field.
 - Follow `docs/DEFINITION_OF_DONE.md` before calling a feature complete.
 
 ## Gotchas
 
+- A new service worker waits (no automatic `skipWaiting`): the Update toast's Reload sends SKIP_WAITING. Install downloads the shell strictly and media best-effort. Library photos need `crossOrigin="anonymous"`; only readable responses are cached (cap 300); activate prunes Rae files `loops.json` no longer lists.
 - `public/sw.js` is stamped at build time (`sw-build-manifest` plugin in `vite.config.ts`): the shell cache is named per build and every built chunk is precached, so there is no manual `CACHE_NAME` bump. Rae loop and still URLs carry `?v=<content hash>` from `loops.json`, so a redraw is a new URL; long-lived media stays in the media cache, never the shell cache. After changing Rae art without the sources, `npm run rae:build -- --index-only` refreshes the versions.
-- Backup import merges into the active profile (new eventIds only, never overwriting plans/results), after an in-page confirmation, then reloads. Exports carry the profile.
+- Backup import merges into the active profile (new eventIds only, never overwriting plans/results), after an in-page confirmation, then reloads. Current state (settings/familiarity/progression/routines/body weight) merges newest-wins by row timestamp; another profile's backup imports history only; rows are zod-validated (`exportImport/bundleSchema.ts`). Exports carry the profile and use the share sheet when available. Deleted routines leave a `deletedRoutines` marker so import can't revive them.
 - Playwright: a hash-only `goto` does not reload the document; bounce via `about:blank` for a fresh load. Player buttons are briefly `disabled` while an action persists — drive workouts with short-timeout force clicks in a loop (`e2e/helpers.ts`).
 - `.claude/` is gitignored and excluded from vitest. Never `git add -A` with a fork worktree present.
 - Settings hooks (`useWeightUnit`, `useFeedbackSettings`) are seeded from module-level caches; a profile switch reloads the page, which is what makes those caches safe. The motion setting has no cache and starts as `full` until the stored value loads.

@@ -77,7 +77,7 @@ export function SessionDetailScreen() {
               </p>
             </div>
             {exercise.sets.length === 0 ? (
-              <p className="text-sm text-ink-muted">Not reached</p>
+              <p className="text-sm text-ink-muted">{exercise.skipped ? 'Skipped' : 'Not reached'}</p>
             ) : (
               <ol className="flex flex-wrap gap-2">
                 {exercise.sets.map((set) => (

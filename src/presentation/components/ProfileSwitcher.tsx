@@ -78,11 +78,11 @@ export function ProfileSwitcher() {
           {active.name.trim().charAt(0).toUpperCase() || '?'}
         </span>
         <span className="flex-1 font-semibold">{active.name}</span>
-        <span className="text-sm font-semibold text-primary">Switch</span>
+        <span className="text-sm font-semibold text-primary-ink">Switch</span>
       </button>
 
       {open && (
-        <div className="fixed inset-0 z-30 flex items-end bg-ink/40" onClick={() => setOpen(false)}>
+        <div className="fixed inset-0 z-30 flex items-end bg-black/40" onClick={() => setOpen(false)}>
           <div
             className="w-full rounded-t-[var(--radius-panel)] bg-surface p-4 pb-8 space-y-3"
             style={{ paddingBottom: 'calc(env(safe-area-inset-bottom) + 1.5rem)' }}

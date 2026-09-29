@@ -12,6 +12,7 @@ import { formatWeight } from '../units'
 import { useWeightUnit } from '../components/useWeightUnit'
 import { ThumbBar } from '../components/ThumbBar'
 import { RaeFace } from '../components/Rae'
+import { BackupNudge } from '../components/BackupNudge'
 import { RaeNote } from '../components/RaeNote'
 
 type Candidate = {
@@ -143,6 +144,11 @@ export function SessionCompleteScreen() {
       <Link to="/progress" className="btn-ghost min-h-11">
         See your progress
       </Link>
+
+      {/* Shows only when a backup is due (14 days, or never with history). */}
+      <div className="w-full">
+        <BackupNudge />
+      </div>
 
       {/* ThumbBar ignores taps briefly: this button sits where the player's
           last "Yes"/"Complete Set" was, so a double tap on the final set

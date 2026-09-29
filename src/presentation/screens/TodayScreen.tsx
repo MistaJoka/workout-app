@@ -1,3 +1,5 @@
+import { DRAFT_TEMPLATE_IDS } from '../../domain/content/fixtures/raeDraftTemplates'
+import { DraftTag } from '../components/DraftTag'
 import { countLabel } from '../format'
 import { useEffect, useState } from 'react'
 import { Link } from 'react-router-dom'
@@ -234,7 +236,10 @@ export function TodayScreen() {
               <li key={template.id}>
                 <Link to={`/checkin/${template.id}`} className="flex items-center gap-3 px-4 py-3 active:bg-field-primary">
                   <span className="min-w-0 flex-1">
-                    <span className="block truncate font-bold">{template.name}</span>
+                    <span className="block truncate font-bold">
+                      {template.name}
+                      {DRAFT_TEMPLATE_IDS.has(template.id) && <DraftTag />}
+                    </span>
                     <span className="block text-sm text-ink-muted">
                       {custom ? 'Your routine, ' : ''}
                       {describe(template)}

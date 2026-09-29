@@ -98,7 +98,7 @@ export function ExerciseDetailScreen() {
       </button>
 
       {routines && (
-        <div className="fixed inset-0 z-40 flex items-end bg-ink/40" onClick={busy ? undefined : () => setRoutines(null)}>
+        <div className="fixed inset-0 z-40 flex items-end bg-black/40" onClick={busy ? undefined : () => setRoutines(null)}>
           <div
             className="max-h-[80vh] w-full space-y-3 overflow-y-auto rounded-t-[var(--radius-panel)] bg-surface p-4"
             style={{ paddingBottom: 'calc(env(safe-area-inset-bottom) + 1.5rem)' }}

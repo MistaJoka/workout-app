@@ -11,6 +11,7 @@ import { useFeedbackSettings } from '../components/useFeedbackSettings'
 import { useWeightUnit } from '../components/useWeightUnit'
 import { RaeFace } from '../components/Rae'
 import { LAST_EXPORT_KEY, exportAndRecord } from '../backup'
+import { canVibrate } from '../../application/restFeedback'
 
 export function SettingsScreen() {
   const [feedback, updateFeedback] = useFeedbackSettings()
@@ -125,9 +126,8 @@ export function SettingsScreen() {
             onClick={() => updateFeedback({ sound: !feedback.sound })}
           />
           {/* iPhone Safari has no navigator.vibrate, so the toggle would do
-              nothing there. TODO(merge): use canVibrate() from
-              application/restFeedback once Fork P's branch is in. */}
-          {typeof navigator !== 'undefined' && 'vibrate' in navigator && (
+              nothing there. */}
+          {canVibrate() && (
             <ChoiceChip
               label={`Vibration ${feedback.vibration ? 'on' : 'off'}`}
               active={feedback.vibration}
@@ -258,7 +258,7 @@ function ImportSheet({
   // profile is still the same person.
   const otherPerson = isOtherProfile(bundle, intoId)
   return (
-    <div className="fixed inset-0 z-30 flex items-end bg-ink/40" onClick={busy ? undefined : onCancel}>
+    <div className="fixed inset-0 z-30 flex items-end bg-black/40" onClick={busy ? undefined : onCancel}>
       <div
         className="w-full space-y-3 rounded-t-[var(--radius-panel)] bg-surface p-4"
         style={{ paddingBottom: 'calc(env(safe-area-inset-bottom) + 1.5rem)' }}

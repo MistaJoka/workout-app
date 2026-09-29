@@ -11,6 +11,8 @@ import { FilterSheet } from '../components/FilterSheet'
 import { ExerciseThumb } from '../components/ExerciseThumb'
 import { RaeNote } from '../components/RaeNote'
 import { RAE_LOOPS } from '../components/raeLoops'
+import { DRAFT_TEMPLATE_IDS } from '../../domain/content/fixtures/raeDraftTemplates'
+import { DraftTag } from '../components/DraftTag'
 
 const PAGE = 40
 const LEVELS = ['beginner', 'intermediate', 'expert'] as const
@@ -75,7 +77,10 @@ export function LibraryScreen() {
               to={`/routines/${template.id}`}
               className="flex items-center justify-between card px-4 py-3"
             >
-              <span className="font-semibold">{template.name}</span>
+              <span className="font-semibold">
+                {template.name}
+                {DRAFT_TEMPLATE_IDS.has(template.id) && <DraftTag />}
+              </span>
               <span className="text-sm text-ink-muted">{countLabel(template.exercises.length, 'exercise')}</span>
             </Link>
           ))}

@@ -263,7 +263,7 @@ export function RoutineBuilderScreen() {
         ))}
       </ul>
 
-      <button className="w-full rounded-panel border border-primary px-4 py-3 text-primary" onClick={() => setPicking(true)}>
+      <button className="w-full rounded-panel border border-primary px-4 py-3 text-primary-ink" onClick={() => setPicking(true)}>
         + Add exercise
       </button>
 
@@ -440,7 +440,7 @@ function ExercisePicker({
                   {exerciseMeta(exercise).join(', ')}
                 </span>
               </span>
-              <span className="flex-none text-primary">+</span>
+              <span className="flex-none text-primary-ink">+</span>
             </button>
           </li>
         ))}
