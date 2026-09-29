@@ -1,14 +1,14 @@
 import type { SessionEvent, SessionPlan, SessionResult } from '../session/types'
 import type { SetRecord } from './types'
-import { effectiveSets } from '../session/appliedEvents'
+import { effectiveSetSlots } from '../session/appliedEvents'
 
 // Projects persisted history into SetRecords. Pure: no storage authority of
 // its own (docs/rnd/foss-fitness/sources/ischys.md, "Local target architecture").
 //
-// The k-th applied SET_COMPLETED event of a session is the k-th set slot
-// of its immutable plan — the session machine advances exactly one slot
-// per applied SET_COMPLETED; stray taps are dropped by effectiveSets — so exercise and set number come from the plan, not from
-// the event payload. Three payload fields are read from the event, all
+// Each applied SET_COMPLETED maps to the plan slot the session pointed at
+// when it applied (effectiveSetSlots): stray taps are dropped and a skipped
+// move doesn't shift later sets, so exercise and set number come from the
+// immutable plan, not from the event payload. Three payload fields are read from the event, all
 // optional: `met` (false is a miss; true or absent — time-based sets, older
 // events — is met), `reps` (performed reps, when the player logged them),
 // and `weightKg` (the load actually lifted; falls back to the plan's
@@ -32,14 +32,9 @@ export function projectSetRecords(
   for (const result of ordered) {
     const plan = planById.get(result.planId)
     if (!plan) continue
-    const sessionEvents = effectiveSets(plan, eventsBySession.get(result.sessionId) ?? [])
-    const slots = plan.exercises.flatMap((exercise) =>
-      Array.from({ length: exercise.sets }, (_, i) => ({ exercise, setNumber: i + 1 }))
-    )
-    sessionEvents.forEach((event, index) => {
-      const slot = slots[index]
-      if (!slot) return
-      const { exercise, setNumber } = slot
+    for (const { event, exerciseIndex, setNumber } of effectiveSetSlots(plan, eventsBySession.get(result.sessionId) ?? [])) {
+      const exercise = plan.exercises[exerciseIndex]
+      if (!exercise) continue
       records.push({
         exerciseId: exercise.exerciseId,
         exerciseName: exercise.name,
@@ -56,7 +51,7 @@ export function projectSetRecords(
             : {}),
         met: event.payload.met !== false,
       })
-    })
+    }
   }
 
   return records

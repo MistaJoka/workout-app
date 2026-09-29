@@ -29,14 +29,43 @@ function moved(before: SessionState, after: SessionState): boolean {
   )
 }
 
+function inOrder(sessionEvents: readonly SessionEvent[]): SessionEvent[] {
+  return [...sessionEvents].sort((a, b) => (a.seq ?? 0) - (b.seq ?? 0) || a.timestamp.localeCompare(b.timestamp))
+}
+
 // The SET_COMPLETED events that counted, in order, for one session's
 // events. Sessions stored without a SESSION_STARTED (hand-built history)
 // can't be replayed, so their sets are taken as recorded.
 export function effectiveSets(plan: SessionPlan, sessionEvents: readonly SessionEvent[]): SessionEvent[] {
-  const ordered = [...sessionEvents].sort(
-    (a, b) => (a.seq ?? 0) - (b.seq ?? 0) || a.timestamp.localeCompare(b.timestamp)
-  )
-  const replayable = ordered.some((e) => e.type === 'SESSION_STARTED')
-  const kept = replayable ? withoutIneffectiveSets(plan, ordered) : ordered
-  return kept.filter((e) => e.type === 'SET_COMPLETED')
+  return effectiveSetSlots(plan, sessionEvents).map((slot) => slot.event)
+}
+
+export type SetSlot = { event: SessionEvent; exerciseIndex: number; setNumber: number }
+
+// Each counted set with the move and set number it was done for — read from
+// the session's own pointer at the moment it applied, so a skipped move
+// (EXERCISE_SKIPPED) doesn't shift later sets onto the wrong exercise.
+// History with no start event can't be replayed; its sets fill the plan's
+// slots in order.
+export function effectiveSetSlots(plan: SessionPlan, sessionEvents: readonly SessionEvent[]): SetSlot[] {
+  const ordered = inOrder(sessionEvents)
+  if (!ordered.some((e) => e.type === 'SESSION_STARTED')) {
+    const slots = plan.exercises.flatMap((exercise, exerciseIndex) =>
+      Array.from({ length: exercise.sets }, (_, i) => ({ exerciseIndex, setNumber: i + 1 }))
+    )
+    return ordered
+      .filter((e) => e.type === 'SET_COMPLETED')
+      .slice(0, slots.length)
+      .map((event, i) => ({ event, ...slots[i] }))
+  }
+  let state = initSessionState()
+  const out: SetSlot[] = []
+  for (const event of ordered) {
+    const next = applyEvent(plan, state, event)
+    if (event.type === 'SET_COMPLETED' && moved(state, next)) {
+      out.push({ event, exerciseIndex: state.currentExerciseIndex, setNumber: state.currentSetNumber })
+    }
+    state = next
+  }
+  return out
 }

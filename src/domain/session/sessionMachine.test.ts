@@ -34,6 +34,8 @@ describe('initSessionState', () => {
       currentSetNumber: 1,
       restStartedAt: null,
       restEndsAt: null,
+      holdStartedAt: null,
+      pausedAt: null,
       appliedEventIds: [],
     })
   })
@@ -185,5 +187,106 @@ describe('replayEvents', () => {
       manual = applyEvent(plan, manual, e)
     }
     expect(replayed).toEqual(manual)
+  })
+})
+
+const timedPlan: SessionPlan = {
+  ...plan,
+  id: 'session-timed',
+  exercises: [
+    { exerciseId: 'plank', exerciseVersion: 1, name: 'Plank', sets: 2, timeSeconds: 20, restSeconds: 30, order: 0 },
+    { exerciseId: 'ex2', exerciseVersion: 1, name: 'Exercise Two', sets: 1, reps: 10, restSeconds: 60, order: 1 },
+  ],
+}
+
+const at = (seconds: number) => new Date(Date.parse('2026-09-13T00:00:00.000Z') + seconds * 1000).toISOString()
+
+describe('holds (HOLD_STARTED)', () => {
+  it('starts a hold on an active timed set, keeps the first start, and clears on SET_COMPLETED', () => {
+    let state = applyEvent(timedPlan, initSessionState(), event({ eventId: 'e1', type: 'SESSION_STARTED' }))
+    state = applyEvent(timedPlan, state, event({ eventId: 'h1', type: 'HOLD_STARTED', timestamp: at(5) }))
+    expect(state.holdStartedAt).toBe(at(5))
+    // A second tap doesn't restart the clock.
+    state = applyEvent(timedPlan, state, event({ eventId: 'h2', type: 'HOLD_STARTED', timestamp: at(9) }))
+    expect(state.holdStartedAt).toBe(at(5))
+    state = applyEvent(timedPlan, state, event({ eventId: 'e2', type: 'SET_COMPLETED', timestamp: at(25) }))
+    expect(state.status).toBe('RESTING')
+    expect(state.holdStartedAt).toBeNull()
+  })
+
+  it('is ignored on a reps set or outside an active set', () => {
+    const active = applyEvent(plan, initSessionState(), event({ eventId: 'e1', type: 'SESSION_STARTED' }))
+    expect(applyEvent(plan, active, event({ eventId: 'h1', type: 'HOLD_STARTED' })).holdStartedAt).toBeNull()
+    const draft = applyEvent(timedPlan, initSessionState(), event({ eventId: 'h1', type: 'HOLD_STARTED' }))
+    expect(draft.holdStartedAt).toBeNull()
+  })
+})
+
+describe('skipping a move (EXERCISE_SKIPPED)', () => {
+  it('moves from any set of the current move to set 1 of the next, with no rest', () => {
+    let state = applyEvent(plan, initSessionState(), event({ eventId: 'e1', type: 'SESSION_STARTED' }))
+    state = applyEvent(plan, state, event({ eventId: 's1', type: 'EXERCISE_SKIPPED' }))
+    expect(state).toMatchObject({ status: 'ACTIVE', currentExerciseIndex: 1, currentSetNumber: 1, restEndsAt: null })
+  })
+
+  it('skipping the last move finishes the workout', () => {
+    let state = applyEvent(plan, initSessionState(), event({ eventId: 'e1', type: 'SESSION_STARTED' }))
+    state = applyEvent(plan, state, event({ eventId: 's1', type: 'EXERCISE_SKIPPED' }))
+    state = applyEvent(plan, state, event({ eventId: 's2', type: 'EXERCISE_SKIPPED' }))
+    expect(state.status).toBe('COMPLETED')
+  })
+
+  it('clears a running hold and is ignored while resting', () => {
+    let state = applyEvent(timedPlan, initSessionState(), event({ eventId: 'e1', type: 'SESSION_STARTED' }))
+    state = applyEvent(timedPlan, state, event({ eventId: 'h1', type: 'HOLD_STARTED' }))
+    state = applyEvent(timedPlan, state, event({ eventId: 's1', type: 'EXERCISE_SKIPPED' }))
+    expect(state.holdStartedAt).toBeNull()
+    expect(state.currentExerciseIndex).toBe(1)
+
+    let resting = applyEvent(plan, initSessionState(), event({ eventId: 'e1', type: 'SESSION_STARTED' }))
+    resting = applyEvent(plan, resting, event({ eventId: 'e2', type: 'SET_COMPLETED' }))
+    const after = applyEvent(plan, resting, event({ eventId: 's1', type: 'EXERCISE_SKIPPED' }))
+    expect(after).toEqual({ ...resting, appliedEventIds: [...resting.appliedEventIds, 's1'] })
+  })
+})
+
+describe('pause freezes the clocks', () => {
+  it('a rest paused for 100s ends 100s later', () => {
+    let state = applyEvent(plan, initSessionState(), event({ eventId: 'e1', type: 'SESSION_STARTED' }))
+    state = applyEvent(plan, state, event({ eventId: 'e2', type: 'SET_COMPLETED', timestamp: at(0) }))
+    expect(state.restEndsAt).toBe(at(90))
+    state = applyEvent(plan, state, event({ eventId: 'p1', type: 'PAUSED', timestamp: at(30) }))
+    state = applyEvent(plan, state, event({ eventId: 'r1', type: 'RESUMED', timestamp: at(130) }))
+    expect(state.status).toBe('RESTING')
+    expect(state.restStartedAt).toBe(at(100))
+    expect(state.restEndsAt).toBe(at(190))
+  })
+
+  it('a hold paused for 60s keeps the time it had left', () => {
+    let state = applyEvent(timedPlan, initSessionState(), event({ eventId: 'e1', type: 'SESSION_STARTED' }))
+    state = applyEvent(timedPlan, state, event({ eventId: 'h1', type: 'HOLD_STARTED', timestamp: at(0) }))
+    state = applyEvent(timedPlan, state, event({ eventId: 'p1', type: 'PAUSED', timestamp: at(8) }))
+    state = applyEvent(timedPlan, state, event({ eventId: 'r1', type: 'RESUMED', timestamp: at(68) }))
+    expect(state.status).toBe('ACTIVE')
+    expect(state.holdStartedAt).toBe(at(60))
+  })
+})
+
+describe('status guards', () => {
+  it('nothing reopens a finished session', () => {
+    let state = applyEvent(plan, initSessionState(), event({ eventId: 'e1', type: 'SESSION_STARTED' }))
+    state = applyEvent(plan, state, event({ eventId: 'x1', type: 'SESSION_COMPLETED_SHORTENED' }))
+    for (const type of ['PAUSED', 'RESUMED', 'SESSION_COMPLETED', 'REST_ENDED', 'REST_SKIPPED', 'EXERCISE_SKIPPED'] as const) {
+      expect(applyEvent(plan, state, event({ eventId: `g-${type}`, type })).status).toBe('COMPLETED_SHORTENED')
+    }
+  })
+
+  it('RESUMED without a pause and REST_ENDED outside a rest change nothing', () => {
+    const active = applyEvent(plan, initSessionState(), event({ eventId: 'e1', type: 'SESSION_STARTED' }))
+    expect(applyEvent(plan, active, event({ eventId: 'r1', type: 'RESUMED' }))).toMatchObject({ status: 'ACTIVE' })
+    let resting = applyEvent(plan, active, event({ eventId: 'e2', type: 'SET_COMPLETED' }))
+    resting = applyEvent(plan, resting, event({ eventId: 'p1', type: 'PAUSED' }))
+    // A rest-end that lands while paused must not unpause.
+    expect(applyEvent(plan, resting, event({ eventId: 'x', type: 'REST_ENDED' })).status).toBe('PAUSED')
   })
 })
