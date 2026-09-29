@@ -127,8 +127,11 @@ test("importing another person's backup keeps this person's workouts", async ({ 
   await page.locator('input[type="file"]').setInputFiles(backupPath)
   const sheet = page.getByRole('dialog', { name: 'Import backup' })
   await expect(sheet.getByText('Add this backup to Kay?')).toBeVisible()
-  await expect(sheet.getByText('This backup belongs to Me, not Kay.')).toBeVisible()
-  await sheet.getByRole('button', { name: 'Add to Kay' }).click()
+  await expect(sheet.getByText("This is Me's backup")).toBeVisible()
+  await expect(sheet.getByText(/Kay's progress, routines and settings stay as they are/)).toBeVisible()
+  // Wait for the reload import triggers, so the checks below read the new
+  // page (the old page's profile button would otherwise pass them early).
+  await Promise.all([page.waitForEvent('load'), sheet.getByRole('button', { name: 'Add their workouts' }).click()])
 
   // The page reloads; nothing of Kay's was overwritten.
   await expect(page.getByRole('button', { name: /Profile: Kay/ })).toBeVisible()

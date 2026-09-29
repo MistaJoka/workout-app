@@ -1,23 +1,24 @@
 import { Link } from 'react-router-dom'
 import { useEffect, useRef, useState } from 'react'
-import { exportAll, importAll, isValidExportBundle, type ExportBundle } from '../../infrastructure/exportImport/exportImport'
-import { downloadBackup } from '../../infrastructure/exportImport/downloadBackup'
-import { getSetting, setSetting } from '../../infrastructure/db/repositories/settingsRepository'
+import { importAll, isOtherProfile, parseExportBundle, type ExportBundle } from '../../infrastructure/exportImport/exportImport'
+import { getSetting } from '../../infrastructure/db/repositories/settingsRepository'
 import { db } from '../../infrastructure/db/schema'
 import { activeProfile, loadProfiles } from '../../infrastructure/profiles'
+import { storageErrorMessage } from '../../infrastructure/storageErrors'
+import { BackupNudge } from '../components/BackupNudge'
 import { ProfileSwitcher } from '../components/ProfileSwitcher'
 import { useFeedbackSettings } from '../components/useFeedbackSettings'
 import { useWeightUnit } from '../components/useWeightUnit'
 import { RaeFace } from '../components/Rae'
-
-const LAST_EXPORT_KEY = 'lastExportAt'
+import { LAST_EXPORT_KEY, exportAndRecord } from '../backup'
 
 export function SettingsScreen() {
   const [feedback, updateFeedback] = useFeedbackSettings()
   const [unit, setUnit] = useWeightUnit()
   const fileInputRef = useRef<HTMLInputElement>(null)
   const [status, setStatus] = useState<string | null>(null)
-  const [lastExportAt, setLastExportAt] = useState<string | null>(null)
+  // undefined until read, so the backup nudge doesn't flash before it knows.
+  const [lastExportAt, setLastExportAt] = useState<string | null | undefined>(undefined)
   const [resetText, setResetText] = useState('')
   const [resetting, setResetting] = useState(false)
   const [resetError, setResetError] = useState<string | null>(null)
@@ -30,36 +31,44 @@ export function SettingsScreen() {
   const [otherPeople] = useState(() => loadProfiles().profiles.length > 1)
 
   useEffect(() => {
-    getSetting<string>(LAST_EXPORT_KEY).then((value) => setLastExportAt(value ?? null))
+    getSetting<string>(LAST_EXPORT_KEY)
+      .then((value) => setLastExportAt(value ?? null))
+      .catch(() => {})
   }, [])
 
   // Every failure below is local (IndexedDB or the file picker), never the
   // network, and the copy says so.
   async function handleExport() {
     try {
-      const bundle = await exportAll()
-      downloadBackup(bundle)
-      const now = new Date().toISOString()
-      await setSetting(LAST_EXPORT_KEY, now)
-      setLastExportAt(now)
-      setStatus('Backup downloaded.')
-    } catch {
-      setStatus('Could not make a backup. The phone may be low on storage.')
+      const at = await exportAndRecord()
+      if (at) {
+        setLastExportAt(at)
+        setStatus('Backup saved.')
+      } else {
+        setStatus('Backup not saved.')
+      }
+    } catch (error) {
+      setStatus(storageErrorMessage(error, 'read'))
     }
   }
 
   async function handleImportFile(file: File) {
+    let raw: unknown
     try {
-      const bundle = JSON.parse(await file.text())
-      if (!isValidExportBundle(bundle)) {
-        setStatus('Import failed: this file is not a valid backup.')
-        return
-      }
-      setStatus(null)
-      setPendingImport(bundle)
+      raw = JSON.parse(await file.text())
     } catch {
-      setStatus('Import failed: check the file and try again.')
+      setStatus("Import failed: that file isn't a backup. Nothing was changed.")
+      return
     }
+    // Every row is checked before anything is written.
+    const parsed = parseExportBundle(raw)
+    if (!parsed.ok) {
+      console.warn('Backup rejected:', parsed.problem)
+      setStatus("Import failed: this backup is damaged or from a different app. Nothing was changed.")
+      return
+    }
+    setStatus(null)
+    setPendingImport(parsed.bundle)
   }
 
   async function confirmImport() {
@@ -69,10 +78,10 @@ export function SettingsScreen() {
       await importAll(pendingImport)
       // Reload so every screen and settings cache reads the merged data.
       location.reload()
-    } catch {
+    } catch (error) {
       setImporting(false)
       setPendingImport(null)
-      setStatus('Import failed. Nothing was changed.')
+      setStatus(`${storageErrorMessage(error, 'save')} Nothing was changed.`)
     }
   }
 
@@ -115,16 +124,22 @@ export function SettingsScreen() {
             active={feedback.sound}
             onClick={() => updateFeedback({ sound: !feedback.sound })}
           />
-          <ChoiceChip
-            label={`Vibration ${feedback.vibration ? 'on' : 'off'}`}
-            active={feedback.vibration}
-            onClick={() => updateFeedback({ vibration: !feedback.vibration })}
-          />
+          {/* iPhone Safari has no navigator.vibrate, so the toggle would do
+              nothing there. TODO(merge): use canVibrate() from
+              application/restFeedback once Fork P's branch is in. */}
+          {typeof navigator !== 'undefined' && 'vibrate' in navigator && (
+            <ChoiceChip
+              label={`Vibration ${feedback.vibration ? 'on' : 'off'}`}
+              active={feedback.vibration}
+              onClick={() => updateFeedback({ vibration: !feedback.vibration })}
+            />
+          )}
         </div>
       </section>
 
       <section className="space-y-2">
         <p className="font-semibold">Backup</p>
+        {lastExportAt !== undefined && <BackupNudge lastExportAt={lastExportAt} onSaved={setLastExportAt} />}
         <div className="flex justify-end gap-2">
           <button className="btn-secondary" onClick={handleExport}>
             Export data
@@ -158,6 +173,7 @@ export function SettingsScreen() {
       {pendingImport && (
         <ImportSheet
           bundle={pendingImport}
+          intoId={profile.id}
           intoName={profile.name}
           busy={importing}
           onConfirm={() => void confirmImport()}
@@ -223,12 +239,14 @@ function ChoiceChip({ label, active, onClick }: { label: string; active: boolean
 
 function ImportSheet({
   bundle,
+  intoId,
   intoName,
   busy,
   onConfirm,
   onCancel,
 }: {
   bundle: ExportBundle
+  intoId: string
   intoName: string
   busy: boolean
   onConfirm: () => void
@@ -236,7 +254,9 @@ function ImportSheet({
 }) {
   const fromName = bundle.profile?.name
   const madeOn = new Date(bundle.exportedAt).toLocaleDateString()
-  const otherPerson = fromName !== undefined && fromName !== intoName
+  // By profile id, not name: two people can share a name, and a renamed
+  // profile is still the same person.
+  const otherPerson = isOtherProfile(bundle, intoId)
   return (
     <div className="fixed inset-0 z-30 flex items-end bg-ink/40" onClick={busy ? undefined : onCancel}>
       <div
@@ -244,19 +264,23 @@ function ImportSheet({
         style={{ paddingBottom: 'calc(env(safe-area-inset-bottom) + 1.5rem)' }}
         onClick={(e) => e.stopPropagation()}
         role="dialog"
+        aria-modal="true"
         aria-label="Import backup"
       >
         <p className="text-lg font-bold">Add this backup to {intoName}?</p>
-        <p className="text-sm text-ink-muted">
-          {fromName ? `${fromName}'s backup` : 'Backup'} from {madeOn}. Workouts already here are kept.
-        </p>
-        {otherPerson && (
-          <p className="text-sm font-semibold" role="alert">
-            This backup belongs to {fromName}, not {intoName}.
+        {otherPerson ? (
+          <p className="text-sm" role="alert">
+            <span className="font-semibold">This is {fromName}'s backup</span> from {madeOn}. Their workouts are added to{' '}
+            {intoName}'s history. {intoName}'s progress, routines and settings stay as they are.
+          </p>
+        ) : (
+          <p className="text-sm text-ink-muted">
+            {fromName ? `${fromName}'s backup` : 'Backup'} from {madeOn}. Adds workouts that aren't here yet. Progress,
+            routines and body weight keep whichever copy is newer; nothing here is rolled back.
           </p>
         )}
-        <button type="button" className="btn-primary btn-lg w-full" disabled={busy} onClick={onConfirm}>
-          {busy ? 'Adding…' : `Add to ${intoName}`}
+        <button type="button" className="btn-primary btn-lg w-full" autoFocus disabled={busy} onClick={onConfirm}>
+          {busy ? 'Adding…' : otherPerson ? 'Add their workouts' : `Add to ${intoName}`}
         </button>
         <button type="button" className="btn-ghost w-full" disabled={busy} onClick={onCancel}>
           Cancel

@@ -3,6 +3,7 @@ import {
   activeDbName,
   addProfile,
   BASE_DB_NAME,
+  deleteProfile,
   loadProfiles,
   removeProfile,
   renameProfile,
@@ -48,5 +49,47 @@ describe('profiles', () => {
     expect(loadProfiles(store).activeId).toBe('default')
     store.setItem('workout-app:profiles', JSON.stringify({ profiles: [{ id: 'a', name: 'A' }], activeId: 'zzz' }))
     expect(loadProfiles(store).activeId).toBe('a')
+  })
+})
+
+describe('deleteProfile', () => {
+  function twoPeople() {
+    const store = memoryStore()
+    const kay = addProfile('Kay', store)
+    return { store, kay }
+  }
+
+  it('deletes the database first, then the entry', async () => {
+    const { store, kay } = twoPeople()
+    const deleted: string[] = []
+    const result = await deleteProfile(kay.id, { store, deleteDb: async (name) => void deleted.push(name) })
+    expect(result).toBe('deleted')
+    expect(deleted).toEqual([`${BASE_DB_NAME}:${kay.id}`])
+    expect(loadProfiles(store).profiles.map((p) => p.name)).toEqual(['Me'])
+  })
+
+  it('refuses the active profile and the last profile without touching any database', async () => {
+    const { store } = twoPeople()
+    let calls = 0
+    const deleteDb = async () => void calls++
+    expect(await deleteProfile('default', { store, deleteDb })).toBe('refused')
+    expect(await deleteProfile('default', { store: memoryStore(), deleteDb })).toBe('refused')
+    expect(calls).toBe(0)
+  })
+
+  it('keeps the entry when the database is open elsewhere and the delete is blocked', async () => {
+    const { store, kay } = twoPeople()
+    const never = () => new Promise<void>(() => {})
+    expect(await deleteProfile(kay.id, { store, deleteDb: never, blockedAfterMs: 10 })).toBe('blocked')
+    expect(loadProfiles(store).profiles).toHaveLength(2)
+  })
+
+  it('keeps the entry and rethrows when the delete fails', async () => {
+    const { store, kay } = twoPeople()
+    const failing = async () => {
+      throw new Error('boom')
+    }
+    await expect(deleteProfile(kay.id, { store, deleteDb: failing })).rejects.toThrow('boom')
+    expect(loadProfiles(store).profiles).toHaveLength(2)
   })
 })

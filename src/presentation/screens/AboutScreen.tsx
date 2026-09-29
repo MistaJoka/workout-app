@@ -1,15 +1,23 @@
 import { useEffect, useState } from 'react'
 import { BackButton } from '../components/BackButton'
 import { useTheme } from '../theme/ThemeContext'
-import { requestPersistentStorage, storageStatusLabel, type StorageStatus } from '../pwa/storagePersistence'
+import {
+  getStorageEstimate,
+  requestPersistentStorage,
+  storageStatusLabel,
+  storageUsageLabel,
+  type StorageStatus,
+} from '../pwa/storagePersistence'
 import { RaeFace } from '../components/Rae'
 
 export function AboutScreen() {
   const { motion, setMotion } = useTheme()
   const [storage, setStorage] = useState<StorageStatus>('unknown')
+  const [usage, setUsage] = useState<string | null>(null)
 
   useEffect(() => {
     requestPersistentStorage().then(setStorage)
+    getStorageEstimate().then((estimate) => setUsage(storageUsageLabel(estimate)))
   }, [])
 
   return (
@@ -29,6 +37,7 @@ export function AboutScreen() {
           Version {__APP_VERSION__} ({__GIT_SHA__}), built {new Date(__BUILD_DATE__).toLocaleDateString()}
         </p>
         <p>{storageStatusLabel(storage)}</p>
+        {usage && <p>{usage}</p>}
       </section>
 
       {/* Moved here from Settings: most people never need it, and the

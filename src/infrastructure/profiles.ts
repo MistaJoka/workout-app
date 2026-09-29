@@ -83,6 +83,38 @@ export function removeProfile(id: string, store: KeyValueStore | null = browserS
   return next
 }
 
+// Deletes another person's data: their database first, then their entry, so
+// a failed or blocked delete never leaves an orphaned database behind a
+// removed profile. The active profile and the last profile are refused
+// before anything is touched. A delete that stays blocked (the database is
+// open in another tab or window) gives up after blockedAfterMs and keeps
+// the entry, so it can be retried once that window closes.
+export async function deleteProfile(
+  id: string,
+  {
+    store = browserStore(),
+    deleteDb,
+    blockedAfterMs = 5_000,
+  }: { store?: KeyValueStore | null; deleteDb: (dbName: string) => Promise<void>; blockedAfterMs?: number }
+): Promise<'deleted' | 'refused' | 'blocked'> {
+  const state = loadProfiles(store)
+  if (state.profiles.length <= 1 || id === state.activeId || !state.profiles.some((p) => p.id === id)) {
+    return 'refused'
+  }
+  let timer: ReturnType<typeof setTimeout> | undefined
+  const blocked = new Promise<'blocked'>((resolve) => {
+    timer = setTimeout(() => resolve('blocked'), blockedAfterMs)
+  })
+  try {
+    const outcome = await Promise.race([deleteDb(dbNameFor(id)).then(() => 'done' as const), blocked])
+    if (outcome === 'blocked') return 'blocked'
+  } finally {
+    clearTimeout(timer)
+  }
+  removeProfile(id, store)
+  return 'deleted'
+}
+
 export function setActiveProfile(id: string, store: KeyValueStore | null = browserStore()): void {
   const state = loadProfiles(store)
   if (!state.profiles.some((p) => p.id === id)) return

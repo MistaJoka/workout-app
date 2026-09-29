@@ -57,6 +57,12 @@ export async function addExerciseToCustomTemplate(
   })
 }
 
+// Records the deletion (settings 'deletedRoutines', id -> deletedAt) so an
+// older backup imported later can't bring the routine back.
 export async function deleteCustomTemplate(id: string): Promise<void> {
-  await db.customTemplates.delete(id)
+  await db.transaction('rw', db.customTemplates, db.settings, async () => {
+    await db.customTemplates.delete(id)
+    const marks = ((await db.settings.get('deletedRoutines'))?.value ?? {}) as Record<string, string>
+    await db.settings.put({ key: 'deletedRoutines', value: { ...marks, [id]: new Date().toISOString() } })
+  })
 }
