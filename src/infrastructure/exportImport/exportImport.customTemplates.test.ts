@@ -30,6 +30,6 @@ describe('export/import of custom routines', () => {
     const bundle = await exportAll()
     const { customTemplates: _dropped, ...legacy } = bundle
     expect(isValidExportBundle(legacy)).toBe(true)
-    await expect(importAll(legacy)).resolves.toBeUndefined()
+    await expect(importAll(legacy)).resolves.toEqual({ state: 'merged' })
   })
 })

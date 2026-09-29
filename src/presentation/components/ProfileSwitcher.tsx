@@ -2,9 +2,8 @@ import { useState } from 'react'
 import Dexie from 'dexie'
 import {
   addProfile,
-  dbNameFor,
+  deleteProfile,
   loadProfiles,
-  removeProfile,
   renameProfile,
   setActiveProfile,
   type Profile,
@@ -22,6 +21,8 @@ export function ProfileSwitcher() {
   const [draft, setDraft] = useState('')
   const [renaming, setRenaming] = useState<Profile | null>(null)
   const [confirmRemove, setConfirmRemove] = useState<Profile | null>(null)
+  const [removing, setRemoving] = useState(false)
+  const [removeError, setRemoveError] = useState<string | null>(null)
   // Derived from the state already in memory — no localStorage parse per render.
   const active = state.profiles.find((p) => p.id === state.activeId) ?? state.profiles[0]
 
@@ -42,11 +43,27 @@ export function ProfileSwitcher() {
     switchTo(profile.id)
   }
 
+  // Reads fresh profile state inside deleteProfile, so a stale sheet can't
+  // delete the active person; the database goes first so a failure never
+  // orphans it. Failures are local and say so.
   async function handleRemove(profile: Profile) {
-    removeProfile(profile.id)
-    await Dexie.delete(dbNameFor(profile.id))
-    setConfirmRemove(null)
-    refresh()
+    setRemoving(true)
+    setRemoveError(null)
+    try {
+      const result = await deleteProfile(profile.id, { deleteDb: (name) => Dexie.delete(name) })
+      if (result === 'blocked') {
+        setRemoveError(`${profile.name}'s data is open in another window. Close it, then try again.`)
+      } else if (result === 'refused') {
+        setRemoveError(`${profile.name} can't be removed right now.`)
+      } else {
+        setConfirmRemove(null)
+      }
+    } catch {
+      setRemoveError(`Couldn't remove ${profile.name}'s data on this device. Nothing was changed.`)
+    } finally {
+      setRemoving(false)
+      refresh()
+    }
   }
 
   return (
@@ -121,8 +138,13 @@ export function ProfileSwitcher() {
                         </button>
                         {!isActive && state.profiles.length > 1 && (
                           confirmRemove?.id === profile.id ? (
-                            <button type="button" className="btn-danger btn-sm" onClick={() => handleRemove(profile)}>
-                              Delete all their data
+                            <button
+                              type="button"
+                              className="btn-danger btn-sm"
+                              disabled={removing}
+                              onClick={() => void handleRemove(profile)}
+                            >
+                              {removing ? 'Removing…' : 'Delete all their data'}
                             </button>
                           ) : (
                             <button type="button" className="btn-ghost" onClick={() => setConfirmRemove(profile)}>
@@ -136,6 +158,11 @@ export function ProfileSwitcher() {
                 )
               })}
             </ul>
+            {removeError && (
+              <p className="text-sm font-semibold" role="alert">
+                {removeError}
+              </p>
+            )}
 
             {adding ? (
               <form
