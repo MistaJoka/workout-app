@@ -1,3 +1,4 @@
+import type { ReactNode } from 'react'
 import { Link } from 'react-router-dom'
 
 // The panel joined to the bottom of Rae's room: the one thing to do today.
@@ -27,7 +28,8 @@ const FIELD: Record<Mission['kind'], string> = {
   rest: 'bg-field-calm',
 }
 
-export function TodayMission({ mission }: { mission: Mission }) {
+// `resumeActions` sits under Resume (Finish / Discard for a workout left open).
+export function TodayMission({ mission, resumeActions }: { mission: Mission; resumeActions?: ReactNode }) {
   return (
     <div className={`today-mission ${FIELD[mission.kind]} p-4 space-y-3`}>
       {mission.kind === 'ready' && (
@@ -83,6 +85,7 @@ export function TodayMission({ mission }: { mission: Mission }) {
           <Link to={mission.to} className="btn-primary btn-lg w-full">
             Resume workout
           </Link>
+          {resumeActions}
         </>
       )}
 

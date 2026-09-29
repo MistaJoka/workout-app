@@ -3,7 +3,8 @@ import { Link } from 'react-router-dom'
 import { getAllSessionHistory } from '../../infrastructure/db/repositories/sessionRepository'
 import { getTemplate } from '../../domain/content/catalog'
 import { projectSetRecords } from '../../domain/progress/history'
-import { calculateStreak, detectPersonalRecords, weeklyTotals } from '../../domain/progress/stats'
+import { calculateWeekStreak, detectPersonalRecords, weeklyGoal, weeklyTotals } from '../../domain/progress/stats'
+import { getWeeklySchedule } from '../../infrastructure/db/repositories/scheduleRepository'
 import type { PersonalRecord, WeekTotal } from '../../domain/progress/types'
 import { formatWeight } from '../units'
 import { useWeightUnit } from '../components/useWeightUnit'
@@ -13,6 +14,8 @@ import { RaeNote } from '../components/RaeNote'
 
 type Snapshot = {
   rows: HistoryRow[]
+  // Weeks in a row with at least `goal` workouts (weeklyGoal).
+  goal: number
   streak: number
   weeks: WeekTotal[]
   records: PersonalRecord[]
@@ -40,13 +43,14 @@ export function ProgressScreen() {
   }, [attempt])
 
   async function load(): Promise<Snapshot> {
-    const { plans, results, events } = await getAllSessionHistory()
+    const [{ plans, results, events }, schedule] = await Promise.all([getAllSessionHistory(), getWeeklySchedule()])
     const rows = await buildHistoryRows(plans, results, getTemplate)
     const setRecords = projectSetRecords(plans, results, events)
     const now = new Date()
     return {
       rows,
-      streak: calculateStreak(results, now),
+      goal: weeklyGoal(schedule),
+      streak: calculateWeekStreak(results, weeklyGoal(schedule), now),
       weeks: weeklyTotals(results, now, 8),
       records: [...detectPersonalRecords(setRecords).values()].sort((a, b) => a.exerciseName.localeCompare(b.exerciseName)),
     }
@@ -79,7 +83,7 @@ export function ProgressScreen() {
           <span className="font-semibold">
             {totalWorkouts === 1 ? '1 workout' : `${totalWorkouts} workouts`} and {totalSets} sets so far.
           </span>{' '}
-          {snapshot.streak >= 2 ? `${snapshot.streak} days in a row. ` : ''}Proud of you.
+          {snapshot.streak >= 2 ? `${snapshot.streak} weeks in a row. ` : ''}Proud of you.
         </RaeNote>
       )}
 
@@ -88,7 +92,11 @@ export function ProgressScreen() {
           <div className="flex gap-3">
             <Stat value={totalWorkouts} label={totalWorkouts === 1 ? 'workout' : 'workouts'} />
             <Stat value={totalSets} label="sets done" />
-            <Stat value={snapshot.streak} label="day streak" />
+            <Stat
+              value={snapshot.streak}
+              label="week streak"
+              hint={`Weeks with ${snapshot.goal}+ workouts`}
+            />
           </div>
 
           <section className="card p-3">
@@ -151,11 +159,12 @@ export function ProgressScreen() {
   )
 }
 
-function Stat({ value, label }: { value: number; label: string }) {
+function Stat({ value, label, hint }: { value: number; label: string; hint?: string }) {
   return (
     <div className="flex-1 field-info p-3 text-center">
       <p className="hud-num text-3xl font-bold">{value}</p>
       <p className="text-xs text-ink-muted">{label}</p>
+      {hint && <p className="sr-only">{hint}</p>}
     </div>
   )
 }

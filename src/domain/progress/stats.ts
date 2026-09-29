@@ -1,4 +1,5 @@
 import type { SessionResult } from '../session/types'
+import type { WeeklySchedule } from '../schedule/weeklySchedule'
 import type { ExerciseHistoryPoint, PersonalRecord, SetRecord, WeekTotal } from './types'
 
 // Behaviorally adapted from ischys-app/Ischys (MIT) stats/records/streak
@@ -95,6 +96,35 @@ export function calculateStreak(results: readonly SessionResult[], now: Date): n
   while (days.has(localDayKey(cursor))) {
     streak += 1
     cursor = shiftDays(cursor, -1)
+  }
+  return streak
+}
+
+// Owner default ("go for all", 2026-09-29): the weekly goal is the number of
+// planned workout days in the weekly schedule, or 2 when nothing is planned.
+export const DEFAULT_WEEKLY_GOAL = 2
+
+export function weeklyGoal(schedule: WeeklySchedule | null): number {
+  const planned = schedule ? Object.values(schedule).filter((p) => p != null && p !== 'rest').length : 0
+  return planned > 0 ? planned : DEFAULT_WEEKLY_GOAL
+}
+
+// Consecutive Monday-start weeks with at least `goal` finished workouts. The
+// current week counts once it has met the goal and never breaks the streak
+// while it's still in progress, so a planned rest day costs nothing.
+export function calculateWeekStreak(results: readonly SessionResult[], goal: number, now: Date): number {
+  const counts = new Map<string, number>()
+  for (const r of results) {
+    const key = localDayKey(isoWeekStart(new Date(r.endedAt)))
+    counts.set(key, (counts.get(key) ?? 0) + 1)
+  }
+  const met = (week: Date) => (counts.get(localDayKey(week)) ?? 0) >= goal
+  let week = isoWeekStart(now)
+  let streak = met(week) ? 1 : 0
+  week = shiftDays(week, -7)
+  while (met(week)) {
+    streak += 1
+    week = shiftDays(week, -7)
   }
   return streak
 }

@@ -1,4 +1,4 @@
-import { replayEvents } from '../domain/session/sessionMachine'
+import { applyEvent, initSessionState, replayEvents } from '../domain/session/sessionMachine'
 import { withoutIneffectiveSets } from '../domain/session/appliedEvents'
 import type { SessionEvent, SessionEventType, SessionPlan, SessionResult, SessionState } from '../domain/session/types'
 import * as sessionRepo from '../infrastructure/db/repositories/sessionRepository'
@@ -96,6 +96,7 @@ async function persistResultIfMissing(sessionId: string, state: SessionState): P
   // Only sets the machine applied (a racing duplicate tap is stored but ignored).
   const events = withoutIneffectiveSets(plan, await sessionRepo.getEventsForSession(sessionId))
   const startEvent = events.find((e) => e.type === 'SESSION_STARTED')
+  const endEvent = completingEvent(plan, events)
   const completedCount = events.filter((e) => e.type === 'SET_COMPLETED').length
   const totalSetsPlanned = plan.exercises.reduce((sum, e) => sum + e.sets, 0)
   const result: SessionResult = {
@@ -103,7 +104,9 @@ async function persistResultIfMissing(sessionId: string, state: SessionState): P
     planId: plan.id,
     status: state.status === 'COMPLETED' ? 'COMPLETED' : 'COMPLETED_SHORTENED',
     startedAt: startEvent?.timestamp ?? plan.createdAt,
-    endedAt: new Date().toISOString(),
+    // When the workout actually ended, not when this write happened: a
+    // result repaired on a later reopen must not move the workout to that day.
+    endedAt: endEvent?.timestamp ?? new Date().toISOString(),
     totalSetsCompleted: completedCount,
     totalSetsPlanned,
   }
@@ -122,6 +125,63 @@ async function persistResultIfMissing(sessionId: string, state: SessionState): P
     }
     throw error
   }
+}
+
+// The event that moved the replayed session into a finished status.
+function completingEvent(plan: SessionPlan, events: readonly SessionEvent[]): SessionEvent | undefined {
+  let state = initSessionState()
+  for (const event of events) {
+    state = applyEvent(plan, state, event)
+    if (state.status === 'COMPLETED' || state.status === 'COMPLETED_SHORTENED') return event
+  }
+  return undefined
+}
+
+// Owner default ("go for all", 2026-09-29): a workout untouched for 12 hours
+// is over. It is finished as ended early at its last action, so its sets
+// count and nothing lands on the day it was noticed.
+export const ABANDON_AFTER_MS = 12 * 60 * 60 * 1000
+
+function lastEventAt(events: readonly SessionEvent[], fallback: string): string {
+  return events.reduce((latest, e) => (e.timestamp > latest ? e.timestamp : latest), fallback)
+}
+
+async function endAt(plan: SessionPlan, at: string): Promise<void> {
+  await sessionRepo.appendEvent({
+    eventId: `${plan.id}:auto-end`,
+    sessionId: plan.id,
+    type: 'SESSION_COMPLETED_SHORTENED',
+    timestamp: at,
+    payload: { reason: 'idle' },
+  })
+  await getCurrentState(plan.id)
+}
+
+// Tidies unfinished sessions and returns the one to offer for resume, if
+// any: sessions idle past ABANDON_AFTER_MS, and every recent one but the
+// newest, are ended early at their last action. Idempotent.
+export async function settleOpenSessions(now: Date = new Date()): Promise<SessionPlan | null> {
+  const open = await sessionRepo.getInProgressSessions()
+  let offered: SessionPlan | null = null
+  for (const plan of open) {
+    // A session whose end landed but whose result didn't is repaired here.
+    const state = await getCurrentState(plan.id)
+    if (state.status === 'COMPLETED' || state.status === 'COMPLETED_SHORTENED') continue
+    const last = lastEventAt(await sessionRepo.getEventsForSession(plan.id), plan.createdAt)
+    const idle = now.getTime() - Date.parse(last) > ABANDON_AFTER_MS
+    if (!idle && offered === null) {
+      offered = plan
+      continue
+    }
+    await endAt(plan, last)
+  }
+  return offered
+}
+
+// Throws away an unfinished session (Today's "Discard"). Finished sessions
+// are history and are refused.
+export async function discardSession(sessionId: string): Promise<void> {
+  await sessionRepo.deleteUnfinishedSession(sessionId)
 }
 
 async function updateProgressionAfterSession(sessionId: string): Promise<void> {

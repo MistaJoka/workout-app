@@ -3,7 +3,7 @@ import { db } from '../infrastructure/db/schema'
 import * as sessionRepo from '../infrastructure/db/repositories/sessionRepository'
 import * as progressionRepo from '../infrastructure/db/repositories/familiarityProgressionRepository'
 import { getProgression } from '../infrastructure/db/repositories/familiarityProgressionRepository'
-import { getCurrentState, recordEvent, startSession } from './sessionService'
+import { ABANDON_AFTER_MS, discardSession, getCurrentState, recordEvent, settleOpenSessions, startSession } from './sessionService'
 import type { SessionPlan } from '../domain/session/types'
 
 const plan: SessionPlan = {
@@ -248,5 +248,98 @@ describe('atomicity', () => {
     await getCurrentState(repsPlan.id)
     await recordEvent(repsPlan.id, 'SET_COMPLETED', 'evt-set-1', { exerciseId: 'ex1', met: true })
     expect((await getProgression('ex1')).currentPrescribedReps).toBe(12)
+  })
+})
+
+// Seeds a started session directly, with explicit event timestamps.
+async function seedStarted(
+  p: SessionPlan,
+  events: { id: string; type: 'SESSION_STARTED' | 'SET_COMPLETED' | 'REST_SKIPPED'; at: string }[]
+) {
+  await sessionRepo.savePlan(p)
+  for (const e of events) {
+    await sessionRepo.appendEvent({
+      eventId: e.id,
+      sessionId: p.id,
+      type: e.type,
+      timestamp: e.at,
+      payload: e.type === 'SET_COMPLETED' ? { exerciseId: 'ex1', met: true } : {},
+    })
+  }
+}
+
+const twoSetPlan = (id: string, createdAt = '2026-09-20T10:00:00.000Z'): SessionPlan => ({
+  ...plan,
+  id,
+  createdAt,
+  exercises: [{ exerciseId: 'ex1', exerciseVersion: 1, name: 'Exercise One', sets: 2, reps: 10, restSeconds: 60, order: 0 }],
+})
+
+describe('endedAt', () => {
+  it('is the completing event time, not when the result happened to be written', async () => {
+    const p = twoSetPlan('s-ended')
+    await seedStarted(p, [
+      { id: 'a', type: 'SESSION_STARTED', at: '2026-09-20T10:00:00.000Z' },
+      { id: 'b', type: 'SET_COMPLETED', at: '2026-09-20T10:01:00.000Z' },
+      { id: 'c', type: 'REST_SKIPPED', at: '2026-09-20T10:02:00.000Z' },
+      { id: 'd', type: 'SET_COMPLETED', at: '2026-09-20T10:03:00.000Z' },
+    ])
+    await getCurrentState(p.id) // repaired days later
+    expect((await sessionRepo.getResult(p.id))?.endedAt).toBe('2026-09-20T10:03:00.000Z')
+  })
+})
+
+describe('settleOpenSessions', () => {
+  const now = new Date('2026-09-22T12:00:00.000Z')
+
+  it(`finishes a session idle longer than ${ABANDON_AFTER_MS / 3_600_000}h as ended early, at its last action`, async () => {
+    const p = twoSetPlan('s-old')
+    await seedStarted(p, [
+      { id: 'a', type: 'SESSION_STARTED', at: '2026-09-20T10:00:00.000Z' },
+      { id: 'b', type: 'SET_COMPLETED', at: '2026-09-20T10:01:00.000Z' },
+    ])
+    expect(await settleOpenSessions(now)).toBeNull()
+    expect(await sessionRepo.getResult(p.id)).toMatchObject({
+      status: 'COMPLETED_SHORTENED',
+      endedAt: '2026-09-20T10:01:00.000Z',
+      totalSetsCompleted: 1,
+    })
+    expect(await sessionRepo.getInProgressSessions()).toEqual([])
+    // Idempotent.
+    expect(await settleOpenSessions(now)).toBeNull()
+  })
+
+  it('offers only the newest recent session and ends older recent ones', async () => {
+    const older = twoSetPlan('s-a', '2026-09-22T09:00:00.000Z')
+    const newer = twoSetPlan('s-b', '2026-09-22T11:00:00.000Z')
+    await seedStarted(older, [{ id: 'a1', type: 'SESSION_STARTED', at: '2026-09-22T09:00:00.000Z' }])
+    await seedStarted(newer, [{ id: 'b1', type: 'SESSION_STARTED', at: '2026-09-22T11:00:00.000Z' }])
+    const offered = await settleOpenSessions(now)
+    expect(offered?.id).toBe('s-b')
+    expect(await sessionRepo.getResult('s-a')).toMatchObject({
+      status: 'COMPLETED_SHORTENED',
+      endedAt: '2026-09-22T09:00:00.000Z',
+    })
+    expect(await sessionRepo.getResult('s-b')).toBeUndefined()
+  })
+})
+
+describe('discardSession', () => {
+  it('removes an unfinished session entirely', async () => {
+    const p = twoSetPlan('s-discard')
+    await seedStarted(p, [
+      { id: 'a', type: 'SESSION_STARTED', at: '2026-09-22T11:00:00.000Z' },
+      { id: 'b', type: 'SET_COMPLETED', at: '2026-09-22T11:01:00.000Z' },
+    ])
+    await discardSession(p.id)
+    expect(await sessionRepo.getPlan(p.id)).toBeUndefined()
+    expect(await sessionRepo.getEventsForSession(p.id)).toEqual([])
+  })
+
+  it('refuses to delete a finished session: history is immutable', async () => {
+    await startSession(plan)
+    await recordEvent(plan.id, 'SET_COMPLETED', 'evt-set-1')
+    await expect(discardSession(plan.id)).rejects.toThrow()
+    expect(await sessionRepo.getPlan(plan.id)).toBeDefined()
   })
 })

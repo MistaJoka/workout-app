@@ -1,5 +1,14 @@
 import { describe, expect, it } from 'vitest'
-import { calculateStreak, calculateVolume, detectPersonalRecords, perExerciseHistory, weeklyTotals } from './stats'
+import {
+  calculateStreak,
+  calculateVolume,
+  calculateWeekStreak,
+  detectPersonalRecords,
+  perExerciseHistory,
+  weeklyGoal,
+  weeklyTotals,
+} from './stats'
+import { EMPTY_SCHEDULE } from '../schedule/weeklySchedule'
 import type { SetRecord } from './types'
 import type { SessionResult } from '../session/types'
 
@@ -63,6 +72,41 @@ describe('detectPersonalRecords', () => {
   it('ignores missed sets — no record is invented from a prescription that was not met', () => {
     const records = detectPersonalRecords([rec({ prescribedReps: 20, met: false }), rec({ prescribedReps: 8, met: true, setNumber: 2 })])
     expect(records.get('squat')?.value).toBe(8)
+  })
+})
+
+describe('weeklyGoal', () => {
+  it('is the number of planned workout days, or 2 with no plan', () => {
+    expect(weeklyGoal(null)).toBe(2)
+    expect(weeklyGoal(EMPTY_SCHEDULE)).toBe(2)
+    expect(weeklyGoal({ ...EMPTY_SCHEDULE, 1: 'fs.full-body-a', 3: 'fs.full-body-b', 5: 'fs.quick-10', 0: 'rest' })).toBe(3)
+  })
+})
+
+describe('calculateWeekStreak', () => {
+  // 2026-09-28 is a Monday.
+  const at = (d: number) => result(`r${d}`, local(2026, 9, d).toISOString())
+
+  it('counts consecutive Monday-start weeks that met the goal, including this week once met', () => {
+    const now = local(2026, 9, 30) // Wednesday
+    const results = [at(14), at(16), at(21), at(24), at(28), at(29)]
+    expect(calculateWeekStreak(results, 2, now)).toBe(3)
+  })
+
+  it("doesn't break on a week still in progress", () => {
+    const now = local(2026, 9, 29) // Tuesday, nothing yet this week
+    const results = [at(14), at(16), at(21), at(24)]
+    expect(calculateWeekStreak(results, 2, now)).toBe(2)
+  })
+
+  it('stops at the first past week that fell short', () => {
+    const now = local(2026, 9, 29)
+    const results = [at(7), at(9), at(14), at(21), at(24)]
+    expect(calculateWeekStreak(results, 2, now)).toBe(1)
+  })
+
+  it('is zero with no history', () => {
+    expect(calculateWeekStreak([], 2, local(2026, 9, 29))).toBe(0)
   })
 })
 

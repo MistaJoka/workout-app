@@ -91,6 +91,19 @@ export async function getInProgressSessions(): Promise<SessionPlan[]> {
   return open.filter((p) => startedIds.has(p.id)).sort((a, b) => b.createdAt.localeCompare(a.createdAt))
 }
 
+// The one deletion of session data: a session that never finished never
+// became history, so discarding it removes its plan and events. A session
+// with a result is immutable and is refused.
+export async function deleteUnfinishedSession(sessionId: string): Promise<void> {
+  await db.transaction('rw', [db.sessionPlans, db.sessionEvents, db.sessionResults], async () => {
+    if (await db.sessionResults.get(sessionId)) {
+      throw new Error(`Session ${sessionId} is finished; history is immutable and cannot be deleted`)
+    }
+    await db.sessionEvents.where('sessionId').equals(sessionId).delete()
+    await db.sessionPlans.delete(sessionId)
+  })
+}
+
 // Runs `work` in one read-write transaction over every store a session
 // touches, so a multi-step write (plan + start event; result + progression +
 // familiarity) lands whole or not at all. Repository calls made inside
