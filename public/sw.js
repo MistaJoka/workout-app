@@ -3,6 +3,10 @@
 // - CACHE_NAME holds the app shell (index.html, manifest, every built chunk,
 //   the precached curated photos). It is named after the build, so each
 //   deploy installs a fresh one and activate deletes the old one wholesale.
+//   A new worker does NOT take over on its own: it waits until the app is
+//   closed, or until the user taps Reload on the "Update ready" toast
+//   (which posts SKIP_WAITING). A workout in progress keeps running on the
+//   build it started with, whose lazy chunks are still in its cache.
 //   BUILD_ID and BUILD_ASSETS are filled in by the `sw-build-manifest`
 //   plugin in vite.config.ts when dist/ is written; in `vite dev` they keep
 //   the placeholders below. Changing anything in SHELL_URLS needs no manual
@@ -13,11 +17,17 @@
 //   its photos offline across app updates. Upstream photos never go stale
 //   (pinned revision). Rae's files are requested as `...?v=<content hash>`
 //   (src/presentation/components/raeLoops.ts), so a redraw is a new URL;
-//   putMedia drops the old version of the same file when it caches the new.
+//   putMedia drops the old version of the same file when it caches the new,
+//   and activate drops files of versions/loops the build no longer lists.
+//   Only real (CORS/same-origin, ok) responses are cached: an opaque
+//   response can hide a 404 forever and counts ~7 MB against quota in
+//   Chromium. Library photos are capped at MAX_LIBRARY_PHOTOS, oldest out.
 const BUILD_ID = 'dev'
 const BUILD_ASSETS = []
 const CACHE_NAME = `workout-app-shell-${BUILD_ID}`
 const MEDIA_CACHE_NAME = 'workout-app-media-v1'
+const MAX_LIBRARY_PHOTOS = 300
+const UPSTREAM_PHOTO = (url) => url.hostname === 'raw.githubusercontent.com' && url.pathname.includes('/free-exercise-db/')
 
 // Movement photos are precached so a workout works fully offline even if
 // the user never opened every exercise while online. Keep in sync with
@@ -43,7 +53,11 @@ const RAE_URLS = [
   '/rae/full-3q.png',
   '/rae/loops.json',
 ]
-const SHELL_URLS = ['/', '/manifest.json', ...MEDIA_URLS, ...RAE_URLS, ...BUILD_ASSETS.map((f) => `/${f}`)]
+// The shell must install whole (a half-installed build can't run offline);
+// media is best-effort, so one flaky image fetch never costs the app its
+// offline copy. Anything that missed is cached the first time it's shown.
+const SHELL_URLS = ['/', '/manifest.json', '/rae/loops.json', ...BUILD_ASSETS.map((f) => `/${f}`)]
+const BEST_EFFORT_URLS = [...MEDIA_URLS, ...RAE_URLS.filter((u) => u !== '/rae/loops.json')]
 
 // `cache: 'reload'` skips the browser's HTTP cache, which can otherwise hand
 // the new worker an old build's index.html.
@@ -54,6 +68,13 @@ self.addEventListener('install', (event) => {
     (async () => {
       const shell = await caches.open(CACHE_NAME)
       await shell.addAll(SHELL_URLS.map(fresh))
+      await Promise.all(
+        BEST_EFFORT_URLS.map((url) =>
+          fetch(fresh(url))
+            .then((response) => (response.ok ? shell.put(url, response) : undefined))
+            .catch(() => undefined)
+        )
+      )
       // Rae's featured loops (listed in /rae/loops.json by
       // scripts/assets/build-rae-strips.py) are precached into the media
       // cache, at the exact versioned URLs the app asks for. Only the ones
@@ -67,13 +88,20 @@ self.addEventListener('install', (event) => {
       const missing = []
       for (const url of wanted) if (!(await media.match(url))) missing.push(url)
       for (const url of missing) {
-        const response = await fetch(fresh(url))
-        if (!response.ok) throw new Error(`precache ${url}: ${response.status}`)
-        await putMedia(media, new Request(url), response)
+        try {
+          const response = await fetch(fresh(url))
+          if (response.ok) await putMedia(media, new Request(url), response)
+        } catch {
+          // Best-effort: cached on first view instead.
+        }
       }
     })()
   )
-  self.skipWaiting()
+})
+
+// The "Update ready" toast's Reload asks the waiting worker to take over.
+self.addEventListener('message', (event) => {
+  if (event.data && event.data.type === 'SKIP_WAITING') self.skipWaiting()
 })
 
 self.addEventListener('activate', (event) => {
@@ -81,17 +109,47 @@ self.addEventListener('activate', (event) => {
     (async () => {
       const keys = await caches.keys()
       await Promise.all(keys.filter((k) => k !== CACHE_NAME && k !== MEDIA_CACHE_NAME).map((k) => caches.delete(k)))
-      // Rae files cached before URLs were versioned can never be requested
-      // again; drop them.
-      const media = await caches.open(MEDIA_CACHE_NAME)
-      for (const request of await media.keys()) {
-        const url = new URL(request.url)
-        if (url.pathname.startsWith('/rae/') && !url.searchParams.has('v')) await media.delete(request)
-      }
+      await pruneMedia()
     })()
   )
   self.clients.claim()
 })
+
+// Drops media the current build can never ask for again: Rae files of a
+// version or loop loops.json no longer lists (or from before URLs were
+// versioned), opaque library photos cached by older builds, and library
+// photos beyond the cap (oldest first; Cache keys come back in insertion
+// order).
+async function pruneMedia() {
+  const media = await caches.open(MEDIA_CACHE_NAME)
+  const shell = await caches.open(CACHE_NAME)
+  const loopsResponse = await shell.match('/rae/loops.json')
+  const current = new Map()
+  if (loopsResponse) {
+    for (const loop of await loopsResponse.json()) {
+      current.set(`/rae/${loop.id}.webp`, loop.v)
+      for (const still of loop.stills) current.set(`/rae/${loop.id}-${still}.png`, loop.v)
+    }
+  }
+  const photos = []
+  for (const request of await media.keys()) {
+    const url = new URL(request.url)
+    if (url.pathname.startsWith('/rae/')) {
+      if (!loopsResponse) continue
+      if (current.get(url.pathname) !== url.searchParams.get('v')) await media.delete(request)
+    } else if (UPSTREAM_PHOTO(url)) {
+      const cached = await media.match(request)
+      if (!cached || cached.type === 'opaque' || !cached.ok) await media.delete(request)
+      else photos.push(request)
+    }
+  }
+  for (const request of photos.slice(0, Math.max(0, photos.length - MAX_LIBRARY_PHOTOS))) await media.delete(request)
+}
+
+async function capLibraryPhotos(cache) {
+  const photos = (await cache.keys()).filter((request) => UPSTREAM_PHOTO(new URL(request.url)))
+  for (const request of photos.slice(0, Math.max(0, photos.length - MAX_LIBRARY_PHOTOS))) await cache.delete(request)
+}
 
 // Caches a Rae file and removes any other version of the same path.
 async function putMedia(cache, request, response) {
@@ -112,13 +170,17 @@ self.addEventListener('fetch', (event) => {
   // cached the first time they're viewed (cache-first afterwards) in the
   // long-lived media cache, so a routine built from the library keeps its
   // photos offline once seen — including across app updates.
-  if (url.hostname === 'raw.githubusercontent.com' && url.pathname.includes('/free-exercise-db/')) {
+  // Photos are requested with crossOrigin="anonymous", so a good response is
+  // readable (ok); an opaque one (an <img> without it) is served, not stored.
+  if (UPSTREAM_PHOTO(url)) {
     event.respondWith(
       caches.open(MEDIA_CACHE_NAME).then((cache) =>
-        cache.match(request).then((cached) => {
-          if (cached) return cached
+        cache.match(request, { ignoreVary: true }).then((cached) => {
+          if (cached && cached.type !== 'opaque') return cached
           return fetch(request).then((response) => {
-            if (response.ok || response.type === 'opaque') cache.put(request, response.clone())
+            if (response.ok && response.type !== 'opaque') {
+              cache.put(request, response.clone()).then(() => capLibraryPhotos(cache))
+            }
             return response
           })
         })

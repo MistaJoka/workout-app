@@ -24,6 +24,8 @@ export function ExerciseThumb({
     )
   }
   const photo = exercise?.mediaManifest.start
-  if (photo) return <img src={photo} alt="" loading="lazy" className={`${className} flex-none object-cover`} />
+  // crossOrigin: the service worker only keeps readable (CORS) photo
+  // responses offline; the pinned upstream host sends CORS headers.
+  if (photo) return <img src={photo} alt="" loading="lazy" crossOrigin="anonymous" className={`${className} flex-none object-cover`} />
   return <div className={`${className} flex-none bg-bg`} />
 }

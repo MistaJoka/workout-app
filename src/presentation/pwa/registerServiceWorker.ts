@@ -1,26 +1,47 @@
 import { notifyUpdateReady } from './updateSignal'
 
+// A newer build installs in the background and then waits (sw.js never
+// calls skipWaiting on its own), so a workout in progress keeps running on
+// the build it started with. The "Update ready" toast calls applyUpdate():
+// the waiting worker takes over, and the page reloads onto the new build.
+// Closing the app fully does the same without asking.
+let waiting: ServiceWorker | null = null
+let reloadWhenControlled = false
+
+function offer(worker: ServiceWorker | null): void {
+  if (!worker) return
+  waiting = worker
+  notifyUpdateReady()
+}
+
+export function applyUpdate(): void {
+  if (!waiting || !('serviceWorker' in navigator)) {
+    location.reload()
+    return
+  }
+  reloadWhenControlled = true
+  waiting.postMessage({ type: 'SKIP_WAITING' })
+  // If the handover never happens (the worker went redundant), reload anyway.
+  setTimeout(() => location.reload(), 3000)
+}
+
 export function registerServiceWorker(): void {
   if (!('serviceWorker' in navigator)) return
-
-  // On the very first install the new worker claims the page and fires
-  // controllerchange too; that's not an update, so remember whether a
-  // controller existed before we registered.
-  const hadController = navigator.serviceWorker.controller != null
 
   navigator.serviceWorker
     .register('/sw.js')
     .then((registration) => {
       // A worker already waiting means a newer build was fetched on a
       // previous visit.
-      if (registration.waiting && navigator.serviceWorker.controller) notifyUpdateReady()
+      if (navigator.serviceWorker.controller) offer(registration.waiting)
 
       registration.addEventListener('updatefound', () => {
         const installing = registration.installing
         if (!installing) return
         installing.addEventListener('statechange', () => {
-          // "installed" while a controller exists = update, not first install.
-          if (installing.state === 'installed' && navigator.serviceWorker.controller) notifyUpdateReady()
+          // "installed" while a controller exists = an update waiting, not
+          // the first install (which activates and claims the page itself).
+          if (installing.state === 'installed' && navigator.serviceWorker.controller) offer(installing)
         })
       })
     })
@@ -28,9 +49,7 @@ export function registerServiceWorker(): void {
       // Non-fatal: the app still works without offline shell caching.
     })
 
-  // sw.js calls skipWaiting()/clients.claim(), so the new worker takes over
-  // on its own; surfacing it lets the user reload for the new assets.
   navigator.serviceWorker.addEventListener('controllerchange', () => {
-    if (hadController) notifyUpdateReady()
+    if (reloadWhenControlled) location.reload()
   })
 }
