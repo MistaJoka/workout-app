@@ -8,6 +8,7 @@ import {
   foundationStrengthStarterPack,
   foundationStrengthStarterTemplates,
   quick10,
+  starterTemplates,
   templateById,
 } from './foundationStrengthStarter'
 
@@ -16,7 +17,7 @@ describe('foundationStrengthStarter', () => {
     const result = validateContentPack(
       foundationStrengthStarterPack,
       foundationStrengthStarterExercises,
-      foundationStrengthStarterTemplates
+      starterTemplates
     )
     expect(result.valid).toBe(true)
     expect(result.errors).toEqual([])
@@ -60,7 +61,7 @@ describe('foundationStrengthStarter', () => {
   })
 
   it('prescribes hold-based exercises by time, never reps, in every template', () => {
-    for (const template of foundationStrengthStarterTemplates) {
+    for (const template of starterTemplates) {
       for (const te of template.exercises) {
         const exercise = foundationStrengthStarterExercises.find((e) => e.id === te.exerciseId)!
         if (exercise.prescriptionCapabilities.hold) {

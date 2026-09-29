@@ -230,6 +230,8 @@ TypeScript
 
 Offline/service-worker E2E may require a separate project/setup because normal test contexts intentionally disable or isolate service-worker state; document that explicitly rather than claiming coverage that is not present.
 
+Current state (2026-09-29): CI runs the Chromium-mobile suite (`e2e` job) and the WebKit/iPhone suite (`e2e-webkit` job, inside Playwright's official Ubuntu image, whose tag is read from the lockfile). Locally, `npm run e2e` is Chromium and `npm run e2e:webkit` runs WebKit in the same Docker image. Playwright WebKit can't drive service-worker reloads, so the offline journeys (`e2e/offline.spec.ts`, `e2e/data-offline.spec.ts`) skip themselves on WebKit: real offline is proven in Chromium only, and real-iPhone offline stays a manual smoke check (section 13).
+
 ## 13. Manual iPhone smoke test
 
 Automated WebKit is necessary, not sufficient. Before meaningful releases, validate on a real target iPhone:

@@ -94,7 +94,7 @@ export function WeekBlooms({ week }: { week: WeekDay[] }) {
     >
       <div className="flex items-baseline justify-between px-1">
         <p className="font-bold">{summary}</p>
-        <span className="text-sm font-semibold text-primary">Plan</span>
+        <span className="text-sm font-semibold text-primary-ink">Plan</span>
       </div>
       <ol className="mt-1 grid grid-cols-7">
         {week.map((day, i) => (

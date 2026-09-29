@@ -37,7 +37,7 @@ function NavItem({ to, label, end, icon }: { to: string; label: string; end?: bo
       }}
       className={({ isActive }) =>
         `flex flex-1 flex-col items-center justify-center gap-0.5 text-xs font-bold ${
-          isActive ? 'text-primary' : 'text-ink-muted'
+          isActive ? 'text-primary-ink' : 'text-ink-muted'
         }`
       }
     >

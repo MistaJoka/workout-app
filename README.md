@@ -103,8 +103,8 @@ Missing product truth belongs in `support/CLAUDE_REQUESTS.md`; implementation ag
 
 ## Current high-value hardening work
 
-- run the WebKit journeys (`npm run e2e:webkit`) in CI, not only locally;
-- extend the offline journey to going offline mid-session and resuming;
-- harden session-start atomicity;
-- expand export/import corruption tests;
+- expand export/import corruption tests (row-level validation of backups);
+- an old-shell -> new-shell service-worker update during an active workout (no E2E yet);
 - integrate approved Pixel Bloom assets/animation in controlled batches.
+
+Done since this list was written: WebKit journeys run in CI (`e2e-webkit` job, Playwright's Ubuntu image; `npm run e2e:webkit` locally), the offline journey covers going offline mid-session and resuming (`e2e/data-offline.spec.ts`), and session start is atomic (plan + start event in one transaction).

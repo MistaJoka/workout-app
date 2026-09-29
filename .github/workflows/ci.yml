@@ -38,3 +38,38 @@ jobs:
           name: playwright-traces
           path: test-results/
           retention-days: 7
+
+  # The container image must match the installed @playwright/test exactly,
+  # so read the version from the lockfile instead of hardcoding it.
+  playwright-version:
+    runs-on: ubuntu-latest
+    needs: check
+    outputs:
+      version: ${{ steps.v.outputs.version }}
+    steps:
+      - uses: actions/checkout@v4
+      - id: v
+        run: echo "version=$(node -p "require('./package-lock.json').packages['node_modules/@playwright/test'].version")" >> "$GITHUB_OUTPUT"
+
+  # WebKit is the iPhone engine, which CLAUDE.md requires for critical
+  # journeys. Its Linux build needs Ubuntu libraries, so it runs inside
+  # Playwright's official image (same image as `npm run e2e:webkit`). The
+  # offline specs skip themselves on WebKit (it can't drive SW reloads).
+  e2e-webkit:
+    runs-on: ubuntu-latest
+    needs: playwright-version
+    container:
+      image: mcr.microsoft.com/playwright:v${{ needs.playwright-version.outputs.version }}-noble
+      options: --ipc=host
+    env:
+      HOME: /root
+    steps:
+      - uses: actions/checkout@v4
+      - run: npm ci
+      - run: npx playwright test --project=webkit-iphone
+      - uses: actions/upload-artifact@v4
+        if: failure()
+        with:
+          name: playwright-traces-webkit
+          path: test-results/
+          retention-days: 7

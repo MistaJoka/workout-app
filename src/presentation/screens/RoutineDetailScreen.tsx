@@ -3,6 +3,7 @@ import { Link, useLocation, useNavigate, useParams } from 'react-router-dom'
 import { getExercises, getTemplate } from '../../domain/content/catalog'
 import type { Exercise, WorkoutTemplate } from '../../domain/content/types'
 import { deleteCustomTemplate, isCustomTemplateId } from '../../infrastructure/db/repositories/customTemplateRepository'
+import { removeTemplateFromSchedule } from '../../infrastructure/db/repositories/scheduleRepository'
 import { formatWeight } from '../units'
 import { useWeightUnit } from '../components/useWeightUnit'
 import { BackButton } from '../components/BackButton'
@@ -76,6 +77,9 @@ export function RoutineDetailScreen() {
     setError(null)
     try {
       await deleteCustomTemplate(template.id)
+      // Days planned with this routine go back to "Not planned". Best effort:
+      // the Schedule screen also prunes unknown ids when it loads.
+      await removeTemplateFromSchedule(template.id).catch(() => undefined)
       navigate('/library', { replace: true })
     } catch {
       setError("Couldn't delete on this device. Try again.")

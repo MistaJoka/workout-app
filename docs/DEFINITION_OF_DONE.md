@@ -124,9 +124,9 @@ production build green
         ↓
 Chromium-mobile golden path green
         ↓
-WebKit/iPhone-like critical path green
+WebKit/iPhone-like critical path green (CI `e2e-webkit` job; `npm run e2e:webkit` locally)
         ↓
-real offline flow proven
+real offline flow proven (Chromium E2E; WebKit can't drive SW reloads, so real-iPhone offline is a manual check)
         ↓
 real iPhone smoke check
         ↓

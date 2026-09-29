@@ -5,6 +5,9 @@ export type ThemeTokens = {
   colorSurface: string
   colorPrimary: string
   colorPrimaryShadow: string
+  // Pink for text (links, active tab label, selected values). The fill pink
+  // is only 4.4:1 on the background and ~3:1 on the fields, under AA.
+  colorPrimaryInk: string
   // Text/icon color placed on the primary color (white on pink).
   colorOnPrimary: string
   colorAccent: string
@@ -39,6 +42,7 @@ export const PIXEL_BLOOM_TOKENS: ThemeTokens = {
   colorSurface: '#ffffff',
   colorPrimary: '#db2777',
   colorPrimaryShadow: '#b4286f',
+  colorPrimaryInk: '#a3195b',
   colorOnPrimary: '#ffffff',
   colorAccent: '#7c3aed',
   colorOnAccent: '#ffffff',
@@ -60,6 +64,7 @@ const TOKEN_CSS_VAR: Record<keyof ThemeTokens, string> = {
   colorSurface: '--color-surface',
   colorPrimary: '--color-primary',
   colorPrimaryShadow: '--color-primary-shadow',
+  colorPrimaryInk: '--color-primary-ink',
   colorOnPrimary: '--color-on-primary',
   colorAccent: '--color-accent',
   colorOnAccent: '--color-on-accent',

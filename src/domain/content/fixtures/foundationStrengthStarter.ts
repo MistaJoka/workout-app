@@ -17,6 +17,7 @@
 // 8-12 reps or a 20s hold, 30-45s rest), not clinically tuned — subject to
 // the same review.
 import type { ContentPack, Exercise, WorkoutTemplate } from '../types'
+import { raeDraftTemplates } from './raeDraftTemplates'
 
 const SOURCE = {
   sourceRepo: 'yuhonas/free-exercise-db',
@@ -281,7 +282,12 @@ export const quick10: WorkoutTemplate = {
   ],
 }
 
-export const foundationStrengthStarterTemplates: WorkoutTemplate[] = [fullBodyA, fullBodyB, quick10]
+// The starter pack's own templates (what the pack validates against).
+export const starterTemplates: WorkoutTemplate[] = [fullBodyA, fullBodyB, quick10]
+
+// Every curated template the app lists: the starter pack plus the draft
+// Rae workouts (warm-up, cool-down, chair day; raeDraftTemplates.ts).
+export const foundationStrengthStarterTemplates: WorkoutTemplate[] = [...starterTemplates, ...raeDraftTemplates]
 
 export const templateById: ReadonlyMap<string, WorkoutTemplate> = new Map(
   foundationStrengthStarterTemplates.map((t) => [t.id, t])
@@ -300,5 +306,5 @@ export const foundationStrengthStarterPack: ContentPack = {
   name: 'Foundation Strength (Starter)',
   dependsOn: [],
   exerciseIds: foundationStrengthStarterExercises.map((e) => e.id),
-  templateIds: foundationStrengthStarterTemplates.map((t) => t.id),
+  templateIds: starterTemplates.map((t) => t.id),
 }
