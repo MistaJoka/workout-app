@@ -3,8 +3,9 @@ import { useEffect, useState } from 'react'
 import { Link } from 'react-router-dom'
 import { ROTATION, foundationStrengthStarterTemplates } from '../../domain/content/fixtures/foundationStrengthStarter'
 import { getExercises, getTemplate } from '../../domain/content/catalog'
-import { getInProgressSessions, getPlan } from '../../infrastructure/db/repositories/sessionRepository'
-import { getCurrentState } from '../../application/sessionService'
+import { getPlan } from '../../infrastructure/db/repositories/sessionRepository'
+import { getCurrentState, settleOpenSessions } from '../../application/sessionService'
+import { ResumeActions } from '../components/ResumeActions'
 import { listCustomTemplates } from '../../infrastructure/db/repositories/customTemplateRepository'
 import { getWeeklySchedule } from '../../infrastructure/db/repositories/scheduleRepository'
 import { db } from '../../infrastructure/db/schema'
@@ -42,13 +43,17 @@ type TodayData = {
   others: { template: WorkoutTemplate; custom: boolean }[]
   // Any workout ever finished on this profile (retires the welcome card).
   hasFinished: boolean
+  // The open workout offered for resume, if any.
+  resumeId: string | null
 }
 
 async function loadToday(now: Date): Promise<TodayData> {
-  const [results, schedule, inProgress, custom] = await Promise.all([
+  // First, so a workout abandoned long ago is finished (at its last action)
+  // before history is read: it counts, and never blocks today.
+  const resumable = await settleOpenSessions(now)
+  const [results, schedule, custom] = await Promise.all([
     db.sessionResults.toArray(),
     getWeeklySchedule(),
-    getInProgressSessions(),
     listCustomTemplates(),
   ])
 
@@ -74,14 +79,14 @@ async function loadToday(now: Date): Promise<TodayData> {
   const extra = quick && quick.id !== primary.id ? { name: quick.name, to: `/checkin/${quick.id}` } : null
 
   const mode = todayMode({
-    inProgress: inProgress.length > 0,
+    inProgress: resumable != null,
     doneToday: today.length > 0,
     restToday: resolution.kind === 'rest',
   })
 
   let mission: Mission
-  if (mode === 'resume') {
-    const plan = inProgress[0]
+  if (mode === 'resume' && resumable) {
+    const plan = resumable
     const state = await getCurrentState(plan.id)
     const { done, total } = setsDone(plan, state)
     mission = {
@@ -135,12 +140,37 @@ async function loadToday(now: Date): Promise<TodayData> {
     ...custom.map((template) => ({ template, custom: true })),
   ].filter(({ template }) => template.id !== hideId)
 
-  return { mission, week: buildWeek(results, schedule, now), others, hasFinished: results.length > 0 }
+  return {
+    mission,
+    week: buildWeek(results, schedule, now),
+    others,
+    hasFinished: results.length > 0,
+    resumeId: mode === 'resume' ? (resumable?.id ?? null) : null,
+  }
+}
+
+// Home-screen apps stay alive in the background for days, so "now" is
+// refreshed whenever Today comes back into view and just after midnight.
+function useNow(): [Date, () => void] {
+  const [now, setNow] = useState(() => new Date())
+  useEffect(() => {
+    const refresh = () => {
+      if (document.visibilityState === 'visible') setNow(new Date())
+    }
+    document.addEventListener('visibilitychange', refresh)
+    const tomorrow = new Date(now.getFullYear(), now.getMonth(), now.getDate() + 1, 0, 0, 5)
+    const timer = window.setTimeout(() => setNow(new Date()), tomorrow.getTime() - now.getTime())
+    return () => {
+      document.removeEventListener('visibilitychange', refresh)
+      window.clearTimeout(timer)
+    }
+  }, [now])
+  return [now, () => setNow(new Date())]
 }
 
 export function TodayScreen() {
   const [profile] = useState(() => activeProfile())
-  const [now] = useState(() => new Date())
+  const [now, refreshNow] = useNow()
   const [data, setData] = useState<TodayData | null>(null)
   const [failed, setFailed] = useState(false)
   const [attempt, setAttempt] = useState(0)
@@ -172,7 +202,12 @@ export function TodayScreen() {
       <section className="today-stage" aria-label="Today">
         <RaeHero part={dayPart(now)} />
         {data ? (
-          <TodayMission mission={data.mission} />
+          <TodayMission
+            mission={data.mission}
+            resumeActions={
+              data.resumeId ? <ResumeActions sessionId={data.resumeId} onDiscarded={refreshNow} /> : undefined
+            }
+          />
         ) : failed ? (
           <div className="today-mission bg-field-primary space-y-3 p-4 text-center">
             <p className="font-bold">Couldn't load today's workout.</p>
