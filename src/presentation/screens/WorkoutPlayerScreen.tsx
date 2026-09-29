@@ -2,8 +2,7 @@ import { useCallback, useEffect, useRef, useState } from 'react'
 import { newId } from '../../shared/id'
 import { Link, useNavigate, useParams } from 'react-router-dom'
 import { getCurrentState, getPlan, recordEvent } from '../../application/sessionService'
-import type { SessionPlan, SessionState } from '../../domain/session/types'
-import { isRestComplete, remainingRestMs } from '../../domain/session/restTimer'
+import type { SessionPlan, SessionPlanExercise, SessionState } from '../../domain/session/types'
 import { getExercises } from '../../domain/content/catalog'
 import { getFamiliarExerciseIds } from '../../application/familiarity'
 import type { Exercise } from '../../domain/content/types'
@@ -17,6 +16,7 @@ import { ExerciseThumb } from '../components/ExerciseThumb'
 import { RestRing } from '../components/RestRing'
 import { SetDots } from '../components/SetDots'
 import { WorkoutProgressBar } from '../components/WorkoutProgressBar'
+import { useCountdown } from '../components/useCountdown'
 import { getLastTimeSummary } from '../../application/lastTime'
 import { primeAudio, restEndFeedback } from '../../application/restFeedback'
 import { useFeedbackSettings } from '../components/useFeedbackSettings'
@@ -24,7 +24,15 @@ import { useWeightUnit } from '../components/useWeightUnit'
 import { useWakeLock } from '../pwa/useWakeLock'
 import { formatWeight, kgToUnit, roundToStep, stepInUnit, unitToKg } from '../units'
 
-type ActionType = 'SET_COMPLETED' | 'REST_ENDED' | 'REST_EXTENDED' | 'REST_SKIPPED' | 'PAUSED' | 'RESUMED'
+type ActionType =
+  | 'SET_COMPLETED'
+  | 'REST_ENDED'
+  | 'REST_EXTENDED'
+  | 'REST_SKIPPED'
+  | 'PAUSED'
+  | 'RESUMED'
+  | 'HOLD_STARTED'
+  | 'EXERCISE_SKIPPED'
 
 const REST_EXTENSION_MS = 15_000
 
@@ -41,6 +49,8 @@ export function WorkoutPlayerScreen() {
   const [error, setError] = useState<string | null>(null)
   const [busy, setBusy] = useState(false)
   const [awaitingRepCheck, setAwaitingRepCheck] = useState(false)
+  // "No, fell short": the reps actually done, logged with the set.
+  const [shortReps, setShortReps] = useState<number | null>(null)
   const [exerciseById, setExerciseById] = useState<Map<string, Exercise>>(new Map())
   const [lastTime, setLastTime] = useState<string | null>(null)
   const [feedback] = useFeedbackSettings()
@@ -49,6 +59,7 @@ export function WorkoutPlayerScreen() {
   const [loggedWeightKg, setLoggedWeightKg] = useState<number | null>(null)
   const [confirmingEnd, setConfirmingEnd] = useState(false)
   const [endError, setEndError] = useState<string | null>(null)
+  const [confirmingSkip, setConfirmingSkip] = useState(false)
   const [loadFailed, setLoadFailed] = useState(false)
   // Familiar moves start with their steps folded away; opening one keeps it
   // open for the rest of this session (not persisted).
@@ -103,9 +114,12 @@ export function WorkoutPlayerScreen() {
     if (!currentExerciseId) return
     let cancelled = false
     setLastTime(null)
-    getLastTimeSummary(currentExerciseId).then((summary) => {
-      if (!cancelled) setLastTime(summary)
-    })
+    getLastTimeSummary(currentExerciseId)
+      .then((summary) => {
+        if (!cancelled) setLastTime(summary)
+      })
+      // "Last time" is a nicety; a failed read just leaves it out.
+      .catch(() => {})
     return () => {
       cancelled = true
     }
@@ -117,16 +131,19 @@ export function WorkoutPlayerScreen() {
     setLoggedWeightKg(null)
   }, [state?.currentExerciseIndex])
 
-  async function handleAction(type: ActionType, payload: Record<string, unknown> = {}) {
-    if (!sessionId) return
+  async function handleAction(type: ActionType, payload: Record<string, unknown> = {}): Promise<boolean> {
+    if (!sessionId) return false
     setBusy(true)
     setError(null)
     try {
       const next = await recordEvent(sessionId, type, newId(), payload)
       setState(next)
       setAwaitingRepCheck(false)
+      setShortReps(null)
+      return true
     } catch {
       setError(SAVE_ERROR)
+      return false
     } finally {
       setBusy(false)
     }
@@ -144,6 +161,11 @@ export function WorkoutPlayerScreen() {
     setAwaitingRepCheck(true)
   }
 
+  function handleStartHold() {
+    if (feedback.sound) primeAudio()
+    void handleAction('HOLD_STARTED')
+  }
+
   // Ending early still finishes on the Complete screen: the "you're done"
   // moment, and any Try Next Level offer the finished sets earned.
   async function handleEndWorkout() {
@@ -157,6 +179,11 @@ export function WorkoutPlayerScreen() {
       setEndError(SAVE_ERROR)
       setBusy(false)
     }
+  }
+
+  async function handleSkipMove() {
+    // A failed save keeps the sheet open, showing the error.
+    if (await handleAction('EXERCISE_SKIPPED')) setConfirmingSkip(false)
   }
 
   function openEndSheet() {
@@ -204,6 +231,9 @@ export function WorkoutPlayerScreen() {
         <p className="text-ink-muted">
           {plan.exercises[state.currentExerciseIndex]?.name}, set {state.currentSetNumber}
         </p>
+        {(state.restEndsAt || state.holdStartedAt) && (
+          <p className="text-sm text-ink-muted">The timer waits for you.</p>
+        )}
         {error && <p className="text-sm text-accent">{error}</p>}
         <button className="btn-ghost min-h-11" disabled={busy} onClick={openEndSheet}>
           End workout
@@ -229,6 +259,7 @@ export function WorkoutPlayerScreen() {
         restEndsAt={state.restEndsAt}
         busy={busy}
         error={error}
+        tick={feedback.sound}
         onRestComplete={() => {
           restEndFeedback(feedback)
           void handleAction('REST_ENDED')
@@ -252,7 +283,25 @@ export function WorkoutPlayerScreen() {
   const setWeightKg = loggedWeightKg ?? exercise.weightKg ?? 0
   const progress = workoutProgress(plan, state.currentExerciseIndex, state.currentSetNumber)
   const exerciseLabel = `Exercise ${state.currentExerciseIndex + 1} of ${plan.exercises.length}`
+  const timed = exercise.reps == null && exercise.timeSeconds != null
+  const holding = timed && state.holdStartedAt !== null
   const target = exercise.reps != null ? { value: exercise.reps, unit: 'reps' } : exercise.timeSeconds != null ? { value: exercise.timeSeconds, unit: 'sec hold' } : null
+  const nextExercise = plan.exercises[state.currentExerciseIndex + 1]
+  const repTarget = exercise.reps ?? 0
+
+  const skipSheet = confirmingSkip ? (
+    <ConfirmSheet
+      title={`Skip ${exercise.name}?`}
+      confirmLabel="Skip"
+      cancelLabel="Keep it"
+      busy={busy}
+      error={error}
+      onConfirm={handleSkipMove}
+      onCancel={() => setConfirmingSkip(false)}
+    >
+      {nextExercise ? `Its other sets stay undone. Next up: ${nextExercise.name}.` : 'This is the last move, so the workout ends here.'}
+    </ConfirmSheet>
+  ) : null
 
   return (
     <div className="p-6 pt-4 pb-40 space-y-4">
@@ -281,27 +330,41 @@ export function WorkoutPlayerScreen() {
       </div>
 
       {/* The target, readable from the floor: a big number, what it counts,
-          and one dot per set. The caption says the same thing as text. */}
+          and one dot per set. The caption says the same thing as text. A
+          running hold swaps the number for its countdown ring. */}
       <div className="space-y-1">
         <h2 className="text-2xl font-bold leading-tight">{exercise.name}</h2>
-        <div className="flex items-end justify-between gap-4">
-          <p className="flex items-baseline gap-2">
-            {target && (
-              <>
-                <span className="hud-num text-6xl font-extrabold leading-none text-primary">{target.value}</span>
-                <span className="text-lg font-bold text-ink-muted">{target.unit}</span>
-              </>
-            )}
-            {weighted && <span className="hud-num text-lg font-bold">@ {formatWeight(setWeightKg, unit)}</span>}
-          </p>
-          <div className="flex-none space-y-1 pb-1">
-            <SetDots total={exercise.sets} current={state.currentSetNumber} />
-            <p className="text-sm font-semibold text-ink-muted">
-              Set {state.currentSetNumber} of {exercise.sets}
+        {holding && state.holdStartedAt ? (
+          <HoldCountdown
+            key={state.holdStartedAt}
+            holdStartedAt={state.holdStartedAt}
+            timeSeconds={exercise.timeSeconds ?? 0}
+            tick={feedback.sound}
+            onDone={() => {
+              restEndFeedback(feedback)
+              void handleAction('SET_COMPLETED', { exerciseId: exercise.exerciseId })
+            }}
+          />
+        ) : (
+          <div className="flex items-end justify-between gap-4">
+            <p className="flex items-baseline gap-2">
+              {target && (
+                <>
+                  <span className="hud-num text-6xl font-extrabold leading-none text-primary">{target.value}</span>
+                  <span className="text-lg font-bold text-ink-muted">{target.unit}</span>
+                </>
+              )}
+              {weighted && <span className="hud-num text-lg font-bold">@ {formatWeight(setWeightKg, unit)}</span>}
             </p>
+            <div className="flex-none space-y-1 pb-1">
+              <SetDots total={exercise.sets} current={state.currentSetNumber} />
+              <p className="text-sm font-semibold text-ink-muted">
+                Set {state.currentSetNumber} of {exercise.sets}
+              </p>
+            </div>
           </div>
-        </div>
-        {lastTime && <p className="text-sm text-ink-muted">{lastTime}</p>}
+        )}
+        {lastTime && !holding && <p className="text-sm text-ink-muted">{lastTime}</p>}
       </div>
 
       {exerciseContent && (
@@ -322,9 +385,17 @@ export function WorkoutPlayerScreen() {
         />
       )}
 
-      {error && <p className="text-sm text-accent">{error}</p>}
+      {/* A sore wrist or no room for lunges shouldn't end the whole workout. */}
+      {!awaitingRepCheck && (
+        <button type="button" className="btn-ghost min-h-11 w-full" disabled={busy} onClick={() => setConfirmingSkip(true)}>
+          Skip this move
+        </button>
+      )}
+
+      {error && !confirmingSkip && <p className="text-sm text-accent">{error}</p>}
       {endSheet}
-      {awaitingRepCheck && weighted && (
+      {skipSheet}
+      {awaitingRepCheck && weighted && shortReps === null && (
         <div className="flex items-center justify-center gap-6 rounded-panel bg-bg p-2">
           <button
             type="button"
@@ -346,28 +417,68 @@ export function WorkoutPlayerScreen() {
         </div>
       )}
 
+      {/* Screen readers hear the question the thumb bar is asking. */}
+      <p className="sr-only" aria-live="polite">
+        {shortReps !== null
+          ? 'Rep count: enter how many you did'
+          : awaitingRepCheck
+            ? `Rep check: all ${repTarget} done?`
+            : holding
+              ? `Hold, ${exercise.timeSeconds} seconds`
+              : ''}
+      </p>
+
       {/* Complete Set is the most-tapped control in the app — pinned to a
           fixed bottom bar so it's always in thumb reach regardless of how
           much media/instruction content is above it. */}
       <ThumbBar
-        armKey={`${state.currentExerciseIndex}:${state.currentSetNumber}:${awaitingRepCheck}`}
+        armKey={`${state.currentExerciseIndex}:${state.currentSetNumber}:${awaitingRepCheck}:${shortReps !== null}:${holding}`}
         className="space-y-2"
       >
-        {awaitingRepCheck ? (
+        {shortReps !== null ? (
           <>
-            <p className="text-center text-xl font-bold">Did you complete all {exercise.reps} reps?</p>
-            <div className="flex gap-2">
+            <p className="text-center text-xl font-bold">How many reps?</p>
+            <div className="flex items-center gap-2">
               <button
-                className="btn-secondary flex-1"
+                type="button"
+                className="stepper-btn"
+                aria-label="Fewer reps"
+                disabled={busy || shortReps <= 0}
+                onClick={() => setShortReps(Math.max(0, shortReps - 1))}
+              >
+                −
+              </button>
+              <span className="hud-num w-12 text-center text-3xl font-extrabold tabular-nums">{shortReps}</span>
+              <button
+                type="button"
+                className="stepper-btn"
+                aria-label="More reps"
+                disabled={busy || shortReps >= repTarget - 1}
+                onClick={() => setShortReps(Math.min(repTarget - 1, shortReps + 1))}
+              >
+                +
+              </button>
+              <button
+                className="btn-primary flex-1"
                 disabled={busy}
                 onClick={() =>
                   handleAction('SET_COMPLETED', {
                     exerciseId: exercise.exerciseId,
                     met: false,
+                    reps: shortReps,
                     ...(weighted ? { weightKg: setWeightKg } : {}),
                   })
                 }
               >
+                Save reps
+              </button>
+            </div>
+          </>
+        ) : awaitingRepCheck ? (
+          <>
+            <p className="text-center text-xl font-bold">Did you complete all {exercise.reps} reps?</p>
+            <div className="flex gap-2">
+              <button className="btn-secondary flex-1" disabled={busy} onClick={() => setShortReps(Math.max(0, repTarget - 1))}>
                 No, fell short
               </button>
               <button
@@ -385,6 +496,21 @@ export function WorkoutPlayerScreen() {
               </button>
             </div>
           </>
+        ) : timed && !holding ? (
+          // A timed set counts itself down; Complete Set stays for anyone
+          // timing it on their own.
+          <div className="flex gap-2">
+            <button
+              className="btn-secondary"
+              disabled={busy}
+              onClick={() => handleCompleteSetClick(exercise.exerciseId, false)}
+            >
+              Complete Set
+            </button>
+            <button className="btn-primary btn-lg flex-1" disabled={busy} onClick={handleStartHold}>
+              Start {exercise.timeSeconds}s
+            </button>
+          </div>
         ) : (
           <button
             className="btn-primary btn-lg w-full"
@@ -443,7 +569,7 @@ function StepsList({ steps, folded, onUnfold }: { steps: string[]; folded: boole
         ))}
       </ol>
       {hidden > 0 && (
-        <button type="button" className="text-sm text-primary" onClick={() => setExpanded(true)}>
+        <button type="button" className="min-h-11 text-sm text-primary" onClick={() => setExpanded(true)}>
           Show {hidden} more {hidden === 1 ? 'step' : 'steps'}
         </button>
       )}
@@ -459,8 +585,40 @@ function workoutProgress(plan: SessionPlan, exerciseIndex: number, setNumber: nu
   return { done: Math.min(total, before + setNumber - 1), total }
 }
 
-function secondsUntil(restEndsAt: string): number {
-  return Math.ceil(remainingRestMs(restEndsAt) / 1000)
+// A running hold: its countdown in a ring, from the persisted start time
+// (HOLD_STARTED), so a refresh keeps the clock. At zero the set completes.
+function HoldCountdown({
+  holdStartedAt,
+  timeSeconds,
+  tick,
+  onDone,
+}: {
+  holdStartedAt: string
+  timeSeconds: number
+  tick: boolean
+  onDone: () => void
+}) {
+  const endsAt = new Date(Date.parse(holdStartedAt) + timeSeconds * 1000).toISOString()
+  // Fires once: a refresh after the hold ran out completes it straight away.
+  const doneRef = useRef(false)
+  const seconds = useCountdown(
+    endsAt,
+    () => {
+      if (doneRef.current) return
+      doneRef.current = true
+      onDone()
+    },
+    tick
+  )
+  return (
+    <RestRing restStartedAt={holdStartedAt} restEndsAt={endsAt} seconds={seconds} size={168}>
+      <p className="text-sm font-bold text-ink-muted">Hold</p>
+      <p className="hud-num text-5xl font-extrabold leading-none tabular-nums text-primary" role="timer">
+        {seconds}
+      </p>
+      <p className="text-xs font-semibold text-ink-muted">sec</p>
+    </RestRing>
+  )
 }
 
 function RestingView({
@@ -471,46 +629,35 @@ function RestingView({
   restEndsAt,
   busy,
   error,
+  tick,
   onRestComplete,
   onExtend,
   onSkip,
   onPause,
 }: {
   // During rest the session already points at the coming set.
-  upNext: { exerciseId: string; name: string; sets: number } | undefined
+  upNext: SessionPlanExercise | undefined
   upNextContent: Exercise | undefined
   setNumber: number
   restStartedAt: string | null
   restEndsAt: string
   busy: boolean
   error: string | null
+  tick: boolean
   onRestComplete: () => void
   onExtend: () => void
   onSkip: () => void
   onPause: () => void
 }) {
   // The timer derives from the persisted restEndsAt alone (+15s moves that
-  // timestamp via REST_EXTENDED), so a refresh mid-rest shows the same
-  // countdown. State holds whole seconds: the 250ms tick keeps the display
-  // honest at second boundaries but React bails out on the equal value, so
-  // the view re-renders once per second, not four times.
-  const [seconds, setSeconds] = useState(() => secondsUntil(restEndsAt))
-  // Latest callback in a ref so the interval never calls a stale closure
-  // (e.g. feedback settings that arrived after the rest started).
-  const onRestCompleteRef = useRef(onRestComplete)
-  onRestCompleteRef.current = onRestComplete
-
+  // timestamp via REST_EXTENDED; a pause pushes it on resume), so a refresh
+  // mid-rest shows the same countdown.
+  const seconds = useCountdown(restEndsAt, onRestComplete, tick)
+  // Announced once as the rest starts and once near its end, not every second.
+  const [spoken, setSpoken] = useState(() => `Rest, ${seconds} seconds`)
   useEffect(() => {
-    setSeconds(secondsUntil(restEndsAt))
-    const interval = setInterval(() => {
-      setSeconds(secondsUntil(restEndsAt))
-      if (isRestComplete(restEndsAt)) {
-        clearInterval(interval)
-        onRestCompleteRef.current()
-      }
-    }, 250)
-    return () => clearInterval(interval)
-  }, [restEndsAt])
+    if (seconds === 10) setSpoken('10 seconds left')
+  }, [seconds])
 
   return (
     <div className="field-calm min-h-screen rounded-none p-6 pt-4 pb-32 text-center space-y-4">
@@ -520,6 +667,9 @@ function RestingView({
           Pause
         </button>
       </div>
+      <p className="sr-only" aria-live="polite">
+        {spoken}
+      </p>
       <RestRing restStartedAt={restStartedAt} restEndsAt={restEndsAt} seconds={seconds}>
         <p className="text-lg font-bold">Rest</p>
         <p className="hud-num text-6xl font-extrabold leading-none tabular-nums" role="timer">

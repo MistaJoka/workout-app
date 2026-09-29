@@ -64,6 +64,11 @@ export type SessionEventType =
   | 'RESUMED'
   | 'SESSION_COMPLETED'
   | 'SESSION_COMPLETED_SHORTENED'
+  // Starts the countdown of a timed set (a hold); its end is derived from
+  // this timestamp and the plan's timeSeconds, so a refresh keeps the clock.
+  | 'HOLD_STARTED'
+  // Leaves the rest of the current move undone and moves to the next one.
+  | 'EXERCISE_SKIPPED'
 
 export type SessionEvent = {
   // Dexie-assigned auto-increment primary key (src/infrastructure/db/schema.ts).
@@ -94,6 +99,11 @@ export type SessionState = {
   currentSetNumber: number
   restStartedAt: string | null
   restEndsAt: string | null
+  // When the current timed set's countdown began (HOLD_STARTED), or null.
+  holdStartedAt: string | null
+  // When the session was paused, so RESUMED can push the running clocks
+  // (rest, hold) forward by the time spent paused.
+  pausedAt: string | null
   appliedEventIds: string[]
 }
 

@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest'
-import { withoutIneffectiveSets } from './appliedEvents'
+import { effectiveSetSlots, withoutIneffectiveSets } from './appliedEvents'
 import type { SessionEvent, SessionPlan } from './types'
 
 const plan: SessionPlan = {
@@ -44,5 +44,32 @@ describe('withoutIneffectiveSets', () => {
   it('leaves non-set events alone', () => {
     const events = [ev('SESSION_STARTED'), ev('PAUSED'), ev('RESUMED')]
     expect(withoutIneffectiveSets(plan, events)).toEqual(events)
+  })
+})
+
+describe('effectiveSetSlots', () => {
+  const two: SessionPlan = {
+    ...plan,
+    exercises: [
+      { exerciseId: 'ex1', exerciseVersion: 1, name: 'One', sets: 2, reps: 10, restSeconds: 60, order: 0 },
+      { exerciseId: 'ex2', exerciseVersion: 1, name: 'Two', sets: 2, reps: 10, restSeconds: 60, order: 1 },
+    ],
+  }
+
+  it('gives each counted set the move and set number it was done for', () => {
+    const events = [ev('SESSION_STARTED'), ev('SET_COMPLETED'), ev('REST_SKIPPED'), ev('EXERCISE_SKIPPED'), ev('SET_COMPLETED')]
+    expect(effectiveSetSlots(two, events).map((s) => [s.exerciseIndex, s.setNumber])).toEqual([
+      [0, 1],
+      [1, 1],
+    ])
+  })
+
+  it('falls back to plan order for hand-built history with no start event', () => {
+    const events = [ev('SET_COMPLETED'), ev('SET_COMPLETED'), ev('SET_COMPLETED')]
+    expect(effectiveSetSlots(two, events).map((s) => [s.exerciseIndex, s.setNumber])).toEqual([
+      [0, 1],
+      [0, 2],
+      [1, 1],
+    ])
   })
 })
