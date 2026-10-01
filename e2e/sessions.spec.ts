@@ -54,7 +54,8 @@ test.describe('sessions', () => {
     await page.getByRole('button', { name: 'Finish', exact: true }).click()
     await page.getByRole('dialog', { name: 'Finish this workout?' }).getByRole('button', { name: 'Finish now' }).click()
     await expect(page.getByText('Workout complete')).toBeVisible()
-    await expect(page.getByText('1 of 6 sets completed')).toBeVisible()
+    // Sets stat tile folds "N of M" into its own value (Complete rewrite).
+    await expect(page.getByText('1/6')).toBeVisible()
   })
 
   test('a workout left open can be discarded from Today, and leaves no history', async ({ page }) => {

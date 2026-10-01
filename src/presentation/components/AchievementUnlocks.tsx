@@ -112,7 +112,7 @@ export function AchievementUnlocks({ sessionId }: { sessionId: string }) {
   if (!unlocked || unlocked.length === 0) return null
   const [first, ...rest] = unlocked
   return (
-    <section className="field-info achievement-pop w-full space-y-3 p-4" aria-label="Achievements unlocked">
+    <section className="achievement-pop w-full space-y-3" aria-label="Achievements unlocked">
       <style>{STYLE}</style>
       <ul className="space-y-2">
         {[first, ...rest.slice(0, 2)].map((a) => (

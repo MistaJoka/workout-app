@@ -14,7 +14,8 @@ test('Today dates the greeting, the finish screen shows its numbers, and the wel
   await page.goto('/#/checkin/fs.full-body-a')
   await page.getByRole('button', { name: 'Start workout' }).click()
   await finishWorkout(page)
-  await expect(page.getByText('10 of 10 sets completed')).toBeVisible()
+  // Sets stat tile folds "N of M" into its own value (Complete rewrite).
+  await expect(page.getByText('10/10')).toBeVisible()
   await expect(page.getByText('sets', { exact: true })).toBeVisible()
   await expect(page.getByText('moves', { exact: true })).toBeVisible()
   await expect(page.getByText(/^minutes?$/)).toBeVisible()

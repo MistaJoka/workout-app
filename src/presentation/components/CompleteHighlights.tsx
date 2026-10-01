@@ -39,7 +39,7 @@ export function CompleteHighlights({ sessionId }: { sessionId: string }) {
   if (lines.length === 0) return null
 
   return (
-    <ul className="mx-auto flex max-w-sm flex-col items-center gap-2" aria-label="Highlights">
+    <ul className="flex flex-col items-center gap-2" aria-label="Highlights">
       <style>{`@keyframes complete-highlight-pop { from { opacity: 0; scale: 0.85 } to { opacity: 1; scale: 1 } }`}</style>
       {lines.map((line) => (
         <li

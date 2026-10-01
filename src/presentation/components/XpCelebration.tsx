@@ -64,7 +64,7 @@ export function LevelBar({ level, className = '' }: { level: LevelInfo; classNam
 export function XpGainChip({ gain }: { gain: SessionXpGain }) {
   const shown = useCountUp(gain.gained, 900)
   return (
-    <div className="mx-auto max-w-sm space-y-2 rounded-panel bg-surface p-3 text-left" data-testid="xp-gain">
+    <div className="space-y-2 text-left" data-testid="xp-gain">
       <p className="text-center">
         <span className="hud-num text-2xl font-extrabold text-primary-ink" aria-label={`Plus ${gain.gained} XP`}>
           +{shown} XP

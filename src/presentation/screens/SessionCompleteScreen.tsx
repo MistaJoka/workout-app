@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react'
+import { useEffect, useState, type ReactNode } from 'react'
 import { Link, useParams } from 'react-router-dom'
 import { ShareWorkoutButton } from '../components/ShareWorkoutButton'
 import { getEventsForSession, getPlan, getResult } from '../../infrastructure/db/repositories/sessionRepository'
@@ -117,10 +117,15 @@ export function SessionCompleteScreen() {
     resolveCandidate(exerciseId, (id) => advanceProgression(id, new Date().toISOString()))
   const handleDismiss = (exerciseId: string) => resolveCandidate(exerciseId, dismissProgressionCandidate)
 
+  const shortened = result?.status === 'COMPLETED_SHORTENED'
+
   return (
     <div className="field-success min-h-screen rounded-none p-6 pt-16 pb-28 text-center space-y-4">
-      {/* The moment: Rae cheers beside this week's new flower, which grows
-          in as the screen opens (static when motion is reduced or off). */}
+      {/* Hero: Rae cheers beside this week's new flower (grows in as the
+          screen opens, static under reduced/off motion), the headline, and
+          this workout's species chip. The chip's own "new to your garden"
+          note and the week-bloom caption are one grouped line here, not
+          scattered text lower on the screen. */}
       <div className="mx-auto flex max-w-xs items-end justify-center gap-3" data-testid="complete-celebration">
         <RaeFace expression="cheer" size={112} motion="pop" />
         <div className="flex flex-col items-center">
@@ -136,37 +141,51 @@ export function SessionCompleteScreen() {
       <p className="text-3xl font-extrabold">Workout complete</p>
       {result && bloom && <BloomReveal species={bloom.species} isNew={bloom.isNew} />}
       {result && (
-        <p className="text-ink-muted">
-          {result.totalSetsCompleted} of {result.totalSetsPlanned} sets completed
-          {result.status === 'COMPLETED_SHORTENED' ? ' (ended early)' : ''}
-        </p>
-      )}
-      {stats && (
-        <div className="mx-auto flex max-w-sm gap-2">
-          <Stat value={stats.minutes} label={stats.minutes === 1 ? 'minute' : 'minutes'} />
-          <Stat value={stats.sets} label={stats.sets === 1 ? 'set' : 'sets'} />
-          <Stat value={stats.moves} label={stats.moves === 1 ? 'move' : 'moves'} />
-        </div>
-      )}
-      {result && sessionId && <PerfectStamp sessionId={sessionId} />}
-      {result && xp && <XpGainChip gain={xp} />}
-      {result && xp?.goalMet && <GoalMetBanner />}
-      {result && xp?.leveledUp && <LevelUpMoment to={xp.to} />}
-      {result && sessionId && <CompleteHighlights sessionId={sessionId} />}
-      {result && sessionId && <AchievementUnlocks sessionId={sessionId} />}
-      {result && <NextUpTeaser />}
-      {result && (
         // Ties the finish to Today's week: every finished workout grows a
-        // flower there (WeekBlooms), ended-early ones included.
-        // Rae already cheers beside the flower above, so this is a caption,
-        // not a second Rae.
-        <p className="mx-auto max-w-xs text-center font-semibold">
-          {result.status === 'COMPLETED_SHORTENED'
-            ? 'You showed up, and that counts. A new flower is growing in your week.'
-            : 'A new flower just bloomed in your week!'}
+        // flower there (WeekBlooms), ended-early ones included. Sits right
+        // under the chip above instead of as a separate block lower down.
+        <p className="mx-auto max-w-xs text-center text-sm font-semibold text-ink-muted">
+          {shortened ? 'You showed up, and that counts.' : 'A new flower just bloomed in your week!'}
         </p>
       )}
 
+      {stats && result && (
+        <div className="mx-auto flex max-w-sm gap-2">
+          <Stat value={stats.minutes} label={stats.minutes === 1 ? 'minute' : 'minutes'} />
+          <SetsStat completed={result.totalSetsCompleted} planned={result.totalSetsPlanned} shortened={shortened} />
+          <Stat value={stats.moves} label={stats.moves === 1 ? 'move' : 'moves'} />
+        </div>
+      )}
+
+      {/* One rewards card: perfect stamp, XP + level (+ goal met), session
+          highlights, and badge unlocks, each a staggered slot under full
+          motion so the eye lands on one thing at a time instead of a dozen
+          competing call-outs. The level-up overlay is a full-screen moment
+          of its own and stays outside the card. */}
+      {result && sessionId && (
+        <section className="rewards-card card mx-auto max-w-sm space-y-3 p-4 text-left" aria-label="Rewards">
+          <style>{REWARDS_STYLE}</style>
+          <RewardItem delay={0}>
+            <PerfectStamp sessionId={sessionId} />
+          </RewardItem>
+          {xp && (
+            <RewardItem delay={90}>
+              <XpGainChip gain={xp} />
+              {xp.goalMet && <GoalMetBanner />}
+            </RewardItem>
+          )}
+          <RewardItem delay={180}>
+            <CompleteHighlights sessionId={sessionId} />
+          </RewardItem>
+          <RewardItem delay={270}>
+            <AchievementUnlocks sessionId={sessionId} />
+          </RewardItem>
+        </section>
+      )}
+      {result && xp?.leveledUp && <LevelUpMoment to={xp.to} />}
+
+      {/* The next-level offer is a decision, not a reward: it stays its own
+          prominent block right after the rewards card. */}
       {candidates.length > 0 && (
         <div className="space-y-3 text-left">
           {candidates.map((candidate) => (
@@ -198,6 +217,23 @@ export function SessionCompleteScreen() {
         </div>
       )}
 
+      {result && <NextUpTeaser />}
+
+      {/* Actions: Share and See your progress side by side, Cool down (when
+          offered) as a compact card under them, backup last when it's due. */}
+      {result && (
+        <div className="mx-auto flex max-w-sm items-stretch justify-center gap-2">
+          {sessionId && (
+            <div className="flex flex-1 items-center justify-center">
+              <ShareWorkoutButton sessionId={sessionId} />
+            </div>
+          )}
+          <Link to="/progress" className="btn-ghost min-h-11 flex-1">
+            See your progress
+          </Link>
+        </div>
+      )}
+
       {coolDown && (
         <Link
           to={`/checkin/${coolDown.id}`}
@@ -212,12 +248,6 @@ export function SessionCompleteScreen() {
           </span>
         </Link>
       )}
-
-      {result && sessionId && <ShareWorkoutButton sessionId={sessionId} />}
-
-      <Link to="/progress" className="btn-ghost min-h-11">
-        See your progress
-      </Link>
 
       {/* Shows only when a backup is due (14 days, or never with history),
           and not before the 3rd finished workout: a first finish stays a
@@ -247,6 +277,45 @@ function Stat({ value, label }: { value: number; label: string }) {
         {shown}
       </p>
       <p className="text-xs text-ink-muted">{label}</p>
+    </div>
+  )
+}
+
+// The sets tile, folding "N of M sets completed" into the stat row instead
+// of a separate sentence under the hero. The numerator counts up like the
+// other tiles; the denominator and "ended early" note are static.
+function SetsStat({ completed, planned, shortened }: { completed: number; planned: number; shortened: boolean }) {
+  const shown = useCountUp(completed)
+  return (
+    <div className="flex-1 field-info p-3 text-center">
+      <p
+        className="hud-num text-3xl font-bold"
+        aria-label={`${completed} of ${planned} sets completed${shortened ? ' (ended early)' : ''}`}
+      >
+        {shown}/{planned}
+      </p>
+      <p className="text-xs text-ink-muted">{shortened ? 'sets (ended early)' : 'sets'}</p>
+    </div>
+  )
+}
+
+const REWARDS_STYLE = `
+.rewards-item:empty { display: none; }
+.rewards-item:not(:empty) ~ .rewards-item:not(:empty) { margin-top: 0.75rem; padding-top: 0.75rem; border-top: 1px solid var(--color-border); }
+[data-motion='full'] .rewards-item:not(:empty) { animation: rewards-pop 280ms cubic-bezier(.2,.9,.3,1.1) both; }
+@keyframes rewards-pop { from { opacity: 0; transform: translateY(6px); } to { opacity: 1; transform: none; } }
+/* No reward actually landed (all slots empty): the card itself disappears
+   rather than showing as a blank padded box. */
+.rewards-card:not(:has(.rewards-item:not(:empty))) { display: none; }
+`
+
+// One slot in the rewards card. A slot whose children render nothing (a
+// reward that didn't happen) collapses to nothing via :empty rather than
+// leaving a gap or an empty separator line.
+function RewardItem({ delay, children }: { delay: number; children: ReactNode }) {
+  return (
+    <div className="rewards-item" style={{ animationDelay: `${delay}ms` }}>
+      {children}
     </div>
   )
 }

@@ -32,7 +32,9 @@ test.describe('golden path', () => {
     await expect(page.getByRole('timer')).toBeVisible()
 
     await finishWorkout(page)
-    await expect(page.getByText('10 of 10 sets completed')).toBeVisible()
+    // The sets stat tile now folds "N of M" into its own value (Complete
+    // screen rewrite): "10/10" with a "sets" label, not a separate sentence.
+    await expect(page.getByText('10/10')).toBeVisible()
     await page.getByRole('link', { name: 'Back to Today' }).click()
 
     // Today says it's done and a flower bloomed; Progress recorded it.
