@@ -69,6 +69,10 @@ export type SessionEventType =
   | 'HOLD_STARTED'
   // Leaves the rest of the current move undone and moves to the next one.
   | 'EXERCISE_SKIPPED'
+  // Takes back the set that started the current rest (a mis-tap): back to
+  // ACTIVE on that same set. The undone SET_COMPLETED stays stored but
+  // never counts (appliedEvents.ts).
+  | 'SET_UNDONE'
 
 export type SessionEvent = {
   // Dexie-assigned auto-increment primary key (src/infrastructure/db/schema.ts).
@@ -104,6 +108,9 @@ export type SessionState = {
   // When the session was paused, so RESUMED can push the running clocks
   // (rest, hold) forward by the time spent paused.
   pausedAt: string | null
+  // Where the set that started the current rest was done, so SET_UNDONE can
+  // go back to it. Only set while that rest is still running (or paused).
+  lastSet: { exerciseIndex: number; setNumber: number } | null
   appliedEventIds: string[]
 }
 

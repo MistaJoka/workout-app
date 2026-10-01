@@ -35,6 +35,7 @@ type ActionType =
   | 'RESUMED'
   | 'HOLD_STARTED'
   | 'EXERCISE_SKIPPED'
+  | 'SET_UNDONE'
 
 const REST_EXTENSION_MS = 15_000
 
@@ -55,6 +56,9 @@ export function WorkoutPlayerScreen() {
   const [shortReps, setShortReps] = useState<number | null>(null)
   // "Other" on the quick picks: the stepper, for counts further off.
   const [repsOther, setRepsOther] = useState(false)
+  // Set by an undo (a set taken back, or a rep check backed out of) so the
+  // player's live region tells screen readers what just happened.
+  const [undoNotice, setUndoNotice] = useState(false)
   const [exerciseById, setExerciseById] = useState<Map<string, Exercise>>(new Map())
   const [lastTime, setLastTime] = useState<string | null>(null)
   const [feedback] = useFeedbackSettings()
@@ -145,6 +149,7 @@ export function WorkoutPlayerScreen() {
       setAwaitingRepCheck(false)
       setShortReps(null)
       setRepsOther(false)
+      setUndoNotice(type === 'SET_UNDONE')
       return true
     } catch {
       setError(SAVE_ERROR)
@@ -164,6 +169,15 @@ export function WorkoutPlayerScreen() {
       return
     }
     setAwaitingRepCheck(true)
+  }
+
+  // Backs out of the rep check before anything is stored: the set wasn't
+  // logged yet, so "undo" here is just going back to it.
+  function cancelRepCheck() {
+    setAwaitingRepCheck(false)
+    setShortReps(null)
+    setRepsOther(false)
+    setUndoNotice(true)
   }
 
   function handleStartHold() {
@@ -301,6 +315,7 @@ export function WorkoutPlayerScreen() {
         onExtend={() => handleAction('REST_EXTENDED', { byMs: REST_EXTENSION_MS })}
         onSkip={() => handleAction('REST_SKIPPED')}
         onPause={() => handleAction('PAUSED')}
+        onUndo={state.lastSet ? () => handleAction('SET_UNDONE') : undefined}
       />
     )
   }
@@ -457,7 +472,9 @@ export function WorkoutPlayerScreen() {
             ? `Rep check: all ${repTarget} done?`
             : holding
               ? `Hold, ${exercise.timeSeconds} seconds`
-              : ''}
+              : undoNotice
+                ? `Set undone. Set ${state.currentSetNumber} of ${exercise.sets} again.`
+                : ''}
       </p>
 
       {/* Complete Set is the most-tapped control in the app — pinned to a
@@ -469,7 +486,7 @@ export function WorkoutPlayerScreen() {
       >
         {shortReps !== null && !repsOther ? (
           <>
-            <p className="text-center text-xl font-bold">How many reps?</p>
+            <RepQuestion busy={busy} onUndo={cancelRepCheck}>How many reps?</RepQuestion>
             <RepPicks
               target={repTarget}
               busy={busy}
@@ -486,7 +503,7 @@ export function WorkoutPlayerScreen() {
           </>
         ) : shortReps !== null ? (
           <>
-            <p className="text-center text-xl font-bold">How many reps?</p>
+            <RepQuestion busy={busy} onUndo={cancelRepCheck}>How many reps?</RepQuestion>
             <div className="flex items-center gap-2">
               <button
                 type="button"
@@ -525,7 +542,7 @@ export function WorkoutPlayerScreen() {
           </>
         ) : awaitingRepCheck ? (
           <>
-            <p className="text-center text-xl font-bold">Did you complete all {exercise.reps} reps?</p>
+            <RepQuestion busy={busy} onUndo={cancelRepCheck}>Did you complete all {exercise.reps} reps?</RepQuestion>
             <div className="flex gap-2">
               <button className="btn-secondary flex-1" disabled={busy} onClick={() => setShortReps(Math.max(0, repTarget - 1))}>
                 No, fell short
@@ -670,6 +687,19 @@ function HoldCountdown({
   )
 }
 
+// The rep check's question with a way back: a mis-tapped Complete Set is
+// taken back here before anything is saved.
+function RepQuestion({ children, busy, onUndo }: { children: React.ReactNode; busy: boolean; onUndo: () => void }) {
+  return (
+    <div className="flex items-center justify-between gap-2">
+      <p className="text-xl font-bold">{children}</p>
+      <button type="button" className="btn-ghost min-h-11 flex-none" disabled={busy} aria-label="Undo, back to the set" onClick={onUndo}>
+        Undo
+      </button>
+    </div>
+  )
+}
+
 function RestingView({
   upNext,
   upNextContent,
@@ -683,6 +713,7 @@ function RestingView({
   onExtend,
   onSkip,
   onPause,
+  onUndo,
 }: {
   // During rest the session already points at the coming set.
   upNext: SessionPlanExercise | undefined
@@ -697,6 +728,9 @@ function RestingView({
   onExtend: () => void
   onSkip: () => void
   onPause: () => void
+  // Takes back the set that started this rest; absent when there's nothing
+  // to undo (e.g. the rest came back from a session with no set to revert).
+  onUndo?: () => void
 }) {
   // The timer derives from the persisted restEndsAt alone (+15s moves that
   // timestamp via REST_EXTENDED; a pause pushes it on resume), so a refresh
@@ -725,6 +759,13 @@ function RestingView({
           {Math.floor(seconds / 60)}:{String(seconds % 60).padStart(2, '0')}
         </p>
       </RestRing>
+      {/* A mis-tapped Complete Set is taken back here, away from the
+          thumb bar so it can't be hit by the tap that lands on Skip rest. */}
+      {onUndo && (
+        <button type="button" className="btn-ghost min-h-11" disabled={busy} onClick={onUndo}>
+          ↶ Undo last set
+        </button>
+      )}
       {upNext && (
         <UpNext
           exerciseId={upNext.exerciseId}

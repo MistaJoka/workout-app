@@ -210,6 +210,25 @@ describe('only sets the session machine applied are counted', () => {
     // The stray "met: false" set must not turn a clean session into a miss.
     expect((await getProgression('ex1')).currentPrescribedReps).toBe(12)
   })
+
+  it('an undone mis-tap counts nowhere: the redone set is what the result and progression see', async () => {
+    const twoSets: SessionPlan = {
+      ...plan,
+      id: 'session-undo',
+      exercises: [{ exerciseId: 'ex1', exerciseVersion: 1, name: 'Exercise One', sets: 2, reps: 10, restSeconds: 60, order: 0 }],
+    }
+    await startSession(twoSets)
+    await recordEvent(twoSets.id, 'SET_COMPLETED', 'oops', { exerciseId: 'ex1', met: false, reps: 3 })
+    const undone = await recordEvent(twoSets.id, 'SET_UNDONE', 'undo-1')
+    expect(undone).toMatchObject({ status: 'ACTIVE', currentSetNumber: 1 })
+    await recordEvent(twoSets.id, 'SET_COMPLETED', 'set-1', { exerciseId: 'ex1', met: true })
+    await recordEvent(twoSets.id, 'REST_SKIPPED', 'skip-1')
+    await recordEvent(twoSets.id, 'SET_COMPLETED', 'set-2', { exerciseId: 'ex1', met: true })
+
+    expect(await sessionRepo.getResult(twoSets.id)).toMatchObject({ totalSetsCompleted: 2, totalSetsPlanned: 2 })
+    // The undone "met: false" must not turn a clean session into a miss.
+    expect((await getProgression('ex1')).currentPrescribedReps).toBe(12)
+  })
 })
 
 describe('atomicity', () => {

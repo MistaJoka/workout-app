@@ -9,6 +9,7 @@ export function initSessionState(): SessionState {
     restEndsAt: null,
     holdStartedAt: null,
     pausedAt: null,
+    lastSet: null,
     appliedEventIds: [],
   }
 }
@@ -70,9 +71,25 @@ export function applyEvent(plan: SessionPlan, state: SessionState, event: Sessio
         restStartedAt,
         restEndsAt,
         holdStartedAt: null,
+        lastSet: { exerciseIndex: state.currentExerciseIndex, setNumber: state.currentSetNumber },
         appliedEventIds,
       }
     }
+
+    case 'SET_UNDONE':
+      // Only the set that started the rest still running, and only once.
+      if (state.status !== 'RESTING' || state.lastSet === null) return ignore
+      return {
+        ...state,
+        status: 'ACTIVE',
+        currentExerciseIndex: state.lastSet.exerciseIndex,
+        currentSetNumber: state.lastSet.setNumber,
+        restStartedAt: null,
+        restEndsAt: null,
+        holdStartedAt: null,
+        lastSet: null,
+        appliedEventIds,
+      }
 
     case 'HOLD_STARTED': {
       // Only a timed set being worked on, and a second tap keeps the first
@@ -107,7 +124,7 @@ export function applyEvent(plan: SessionPlan, state: SessionState, event: Sessio
       // A rest timer that fires while paused (or late, after the end) must
       // not unpause or reopen anything.
       if (state.status !== 'RESTING') return ignore
-      return { ...state, status: 'ACTIVE', restStartedAt: null, restEndsAt: null, appliedEventIds }
+      return { ...state, status: 'ACTIVE', restStartedAt: null, restEndsAt: null, lastSet: null, appliedEventIds }
 
     case 'PAUSED':
       if (state.status !== 'ACTIVE' && state.status !== 'RESTING') return ignore

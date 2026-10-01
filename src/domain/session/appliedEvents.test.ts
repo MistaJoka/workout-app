@@ -73,3 +73,24 @@ describe('effectiveSetSlots', () => {
     ])
   })
 })
+
+describe('undone sets', () => {
+  it('an undone set is not counted, and its redo is', () => {
+    const start = ev('SESSION_STARTED')
+    const wrong = ev('SET_COMPLETED')
+    const undo = ev('SET_UNDONE')
+    const redo = ev('SET_COMPLETED')
+    const events = [start, wrong, undo, redo]
+    expect(withoutIneffectiveSets(plan, events).filter((e) => e.type === 'SET_COMPLETED')).toEqual([redo])
+    expect(effectiveSetSlots(plan, events)).toEqual([{ event: redo, exerciseIndex: 0, setNumber: 1 }])
+  })
+
+  it('an ignored undo (rest already over) removes nothing', () => {
+    const start = ev('SESSION_STARTED')
+    const set1 = ev('SET_COMPLETED')
+    const skip = ev('REST_SKIPPED')
+    const undo = ev('SET_UNDONE')
+    expect(effectiveSetSlots(plan, [start, set1, skip, undo]).map((s) => s.event)).toEqual([set1])
+    expect(withoutIneffectiveSets(plan, [start, set1, skip, undo]).filter((e) => e.type === 'SET_COMPLETED')).toEqual([set1])
+  })
+})
