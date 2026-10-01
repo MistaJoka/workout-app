@@ -14,6 +14,7 @@ import { ThumbBar } from '../components/ThumbBar'
 import { RaeFace } from '../components/Rae'
 import { BackupNudge } from '../components/BackupNudge'
 import { PixelBloom } from '../components/PixelBloom'
+import { CompleteHighlights } from '../components/CompleteHighlights'
 import { bookendsFor } from '../../domain/content/workoutEstimate'
 import { templateById } from '../../domain/content/fixtures/foundationStrengthStarter'
 import type { WorkoutTemplate } from '../../domain/content/types'
@@ -117,6 +118,7 @@ export function SessionCompleteScreen() {
           <Stat value={stats.moves} label={stats.moves === 1 ? 'move' : 'moves'} />
         </div>
       )}
+      {result && sessionId && <CompleteHighlights sessionId={sessionId} />}
       {result && (
         // Ties the finish to Today's week: every finished workout grows a
         // flower there (WeekBlooms), ended-early ones included.
