@@ -1,6 +1,6 @@
 import { useEffect, useMemo, useState } from 'react'
 import { newId } from '../../shared/id'
-import { useNavigate, useParams } from 'react-router-dom'
+import { Link, useNavigate, useParams } from 'react-router-dom'
 import { startSession } from '../../application/sessionService'
 import { getExercises, getTemplate } from '../../domain/content/catalog'
 import type { Exercise, WorkoutTemplate } from '../../domain/content/types'
@@ -10,7 +10,9 @@ import { getProgression } from '../../infrastructure/db/repositories/familiarity
 import { BackButton } from '../components/BackButton'
 import { ThumbBar } from '../components/ThumbBar'
 import { ExerciseThumb } from '../components/ExerciseThumb'
-import { RaeFace } from '../components/Rae'
+import { MovementMedia } from '../components/MovementMedia'
+import { bookendsFor, estimateMinutes } from '../../domain/content/workoutEstimate'
+import { templateById } from '../../domain/content/fixtures/foundationStrengthStarter'
 import { useWeightUnit } from '../components/useWeightUnit'
 import { formatWeight } from '../units'
 
@@ -111,6 +113,10 @@ export function CheckInScreen() {
   }
 
   const totalSets = preview.exercises.reduce((sum, e) => sum + e.sets, 0)
+  const minutes = estimateMinutes(loaded.template)
+  const first = preview.exercises[0]
+  const firstContent = first ? loaded.exercises.find((e) => e.id === first.exerciseId) : undefined
+  const { warmUp } = bookendsFor(loaded.template.id, (id) => templateById.get(id))
 
   async function handleStart() {
     if (!loaded) return
@@ -132,16 +138,42 @@ export function CheckInScreen() {
     <div className="p-4 pb-28 space-y-5">
       <div>
         <BackButton />
-        <div className="flex items-center justify-between gap-3">
-          <div className="min-w-0">
-            <h1 className="text-2xl font-bold">{loaded.template.name}</h1>
-            <p className="text-ink-muted">
-              {preview.exercises.length} moves, {totalSets} sets
-            </p>
-          </div>
-          <RaeFace expression="happy" size={56} motion="pop" />
-        </div>
+        <h1 className="text-2xl font-bold">{loaded.template.name}</h1>
+        <p className="text-ink-muted">
+          {preview.exercises.length} moves, {totalSets} sets, about {minutes} min
+        </p>
       </div>
+
+      {warmUp && (
+        <Link
+          to={`/checkin/${warmUp.id}`}
+          className="card flex min-h-11 items-center justify-between gap-3 px-4 py-3"
+        >
+          <span className="min-w-0">
+            <span className="block font-semibold">Warm up first</span>
+            <span className="block text-sm text-ink-muted">
+              {warmUp.exercises.length} moves, about {estimateMinutes(warmUp)} min
+            </span>
+          </span>
+          <span aria-hidden="true" className="text-ink-muted">
+            ›
+          </span>
+        </Link>
+      )}
+
+      {/* Up first: Rae doing the opening move, so the screen shows what
+          Start leads into (photo when Rae doesn't demo it yet). */}
+      {firstContent && (
+        <section aria-label={`Up first: ${firstContent.name}`} className="space-y-1">
+          <p className="text-sm font-semibold text-ink-muted">Up first</p>
+          <MovementMedia
+            name={firstContent.name}
+            exerciseId={firstContent.id}
+            start={firstContent.mediaManifest.start}
+            finish={firstContent.mediaManifest.finish}
+          />
+        </section>
+      )}
 
       <ul className="space-y-2" aria-label="Your workout">
         {preview.exercises.map((exercise) => (
@@ -160,6 +192,7 @@ export function CheckInScreen() {
           </li>
         ))}
       </ul>
+
 
       {error && <p className="text-sm text-accent">{error}</p>}
       <ThumbBar armKey="checkin">
