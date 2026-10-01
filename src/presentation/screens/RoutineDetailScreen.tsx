@@ -3,12 +3,17 @@ import { Link, useLocation, useNavigate, useParams } from 'react-router-dom'
 import { getExercises, getTemplate } from '../../domain/content/catalog'
 import type { Exercise, WorkoutTemplate } from '../../domain/content/types'
 import { deleteCustomTemplate, isCustomTemplateId } from '../../infrastructure/db/repositories/customTemplateRepository'
-import { removeTemplateFromSchedule } from '../../infrastructure/db/repositories/scheduleRepository'
+import { getWeeklySchedule, removeTemplateFromSchedule } from '../../infrastructure/db/repositories/scheduleRepository'
+import { DRAFT_TEMPLATE_IDS } from '../../domain/content/fixtures/raeDraftTemplates'
+import type { WeeklySchedule } from '../../domain/schedule/weeklySchedule'
 import { formatWeight } from '../units'
 import { useWeightUnit } from '../components/useWeightUnit'
 import { BackButton } from '../components/BackButton'
+import { ConfirmSheet } from '../components/ConfirmSheet'
+import { DraftTag } from '../components/DraftTag'
 import { ExerciseThumb } from '../components/ExerciseThumb'
 import { ThumbBar } from '../components/ThumbBar'
+import { plannedDaysLabel, routineSummary } from './routineSummary'
 
 export function RoutineDetailScreen() {
   const { templateId } = useParams()
@@ -23,6 +28,23 @@ export function RoutineDetailScreen() {
   const [error, setError] = useState<string | null>(null)
   const [loadFailed, setLoadFailed] = useState(false)
   const [attempt, setAttempt] = useState(0)
+  // undefined while loading: the plan line stays hidden rather than
+  // flashing "Add to my week" for a routine that's already planned.
+  const [schedule, setSchedule] = useState<WeeklySchedule | null | undefined>(undefined)
+
+  useEffect(() => {
+    let cancelled = false
+    getWeeklySchedule()
+      .then((s) => {
+        if (!cancelled) setSchedule(s)
+      })
+      .catch(() => {
+        if (!cancelled) setSchedule(null)
+      })
+    return () => {
+      cancelled = true
+    }
+  }, [])
 
   useEffect(() => {
     if (!templateId) return
@@ -60,9 +82,10 @@ export function RoutineDetailScreen() {
   if (template === undefined) return <div className="p-4">Loading…</div>
   if (template === null) {
     return (
-      <div className="p-4 space-y-2">
-        <p>That routine isn't available.</p>
-        <button className="underline" onClick={() => navigate('/library')}>
+      <div className="p-4 space-y-4">
+        <BackButton />
+        <p className="font-bold">That routine isn't available.</p>
+        <button type="button" className="btn-secondary w-full" onClick={() => navigate('/library')}>
           Back to Library
         </button>
       </div>
@@ -70,6 +93,7 @@ export function RoutineDetailScreen() {
   }
 
   const custom = isCustomTemplateId(template.id)
+  const planned = schedule === undefined ? undefined : plannedDaysLabel(schedule, template.id)
 
   async function handleDelete() {
     if (!template) return
@@ -90,7 +114,23 @@ export function RoutineDetailScreen() {
   return (
     <div className="p-4 space-y-4 pb-44">
       <BackButton />
-      <h1 className="text-2xl font-bold">{template.name}</h1>
+      <div className="space-y-1">
+        <h1 className="text-2xl font-bold">
+          {template.name}
+          {DRAFT_TEMPLATE_IDS.has(template.id) && <DraftTag />}
+        </h1>
+        <p className="text-sm text-ink-muted">{routineSummary(template)}</p>
+        {planned !== undefined &&
+          (planned ? (
+            <Link to="/schedule" className="inline-flex min-h-11 items-center text-sm font-semibold text-primary-ink">
+              On your plan: {planned}
+            </Link>
+          ) : (
+            <Link to="/schedule" className="inline-flex min-h-11 items-center text-sm font-semibold text-primary-ink">
+              + Add to my week
+            </Link>
+          ))}
+      </div>
       {added && (
         <p className="field-success px-3 py-2 text-sm font-semibold" role="status">
           Added {added}
@@ -121,22 +161,31 @@ export function RoutineDetailScreen() {
       </ul>
 
       {custom && (
-        <div className="flex gap-2">
-          <Link to={`/routines/${template.id}/edit`} className="btn-secondary flex-1">
+        <div className="grid grid-cols-2 gap-3 pt-2">
+          <Link to={`/routines/${template.id}/edit`} className="btn-secondary min-h-11">
             Edit
           </Link>
-          {confirmingDelete ? (
-            <button className="btn-danger flex-1" disabled={deleting} onClick={handleDelete}>
-              Yes, delete
-            </button>
-          ) : (
-            <button className="btn-secondary flex-1" onClick={() => setConfirmingDelete(true)}>
-              Delete
-            </button>
-          )}
+          <button type="button" className="btn-secondary min-h-11" onClick={() => setConfirmingDelete(true)}>
+            Delete
+          </button>
         </div>
       )}
-      {error && <p className="text-sm text-accent">{error}</p>}
+      {confirmingDelete && (
+        <ConfirmSheet
+          title={`Delete ${template.name}?`}
+          confirmLabel="Yes, delete"
+          cancelLabel="Keep it"
+          busy={deleting}
+          error={error}
+          onConfirm={handleDelete}
+          onCancel={() => {
+            setConfirmingDelete(false)
+            setError(null)
+          }}
+        >
+          <p className="text-sm text-ink-muted">Your past workouts with it stay in your history.</p>
+        </ConfirmSheet>
+      )}
 
       <ThumbBar armKey="routine" aboveTabBar>
         <Link
