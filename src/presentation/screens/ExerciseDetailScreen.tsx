@@ -8,6 +8,7 @@ import {
   listCustomTemplates,
 } from '../../infrastructure/db/repositories/customTemplateRepository'
 import { MovementMedia } from '../components/MovementMedia'
+import { ExerciseYou } from '../components/ExerciseYou'
 import { BackButton } from '../components/BackButton'
 import { defaultPrescription } from './routineBuilderRows'
 
@@ -83,6 +84,8 @@ export function ExerciseDetailScreen() {
       </div>
 
       <MovementMedia name={exercise.name} exerciseId={exercise.id} start={exercise.mediaManifest.start} finish={exercise.mediaManifest.finish} />
+
+      <ExerciseYou exerciseId={exercise.id} />
 
       <ol className="space-y-1.5 text-sm leading-snug">
         {[exercise.setup, ...exercise.executionPhases].filter(Boolean).map((step, i) => (
