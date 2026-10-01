@@ -2,7 +2,7 @@
 // download link is clumsy, so the share sheet (Save to Files, Calendar,
 // AirDrop) is tried first; elsewhere it falls back to a download. Returns
 // false only if the user dismissed the share sheet.
-export async function shareOrDownload(content: string, filename: string, type: string): Promise<boolean> {
+export async function shareOrDownload(content: string | Blob, filename: string, type: string): Promise<boolean> {
   const file = new File([content], filename, { type })
   if (typeof navigator !== 'undefined' && navigator.canShare?.({ files: [file] }) && navigator.share) {
     try {
