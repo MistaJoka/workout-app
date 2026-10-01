@@ -22,6 +22,7 @@ import { PlanWeekCard } from '../components/PlanWeekCard'
 import { RecapEntry } from '../components/RecapEntry'
 import { shouldOfferPlanWeek } from '../../domain/schedule/planWeek'
 import { bloomStreakLabel, calculateWeekStreak, nextMilestone, weeklyGoal, weekProgress } from '../../domain/progress/stats'
+import { buildGarden, type GardenFlower } from '../../domain/progress/garden'
 import { MomentumStrip, useMomentumEntrance } from '../components/TodayMomentum'
 import { dayPart, greeting, longDate } from '../greeting'
 import { raeSays } from '../raeSays'
@@ -55,6 +56,8 @@ type TodayData = {
   bloomStreak: string | null
   // What Rae says in her room (raeSays).
   raeLine: string
+  // Every flower grown so far, oldest first; RaeHero shows the newest few.
+  gardenFlowers: GardenFlower[]
 }
 
 async function loadToday(now: Date): Promise<TodayData> {
@@ -180,6 +183,7 @@ async function loadToday(now: Date): Promise<TodayData> {
       part: dayPart(now),
       dateKey: localDateKey(now),
     }),
+    gardenFlowers: buildGarden(results).flowers,
   }
 }
 
@@ -247,7 +251,7 @@ export function TodayScreen() {
       {/* Rae's room with today's one thing to do joined underneath it, so
           the stage reads as her presenting it. */}
       <section className="today-stage" aria-label="Today">
-        <RaeHero part={dayPart(now)} says={data?.raeLine} />
+        <RaeHero part={dayPart(now)} says={data?.raeLine} flowers={data?.gardenFlowers} />
         {data ? (
           <TodayMission
             mission={data.mission}
