@@ -54,7 +54,7 @@ export function FilterSheet({
           beneath the tab bar. */}
       {open &&
         createPortal(
-          <div className="fixed inset-0 z-30 flex items-end bg-black/40" onClick={() => setOpen(false)}>
+          <div className="sheet-backdrop fixed inset-0 z-30 flex items-end bg-black/40" onClick={() => setOpen(false)}>
             <div
               ref={sheetRef}
               className="max-h-[75vh] w-full space-y-3 overflow-y-auto rounded-t-[var(--radius-panel)] bg-surface p-4"

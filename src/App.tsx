@@ -1,6 +1,7 @@
 import { HashRouter, Navigate, Route, Routes } from 'react-router-dom'
 import { ThemeProvider } from './presentation/theme/ThemeContext'
 import { AppShell } from './presentation/layout/AppShell'
+import { RouteFade } from './presentation/layout/RouteFade'
 import { TodayScreen } from './presentation/screens/TodayScreen'
 import { CheckInScreen } from './presentation/screens/CheckInScreen'
 import { WorkoutPlayerScreen } from './presentation/screens/WorkoutPlayerScreen'
@@ -37,11 +38,14 @@ export default function App() {
             <Route path="/about" element={<AboutScreen />} />
             <Route path="/rae" element={<MeetRaeScreen />} />
           </Route>
-          <Route path="/checkin/:templateId" element={<CheckInScreen />} />
+          {/* Full-screen flow outside the tab bar fades in the same way. */}
+          <Route element={<RouteFade />}>
+            <Route path="/checkin/:templateId" element={<CheckInScreen />} />
+            <Route path="/session/:sessionId" element={<WorkoutPlayerScreen />} />
+            <Route path="/session/:sessionId/complete" element={<SessionCompleteScreen />} />
+          </Route>
           {/* Preview merged into check-in; an old /preview link has no plan state. */}
           <Route path="/preview" element={<Navigate to="/" replace />} />
-          <Route path="/session/:sessionId" element={<WorkoutPlayerScreen />} />
-          <Route path="/session/:sessionId/complete" element={<SessionCompleteScreen />} />
         </Routes>
       </HashRouter>
     </ThemeProvider>
