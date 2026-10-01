@@ -34,7 +34,18 @@ const STYLE = `
 @keyframes pixel-bloom-shimmer { 0%, 100% { opacity: 0.25; } 50% { opacity: 1; } }
 [data-motion='reduced'] .pixel-bloom__shimmer, [data-motion='off'] .pixel-bloom__shimmer { animation: none; opacity: 1; }
 @media (prefers-reduced-motion: reduce) { .pixel-bloom__shimmer { animation: none; opacity: 1; } }
+.pixel-bloom__pot-shine { animation: pixel-bloom-pot-shine 2s ease-in-out 0.4s infinite both; }
+@keyframes pixel-bloom-pot-shine { 0%, 100% { opacity: 0.35; } 50% { opacity: 1; } }
+[data-motion='reduced'] .pixel-bloom__pot-shine, [data-motion='off'] .pixel-bloom__pot-shine { animation: none; opacity: 1; }
+@media (prefers-reduced-motion: reduce) { .pixel-bloom__pot-shine { animation: none; opacity: 1; } }
 `
+
+// A golden pot's clay, in place of the ordinary terracotta.
+const POT_GOLD = '#f2c338'
+const POT_GOLD_RIM = '#b8840f'
+const POT_GOLD_BODY = '#ffdd6b'
+const POT_GOLD_SHADOW = '#d9a21f'
+const POT_SHINE = '#fff6d8'
 
 // Rare and legendary species keep a few sparkles around the head: they
 // twinkle under full motion and simply stay lit when motion is reduced/off.
@@ -64,6 +75,7 @@ export function PixelBloom({
   label,
   species,
   animate = true,
+  golden = false,
 }: {
   bloomed?: boolean
   size?: number
@@ -72,6 +84,10 @@ export function PixelBloom({
   species?: GardenSpecies
   // false renders the grown flower at rest (collection grids, lists).
   animate?: boolean
+  // Gold pot, for a flower whose rarity tier is fully collected. Changes
+  // only the pot (not the bloom itself); a subtle shine twinkles under full
+  // motion and simply stays lit under reduced/off, same as the rare sparkle.
+  golden?: boolean
 }) {
   const petal = species?.petal ?? PETAL
   const petalDark = species?.petalDark ?? PETAL_DARK
@@ -86,9 +102,9 @@ export function PixelBloom({
       height={(size * 22) / 16}
       shapeRendering="crispEdges"
       role="img"
-      aria-label={label ?? (bloomed ? 'A flower in bloom' : 'A sprout in a pot')}
+      aria-label={label ?? (bloomed ? 'A flower in bloom' : 'A sprout in a pot') + (golden ? ', in a golden pot' : '')}
     >
-      {animate || sparkly ? <style>{STYLE}</style> : null}
+      {animate || sparkly || golden ? <style>{STYLE}</style> : null}
       {bloomed ? (
         <>
           <rect className="pixel-bloom__stem" x="7" y="7" width="2" height="9" fill={LEAF_DARK} />
@@ -128,11 +144,17 @@ export function PixelBloom({
           <rect x="9" y="10" width="3" height="2" fill={LEAF} />
         </>
       )}
-      {/* The pot, same shape and clay colors as WeekBlooms'. */}
-      <rect x="2" y="16" width="12" height="2" fill="#d4866a" />
-      <rect x="3" y="16" width="10" height="1" fill="#8a5a44" />
-      <rect x="3" y="18" width="10" height="3" fill="#e0906a" />
-      <rect x="4" y="21" width="8" height="1" fill="#c9785d" />
+      {/* The pot, same shape as WeekBlooms'; golden clay for a complete set. */}
+      <rect x="2" y="16" width="12" height="2" fill={golden ? POT_GOLD : '#d4866a'} />
+      <rect x="3" y="16" width="10" height="1" fill={golden ? POT_GOLD_RIM : '#8a5a44'} />
+      <rect x="3" y="18" width="10" height="3" fill={golden ? POT_GOLD_BODY : '#e0906a'} />
+      <rect x="4" y="21" width="8" height="1" fill={golden ? POT_GOLD_SHADOW : '#c9785d'} />
+      {golden && (
+        <g className="pixel-bloom__pot-shine" fill={POT_SHINE}>
+          <rect x="4" y="17" width="1" height="1" />
+          <rect x="11" y="19" width="1" height="1" />
+        </g>
+      )}
     </svg>
   )
 }
