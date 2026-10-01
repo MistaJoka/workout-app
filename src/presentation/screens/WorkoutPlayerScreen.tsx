@@ -20,7 +20,8 @@ import { WorkoutProgressBar } from '../components/WorkoutProgressBar'
 import { WorkoutOverviewSheet } from '../components/WorkoutOverviewSheet'
 import { useCountdown } from '../components/useCountdown'
 import { getLastTimeSummary } from '../../application/lastTime'
-import { primeAudio, restEndFeedback } from '../../application/restFeedback'
+import { primeAudio, restEndFeedback, setCompleteFeedback } from '../../application/restFeedback'
+import { fireSetBurst } from '../components/SetBurst'
 import { useFeedbackSettings } from '../components/useFeedbackSettings'
 import { useWeightUnit } from '../components/useWeightUnit'
 import { useWakeLock } from '../pwa/useWakeLock'
@@ -64,6 +65,9 @@ export function WorkoutPlayerScreen() {
   const [lastTime, setLastTime] = useState<string | null>(null)
   const [feedback] = useFeedbackSettings()
   const [unit] = useWeightUnit()
+  const { motion } = useTheme()
+  const osPrefersReduced = usePrefersReducedMotion()
+  const fullMotion = effectiveMotion(motion, osPrefersReduced) === 'full'
   // Load actually used for the set being logged (kg); null = use the plan's.
   const [loggedWeightKg, setLoggedWeightKg] = useState<number | null>(null)
   const [confirmingEnd, setConfirmingEnd] = useState(false)
@@ -147,6 +151,7 @@ export function WorkoutPlayerScreen() {
     setError(null)
     try {
       const next = await recordEvent(sessionId, type, newId(), payload)
+      if (type === 'SET_COMPLETED') celebrateSet(state, next)
       setState(next)
       setAwaitingRepCheck(false)
       setShortReps(null)
@@ -159,6 +164,22 @@ export function WorkoutPlayerScreen() {
     } finally {
       setBusy(false)
     }
+  }
+
+  // A set that actually counted (the machine moved on): a rising note, a
+  // buzz on Android, and under full motion a petal burst. Fire-and-forget,
+  // after the event is stored, so nothing here ever delays a tap.
+  function celebrateSet(before: SessionState | null, after: SessionState) {
+    if (!plan || !before) return
+    const final = after.status === 'COMPLETED'
+    const moved =
+      final ||
+      after.currentExerciseIndex !== before.currentExerciseIndex ||
+      after.currentSetNumber !== before.currentSetNumber
+    if (!moved) return
+    const { total, done } = workoutProgress(plan, after.currentExerciseIndex, after.currentSetNumber)
+    setCompleteFeedback(feedback, final ? total : done, total, final)
+    if (fullMotion) fireSetBurst()
   }
 
   function handleCompleteSetClick(exerciseId: string, isRepsBased: boolean) {
@@ -390,7 +411,7 @@ export function WorkoutPlayerScreen() {
             it, so the layout doesn't grow and the progressbar keeps its own
             reading for screen readers. */}
         <div className="relative">
-          <WorkoutProgressBar done={progress.done} total={progress.total} label={exerciseLabel} />
+          <WorkoutProgressBar done={progress.done} total={progress.total} label={exerciseLabel} animate={fullMotion} />
           <button
             type="button"
             className="absolute inset-x-0 top-1/2 h-11 -translate-y-1/2"
@@ -399,6 +420,17 @@ export function WorkoutPlayerScreen() {
             onClick={() => setShowingOverview(true)}
           />
         </div>
+        {/* Goal gradient: the finish line, named, as it gets close. */}
+        {progress.total - progress.done === 1 ? (
+          <p
+            className={`text-right text-sm font-extrabold text-primary-ink ${fullMotion ? 'animate-pulse' : ''}`}
+            style={{ textShadow: '0 0 12px color-mix(in srgb, var(--color-primary) 55%, transparent)' }}
+          >
+            Last set!
+          </p>
+        ) : state.currentExerciseIndex === plan.exercises.length - 1 && plan.exercises.length > 1 ? (
+          <p className="text-right text-sm font-bold text-primary-ink">Last move</p>
+        ) : null}
         {showingOverview && sessionId && (
           <WorkoutOverviewSheet
             sessionId={sessionId}
@@ -438,7 +470,7 @@ export function WorkoutPlayerScreen() {
               {weighted && <span className="hud-num text-lg font-bold">@ {formatWeight(setWeightKg, unit)}</span>}
             </p>
             <div className="flex-none space-y-1 pb-1">
-              <SetDots total={exercise.sets} current={state.currentSetNumber} />
+              <SetDots total={exercise.sets} current={state.currentSetNumber} animate={fullMotion} />
               <p className="text-sm font-semibold text-ink-muted">
                 Set {state.currentSetNumber} of {exercise.sets}
               </p>
