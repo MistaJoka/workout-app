@@ -1,6 +1,7 @@
 import { describe, expect, it } from 'vitest'
 import {
   buildBadgeSparkle,
+  buildBestChime,
   buildBloomChime,
   buildCelebrationNotes,
   buildGoalMetChord,
@@ -66,8 +67,16 @@ describe('celebration note builders', () => {
     for (const n of notes) expect(isPleasant(n.frequency)).toBe(true)
   })
 
+  it('best: a quick three-note sparkle under a second, all pleasant notes', () => {
+    const notes = buildBestChime()
+    expect(notes).toHaveLength(3)
+    expect(end(notes)).toBeLessThan(1)
+    for (const n of notes) expect(isPleasant(n.frequency)).toBe(true)
+    for (let i = 1; i < notes.length; i++) expect(notes[i].frequency).toBeGreaterThan(notes[i - 1].frequency)
+  })
+
   it('none of the sequences ever startle: no note peaks past a soft 0.3 gain', () => {
-    for (const kind of ['start', 'bloom', 'badge', 'levelUp', 'goalMet'] as const) {
+    for (const kind of ['start', 'bloom', 'badge', 'levelUp', 'goalMet', 'best'] as const) {
       for (const n of buildCelebrationNotes(kind)) expect(n.peak ?? 0.18).toBeLessThanOrEqual(0.3)
     }
   })
@@ -79,5 +88,6 @@ describe('celebration note builders', () => {
     expect(buildCelebrationNotes('goalMet')).toEqual(buildGoalMetChord())
     expect(buildCelebrationNotes('bloom', { rare: true })).toEqual(buildBloomChime(true))
     expect(buildCelebrationNotes('bloom')).toEqual(buildBloomChime(false))
+    expect(buildCelebrationNotes('best')).toEqual(buildBestChime())
   })
 })

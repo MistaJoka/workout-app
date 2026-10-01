@@ -11,7 +11,7 @@
 
 import { canVibrate, getAudioContext } from './restFeedback'
 
-export type CelebrationKind = 'start' | 'bloom' | 'badge' | 'levelUp' | 'goalMet'
+export type CelebrationKind = 'start' | 'bloom' | 'badge' | 'levelUp' | 'goalMet' | 'best'
 
 export type CelebrationOptions = {
   // 'bloom' only: a brighter, extra-sparkly take for a rare/legendary species.
@@ -92,6 +92,18 @@ export function buildGoalMetChord(): Note[] {
   ]
 }
 
+// A bright three-note run for a live personal best during a workout: a
+// little quicker and sunnier than the badge sparkle (this one lands mid-set,
+// not on a card you're already looking at), still comfortably under a
+// second.
+export function buildBestChime(): Note[] {
+  return [
+    { frequency: degree(2), start: 0, duration: 0.12, peak: 0.16 },
+    { frequency: degree(4), start: 0.08, duration: 0.14, peak: 0.18 },
+    { frequency: degree(7), start: 0.17, duration: 0.26, peak: 0.22 },
+  ]
+}
+
 export function buildCelebrationNotes(kind: CelebrationKind, opts?: CelebrationOptions): Note[] {
   switch (kind) {
     case 'start':
@@ -104,6 +116,8 @@ export function buildCelebrationNotes(kind: CelebrationKind, opts?: CelebrationO
       return buildLevelUpFanfare()
     case 'goalMet':
       return buildGoalMetChord()
+    case 'best':
+      return buildBestChime()
   }
 }
 
@@ -115,6 +129,7 @@ const HAPTIC_PATTERN: Record<CelebrationKind, number | number[]> = {
   badge: [20, 30, 20],
   levelUp: [30, 50, 30, 50, 60],
   goalMet: [40, 60, 40],
+  best: [20, 40, 20],
 }
 
 function playNotes(ctx: AudioContext, notes: Note[]): void {
