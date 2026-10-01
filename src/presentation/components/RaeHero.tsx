@@ -1,10 +1,12 @@
-import { Link } from 'react-router-dom'
+import { Link, useLocation } from 'react-router-dom'
 import { useEffect, useRef, useState, type CSSProperties } from 'react'
 import { RaeFigure } from './Rae'
 import { PixelBloom } from './PixelBloom'
 import type { DayPart } from '../greeting'
 import type { GardenFlower } from '../../domain/progress/garden'
 import { gardenSeenKey, newestFlowers, pickTapLine, RAE_TAP_LINES, shouldRevealNewestFlower } from './raeRoom'
+import { resolveHolidayAccent, resolveSeason } from '../season'
+import { SeasonRoomDecor, SEASON_DECOR_STYLE } from './seasonDecor'
 
 // Today's centerpiece: Rae standing in a cozy room. Everything around her
 // is inline SVG/CSS, with no image assets: a window whose sky follows the
@@ -80,7 +82,7 @@ const ROOM_STYLE = `
 @media (prefers-reduced-motion: reduce) { .rae-petal-puff { display: none; } }
 
 .rae-meet-btn { position: absolute; right: 8px; bottom: 8px; background-color: rgb(255 253 248 / 0.9); }
-`
+` + SEASON_DECOR_STYLE
 
 const PETALS = [
   { x: -14, y: -14, color: '#ff8fb8' },
@@ -112,6 +114,17 @@ export function RaeHero({
 }) {
   const [skyTop, skyBottom] = SKY[part]
   const night = part === 'night'
+
+  // Season: an explicit `?season=` URL override wins (screenshots/tests),
+  // then a dev-only localStorage override, then the real meteorological
+  // season for today. Never a notion of "limited time" - it just quietly
+  // matches the calendar.
+  const location = useLocation()
+  const now = new Date()
+  const storage = typeof window === 'undefined' ? null : window.localStorage
+  const season = resolveSeason(now, location.search, storage)
+  const accent = resolveHolidayAccent(now, location.search, storage)
+
   const pots = newestFlowers(flowers, MAX_POTS)
   const newestId = pots.length > 0 ? pots[pots.length - 1].sessionId : null
 
@@ -234,6 +247,14 @@ export function RaeHero({
         <ellipse cx="326" cy="184" rx="9" ry="26" fill="#6db88c" />
         <rect x="308" y="210" width="36" height="30" rx="4" fill="#e59a7a" />
         <rect x="306" y="208" width="40" height="6" rx="3" fill="#d4866a" />
+
+        <SeasonRoomDecor
+          season={season}
+          accent={accent}
+          showSunGlint={!night}
+          sunCx={90}
+          sunCy={part === 'evening' ? 118 : 68}
+        />
       </svg>
 
       {pots.length > 0 && (
