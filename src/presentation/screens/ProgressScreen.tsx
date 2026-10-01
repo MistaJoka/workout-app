@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react'
 import { Link } from 'react-router-dom'
+import { RecapLink } from '../components/RecapEntry'
 import { getAllSessionHistory } from '../../infrastructure/db/repositories/sessionRepository'
 import { getTemplate } from '../../domain/content/catalog'
 import { projectSetRecords } from '../../domain/progress/history'
@@ -152,6 +153,7 @@ export function ProgressScreen() {
             <span className="font-semibold">Your badges</span>
             <span aria-hidden="true" className="text-ink-muted">›</span>
           </Link>
+          <RecapLink />
 
           <section className="card p-3">
             <p className="text-xs text-ink-muted">Workouts per week, last 8 weeks</p>

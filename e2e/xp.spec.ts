@@ -13,12 +13,13 @@ test('XP counts up on Complete, levels up without blocking, and Progress shows t
   await page.goto('/#/checkin/fs.full-body-a')
   await page.getByRole('button', { name: 'Start workout' }).click()
   await finishWorkout(page)
+  // The overlay dismisses itself after ~2.5s, so check it first.
+  await expect(page.getByTestId('level-up')).toBeVisible()
   await expect(page.getByLabel('Plus 175 XP')).toBeVisible()
   await expect(page.getByTestId('xp-gain').getByText('Level up!')).toBeVisible()
   await expect(page.getByRole('status').filter({ hasText: 'Level 2, Sprout' })).toHaveCount(1)
   await expect(page.getByTestId('goal-met')).toHaveCount(0)
   // The level-up overlay ignores the pointer: Back to Today works right away.
-  await expect(page.getByTestId('level-up')).toBeVisible()
   await page.locator('[data-armed="true"]').waitFor()
   await page.getByRole('link', { name: 'Back to Today' }).click()
   await expect(page).toHaveURL(/#\/$/)

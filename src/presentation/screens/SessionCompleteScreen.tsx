@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react'
 import { Link, useParams } from 'react-router-dom'
+import { ShareWorkoutButton } from '../components/ShareWorkoutButton'
 import { getEventsForSession, getPlan, getResult } from '../../infrastructure/db/repositories/sessionRepository'
 import { completeStats, type CompleteStats } from './completeStats'
 import {
@@ -207,6 +208,8 @@ export function SessionCompleteScreen() {
           </span>
         </Link>
       )}
+
+      {result && sessionId && <ShareWorkoutButton sessionId={sessionId} />}
 
       <Link to="/progress" className="btn-ghost min-h-11">
         See your progress
