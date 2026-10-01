@@ -22,18 +22,9 @@ import { weeklyGoal } from '../../domain/progress/stats'
 import { dayPart, greeting, longDate } from '../greeting'
 import { activeProfile } from '../../infrastructure/profiles'
 import { raeStillFor } from '../components/raeLoops'
+import { estimateMinutes } from '../../domain/content/workoutEstimate'
 
 const QUICK_ID = 'fs.quick-10'
-
-function estimateMinutes(template: WorkoutTemplate | undefined): number {
-  if (!template) return 0
-  // ~3s per rep, plus ~15s per set to get into position; rounded up to 5 min.
-  const seconds = template.exercises.reduce((sum, e) => {
-    const work = e.prescription.timeSeconds ?? (e.prescription.reps ?? 0) * 3
-    return sum + e.prescription.sets * (work + e.prescription.restSeconds + 15)
-  }, 0)
-  return Math.max(5, Math.ceil(seconds / 60 / 5) * 5)
-}
 
 function describe(template: WorkoutTemplate): string {
   return `${countLabel(template.exercises.length, 'exercise')}, about ${estimateMinutes(template)} min`

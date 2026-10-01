@@ -14,6 +14,9 @@ import { ThumbBar } from '../components/ThumbBar'
 import { RaeFace } from '../components/Rae'
 import { BackupNudge } from '../components/BackupNudge'
 import { PixelBloom } from '../components/PixelBloom'
+import { bookendsFor } from '../../domain/content/workoutEstimate'
+import { templateById } from '../../domain/content/fixtures/foundationStrengthStarter'
+import type { WorkoutTemplate } from '../../domain/content/types'
 
 type Candidate = {
   exerciseId: string
@@ -30,6 +33,7 @@ export function SessionCompleteScreen() {
   const [busyExerciseId, setBusyExerciseId] = useState<string | null>(null)
   const [candidateError, setCandidateError] = useState<string | null>(null)
   const [unit] = useWeightUnit()
+  const [coolDown, setCoolDown] = useState<WorkoutTemplate | undefined>(undefined)
 
   useEffect(() => {
     if (!sessionId) return
@@ -43,6 +47,11 @@ export function SessionCompleteScreen() {
     loadCandidates(sessionId)
       .then(setCandidates)
       .catch(() => setCandidates([]))
+    // After a main workout, offer the optional cool-down (never after the
+    // warm-up or cool-down themselves).
+    getPlan(sessionId)
+      .then((plan) => setCoolDown(plan ? bookendsFor(plan.templateId, (id) => templateById.get(id)).coolDown : undefined))
+      .catch(() => setCoolDown(undefined))
   }, [sessionId])
 
   async function loadStats(id: string): Promise<CompleteStats | null> {
@@ -149,6 +158,21 @@ export function SessionCompleteScreen() {
           ))}
           {candidateError && <p className="text-sm text-center text-accent">{candidateError}</p>}
         </div>
+      )}
+
+      {coolDown && (
+        <Link
+          to={`/checkin/${coolDown.id}`}
+          className="card mx-auto flex min-h-11 max-w-sm items-center justify-between gap-3 px-4 py-3 text-left"
+        >
+          <span className="min-w-0">
+            <span className="block font-semibold">Cool down</span>
+            <span className="block text-sm text-ink-muted">{coolDown.exercises.length} moves</span>
+          </span>
+          <span aria-hidden="true" className="text-ink-muted">
+            ›
+          </span>
+        </Link>
       )}
 
       <Link to="/progress" className="btn-ghost min-h-11">
