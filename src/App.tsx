@@ -17,6 +17,7 @@ import { SessionDetailScreen } from './presentation/screens/SessionDetailScreen'
 import { SettingsScreen } from './presentation/screens/SettingsScreen'
 import { AboutScreen } from './presentation/screens/AboutScreen'
 import { MeetRaeScreen } from './presentation/screens/MeetRaeScreen'
+import { GardenScreen } from './presentation/screens/GardenScreen'
 import { ProfilePickGate } from './presentation/components/ProfilePickGate'
 
 export default function App() {
@@ -39,6 +40,7 @@ export default function App() {
             <Route path="/settings" element={<SettingsScreen />} />
             <Route path="/about" element={<AboutScreen />} />
             <Route path="/rae" element={<MeetRaeScreen />} />
+            <Route path="/garden" element={<GardenScreen />} />
           </Route>
           {/* Full-screen flow outside the tab bar fades in the same way. */}
           <Route element={<RouteFade />}>
