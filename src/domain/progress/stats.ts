@@ -142,6 +142,36 @@ export function weekProgress(
   return { done, goal, met: done >= goal }
 }
 
+// Goal-gradient line for Today: the closer the goal, the more it pulls, so it
+// counts what's left. Once met it's a bonus, never "keep it up or lose it".
+export function goalGradientLine(done: number, goal: number): string {
+  if (done >= goal) return 'Anything extra is a bonus.'
+  return `${goal - done} more to hit your week's goal`
+}
+
+const WORKOUT_MILESTONES = [5, 10, 25, 50, 100] as const
+
+// Progress toward the next workout milestone (5, 10, 25, 50, 100, then every
+// 100). Counted from zero, so the bar already shows the ground covered
+// ("7 of 10"), honest endowed progress. Nothing before the first workout.
+export function nextMilestone(finished: number): { done: number; target: number; label: string } | null {
+  if (finished <= 0) return null
+  const target = WORKOUT_MILESTONES.find((m) => m > finished) ?? (Math.floor(finished / 100) + 1) * 100
+  return { done: finished, target, label: `${finished} of ${target} to your ${ordinal(target)} workout` }
+}
+
+// Weeks in a row that met the goal (calculateWeekStreak) as a growing bloom.
+// Zero says nothing: a streak is something to enjoy, not to lose.
+export function bloomStreakLabel(weeks: number): string | null {
+  return weeks >= 1 ? `${weeks}-week bloom` : null
+}
+
+function ordinal(n: number): string {
+  const tens = n % 100
+  if (tens >= 11 && tens <= 13) return `${n}th`
+  return `${n}${({ 1: 'st', 2: 'nd', 3: 'rd' } as Record<number, string>)[n % 10] ?? 'th'}`
+}
+
 function isoWeekStart(date: Date): Date {
   const day = date.getDay() // 0 = Sunday
   const offset = day === 0 ? -6 : 1 - day
