@@ -20,7 +20,8 @@ import { TodayMission, type Mission } from '../components/TodayMission'
 import { WeekBlooms, type WeekNames } from '../components/WeekBlooms'
 import { PlanWeekCard } from '../components/PlanWeekCard'
 import { shouldOfferPlanWeek } from '../../domain/schedule/planWeek'
-import { weeklyGoal, weekProgress } from '../../domain/progress/stats'
+import { bloomStreakLabel, calculateWeekStreak, nextMilestone, weeklyGoal, weekProgress } from '../../domain/progress/stats'
+import { MomentumStrip, useMomentumEntrance } from '../components/TodayMomentum'
 import { dayPart, greeting, longDate } from '../greeting'
 import { raeSays } from '../raeSays'
 import { activeProfile } from '../../infrastructure/profiles'
@@ -47,6 +48,10 @@ type TodayData = {
   resumeId: string | null
   // No day planned yet, after the first workout (shouldOfferPlanWeek).
   offerPlanWeek: boolean
+  // Toward the next workout milestone (nextMilestone), null before the first.
+  milestone: ReturnType<typeof nextMilestone>
+  // Weeks in a row meeting the goal as a chip label (bloomStreakLabel), or null.
+  bloomStreak: string | null
   // What Rae says in her room (raeSays).
   raeLine: string
 }
@@ -160,6 +165,8 @@ async function loadToday(now: Date): Promise<TodayData> {
     week,
     weekNames: { sessions: sessionNames, templates: templateNames },
     weekGoal: weeklyGoal(schedule),
+    milestone: nextMilestone(results.length),
+    bloomStreak: bloomStreakLabel(calculateWeekStreak(results, weeklyGoal(schedule), now)),
     others,
     hasFinished: results.length > 0,
     resumeId: mode === 'resume' ? (resumable?.id ?? null) : null,
@@ -212,6 +219,7 @@ export function TodayScreen() {
   const [data, setData] = useState<TodayData | null>(null)
   const [failed, setFailed] = useState(false)
   const [attempt, setAttempt] = useState(0)
+  const momentumIn = useMomentumEntrance(localDateKey(now))
 
   useEffect(() => {
     let cancelled = false
@@ -260,7 +268,15 @@ export function TodayScreen() {
 
       <WelcomeCard finished={data ? data.hasFinished : null} onNamed={() => setProfile(activeProfile())} />
 
-      {data && <WeekBlooms week={data.week} goal={data.weekGoal} names={data.weekNames} />}
+      {data && (
+        <WeekBlooms
+          week={data.week}
+          goal={data.weekGoal}
+          names={data.weekNames}
+          animate={momentumIn}
+          footer={<MomentumStrip milestone={data.milestone} streak={data.bloomStreak} animate={momentumIn} />}
+        />
+      )}
 
       {data?.offerPlanWeek && <PlanWeekCard />}
 

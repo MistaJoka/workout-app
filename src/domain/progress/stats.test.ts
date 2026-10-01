@@ -8,6 +8,9 @@ import {
   weeklyGoal,
   weeklyTotals,
   weekProgress,
+  goalGradientLine,
+  nextMilestone,
+  bloomStreakLabel,
 } from './stats'
 import { EMPTY_SCHEDULE } from '../schedule/weeklySchedule'
 import type { SetRecord } from './types'
@@ -199,5 +202,36 @@ describe('weekProgress', () => {
 
   it('starts at zero with no workouts', () => {
     expect(weekProgress([], null, now)).toEqual({ done: 0, goal: 2, met: false })
+  })
+})
+
+describe('goalGradientLine', () => {
+  it('counts down to the week goal, then calls anything extra a bonus', () => {
+    expect(goalGradientLine(0, 2)).toBe("2 more to hit your week's goal")
+    expect(goalGradientLine(1, 2)).toBe("1 more to hit your week's goal")
+    expect(goalGradientLine(2, 2)).toBe('Anything extra is a bonus.')
+    expect(goalGradientLine(3, 2)).toBe('Anything extra is a bonus.')
+  })
+})
+
+describe('nextMilestone', () => {
+  it('has nothing to show before the first workout', () => {
+    expect(nextMilestone(0)).toBeNull()
+  })
+
+  it('counts toward the next of 5, 10, 25, 50, 100, then every 100', () => {
+    expect(nextMilestone(1)).toEqual({ done: 1, target: 5, label: '1 of 5 to your 5th workout' })
+    expect(nextMilestone(5)).toEqual({ done: 5, target: 10, label: '5 of 10 to your 10th workout' })
+    expect(nextMilestone(24)).toEqual({ done: 24, target: 25, label: '24 of 25 to your 25th workout' })
+    expect(nextMilestone(100)).toEqual({ done: 100, target: 200, label: '100 of 200 to your 200th workout' })
+    expect(nextMilestone(241)?.target).toBe(300)
+  })
+})
+
+describe('bloomStreakLabel', () => {
+  it('names a streak of met weeks and says nothing at zero', () => {
+    expect(bloomStreakLabel(0)).toBeNull()
+    expect(bloomStreakLabel(1)).toBe('1-week bloom')
+    expect(bloomStreakLabel(3)).toBe('3-week bloom')
   })
 })

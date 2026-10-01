@@ -1,8 +1,10 @@
-import { useRef, useState } from 'react'
+import { useRef, useState, type ReactNode } from 'react'
 import { Link } from 'react-router-dom'
 import { weekDayTarget, type DayMark, type WeekDay, type WeekDayTarget } from '../../domain/schedule/todayView'
 import { WEEKDAY_LABELS } from '../../domain/schedule/weeklySchedule'
 import { useSheetFocus } from './useSheetFocus'
+import { goalGradientLine } from '../../domain/progress/stats'
+import { MOMENTUM_STYLE, momentumProps } from './TodayMomentum'
 
 // This week as seven little pots on Rae's windowsill: a flower blooms on
 // every day with a finished workout. Planned days hold a sprout, rest days
@@ -116,13 +118,29 @@ function hrefFor(target: WeekDayTarget): string | null {
 // Each pot is a door: the workout done that day, a planned workout still
 // ahead, or the planner. The header ("1 of 2 this week ... Plan") is its own
 // link to the planner.
-export function WeekBlooms({ week, goal, names = NO_NAMES }: { week: WeekDay[]; goal: number; names?: WeekNames }) {
+export function WeekBlooms({
+  week,
+  goal,
+  names = NO_NAMES,
+  animate = false,
+  footer,
+}: {
+  week: WeekDay[]
+  goal: number
+  names?: WeekNames
+  // Momentum entrance (once a day, see useMomentumEntrance).
+  animate?: boolean
+  // Under the pots: the milestone bar and bloom chip (MomentumStrip).
+  footer?: ReactNode
+}) {
   const [picking, setPicking] = useState<WeekDay | null>(null)
   const done = week.reduce((sum, d) => sum + d.count, 0)
   const met = done >= goal
   const summary = weekSummary(done, goal)
+  const line = momentumProps(animate, 0)
   return (
     <div className="week-blooms card px-3 pb-2 pt-1">
+      <style>{MOMENTUM_STYLE}</style>
       <Link
         to="/schedule"
         className="flex min-h-11 items-center justify-between rounded-control px-1 active:bg-field-primary"
@@ -146,6 +164,9 @@ export function WeekBlooms({ week, goal, names = NO_NAMES }: { week: WeekDay[]; 
           />
         ))}
       </div>
+      <p className={`px-1 pt-1.5 text-sm font-semibold text-primary-ink ${line.className}`} style={line.style}>
+        {goalGradientLine(done, goal)}
+      </p>
       <ol className="mt-1 grid grid-cols-7">
         {week.map((day, i) => {
           const target = weekDayTarget(day)
@@ -190,6 +211,7 @@ export function WeekBlooms({ week, goal, names = NO_NAMES }: { week: WeekDay[]; 
           )
         })}
       </ol>
+      {footer}
       {picking && <PickSheet day={picking} names={names} onClose={() => setPicking(null)} />}
     </div>
   )
