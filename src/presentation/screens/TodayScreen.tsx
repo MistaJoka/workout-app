@@ -19,6 +19,7 @@ import { RaeHero } from '../components/RaeHero'
 import { TodayMission, type Mission } from '../components/TodayMission'
 import { WeekBlooms, type WeekNames } from '../components/WeekBlooms'
 import { PlanWeekCard } from '../components/PlanWeekCard'
+import { RecapEntry } from '../components/RecapEntry'
 import { shouldOfferPlanWeek } from '../../domain/schedule/planWeek'
 import { bloomStreakLabel, calculateWeekStreak, nextMilestone, weeklyGoal, weekProgress } from '../../domain/progress/stats'
 import { MomentumStrip, useMomentumEntrance } from '../components/TodayMomentum'
@@ -277,6 +278,8 @@ export function TodayScreen() {
           footer={<MomentumStrip milestone={data.milestone} streak={data.bloomStreak} animate={momentumIn} />}
         />
       )}
+
+      {data && <RecapEntry />}
 
       {data?.offerPlanWeek && <PlanWeekCard />}
 

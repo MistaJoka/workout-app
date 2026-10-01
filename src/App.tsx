@@ -19,6 +19,7 @@ import { AboutScreen } from './presentation/screens/AboutScreen'
 import { MeetRaeScreen } from './presentation/screens/MeetRaeScreen'
 import { GardenScreen } from './presentation/screens/GardenScreen'
 import { AchievementsScreen } from './presentation/screens/AchievementsScreen'
+import { RecapScreen } from './presentation/screens/RecapScreen'
 import { ProfilePickGate } from './presentation/components/ProfilePickGate'
 
 export default function App() {
@@ -49,6 +50,7 @@ export default function App() {
             <Route path="/checkin/:templateId" element={<CheckInScreen />} />
             <Route path="/session/:sessionId" element={<WorkoutPlayerScreen />} />
             <Route path="/session/:sessionId/complete" element={<SessionCompleteScreen />} />
+            <Route path="/recap" element={<RecapScreen />} />
           </Route>
           {/* Preview merged into check-in; an old /preview link has no plan state. */}
           <Route path="/preview" element={<Navigate to="/" replace />} />
