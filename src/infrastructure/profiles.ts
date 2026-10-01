@@ -9,7 +9,10 @@ import { newId } from '../shared/id'
 // The first profile maps onto the original database name, so data from
 // before profiles existed is that profile's data, untouched.
 
-export type Profile = { id: string; name: string }
+// emblem: a chosen garden species id (domain/progress/garden.ts), shown in
+// place of the initial circle once set. Additive/optional so old profile
+// records (no emblem ever chosen) keep working unchanged.
+export type Profile = { id: string; name: string; emblem?: string }
 export type ProfilesState = { profiles: Profile[]; activeId: string }
 
 export const DEFAULT_PROFILE_ID = 'default'
@@ -71,6 +74,28 @@ export function addProfile(name: string, store: KeyValueStore | null = browserSt
 export function renameProfile(id: string, name: string, store: KeyValueStore | null = browserStore()): void {
   const state = loadProfiles(store)
   saveProfiles({ ...state, profiles: state.profiles.map((p) => (p.id === id ? { ...p, name: name.trim() || p.name } : p)) }, store)
+}
+
+// Settings -> You -> Emblem: a discovered garden species id to represent
+// this profile, or null to go back to the plain initial circle. The UI is
+// responsible for only offering already-discovered species; this setter
+// trusts its caller.
+export function setProfileEmblem(id: string, emblem: string | null, store: KeyValueStore | null = browserStore()): void {
+  const state = loadProfiles(store)
+  saveProfiles(
+    {
+      ...state,
+      profiles: state.profiles.map((p) => {
+        if (p.id !== id) return p
+        if (!emblem) {
+          const { emblem: _drop, ...rest } = p
+          return rest
+        }
+        return { ...p, emblem }
+      }),
+    },
+    store
+  )
 }
 
 // Removes the profile entry only; deleting its database is the caller's

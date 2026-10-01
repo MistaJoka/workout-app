@@ -10,6 +10,7 @@ import {
   removeProfile,
   renameProfile,
   setActiveProfile,
+  setProfileEmblem,
   type KeyValueStore,
 } from './profiles'
 
@@ -109,5 +110,41 @@ describe('daily profile pick', () => {
     const kay = addProfile('Kay', store)
     setActiveProfile(kay.id, store, '2026-10-01')
     expect(lastProfilePickDate(store)).toBe('2026-10-01')
+  })
+})
+
+describe('setProfileEmblem', () => {
+  it('defaults to no emblem (the plain initial circle)', () => {
+    const store = memoryStore()
+    expect(loadProfiles(store).profiles[0].emblem).toBeUndefined()
+  })
+
+  it('sets an emblem on one profile without touching the other', () => {
+    const store = memoryStore()
+    const kay = addProfile('Kay', store)
+    setProfileEmblem(kay.id, 'pink-bloom', store)
+    const profiles = loadProfiles(store).profiles
+    expect(profiles.find((p) => p.id === kay.id)?.emblem).toBe('pink-bloom')
+    expect(profiles.find((p) => p.id === 'default')?.emblem).toBeUndefined()
+  })
+
+  it('changes an existing emblem to a different species', () => {
+    const store = memoryStore()
+    setProfileEmblem('default', 'pink-bloom', store)
+    setProfileEmblem('default', 'sky-daisy', store)
+    expect(loadProfiles(store).profiles[0].emblem).toBe('sky-daisy')
+  })
+
+  it('clears the emblem back to no emblem with null', () => {
+    const store = memoryStore()
+    setProfileEmblem('default', 'pink-bloom', store)
+    setProfileEmblem('default', null, store)
+    expect(loadProfiles(store).profiles[0].emblem).toBeUndefined()
+  })
+
+  it('is a no-op for an id that is not a known profile', () => {
+    const store = memoryStore()
+    setProfileEmblem('nobody', 'pink-bloom', store)
+    expect(loadProfiles(store).profiles).toEqual([{ id: 'default', name: 'Me' }])
   })
 })

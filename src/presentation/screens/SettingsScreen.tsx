@@ -3,14 +3,17 @@ import { useEffect, useRef, useState, type ReactNode } from 'react'
 import { importAll, isOtherProfile, parseExportBundle, type ExportBundle } from '../../infrastructure/exportImport/exportImport'
 import { getSetting } from '../../infrastructure/db/repositories/settingsRepository'
 import { db } from '../../infrastructure/db/schema'
-import { activeProfile, loadProfiles } from '../../infrastructure/profiles'
+import { activeProfile, loadProfiles, setProfileEmblem } from '../../infrastructure/profiles'
 import { storageErrorMessage } from '../../infrastructure/storageErrors'
 import { ProfileSwitcher } from '../components/ProfileSwitcher'
+import { EmblemSheet } from '../components/EmblemSheet'
+import { PixelBloom } from '../components/PixelBloom'
 import { useFeedbackSettings } from '../components/useFeedbackSettings'
 import { useWeightUnit } from '../components/useWeightUnit'
 import { RaeFace } from '../components/Rae'
 import { BACKUP_NUDGE_DAYS, LAST_EXPORT_KEY, exportAndRecord, needsBackupNudge } from '../backup'
 import { canVibrate } from '../../application/restFeedback'
+import { GARDEN_SPECIES, buildGarden, type GardenSpecies } from '../../domain/progress/garden'
 
 export function SettingsScreen() {
   const [feedback, updateFeedback] = useFeedbackSettings()
@@ -32,16 +35,34 @@ export function SettingsScreen() {
   // profile), so the copy names who it affects.
   const [profile] = useState(() => activeProfile())
   const [otherPeople] = useState(() => loadProfiles().profiles.length > 1)
+  // Emblem: a discovered garden species standing in for the initial
+  // circle. Starts from the profile record; updates locally on pick so the
+  // row (and anything else reading it this session) doesn't need a reload.
+  const [emblem, setEmblemState] = useState<string | null>(() => profile.emblem ?? null)
+  const [emblemOpen, setEmblemOpen] = useState(false)
+  const [discoveredSpecies, setDiscoveredSpecies] = useState<GardenSpecies[] | null>(null)
 
   useEffect(() => {
     getSetting<string>(LAST_EXPORT_KEY)
       .then((value) => setLastExportAt(value ?? null))
       .catch(() => {})
     db.sessionResults
-      .count()
-      .then(setFinished)
+      .toArray()
+      .then((results) => {
+        setFinished(results.length)
+        const garden = buildGarden(results)
+        setDiscoveredSpecies(GARDEN_SPECIES.filter((s) => garden.counts.has(s.id)))
+      })
       .catch(() => {})
   }, [])
+
+  function handleEmblemSelect(next: string | null) {
+    setProfileEmblem(profile.id, next)
+    setEmblemState(next)
+    setEmblemOpen(false)
+  }
+
+  const emblemSpecies = emblem ? GARDEN_SPECIES.find((s) => s.id === emblem) ?? null : null
 
   // Every failure below is local (IndexedDB or the file picker), never the
   // network, and the copy says so.
@@ -116,8 +137,41 @@ export function SettingsScreen() {
       <h1 className="text-xl font-bold">Settings</h1>
 
       <SettingsGroup title="You">
-        <ProfileSwitcher />
+        {/* ProfileSwitcher reads the profile list once at mount; remount it
+            when this profile's emblem changes so its trigger row (shown
+            right above the Emblem row below) reflects the new pick without
+            a full reload. */}
+        <ProfileSwitcher key={emblem ?? 'none'} />
+        <button
+          type="button"
+          onClick={() => setEmblemOpen(true)}
+          className="card flex min-h-14 w-full items-center gap-3 p-3 text-left"
+        >
+          <span
+            aria-hidden="true"
+            className="flex h-10 w-10 flex-none items-center justify-center rounded-control bg-field-primary"
+          >
+            {emblemSpecies ? (
+              <PixelBloom size={28} animate={false} species={emblemSpecies} />
+            ) : (
+              <span className="text-sm font-extrabold text-ink-muted">—</span>
+            )}
+          </span>
+          <span className="flex-1 font-semibold">Emblem</span>
+          <span className="text-xl text-ink-muted" aria-hidden>
+            ›
+          </span>
+        </button>
       </SettingsGroup>
+
+      {emblemOpen && (
+        <EmblemSheet
+          species={discoveredSpecies ?? []}
+          selected={emblem}
+          onSelect={handleEmblemSelect}
+          onCancel={() => setEmblemOpen(false)}
+        />
+      )}
 
       <SettingsGroup title="Workout">
         <div className="card divide-y-2 divide-[var(--color-border)]">

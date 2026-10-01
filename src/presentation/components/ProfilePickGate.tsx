@@ -3,6 +3,8 @@ import { activeProfile, lastProfilePickDate, loadProfiles, markProfilePicked, se
 import { getInProgressSessions } from '../../infrastructure/db/repositories/sessionRepository'
 import { localDate, shouldShowProfilePick } from './profilePick'
 import { RaeFace } from './Rae'
+import { GARDEN_SPECIES } from '../../domain/progress/garden'
+import { PixelBloom } from './PixelBloom'
 
 // Two people share this app. When there's more than one profile, the first
 // open of the day asks who's working out, one big tap per person. It never
@@ -81,7 +83,11 @@ export function ProfilePickGate() {
                 aria-hidden="true"
                 className={`flex h-12 w-12 flex-none items-center justify-center rounded-full text-xl font-extrabold ${profile.id === activeId ? 'bg-surface' : 'bg-field-info'}`}
               >
-                {profile.name.charAt(0).toUpperCase()}
+                {profile.emblem && GARDEN_SPECIES.find((s) => s.id === profile.emblem) ? (
+                  <PixelBloom size={34} animate={false} species={GARDEN_SPECIES.find((s) => s.id === profile.emblem)} />
+                ) : (
+                  profile.name.charAt(0).toUpperCase()
+                )}
               </span>
               {profile.name}
             </button>

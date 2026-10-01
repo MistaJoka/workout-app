@@ -8,6 +8,14 @@ import {
   setActiveProfile,
   type Profile,
 } from '../../infrastructure/profiles'
+import { GARDEN_SPECIES } from '../../domain/progress/garden'
+import { PixelBloom } from './PixelBloom'
+
+// A profile's emblem (Settings -> You -> Emblem), or null for the plain
+// initial circle it replaces.
+function emblemSpeciesFor(profile: Profile) {
+  return profile.emblem ? GARDEN_SPECIES.find((s) => s.id === profile.emblem) ?? null : null
+}
 
 // Who's working out. A row at the top of Settings (each of you has your
 // own phone, so switching is rare — it no longer sits in the corner of
@@ -75,7 +83,11 @@ export function ProfileSwitcher() {
         className="card flex w-full items-center gap-3 p-3 text-left"
       >
         <span className="flex h-10 w-10 flex-none items-center justify-center rounded-control bg-field-primary text-sm font-extrabold">
-          {active.name.trim().charAt(0).toUpperCase() || '?'}
+          {emblemSpeciesFor(active) ? (
+            <PixelBloom size={28} animate={false} species={emblemSpeciesFor(active)!} />
+          ) : (
+            active.name.trim().charAt(0).toUpperCase() || '?'
+          )}
         </span>
         <span className="flex-1 font-semibold">{active.name}</span>
         <span className="text-sm font-semibold text-primary-ink">Switch</span>
@@ -121,7 +133,11 @@ export function ProfileSwitcher() {
                           onClick={() => (isActive ? setOpen(false) : switchTo(profile.id))}
                         >
                           <span className="flex h-9 w-9 items-center justify-center rounded-control bg-surface font-extrabold">
-                            {profile.name.charAt(0).toUpperCase()}
+                            {emblemSpeciesFor(profile) ? (
+                              <PixelBloom size={26} animate={false} species={emblemSpeciesFor(profile)!} />
+                            ) : (
+                              profile.name.charAt(0).toUpperCase()
+                            )}
                           </span>
                           {profile.name}
                           {isActive && <span className="text-xs font-semibold text-ink-muted">(you)</span>}

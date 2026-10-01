@@ -22,14 +22,15 @@ import { PlanWeekCard } from '../components/PlanWeekCard'
 import { RecapEntry } from '../components/RecapEntry'
 import { shouldOfferPlanWeek } from '../../domain/schedule/planWeek'
 import { bloomStreakLabel, calculateWeekStreak, nextMilestone, weeklyGoal, weekProgress } from '../../domain/progress/stats'
-import { buildGarden, type GardenFlower } from '../../domain/progress/garden'
+import { buildGarden, GARDEN_SPECIES, type GardenFlower } from '../../domain/progress/garden'
 import { computeXp, levelFor } from '../../domain/progress/xp'
 import { MomentumStrip, useMomentumEntrance } from '../components/TodayMomentum'
-import { dayPart, greeting, longDate } from '../greeting'
+import { dayPart, greeting, hasRealName, longDate } from '../greeting'
 import { raeSays } from '../raeSays'
 import { activeProfile } from '../../infrastructure/profiles'
 import { raeStillFor } from '../components/raeLoops'
 import { estimateMinutes } from '../../domain/content/workoutEstimate'
+import { PixelBloom } from '../components/PixelBloom'
 
 const QUICK_ID = 'fs.quick-10'
 
@@ -231,6 +232,7 @@ export function TodayScreen() {
   const [failed, setFailed] = useState(false)
   const [attempt, setAttempt] = useState(0)
   const momentumIn = useMomentumEntrance(localDateKey(now))
+  const emblemSpecies = profile.emblem ? GARDEN_SPECIES.find((s) => s.id === profile.emblem) ?? null : null
 
   useEffect(() => {
     let cancelled = false
@@ -251,7 +253,14 @@ export function TodayScreen() {
     <div className="p-4 space-y-4">
       <header className="px-1">
         <p className="text-sm font-semibold text-ink-muted">{longDate(now)}</p>
-        <h1 className="text-[1.625rem] font-extrabold leading-tight">{greeting(now, profile.name)}</h1>
+        <h1 className="flex items-center gap-1.5 text-[1.625rem] font-extrabold leading-tight">
+          <span>{greeting(now, profile.name)}</span>
+          {emblemSpecies && hasRealName(profile.name) && (
+            <span aria-hidden="true" className="inline-flex flex-none">
+              <PixelBloom size={22} animate={false} species={emblemSpecies} />
+            </span>
+          )}
+        </h1>
       </header>
 
       {/* Rae's room with today's one thing to do joined underneath it, so
