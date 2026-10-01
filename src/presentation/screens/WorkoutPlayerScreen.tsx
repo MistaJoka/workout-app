@@ -1,6 +1,6 @@
 import { useCallback, useEffect, useRef, useState } from 'react'
 import { newId } from '../../shared/id'
-import { Link, useNavigate, useParams } from 'react-router-dom'
+import { Link, useLocation, useNavigate, useParams } from 'react-router-dom'
 import { getCurrentState, getPlan, recordEvent } from '../../application/sessionService'
 import { getEventsForSession } from '../../infrastructure/db/repositories/sessionRepository'
 import type { SessionEvent, SessionPlan, SessionPlanExercise, SessionState } from '../../domain/session/types'
@@ -32,6 +32,7 @@ import { LiveBestChip } from '../components/LiveBestChip'
 import { useFeedbackSettings } from '../components/useFeedbackSettings'
 import { useWeightUnit } from '../components/useWeightUnit'
 import { useWakeLock } from '../pwa/useWakeLock'
+import { HypeCountdown, shouldSkipForAutomation } from '../components/HypeCountdown'
 import { formatWeight, kgToUnit, roundToStep, stepInUnit, unitToKg } from '../units'
 import { Skeleton, SkeletonBlock, SkeletonHeading } from '../components/Skeleton'
 import { getPriorBest } from '../../application/liveBest'
@@ -57,6 +58,7 @@ const SAVE_ERROR = "Couldn't save on this device. Try again."
 export function WorkoutPlayerScreen() {
   const { sessionId } = useParams()
   const navigate = useNavigate()
+  const location = useLocation()
   // Keep the screen awake for the whole workout; released when leaving.
   useWakeLock(true)
   const [plan, setPlan] = useState<SessionPlan | null>(null)
@@ -77,7 +79,14 @@ export function WorkoutPlayerScreen() {
   const [unit] = useWeightUnit()
   const { motion } = useTheme()
   const osPrefersReduced = usePrefersReducedMotion()
-  const fullMotion = effectiveMotion(motion, osPrefersReduced) === 'full'
+  const effectiveMotionValue = effectiveMotion(motion, osPrefersReduced)
+  const fullMotion = effectiveMotionValue === 'full'
+  // The hype countdown (HypeCountdown.tsx): only for a session that was
+  // just started from CheckInScreen (its nav state flag), corroborated
+  // against the loaded plan/state so a resumed or reloaded session never
+  // replays it — decided once, the first time both are loaded.
+  const [showHype, setShowHype] = useState(false)
+  const hypeDecidedRef = useRef(false)
   // Load actually used for the set being logged (kg); null = use the plan's.
   const [loggedWeightKg, setLoggedWeightKg] = useState<number | null>(null)
   const [confirmingEnd, setConfirmingEnd] = useState(false)
@@ -156,6 +165,17 @@ export function WorkoutPlayerScreen() {
   useEffect(() => {
     void refresh()
   }, [refresh])
+
+  useEffect(() => {
+    if (hypeDecidedRef.current) return
+    if (!plan || !state) return
+    hypeDecidedRef.current = true
+    if (shouldSkipForAutomation(location.search)) return
+    const justStarted = Boolean((location.state as { justStarted?: boolean } | null)?.justStarted)
+    const freshSession = state.currentExerciseIndex === 0 && state.currentSetNumber === 1
+    const startedRecently = Date.now() - Date.parse(plan.createdAt) < 5_000
+    if (justStarted && freshSession && startedRecently) setShowHype(true)
+  }, [plan, state, location.search, location.state])
 
   useEffect(() => {
     if (!sessionId) return
@@ -499,6 +519,20 @@ export function WorkoutPlayerScreen() {
 
   return (
     <div className="p-6 pt-4 pb-40 space-y-4">
+      {/* The anticipation beat right as a fresh workout opens (never on a
+          resume/reload — see the effect above). The player underneath is
+          already fully mounted and working, so a tap on "Complete Set"
+          never actually waits on this: it only covers the screen for its
+          own ~2.2s (or until tapped away), by design (CLAUDE.md: start
+          must stay fast). */}
+      {showHype && (
+        <HypeCountdown
+          firstMoveName={plan.exercises[0]?.name ?? exercise.name}
+          motion={effectiveMotionValue}
+          sound={feedback.sound}
+          onDone={() => setShowHype(false)}
+        />
+      )}
       {/* Rare actions live up here, out of the thumb bar: End workout used
           to sit exactly where the rest screen's "Skip rest" is (a double tap
           ended the session), and mid-set there's no timer to pause, so

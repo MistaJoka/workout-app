@@ -144,7 +144,10 @@ export function CheckInScreen() {
     const plan = buildPlan(loaded)
     try {
       await startSession(plan)
-      navigate(`/session/${plan.id}`, { replace: true })
+      // The hype overlay (WorkoutPlayerScreen) only runs right after a tap
+      // here, never on a resumed/reloaded session — this flag is its first
+      // signal; the player corroborates it against the fresh plan itself.
+      navigate(`/session/${plan.id}`, { replace: true, state: { justStarted: true } })
     } catch {
       setError("Couldn't start on this device. Try again.")
       setStarting(false)
