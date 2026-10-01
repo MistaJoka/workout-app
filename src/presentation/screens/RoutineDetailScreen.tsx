@@ -156,11 +156,14 @@ export function RoutineDetailScreen() {
             <li key={te.exerciseId}>
               <Link
                 to={`/exercise/${te.exerciseId}`}
-                className="flex items-center gap-3 card p-2"
+                className="flex min-h-11 items-center gap-3 card p-2"
               >
                 <ExerciseThumb exercise={exercise} className="h-12 w-16 rounded-panel" />
                 <span className="min-w-0 flex-1 truncate font-semibold">{exercise?.name ?? te.exerciseId}</span>
                 <span className="flex-none text-sm text-ink-muted">{dose}</span>
+                <span aria-hidden="true" className="flex-none pr-1 text-ink-muted">
+                  ›
+                </span>
               </Link>
             </li>
           )

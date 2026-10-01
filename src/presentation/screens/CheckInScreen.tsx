@@ -175,29 +175,37 @@ export function CheckInScreen() {
       {firstContent && (
         <section aria-label={`Up first: ${firstContent.name}`} className="space-y-1">
           <p className="text-sm font-semibold text-ink-muted">Up first</p>
-          <MovementMedia
-            name={firstContent.name}
-            exerciseId={firstContent.id}
-            start={firstContent.mediaManifest.start}
-            finish={firstContent.mediaManifest.finish}
-          />
+          {/* Tap to see the move's steps before starting. */}
+          <Link to={`/exercise/${firstContent.id}`} aria-label={`About ${firstContent.name}`} className="block">
+            <MovementMedia
+              name={firstContent.name}
+              exerciseId={firstContent.id}
+              start={firstContent.mediaManifest.start}
+              finish={firstContent.mediaManifest.finish}
+            />
+          </Link>
         </section>
       )}
 
       <ul className="space-y-2" aria-label="Your workout">
         {preview.exercises.map((exercise) => (
-          <li key={exercise.exerciseId} className="card flex items-center gap-3 p-2">
-            <ExerciseThumb
-              exercise={loaded.exercises.find((e) => e.id === exercise.exerciseId)}
-              className="h-12 w-16 rounded-panel"
-            />
-            <div className="min-w-0">
-              <p className="truncate font-semibold">{exercise.name}</p>
-              <p className="text-sm text-ink-muted">
-                {exercise.sets} × {exercise.reps ? `${exercise.reps} reps` : `${exercise.timeSeconds}s`}
-                {exercise.weightKg != null ? ` @ ${formatWeight(exercise.weightKg, unit)}` : ''}
-              </p>
-            </div>
+          <li key={exercise.exerciseId}>
+            <Link to={`/exercise/${exercise.exerciseId}`} className="card flex min-h-11 items-center gap-3 p-2">
+              <ExerciseThumb
+                exercise={loaded.exercises.find((e) => e.id === exercise.exerciseId)}
+                className="h-12 w-16 rounded-panel"
+              />
+              <span className="min-w-0 flex-1">
+                <span className="block truncate font-semibold">{exercise.name}</span>
+                <span className="block text-sm text-ink-muted">
+                  {exercise.sets} × {exercise.reps ? `${exercise.reps} reps` : `${exercise.timeSeconds}s`}
+                  {exercise.weightKg != null ? ` @ ${formatWeight(exercise.weightKg, unit)}` : ''}
+                </span>
+              </span>
+              <span aria-hidden="true" className="flex-none pr-1 text-ink-muted">
+                ›
+              </span>
+            </Link>
           </li>
         ))}
       </ul>
