@@ -454,7 +454,8 @@ export function WorkoutPlayerScreen() {
             timeSeconds={exercise.timeSeconds ?? 0}
             tick={feedback.sound}
             onDone={() => {
-              restEndFeedback(feedback)
+              // The counted set plays its own rising note (setCompleteFeedback),
+              // so no rest-end chime here: one sound per finished hold.
               void handleAction('SET_COMPLETED', { exerciseId: exercise.exerciseId })
             }}
           />

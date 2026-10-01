@@ -140,6 +140,10 @@ export function ProgressScreen() {
           </div>
 
           <GardenCard garden={snapshot.garden} />
+          <Link to="/achievements" className="card flex min-h-11 items-center justify-between px-4 py-3">
+            <span className="font-semibold">Your badges</span>
+            <span aria-hidden="true" className="text-ink-muted">›</span>
+          </Link>
 
           <section className="card p-3">
             <p className="text-xs text-ink-muted">Workouts per week, last 8 weeks</p>

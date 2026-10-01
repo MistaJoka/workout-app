@@ -15,6 +15,7 @@ import { RaeFace } from '../components/Rae'
 import { BackupNudge } from '../components/BackupNudge'
 import { PixelBloom } from '../components/PixelBloom'
 import { CompleteHighlights } from '../components/CompleteHighlights'
+import { AchievementUnlocks } from '../components/AchievementUnlocks'
 import { BloomReveal } from '../components/BloomReveal'
 import { useCountUp } from '../components/CountUp'
 import { sessionBloom, type GardenSpecies } from '../../domain/progress/garden'
@@ -137,6 +138,7 @@ export function SessionCompleteScreen() {
         </div>
       )}
       {result && sessionId && <CompleteHighlights sessionId={sessionId} />}
+      {result && sessionId && <AchievementUnlocks sessionId={sessionId} />}
       {result && (
         // Ties the finish to Today's week: every finished workout grows a
         // flower there (WeekBlooms), ended-early ones included.
