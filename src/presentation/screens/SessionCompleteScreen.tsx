@@ -13,7 +13,6 @@ import { useWeightUnit } from '../components/useWeightUnit'
 import { ThumbBar } from '../components/ThumbBar'
 import { RaeFace } from '../components/Rae'
 import { BackupNudge } from '../components/BackupNudge'
-import { RaeNote } from '../components/RaeNote'
 import { PixelBloom } from '../components/PixelBloom'
 
 type Candidate = {
@@ -112,11 +111,13 @@ export function SessionCompleteScreen() {
       {result && (
         // Ties the finish to Today's week: every finished workout grows a
         // flower there (WeekBlooms), ended-early ones included.
-        <RaeNote expression={result.status === 'COMPLETED_SHORTENED' ? 'smile' : 'laugh'} className="mx-auto max-w-xs">
+        // Rae already cheers beside the flower above, so this is a caption,
+        // not a second Rae.
+        <p className="mx-auto max-w-xs text-center font-semibold">
           {result.status === 'COMPLETED_SHORTENED'
             ? 'You showed up, and that counts. A new flower is growing in your week.'
             : 'A new flower just bloomed in your week!'}
-        </RaeNote>
+        </p>
       )}
 
       {candidates.length > 0 && (

@@ -97,6 +97,7 @@ Placement rules (owner-approved button pass, 2026-09-26):
 - Fixed bottom action bars use `components/ThumbBar.tsx`: it ignores taps for 700ms whenever its content changes, so a double tap can't land on the button that replaced the first one. Give it an `armKey` that changes with the bar's content. E2E helpers wait for `[data-armed="true"]`.
 - Rare/destructive actions (Pause, End workout, Erase everything) stay out of the thumb bar. Profile switching lives in Settings, not a corner of every screen.
 - A screen with unsaved edits registers `components/unsavedGuard.ts`; AppShell's tabs call `guardNavigation()` (HashRouter can't block routes).
+- Screen transitions come from `layout/RouteFade.tsx` (fade + rise via margin). Page animations never use `transform`: it breaks the fixed bottom bars. Sheet backdrops get the `sheet-backdrop` class (older sheets are matched by `.fixed.inset-0.items-end`). Animation delays must also be zeroed under reduced/off motion, or delayed parts stay invisible.
 - Bottom sheets use `components/useSheetFocus.ts` (focus in, trap, Escape, restore); ConfirmSheet focuses the safe choice. Backdrops use `bg-black/40` (`bg-ink/40` generates nothing: CSS-var colors take no opacity).
 - Destructive or data-changing confirmations use `components/ConfirmSheet.tsx` (in-page, never `window.confirm`). Ending a workout early asks first, is also offered from Pause, and lands on Complete so a pending next-level offer still shows.
 
