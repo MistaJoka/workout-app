@@ -15,6 +15,8 @@ import {
   unlockedRoomItems,
 } from '../roomUnlocks'
 import { RoomGrowthDecor, ROOM_GROWTH_STYLE, bulbColor } from './roomGrowthDecor'
+import { isAfterglowDay } from '../afterglow'
+import { AfterglowDecor, AFTERGLOW_DECOR_STYLE } from './afterglowDecor'
 
 // Today's centerpiece: Rae standing in a cozy room. Everything around her
 // is inline SVG/CSS, with no image assets: a window whose sky follows the
@@ -90,7 +92,7 @@ const ROOM_STYLE = `
 @media (prefers-reduced-motion: reduce) { .rae-petal-puff { display: none; } }
 
 .rae-meet-btn { position: absolute; right: 8px; bottom: 8px; background-color: rgb(255 253 248 / 0.9); }
-` + SEASON_DECOR_STYLE + ROOM_GROWTH_STYLE
+` + SEASON_DECOR_STYLE + ROOM_GROWTH_STYLE + AFTERGLOW_DECOR_STYLE
 
 const PETALS = [
   { x: -14, y: -14, color: '#ff8fb8' },
@@ -135,6 +137,11 @@ export function RaeHero({
   const storage = typeof window === 'undefined' ? null : window.localStorage
   const season = resolveSeason(now, location.search, storage)
   const accent = resolveHolidayAccent(now, location.search, storage)
+
+  // Afterglow: the room stays warm and celebratory on a day a workout was
+  // finished, derived from the same `flowers` prop (newest flower's
+  // endedAt is today in local time) - see afterglow.ts.
+  const afterglow = isAfterglowDay(flowers, now)
 
   // Room growth: an explicit `?level=` override wins (screenshots/e2e),
   // same shape as the season override above.
@@ -202,7 +209,7 @@ export function RaeHero({
 
   return (
     <>
-    <div className={`rae-room block rae-room--${part}`}>
+    <div className={`rae-room block rae-room--${part}${afterglow ? ' rae-room--afterglow' : ''}`} data-afterglow={afterglow}>
       <style>{ROOM_STYLE}</style>
       <svg
         className="rae-room__scene"
@@ -293,15 +300,25 @@ export function RaeHero({
         />
 
         <RoomGrowthDecor items={unlocked} newest={newest?.item ?? null} reveal={revealNewestUnlock} />
+
+        {afterglow && <AfterglowDecor />}
       </svg>
 
       {pots.length > 0 && (
         <div className="rae-pots" aria-hidden="true" data-testid="rae-pots">
-          {pots.map((flower, i) => (
-            <span key={flower.sessionId} className={revealNewest && i === pots.length - 1 ? 'rae-pots__new' : ''}>
-              <PixelBloom size={24} animate={false} species={flower.species} />
-            </span>
-          ))}
+          {pots.map((flower, i) => {
+            const isNewest = i === pots.length - 1
+            return (
+              <span
+                key={flower.sessionId}
+                className={revealNewest && isNewest ? 'rae-pots__new' : ''}
+                style={isNewest && afterglow ? { position: 'relative', display: 'inline-block' } : undefined}
+              >
+                {isNewest && afterglow && <span className="rae-pots__halo" aria-hidden="true" />}
+                <PixelBloom size={24} animate={false} species={flower.species} />
+              </span>
+            )
+          })}
         </div>
       )}
 
