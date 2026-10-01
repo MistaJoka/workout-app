@@ -17,10 +17,12 @@ import { SessionDetailScreen } from './presentation/screens/SessionDetailScreen'
 import { SettingsScreen } from './presentation/screens/SettingsScreen'
 import { AboutScreen } from './presentation/screens/AboutScreen'
 import { MeetRaeScreen } from './presentation/screens/MeetRaeScreen'
+import { ProfilePickGate } from './presentation/components/ProfilePickGate'
 
 export default function App() {
   return (
     <ThemeProvider>
+      <ProfilePickGate />
       <HashRouter>
         <Routes>
           <Route element={<AppShell />}>

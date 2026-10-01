@@ -4,7 +4,9 @@ import {
   addProfile,
   BASE_DB_NAME,
   deleteProfile,
+  lastProfilePickDate,
   loadProfiles,
+  markProfilePicked,
   removeProfile,
   renameProfile,
   setActiveProfile,
@@ -91,5 +93,21 @@ describe('deleteProfile', () => {
     }
     await expect(deleteProfile(kay.id, { store, deleteDb: failing })).rejects.toThrow('boom')
     expect(loadProfiles(store).profiles).toHaveLength(2)
+  })
+})
+
+describe('daily profile pick', () => {
+  it('remembers the day someone was picked', () => {
+    const store = memoryStore()
+    expect(lastProfilePickDate(store)).toBeNull()
+    markProfilePicked('2026-10-01', store)
+    expect(lastProfilePickDate(store)).toBe('2026-10-01')
+  })
+
+  it('switching profiles counts as picking today, so no picker right after the reload', () => {
+    const store = memoryStore()
+    const kay = addProfile('Kay', store)
+    setActiveProfile(kay.id, store, '2026-10-01')
+    expect(lastProfilePickDate(store)).toBe('2026-10-01')
   })
 })
