@@ -11,10 +11,19 @@ test('XP counts up on Complete, levels up without blocking, and Progress shows t
 
   // First Full-Body A: 10 sets x 10 + 10 met x 5 + 25 = 175 XP, past level 2 (100).
   await page.goto('/#/checkin/fs.full-body-a')
+  // The level-up overlay dismisses itself after ~2.5s; under a loaded run the
+  // assertion can start after it's gone, so record its appearance instead.
+  await page.evaluate(() => {
+    const w = window as unknown as { __sawLevelUp?: boolean }
+    new MutationObserver(() => {
+      if (document.querySelector('[data-testid="level-up"]')) w.__sawLevelUp = true
+    }).observe(document.body, { childList: true, subtree: true })
+  })
   await page.getByRole('button', { name: 'Start workout' }).click()
   await finishWorkout(page)
-  // The overlay dismisses itself after ~2.5s, so check it first.
-  await expect(page.getByTestId('level-up')).toBeVisible()
+  await expect
+    .poll(() => page.evaluate(() => (window as unknown as { __sawLevelUp?: boolean }).__sawLevelUp === true))
+    .toBe(true)
   await expect(page.getByLabel('Plus 175 XP')).toBeVisible()
   await expect(page.getByTestId('xp-gain').getByText('Level up!')).toBeVisible()
   await expect(page.getByRole('status').filter({ hasText: 'Level 2, Sprout' })).toHaveCount(1)

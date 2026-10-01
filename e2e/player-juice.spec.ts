@@ -64,6 +64,9 @@ test('the last set is named as the finish line gets close', async ({ page }) => 
     if (await page.getByText('Last set!', { exact: true }).isVisible().catch(() => false)) break
     if (await armedTap(page, 'Skip rest')) continue
     if (await armedTap(page, 'Yes')) continue
+    // Under load the caption can render a beat after the set view; give it a
+    // moment before tapping, or the loop could finish the workout past it.
+    if (await page.getByText('Last set!', { exact: true }).waitFor({ timeout: 600 }).then(() => true, () => false)) break
     if (await armedTap(page, 'Complete Set')) continue
     await page.waitForTimeout(150)
   }
