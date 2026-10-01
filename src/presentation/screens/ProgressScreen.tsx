@@ -13,6 +13,7 @@ import { useWeightUnit } from '../components/useWeightUnit'
 import { BodyWeightCard } from '../components/BodyWeightCard'
 import { buildHistoryRows, type HistoryRow } from './progressHistoryRows'
 import { RaeNote } from '../components/RaeNote'
+import { MonthBlooms } from '../components/MonthBlooms'
 import { Skeleton, SkeletonBlock, SkeletonList, SkeletonTiles } from '../components/Skeleton'
 
 type Snapshot = {
@@ -138,6 +139,8 @@ export function ProgressScreen() {
             <p className="text-xs text-ink-muted">Workouts per week, last 8 weeks</p>
             <WeekBars weeks={snapshot.weeks} />
           </section>
+
+          <MonthBlooms workouts={rows} />
 
           {snapshot.records.length > 0 && (
             <section className="space-y-2">
