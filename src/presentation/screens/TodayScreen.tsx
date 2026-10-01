@@ -171,7 +171,7 @@ function useNow(): [Date, () => void] {
 }
 
 export function TodayScreen() {
-  const [profile] = useState(() => activeProfile())
+  const [profile, setProfile] = useState(() => activeProfile())
   const [now, refreshNow] = useNow()
   const [data, setData] = useState<TodayData | null>(null)
   const [failed, setFailed] = useState(false)
@@ -222,7 +222,7 @@ export function TodayScreen() {
         )}
       </section>
 
-      <WelcomeCard finished={data ? data.hasFinished : null} />
+      <WelcomeCard finished={data ? data.hasFinished : null} onNamed={() => setProfile(activeProfile())} />
 
       {data && <WeekBlooms week={data.week} goal={data.weekGoal} />}
 
