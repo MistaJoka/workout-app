@@ -20,8 +20,9 @@ import { TodayMission, type Mission } from '../components/TodayMission'
 import { WeekBlooms, type WeekNames } from '../components/WeekBlooms'
 import { PlanWeekCard } from '../components/PlanWeekCard'
 import { shouldOfferPlanWeek } from '../../domain/schedule/planWeek'
-import { weeklyGoal } from '../../domain/progress/stats'
+import { weeklyGoal, weekProgress } from '../../domain/progress/stats'
 import { dayPart, greeting, longDate } from '../greeting'
+import { raeSays } from '../raeSays'
 import { activeProfile } from '../../infrastructure/profiles'
 import { raeStillFor } from '../components/raeLoops'
 import { estimateMinutes } from '../../domain/content/workoutEstimate'
@@ -46,6 +47,8 @@ type TodayData = {
   resumeId: string | null
   // No day planned yet, after the first workout (shouldOfferPlanWeek).
   offerPlanWeek: boolean
+  // What Rae says in her room (raeSays).
+  raeLine: string
 }
 
 async function loadToday(now: Date): Promise<TodayData> {
@@ -161,7 +164,27 @@ async function loadToday(now: Date): Promise<TodayData> {
     hasFinished: results.length > 0,
     resumeId: mode === 'resume' ? (resumable?.id ?? null) : null,
     offerPlanWeek: shouldOfferPlanWeek(results.length > 0, schedule),
+    raeLine: raeSays({
+      mode,
+      hasFinished: results.length > 0,
+      daysSinceLast: daysSinceLast(results, now),
+      goalMet: weekProgress(results, schedule, now).met,
+      part: dayPart(now),
+      dateKey: localDateKey(now),
+    }),
   }
+}
+
+// Whole local calendar days since the last finished workout (0 = today).
+function daysSinceLast(results: readonly { endedAt: string }[], now: Date): number | null {
+  if (results.length === 0) return null
+  const last = new Date(Math.max(...results.map((r) => Date.parse(r.endedAt))))
+  const startOf = (d: Date) => new Date(d.getFullYear(), d.getMonth(), d.getDate()).getTime()
+  return Math.round((startOf(now) - startOf(last)) / 86_400_000)
+}
+
+function localDateKey(d: Date): string {
+  return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`
 }
 
 // Home-screen apps stay alive in the background for days, so "now" is
@@ -215,7 +238,7 @@ export function TodayScreen() {
       {/* Rae's room with today's one thing to do joined underneath it, so
           the stage reads as her presenting it. */}
       <section className="today-stage" aria-label="Today">
-        <RaeHero part={dayPart(now)} />
+        <RaeHero part={dayPart(now)} says={data?.raeLine} />
         {data ? (
           <TodayMission
             mission={data.mission}
