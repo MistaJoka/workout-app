@@ -5,6 +5,8 @@ import { getTemplate } from '../../domain/content/catalog'
 import { projectSetRecords } from '../../domain/progress/history'
 import { calculateWeekStreak, detectPersonalRecords, weekProgress, weeklyGoal, weeklyTotals } from '../../domain/progress/stats'
 import { getWeeklySchedule } from '../../infrastructure/db/repositories/scheduleRepository'
+import { ROTATION } from '../../domain/content/fixtures/foundationStrengthStarter'
+import { resolveToday } from '../../domain/schedule/weeklySchedule'
 import type { PersonalRecord, WeekTotal } from '../../domain/progress/types'
 import { formatWeight } from '../units'
 import { useWeightUnit } from '../components/useWeightUnit'
@@ -21,6 +23,10 @@ type Snapshot = {
   streak: number
   weeks: WeekTotal[]
   records: PersonalRecord[]
+  // Where "Start a workout" goes before there's any history: today's
+  // planned workout, else the first of the A/B rotation (as Today suggests
+  // with no history), or Today itself on a planned rest day.
+  startHref: string
 }
 
 export function ProgressScreen() {
@@ -49,7 +55,15 @@ export function ProgressScreen() {
     const rows = await buildHistoryRows(plans, results, getTemplate)
     const setRecords = projectSetRecords(plans, results, events)
     const now = new Date()
+    const resolution = resolveToday(schedule, now, ROTATION[0])
+    const startId =
+      resolution.kind === 'rest'
+        ? null
+        : (await getTemplate(resolution.templateId).catch(() => undefined))
+          ? resolution.templateId
+          : ROTATION[0]
     return {
+      startHref: startId ? `/checkin/${encodeURIComponent(startId)}` : '/',
       rows,
       week: weekProgress(results, schedule, now),
       streak: calculateWeekStreak(results, weeklyGoal(schedule), now),
@@ -76,8 +90,18 @@ export function ProgressScreen() {
         </div>
       )}
 
-      {rows && rows.length === 0 && (
-        <RaeNote expression="smile">No workouts yet. Finish your first one and I'll keep score here.</RaeNote>
+      {snapshot && rows && rows.length === 0 && (
+        <>
+          <RaeNote expression="smile">Your first workout starts the scoreboard. I'll keep count.</RaeNote>
+          <div className="flex gap-3">
+            <Stat value={0} label="workouts" />
+            <Stat value={0} label="sets done" />
+            <WeekGoalStat {...snapshot.week} />
+          </div>
+          <Link to={snapshot.startHref} className="btn-primary btn-lg w-full">
+            Start a workout
+          </Link>
+        </>
       )}
 
       {snapshot && rows && rows.length > 0 && (
