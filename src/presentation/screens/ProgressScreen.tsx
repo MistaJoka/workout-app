@@ -17,6 +17,8 @@ import { MonthBlooms } from '../components/MonthBlooms'
 import { GardenCard } from '../components/GardenCard'
 import { buildGarden, type Garden } from '../../domain/progress/garden'
 import { Skeleton, SkeletonBlock, SkeletonList, SkeletonTiles } from '../components/Skeleton'
+import { computeXp, levelFor, type LevelInfo } from '../../domain/progress/xp'
+import { LevelBar } from '../components/XpCelebration'
 
 type Snapshot = {
   rows: HistoryRow[]
@@ -28,6 +30,8 @@ type Snapshot = {
   weeks: WeekTotal[]
   records: PersonalRecord[]
   garden: Garden
+  // Bloom XP level (only ever goes up).
+  level: LevelInfo
   // Where "Start a workout" goes before there's any history: today's
   // planned workout, else the first of the A/B rotation (as Today suggests
   // with no history), or Today itself on a planned rest day.
@@ -75,6 +79,7 @@ export function ProgressScreen() {
       weeks: weeklyTotals(results, now, 8),
       records: [...detectPersonalRecords(setRecords).values()].sort((a, b) => a.exerciseName.localeCompare(b.exerciseName)),
       garden: buildGarden(results),
+      level: levelFor(computeXp({ plans, results, events }, weeklyGoal(schedule)).total),
     }
   }
 
@@ -133,6 +138,9 @@ export function ProgressScreen() {
 
       {snapshot && rows && rows.length > 0 && (
         <>
+          <section className="card p-3" data-testid="progress-level">
+            <LevelBar level={snapshot.level} />
+          </section>
           <div className="flex gap-3">
             <Stat value={totalWorkouts} label={totalWorkouts === 1 ? 'workout' : 'workouts'} />
             <Stat value={totalSets} label="sets done" />

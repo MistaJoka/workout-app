@@ -16,6 +16,8 @@ import { BackupNudge } from '../components/BackupNudge'
 import { PixelBloom } from '../components/PixelBloom'
 import { CompleteHighlights } from '../components/CompleteHighlights'
 import { AchievementUnlocks } from '../components/AchievementUnlocks'
+import { GoalMetBanner, LevelUpMoment, XpGainChip, loadSessionXp } from '../components/XpCelebration'
+import type { SessionXpGain } from '../../domain/progress/xp'
 import { BloomReveal } from '../components/BloomReveal'
 import { useCountUp } from '../components/CountUp'
 import { sessionBloom, type GardenSpecies } from '../../domain/progress/garden'
@@ -44,6 +46,9 @@ export function SessionCompleteScreen() {
   // waits and grows once in its own colours instead of switching mid-bloom;
   // `null` if it couldn't be read (the default pink bloom grows instead).
   const [bloom, setBloom] = useState<{ species: GardenSpecies; isNew: boolean } | null | undefined>(undefined)
+  // Bloom XP this workout earned (and whether it crossed a level or met the
+  // week's goal). Null until read, or if it can't be: the screen never waits.
+  const [xp, setXp] = useState<SessionXpGain | null>(null)
 
   useEffect(() => {
     if (!sessionId) return
@@ -58,6 +63,9 @@ export function SessionCompleteScreen() {
     loadStats(sessionId)
       .then(setStats)
       .catch(() => setStats(null))
+    loadSessionXp(sessionId)
+      .then((gain) => setXp(gain.gained > 0 ? gain : null))
+      .catch(() => setXp(null))
     loadCandidates(sessionId)
       .then(setCandidates)
       .catch(() => setCandidates([]))
@@ -137,6 +145,9 @@ export function SessionCompleteScreen() {
           <Stat value={stats.moves} label={stats.moves === 1 ? 'move' : 'moves'} />
         </div>
       )}
+      {result && xp && <XpGainChip gain={xp} />}
+      {result && xp?.goalMet && <GoalMetBanner />}
+      {result && xp?.leveledUp && <LevelUpMoment to={xp.to} />}
       {result && sessionId && <CompleteHighlights sessionId={sessionId} />}
       {result && sessionId && <AchievementUnlocks sessionId={sessionId} />}
       {result && (
