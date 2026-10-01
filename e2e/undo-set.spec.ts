@@ -44,8 +44,15 @@ test('the undo is gone once the rest is over', async ({ page }) => {
   await startFullBodyA(page)
   await tapBar(page, 'Complete Set')
   await tapBar(page, 'Yes')
-  await tapBar(page, 'Skip rest')
-  await expect(page.getByText(/Set 2 of 2/)).toBeVisible()
+  // Right after "Yes" the old bar can still read as armed, so a single forced
+  // tap may land in the new bar's ignore window (seen in WebKit). Retry until
+  // the rest has really ended; "Set 2 of 2" alone also shows on the rest card.
+  await expect(async () => {
+    await tapBar(page, 'Skip rest')
+    await expect(page.getByRole('timer')).toHaveCount(0, { timeout: 1_000 })
+  }).toPass({ timeout: 10_000 })
+  await expect(page.getByRole('button', { name: 'Complete Set', exact: true })).toBeVisible()
+  await expect(page.getByText('Set 2 of 2', { exact: true })).toBeVisible()
   await expect(page.getByRole('button', { name: '↶ Undo last set' })).toHaveCount(0)
 })
 
