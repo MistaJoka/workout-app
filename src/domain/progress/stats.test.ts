@@ -7,6 +7,7 @@ import {
   perExerciseHistory,
   weeklyGoal,
   weeklyTotals,
+  weekProgress,
 } from './stats'
 import { EMPTY_SCHEDULE } from '../schedule/weeklySchedule'
 import type { SetRecord } from './types'
@@ -175,5 +176,28 @@ describe('perExerciseHistory', () => {
       { sessionId: 's1', sessionEndedAt: '2026-09-01T10:00:00.000Z', unit: 'reps', prescribed: 10, metSets: 1, totalSets: 2 },
       { sessionId: 's2', sessionEndedAt: '2026-09-03T10:00:00.000Z', unit: 'reps', prescribed: 12, metSets: 1, totalSets: 1 },
     ])
+  })
+})
+
+describe('weekProgress', () => {
+  // 2026-09-28 is a Monday.
+  const at = (d: number) => result(`r${d}`, local(2026, 9, d).toISOString())
+  const now = local(2026, 9, 30) // Wednesday
+
+  it('counts only this Monday-start week against the goal', () => {
+    expect(weekProgress([at(27), at(28)], null, now)).toEqual({ done: 1, goal: 2, met: false })
+  })
+
+  it('is met once done reaches the goal, and keeps counting past it', () => {
+    expect(weekProgress([at(28), at(29), at(30)], null, now)).toEqual({ done: 3, goal: 2, met: true })
+  })
+
+  it('takes the goal from the schedule', () => {
+    const schedule = { ...EMPTY_SCHEDULE, 1: 'fs.full-body-a', 3: 'fs.full-body-b', 5: 'fs.full-body-a' }
+    expect(weekProgress([at(28)], schedule, now)).toEqual({ done: 1, goal: 3, met: false })
+  })
+
+  it('starts at zero with no workouts', () => {
+    expect(weekProgress([], null, now)).toEqual({ done: 0, goal: 2, met: false })
   })
 })
