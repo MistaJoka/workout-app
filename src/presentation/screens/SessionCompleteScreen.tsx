@@ -14,6 +14,7 @@ import { ThumbBar } from '../components/ThumbBar'
 import { RaeFace } from '../components/Rae'
 import { BackupNudge } from '../components/BackupNudge'
 import { RaeNote } from '../components/RaeNote'
+import { PixelBloom } from '../components/PixelBloom'
 
 type Candidate = {
   exerciseId: string
@@ -85,7 +86,15 @@ export function SessionCompleteScreen() {
 
   return (
     <div className="field-success min-h-screen rounded-none p-6 pt-16 pb-28 text-center space-y-4">
-      <RaeFace expression="cheer" size={120} motion="pop" className="mx-auto" />
+      {/* The moment: Rae cheers beside this week's new flower, which grows
+          in as the screen opens (static when motion is reduced or off). */}
+      <div className="mx-auto flex max-w-xs items-end justify-center gap-3" data-testid="complete-celebration">
+        <RaeFace expression="cheer" size={112} motion="pop" />
+        <div className="flex flex-col items-center">
+          <PixelBloom bloomed={result !== null} size={100} label="This week's new flower, in bloom" />
+        </div>
+      </div>
+      <div aria-hidden="true" className="mx-auto -mt-4 h-2 max-w-[15rem] rounded-full bg-[#e9c6a9]" />
       <p className="text-3xl font-extrabold">Workout complete</p>
       {result && (
         <p className="text-ink-muted">
@@ -145,9 +154,11 @@ export function SessionCompleteScreen() {
         See your progress
       </Link>
 
-      {/* Shows only when a backup is due (14 days, or never with history). */}
+      {/* Shows only when a backup is due (14 days, or never with history),
+          and not before the 3rd finished workout: a first finish stays a
+          celebration. Settings asks from the first. */}
       <div className="w-full">
-        <BackupNudge />
+        <BackupNudge minFinished={3} />
       </div>
 
       {/* ThumbBar ignores taps briefly: this button sits where the player's
