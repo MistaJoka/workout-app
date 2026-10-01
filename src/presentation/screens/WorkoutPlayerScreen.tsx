@@ -25,12 +25,18 @@ import { WorkoutOverviewSheet } from '../components/WorkoutOverviewSheet'
 import { useCountdown } from '../components/useCountdown'
 import { getLastTimeSummary } from '../../application/lastTime'
 import { primeAudio, restEndFeedback, setCompleteFeedback } from '../../application/restFeedback'
+import { playCelebration } from '../../application/celebrationSounds'
 import { fireSetBurst } from '../components/SetBurst'
+import { fireNewBestBurst } from '../components/NewBestBurst'
+import { LiveBestChip } from '../components/LiveBestChip'
 import { useFeedbackSettings } from '../components/useFeedbackSettings'
 import { useWeightUnit } from '../components/useWeightUnit'
 import { useWakeLock } from '../pwa/useWakeLock'
 import { formatWeight, kgToUnit, roundToStep, stepInUnit, unitToKg } from '../units'
 import { Skeleton, SkeletonBlock, SkeletonHeading } from '../components/Skeleton'
+import { getPriorBest } from '../../application/liveBest'
+import { didSetBeatPriorBest, liveBestPreview, performedTarget, type LiveBestTarget } from '../../domain/progress/liveBest'
+import type { PersonalRecord } from '../../domain/progress/types'
 
 type ActionType =
   | 'SET_COMPLETED'
@@ -91,6 +97,13 @@ export function WorkoutPlayerScreen() {
   // (raeMood.ts); cleared back to null once CELEBRATE_MS has passed so her
   // face settles to whatever the current phase shows on its own.
   const [completedAt, setCompletedAt] = useState<number | null>(null)
+  // The current exercise's prior best (finished sessions only, not this
+  // one), loaded fresh whenever the active exercise changes; null while
+  // loading or when there's nothing to compare to yet.
+  const [priorBest, setPriorBest] = useState<PersonalRecord | null>(null)
+  // "New best!" fires at most once per exercise per session, even across
+  // several sets of the same move.
+  const [bestCelebratedIds, setBestCelebratedIds] = useState<ReadonlySet<string>>(new Set())
 
   useEffect(() => {
     if (completedAt == null) return
@@ -167,6 +180,21 @@ export function WorkoutPlayerScreen() {
     }
   }, [currentExerciseId])
 
+  useEffect(() => {
+    if (!currentExerciseId || !sessionId) return
+    let cancelled = false
+    setPriorBest(null)
+    getPriorBest(currentExerciseId, sessionId)
+      .then((best) => {
+        if (!cancelled) setPriorBest(best)
+      })
+      // A live-best moment is a nicety; a failed read just leaves it out.
+      .catch(() => {})
+    return () => {
+      cancelled = true
+    }
+  }, [currentExerciseId, sessionId])
+
   // A logged weight carries across the sets of one exercise (you rarely
   // change plates mid-exercise) but never into the next exercise.
   useEffect(() => {
@@ -180,7 +208,7 @@ export function WorkoutPlayerScreen() {
     try {
       const next = await recordEvent(sessionId, type, newId(), payload)
       if (type === 'SET_COMPLETED') {
-        celebrateSet(state, next)
+        celebrateSet(state, next, payload)
         setCompletedAt(Date.now())
       }
       if (type === 'SET_COMPLETED' || type === 'SET_UNDONE') void refreshFlowEvents()
@@ -201,7 +229,7 @@ export function WorkoutPlayerScreen() {
   // A set that actually counted (the machine moved on): a rising note, a
   // buzz on Android, and under full motion a petal burst. Fire-and-forget,
   // after the event is stored, so nothing here ever delays a tap.
-  function celebrateSet(before: SessionState | null, after: SessionState) {
+  function celebrateSet(before: SessionState | null, after: SessionState, payload: Record<string, unknown>) {
     if (!plan || !before) return
     const final = after.status === 'COMPLETED'
     const moved =
@@ -212,6 +240,24 @@ export function WorkoutPlayerScreen() {
     const { total, done } = workoutProgress(plan, after.currentExerciseIndex, after.currentSetNumber)
     setCompleteFeedback(feedback, final ? total : done, total, final)
     if (fullMotion) fireSetBurst()
+    celebrateIfNewBest(plan.exercises[before.currentExerciseIndex], payload)
+  }
+
+  // Did the set that just landed beat this exercise's own prior best? Only
+  // once per exercise per session, regardless of how many of its sets keep
+  // beating it.
+  function celebrateIfNewBest(completedExercise: SessionPlanExercise | undefined, payload: Record<string, unknown>) {
+    if (!completedExercise || bestCelebratedIds.has(completedExercise.exerciseId)) return
+    const target = liveBestTargetFor(completedExercise, completedExercise.weightKg ?? 0)
+    if (!target) return
+    const performed = performedTarget(target, {
+      reps: typeof payload.reps === 'number' ? payload.reps : undefined,
+      weightKg: typeof payload.weightKg === 'number' ? payload.weightKg : undefined,
+    })
+    if (!didSetBeatPriorBest(priorBest, performed)) return
+    setBestCelebratedIds((ids) => new Set(ids).add(completedExercise.exerciseId))
+    fireNewBestBurst()
+    playCelebration('best', feedback)
   }
 
   function handleCompleteSetClick(exerciseId: string, isRepsBased: boolean) {
@@ -419,6 +465,13 @@ export function WorkoutPlayerScreen() {
   const timed = exercise.reps == null && exercise.timeSeconds != null
   const holding = timed && state.holdStartedAt !== null
   const target = exercise.reps != null ? { value: exercise.reps, unit: 'reps' } : exercise.timeSeconds != null ? { value: exercise.timeSeconds, unit: 'sec hold' } : null
+  // What finishing this exact set (at the weight currently dialed in, for a
+  // weighted move) would mean against the user's own prior best for this
+  // move, if there is one.
+  const liveBestTarget = liveBestTargetFor(exercise, setWeightKg)
+  const liveBestPreviewValue = liveBestTarget
+    ? liveBestPreview(priorBest, liveBestTarget)
+    : { priorBest: null, beatsBestIfDone: false, gap: null }
   const nextExercise = plan.exercises[state.currentExerciseIndex + 1]
   const repTarget = exercise.reps ?? 0
   const activeMood = raeMood({
@@ -557,6 +610,7 @@ export function WorkoutPlayerScreen() {
               <p className="text-sm font-semibold text-ink-muted">
                 Set {state.currentSetNumber} of {exercise.sets}
               </p>
+              <LiveBestChip preview={liveBestPreviewValue} />
             </div>
           </div>
         )}
@@ -790,6 +844,17 @@ function StepsList({ steps, folded, onUnfold }: { steps: string[]; folded: boole
       )}
     </div>
   )
+}
+
+// What a live-best moment compares against for one plan exercise: a hold's
+// seconds, a weighted set's reps at the given load, or a plain rep target.
+// Null for a move with neither reps nor a hold time (shouldn't happen, but
+// never invents a comparison).
+function liveBestTargetFor(exercise: SessionPlanExercise, weightKg: number): LiveBestTarget | null {
+  if (exercise.reps == null && exercise.timeSeconds != null) return { unit: 'seconds', value: exercise.timeSeconds }
+  if (exercise.weightKg != null && exercise.reps != null) return { unit: 'kg', value: weightKg, reps: exercise.reps }
+  if (exercise.reps != null) return { unit: 'reps', value: exercise.reps }
+  return null
 }
 
 // Sets finished across the whole plan: every set of the exercises before
