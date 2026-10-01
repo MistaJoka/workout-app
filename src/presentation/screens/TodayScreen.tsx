@@ -17,7 +17,7 @@ import { buildWeek, setsDone, todayMode, workoutsToday, type WeekDay } from '../
 import { WelcomeCard } from '../components/WelcomeCard'
 import { RaeHero } from '../components/RaeHero'
 import { TodayMission, type Mission } from '../components/TodayMission'
-import { WeekBlooms } from '../components/WeekBlooms'
+import { WeekBlooms, type WeekNames } from '../components/WeekBlooms'
 import { PlanWeekCard } from '../components/PlanWeekCard'
 import { shouldOfferPlanWeek } from '../../domain/schedule/planWeek'
 import { weeklyGoal } from '../../domain/progress/stats'
@@ -35,6 +35,7 @@ function describe(template: WorkoutTemplate): string {
 type TodayData = {
   mission: Mission
   week: WeekDay[]
+  weekNames: WeekNames
   // Workouts this week should reach (weeklyGoal: planned days, or 2).
   weekGoal: number
   // Everything you could start instead, primary pick excluded.
@@ -140,9 +141,21 @@ async function loadToday(now: Date): Promise<TodayData> {
     ...custom.map((template) => ({ template, custom: true })),
   ].filter(({ template }) => template.id !== hideId)
 
+  // Names for the week's pots: what was done each day (via its plan) and
+  // what is planned. This week only, so a handful of plan reads.
+  const week = buildWeek(results, schedule, now)
+  const templateNames: Record<string, string> = {}
+  for (const t of [...foundationStrengthStarterTemplates, ...custom]) templateNames[t.id] = t.name
+  const sessionNames: Record<string, string> = {}
+  for (const s of week.flatMap((d) => d.sessions)) {
+    const plan = await getPlan(s.planId)
+    if (plan) sessionNames[s.sessionId] = templateNames[plan.templateId] ?? (await getTemplate(plan.templateId))?.name ?? 'Workout'
+  }
+
   return {
     mission,
-    week: buildWeek(results, schedule, now),
+    week,
+    weekNames: { sessions: sessionNames, templates: templateNames },
     weekGoal: weeklyGoal(schedule),
     others,
     hasFinished: results.length > 0,
@@ -224,7 +237,7 @@ export function TodayScreen() {
 
       <WelcomeCard finished={data ? data.hasFinished : null} onNamed={() => setProfile(activeProfile())} />
 
-      {data && <WeekBlooms week={data.week} goal={data.weekGoal} />}
+      {data && <WeekBlooms week={data.week} goal={data.weekGoal} names={data.weekNames} />}
 
       {data?.offerPlanWeek && <PlanWeekCard />}
 
