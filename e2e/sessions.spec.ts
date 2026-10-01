@@ -71,7 +71,7 @@ test.describe('sessions', () => {
     await expect(page.getByRole('link', { name: 'Start workout' })).toBeVisible()
 
     await page.getByRole('link', { name: 'Progress' }).click()
-    await expect(page.getByText('No workouts yet.', { exact: false })).toBeVisible()
+    await expect(page.getByRole('link', { name: 'Start a workout' })).toBeVisible()
   })
 
   test('a workout idle for over 12 hours is finished at its last action, not offered for resume', async ({ page }) => {
