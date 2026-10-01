@@ -115,8 +115,39 @@ export async function deleteProfile(
   return 'deleted'
 }
 
-export function setActiveProfile(id: string, store: KeyValueStore | null = browserStore()): void {
+// Choosing a person (from the open-time picker or Settings) is remembered
+// per device for the calendar day, so "Who's working out?" asks at most
+// once a day. `today` is the local YYYY-MM-DD.
+export function setActiveProfile(
+  id: string,
+  store: KeyValueStore | null = browserStore(),
+  today: string = localDay(new Date())
+): void {
   const state = loadProfiles(store)
   if (!state.profiles.some((p) => p.id === id)) return
   saveProfiles({ ...state, activeId: id }, store)
+  markProfilePicked(today, store)
+}
+
+const PICKED_KEY = 'workout-app:profile-picked'
+
+export function markProfilePicked(today: string, store: KeyValueStore | null = browserStore()): void {
+  try {
+    store?.setItem(PICKED_KEY, today)
+  } catch {
+    // Storage blocked: the picker just asks again next open.
+  }
+}
+
+export function lastProfilePickDate(store: KeyValueStore | null = browserStore()): string | null {
+  try {
+    return store?.getItem(PICKED_KEY) ?? null
+  } catch {
+    return null
+  }
+}
+
+export function localDay(date: Date): string {
+  const pad = (n: number) => String(n).padStart(2, '0')
+  return `${date.getFullYear()}-${pad(date.getMonth() + 1)}-${pad(date.getDate())}`
 }
