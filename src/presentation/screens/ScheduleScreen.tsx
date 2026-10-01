@@ -112,6 +112,7 @@ export function ScheduleScreen() {
   if (!schedule) return <div className="p-4">Loading…</div>
 
   const hasWorkoutDay = ROW_ORDER.some((d) => schedule[d] != null && schedule[d] !== 'rest')
+  const todayKey = new Date().getDay() as keyof WeeklySchedule
 
   return (
     <div className="p-4 pb-24 space-y-4">
@@ -146,13 +147,24 @@ export function ScheduleScreen() {
               <button
                 type="button"
                 aria-expanded={open}
-                className={`flex w-full items-center justify-between px-4 py-3 text-left ${open ? '' : 'card'}`}
+                className={`flex min-h-14 w-full items-center gap-3 px-4 py-3 text-left ${open ? '' : 'card'} ${
+                  day === todayKey && !open ? 'border-primary' : ''
+                }`}
                 onClick={() => setOpenDay(open ? null : day)}
               >
-                <span className="font-bold">{WEEKDAY_LABELS[day]}</span>
-                <span className={current === null ? 'text-ink-muted' : 'font-semibold text-primary-ink'}>
-                  {labelFor(current)}
+                <span className="flex min-w-0 flex-1 items-center gap-2">
+                  <span className="font-bold">{WEEKDAY_LABELS[day]}</span>
+                  {/* Visual only: the row's accessible name stays "<day> <plan>". */}
+                  {day === todayKey && (
+                    <span aria-hidden="true" className="rounded-full bg-primary px-2 py-0.5 text-xs font-bold text-on-primary">
+                      Today
+                    </span>
+                  )}
                 </span>
+                <PlanChip plan={current} label={labelFor(current)} />
+                <svg aria-hidden="true" viewBox="0 0 24 24" className={`h-5 w-5 flex-none text-ink-muted transition-transform ${open ? 'rotate-90' : ''}`}>
+                  <path d="M9 6l6 6-6 6" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" />
+                </svg>
               </button>
               {open && (
                 <div role="radiogroup" aria-label={`${WEEKDAY_LABELS[day]} plan`} className="grid grid-cols-2 gap-2">
@@ -176,7 +188,11 @@ export function ScheduleScreen() {
       </ul>
 
       {/* Reminders: the phone's Calendar does the reminding (no push
-          without a server). Shown once a day holds a workout. */}
+          without a server). Shown once a day holds a workout; until then a
+          hint says where reminders come from. */}
+      {!hasWorkoutDay && (
+        <p className="px-1 text-sm text-ink-muted">Plan a workout day and you can add reminders to your Calendar.</p>
+      )}
       {isScheduleSet(schedule) && hasWorkoutDay && (
         <section className="card p-4 space-y-3" aria-labelledby="reminders-heading">
           <h2 id="reminders-heading" className="font-bold">
@@ -207,5 +223,27 @@ export function ScheduleScreen() {
         </section>
       )}
     </div>
+  )
+}
+
+// A day's pick at a glance: a workout is a pink chip, rest a calm one, and
+// an empty day a dashed "+ Plan" that invites the tap. The "Not planned"
+// words stay in the text for screen readers and the row's name.
+function PlanChip({ plan, label }: { plan: DayPlan | null; label: string }) {
+  if (plan === null) {
+    return (
+      <span className="flex-none rounded-full border-2 border-dashed border-edge px-3 py-1 text-sm font-semibold text-ink-muted">
+        <span aria-hidden="true">+ Plan</span>
+        <span className="sr-only">{label}</span>
+      </span>
+    )
+  }
+  if (plan === 'rest') {
+    return <span className="flex-none rounded-full bg-field-calm px-3 py-1 text-sm font-semibold">{label}</span>
+  }
+  return (
+    <span className="min-w-0 max-w-[55%] truncate rounded-full bg-field-primary px-3 py-1 text-sm font-semibold text-primary-ink">
+      {label}
+    </span>
   )
 }
