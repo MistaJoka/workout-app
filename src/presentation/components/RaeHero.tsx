@@ -15,10 +15,30 @@ const SKY: Record<DayPart, [string, string]> = {
   night: ['#3b3a6b', '#6d5fa8'],
 }
 
-export function RaeHero({ part }: { part: DayPart }) {
+// Rae's line (raeSays) sits in a pixel speech bubble on the right wall,
+// clear of her face and the window. The link's "Meet Rae" label would hide
+// anything inside it, so screen readers get the line once from a sibling.
+const SAYS_STYLE = `
+.rae-says {
+  position: absolute; right: 10px; top: 54px; max-width: 128px;
+  padding: 6px 8px; background: #fffdf8; color: #3d2f4f;
+  font-size: 0.8125rem; font-weight: 800; line-height: 1.25; text-align: left;
+  box-shadow: 0 -2px 0 0 #4a3a5c, 0 2px 0 0 #4a3a5c, -2px 0 0 0 #4a3a5c, 2px 0 0 0 #4a3a5c, 0 6px 0 0 rgb(74 58 92 / 0.18);
+  transform-origin: 0% 100%;
+}
+.rae-says__tail, .rae-says__tail::after { position: absolute; display: block; background: #4a3a5c; }
+.rae-says__tail { left: -8px; bottom: 6px; width: 6px; height: 6px; box-shadow: inset -2px -2px 0 0 #fffdf8; }
+.rae-says__tail::after { content: ''; left: -4px; bottom: -2px; width: 4px; height: 4px; }
+[data-motion='full'] .rae-says { animation: rae-says-pop 0.32s steps(4, end) 0.35s both; }
+@media (prefers-reduced-motion: reduce) { [data-motion='full'] .rae-says { animation-delay: 0s !important; } }
+@keyframes rae-says-pop { from { transform: scale(0.4); opacity: 0; } to { transform: scale(1); opacity: 1; } }
+`
+
+export function RaeHero({ part, says }: { part: DayPart; says?: string }) {
   const [skyTop, skyBottom] = SKY[part]
   const night = part === 'night'
   return (
+    <>
     <Link to="/rae" aria-label="Meet Rae" className={`rae-room block rae-room--${part}`}>
       <svg
         className="rae-room__scene"
@@ -104,6 +124,16 @@ export function RaeHero({ part }: { part: DayPart }) {
       <span className="rae-room__figure">
         <RaeFigure view="front" height={250} />
       </span>
+
+      {says && (
+        <span className="rae-says" aria-hidden data-testid="rae-says">
+          <style>{SAYS_STYLE}</style>
+          {says}
+          <span className="rae-says__tail" />
+        </span>
+      )}
     </Link>
+    {says && <p className="sr-only">Rae says: {says}</p>}
+    </>
   )
 }
