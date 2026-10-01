@@ -19,6 +19,7 @@ import { GardenCard } from '../components/GardenCard'
 import { buildGarden, type Garden } from '../../domain/progress/garden'
 import { Skeleton, SkeletonBlock, SkeletonList, SkeletonTiles } from '../components/Skeleton'
 import { computeXp, levelFor, type LevelInfo } from '../../domain/progress/xp'
+import { ShareCardButton } from '../components/ShareCardButton'
 import { LevelBar } from '../components/XpCelebration'
 import { labelFor, nextRoomUnlock } from '../roomUnlocks'
 import { compareWeeks, type WeekCompare } from '../../domain/progress/weekCompare'
@@ -155,6 +156,9 @@ export function ProgressScreen() {
                 </p>
               ) : null
             })()}
+            <div className="mt-2 flex justify-end">
+              <ShareCardButton data={{ kind: 'level', level: snapshot.level }} aria-label="Share your level" />
+            </div>
           </section>
           <div className="flex gap-3">
             <Stat value={totalWorkouts} label={totalWorkouts === 1 ? 'workout' : 'workouts'} />
