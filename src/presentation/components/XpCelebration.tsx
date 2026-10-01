@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import { getAllSessionHistory } from '../../infrastructure/db/repositories/sessionRepository'
 import { getWeeklySchedule } from '../../infrastructure/db/repositories/scheduleRepository'
 import { weeklyGoal } from '../../domain/progress/stats'
@@ -7,6 +7,8 @@ import { useTheme } from '../theme/ThemeContext'
 import { effectiveMotion, usePrefersReducedMotion } from './MovementMedia'
 import { useCountUp } from './CountUp'
 import { RaeFace } from './Rae'
+import { playCelebration } from '../../application/celebrationSounds'
+import { useFeedbackSettings } from './useFeedbackSettings'
 
 // Bloom XP on screen: the +XP chip and level bar on Complete, the level-up
 // moment, the "Goal met!" banner, and the level tile on Progress. Everything
@@ -111,12 +113,22 @@ function Confetti({ count, spread, className = '' }: { count: number; spread: nu
 export function LevelUpMoment({ to }: { to: LevelInfo }) {
   const { full, off } = useFullMotion()
   const [visible, setVisible] = useState(!off)
+  const [feedback] = useFeedbackSettings()
+  const played = useRef(false)
 
   useEffect(() => {
     if (off) return
     const timer = window.setTimeout(() => setVisible(false), 2500)
     return () => window.clearTimeout(timer)
   }, [off])
+
+  // The celebration just appeared: play its fanfare once.
+  useEffect(() => {
+    if (played.current) return
+    played.current = true
+    playCelebration('levelUp', feedback)
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [])
 
   return (
     <>
@@ -149,6 +161,16 @@ export function LevelUpMoment({ to }: { to: LevelInfo }) {
 // This workout reached the week's goal: a banner with pixel confetti.
 export function GoalMetBanner() {
   const { full } = useFullMotion()
+  const [feedback] = useFeedbackSettings()
+  const played = useRef(false)
+
+  useEffect(() => {
+    if (played.current) return
+    played.current = true
+    playCelebration('goalMet', feedback)
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [])
+
   return (
     <div
       className="relative mx-auto max-w-sm overflow-hidden rounded-panel bg-field-notice px-4 py-3 text-center"

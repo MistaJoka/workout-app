@@ -6,7 +6,9 @@
 
 let audioContext: AudioContext | null = null
 
-function getAudioContext(): AudioContext | null {
+// Shared with celebrationSounds.ts: one AudioContext for the whole app, so
+// primeAudio's user-gesture unlock (iOS) covers celebration sounds too.
+export function getAudioContext(): AudioContext | null {
   if (typeof window === 'undefined') return null
   const Ctor = window.AudioContext ?? (window as unknown as { webkitAudioContext?: typeof AudioContext }).webkitAudioContext
   if (!Ctor) return null
