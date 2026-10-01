@@ -2,41 +2,34 @@ import { useMemo, useRef, useState } from 'react'
 import { Link } from 'react-router-dom'
 import { monthGrid, monthOf, shiftMonth, type MonthCell, type MonthRef } from '../../domain/progress/monthGrid'
 import { useSheetFocus } from './useSheetFocus'
+import { GARDEN_DAY_STYLE, SpeciesHead, daySpecies, speciesSuffix } from './gardenDay'
+import type { GardenSpecies } from '../../domain/progress/garden'
 
 // Progress's month at a glance: a little pixel flower on every day with a
-// finished workout, in WeekBlooms' palette on the same crisp 16px grid.
-// Monday-start, like the weekly streak. A done day opens that workout (a
-// pick when there were several); other days are just dates.
+// finished workout, the garden species it grew (gardenDay), on the same
+// crisp 16px grid as WeekBlooms. Monday-start, like the weekly streak. A
+// done day opens that workout (a pick when there were several); other days
+// are just dates.
 
-const PETALS = ['#ff8fb8', '#c9b8ff', '#ffc58a']
 const LEAF = '#5bbf8a'
 const LEAF_DARK = '#3f9d6e'
 const WEEKDAY_LETTERS = ['M', 'T', 'W', 'T', 'F', 'S', 'S']
 
 export type MonthWorkout = { sessionId: string; endedAt: string; workoutName: string }
 
-function TinyFlower({ petal, double }: { petal: string; double: boolean }) {
-  const head = (x: number, color: string) => (
-    <g transform={`translate(${x} 0)`}>
-      <rect x="6" y="1" width="4" height="2" fill={color} />
-      <rect x="4" y="3" width="2" height="4" fill={color} />
-      <rect x="10" y="3" width="2" height="4" fill={color} />
-      <rect x="6" y="7" width="4" height="1" fill={color} />
-      <rect x="6" y="3" width="4" height="4" fill="#ffe08a" />
-      <rect x="7" y="4" width="2" height="2" fill="#f5b942" />
-    </g>
-  )
+// Newest workout's species in front; an older second one behind it.
+function TinyFlower({ species }: { species: GardenSpecies[] }) {
   return (
     <svg viewBox="0 0 16 16" width="24" height="24" shapeRendering="crispEdges" aria-hidden>
       <rect x="7" y="8" width="2" height="7" fill={LEAF_DARK} />
       <rect x="9" y="10" width="3" height="2" fill={LEAF} />
-      {double ? (
+      {species.length > 1 ? (
         <>
-          {head(-3, PETALS[(PETALS.indexOf(petal) + 1) % PETALS.length])}
-          {head(3, petal)}
+          <SpeciesHead species={species[1]} x={-3} />
+          <SpeciesHead species={species[0]} x={3} />
         </>
       ) : (
-        head(0, petal)
+        <SpeciesHead species={species[0]} />
       )}
     </svg>
   )
@@ -54,7 +47,8 @@ export function dayCellLabel(cell: MonthCell): string {
   const date = fullDate(cell)
   if (cell.sessions.length === 0) return cell.isToday ? `${date}, today` : date
   const n = cell.sessions.length
-  return `${date}${cell.isToday ? ', today' : ''}, ${n} ${n === 1 ? 'workout' : 'workouts'} done`
+  const flowers = speciesSuffix(daySpecies(cell.sessions.map((s) => s.sessionId)))
+  return `${date}${cell.isToday ? ', today' : ''}, ${n} ${n === 1 ? 'workout' : 'workouts'} done${flowers}`
 }
 
 export function MonthBlooms({ workouts, now = new Date() }: { workouts: MonthWorkout[]; now?: Date }) {
@@ -72,6 +66,7 @@ export function MonthBlooms({ workouts, now = new Date() }: { workouts: MonthWor
 
   return (
     <section className="card p-3" aria-labelledby="month-blooms-title">
+      <style>{GARDEN_DAY_STYLE}</style>
       <div className="flex items-center justify-between">
         <button
           type="button"
@@ -108,7 +103,7 @@ export function MonthBlooms({ workouts, now = new Date() }: { workouts: MonthWor
         ))}
       </div>
       <ol className="mt-1 grid grid-cols-7 gap-y-1">
-        {grid.weeks.flat().map((cell, i) => {
+        {grid.weeks.flat().map((cell) => {
           if (!cell.inMonth) return <li key={cell.key} aria-hidden />
           const done = cell.sessions.length > 0
           const base = `flex min-h-12 w-full flex-col items-center justify-center rounded-control ${
@@ -117,7 +112,7 @@ export function MonthBlooms({ workouts, now = new Date() }: { workouts: MonthWor
           const face = (
             <>
               {done ? (
-                <TinyFlower petal={PETALS[i % PETALS.length]} double={cell.sessions.length > 1} />
+                <TinyFlower species={daySpecies(cell.sessions.map((s) => s.sessionId))} />
               ) : (
                 <span className="h-6" aria-hidden />
               )}
