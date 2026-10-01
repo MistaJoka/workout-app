@@ -14,10 +14,14 @@ export function longDate(date: Date): string {
 }
 
 // The default profile is named "Me"; "Good morning, Me" reads wrong, so a
-// name is only added when someone has set a real one.
+// name only counts once someone has set a real one.
+export function hasRealName(name?: string): boolean {
+  const trimmed = name?.trim()
+  return Boolean(trimmed) && trimmed!.toLowerCase() !== 'me'
+}
+
 export function greeting(date: Date, name?: string): string {
   const part = dayPart(date)
   const base = part === 'night' ? 'Good evening' : `Good ${part}`
-  const trimmed = name?.trim()
-  return trimmed && trimmed.toLowerCase() !== 'me' ? `${base}, ${trimmed}` : base
+  return hasRealName(name) ? `${base}, ${name!.trim()}` : base
 }

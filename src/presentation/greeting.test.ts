@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest'
-import { dayPart, greeting, longDate } from './greeting'
+import { dayPart, greeting, hasRealName, longDate } from './greeting'
 
 const at = (h: number) => new Date(2026, 8, 26, h, 30)
 
@@ -26,6 +26,19 @@ describe('greeting', () => {
 
   it('says good evening late at night', () => {
     expect(greeting(at(23), 'Rae')).toBe('Good evening, Rae')
+  })
+})
+
+describe('hasRealName', () => {
+  it('is false for the default name, blanks and missing names', () => {
+    expect(hasRealName('Me')).toBe(false)
+    expect(hasRealName(' me ')).toBe(false)
+    expect(hasRealName('   ')).toBe(false)
+    expect(hasRealName(undefined)).toBe(false)
+  })
+
+  it('is true for a name someone set', () => {
+    expect(hasRealName('Andrae')).toBe(true)
   })
 })
 
