@@ -224,18 +224,36 @@ export function WorkoutPlayerScreen() {
   }
 
   if (state.status === 'PAUSED') {
+    const paused = plan.exercises[state.currentExerciseIndex]
+    const pausedContent = paused ? exerciseById.get(paused.exerciseId) : undefined
+    const timerWaiting = Boolean(state.restEndsAt || state.holdStartedAt)
     return (
-      <div className="p-6 pt-16 pb-32 text-center space-y-4">
-        <RaeFace expression="smile" size={112} motion="pop" className="mx-auto" />
-        <p className="text-2xl font-bold">Take your time</p>
-        <p className="text-ink-muted">
-          {plan.exercises[state.currentExerciseIndex]?.name}, set {state.currentSetNumber}
-        </p>
-        {(state.restEndsAt || state.holdStartedAt) && (
-          <p className="text-sm text-ink-muted">The timer waits for you.</p>
+      <div className="p-6 pt-10 pb-32 space-y-5">
+        <div className="flex items-center gap-3">
+          <RaeFace expression="smile" size={64} motion="pop" />
+          <div>
+            <p className="text-2xl font-bold">Take your time</p>
+            <p className="text-sm text-ink-muted">{timerWaiting ? 'Paused. The timer waits for you.' : 'Paused.'}</p>
+          </div>
+        </div>
+        {/* What's waiting: the move and set you'll pick back up, with Rae
+            doing it (or its photo), so resuming needs no re-orienting. */}
+        {paused && (
+          <div className="card space-y-3 p-4 text-center">
+            <ExerciseThumb
+              exercise={pausedContent ?? { id: paused.exerciseId, mediaManifest: {} }}
+              className="mx-auto h-[28vh] w-auto max-w-full rounded-panel"
+            />
+            <div>
+              <p className="text-xl font-bold leading-tight">{paused.name}</p>
+              <p className="text-sm font-semibold text-ink-muted">
+                Set {state.currentSetNumber} of {paused.sets}
+              </p>
+            </div>
+          </div>
         )}
         {error && <p className="text-sm text-accent">{error}</p>}
-        <button className="btn-ghost min-h-11" disabled={busy} onClick={openEndSheet}>
+        <button type="button" className="btn-secondary min-h-11 w-full" disabled={busy} onClick={openEndSheet}>
           End workout
         </button>
         {endSheet}
