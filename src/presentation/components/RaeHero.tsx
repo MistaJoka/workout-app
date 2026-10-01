@@ -7,6 +7,14 @@ import type { GardenFlower } from '../../domain/progress/garden'
 import { gardenSeenKey, newestFlowers, pickTapLine, RAE_TAP_LINES, shouldRevealNewestFlower } from './raeRoom'
 import { resolveHolidayAccent, resolveSeason } from '../season'
 import { SeasonRoomDecor, SEASON_DECOR_STYLE } from './seasonDecor'
+import {
+  newestUnlock,
+  resolveRoomLevel,
+  roomUnlocksSeenKey,
+  shouldRevealNewestUnlock,
+  unlockedRoomItems,
+} from '../roomUnlocks'
+import { RoomGrowthDecor, ROOM_GROWTH_STYLE, bulbColor } from './roomGrowthDecor'
 
 // Today's centerpiece: Rae standing in a cozy room. Everything around her
 // is inline SVG/CSS, with no image assets: a window whose sky follows the
@@ -82,7 +90,7 @@ const ROOM_STYLE = `
 @media (prefers-reduced-motion: reduce) { .rae-petal-puff { display: none; } }
 
 .rae-meet-btn { position: absolute; right: 8px; bottom: 8px; background-color: rgb(255 253 248 / 0.9); }
-` + SEASON_DECOR_STYLE
+` + SEASON_DECOR_STYLE + ROOM_GROWTH_STYLE
 
 const PETALS = [
   { x: -14, y: -14, color: '#ff8fb8' },
@@ -106,11 +114,14 @@ export function RaeHero({
   part,
   says,
   flowers = [],
+  level = 1,
 }: {
   part: DayPart
   says?: string
   // All grown garden flowers, oldest first (as buildGarden returns them).
   flowers?: readonly GardenFlower[]
+  // Bloom level (xp.ts): what the room has grown to show (roomUnlocks.ts).
+  level?: number
 }) {
   const [skyTop, skyBottom] = SKY[part]
   const night = part === 'night'
@@ -124,6 +135,31 @@ export function RaeHero({
   const storage = typeof window === 'undefined' ? null : window.localStorage
   const season = resolveSeason(now, location.search, storage)
   const accent = resolveHolidayAccent(now, location.search, storage)
+
+  // Room growth: an explicit `?level=` override wins (screenshots/e2e),
+  // same shape as the season override above.
+  const roomLevel = resolveRoomLevel(level, location.search)
+  const unlocked = unlockedRoomItems(roomLevel)
+  const newest = newestUnlock(roomLevel)
+  const [revealNewestUnlock, setRevealNewestUnlock] = useState(false)
+  const decidedUnlock = useRef(false)
+  useEffect(() => {
+    if (newest == null || decidedUnlock.current) return
+    decidedUnlock.current = true
+    let seenLevel: number | null = null
+    try {
+      const raw = localStorage.getItem(roomUnlocksSeenKey())
+      seenLevel = raw == null ? null : Number(raw)
+    } catch {
+      // Storage blocked: never reveals, but never throws either.
+    }
+    setRevealNewestUnlock(shouldRevealNewestUnlock(seenLevel, newest.level))
+    try {
+      localStorage.setItem(roomUnlocksSeenKey(), String(newest.level))
+    } catch {
+      // Not persisted: may twinkle again next time, which is harmless.
+    }
+  }, [newest])
 
   const pots = newestFlowers(flowers, MAX_POTS)
   const newestId = pots.length > 0 ? pots[pots.length - 1].sessionId : null
@@ -224,7 +260,7 @@ export function RaeHero({
             cx={x}
             cy={y + 4}
             r="3.2"
-            fill={i % 3 === 0 ? '#ffd27a' : i % 3 === 1 ? '#ffb3cf' : '#c9b8ff'}
+            fill={bulbColor(i, unlocked.includes('lightsUpgrade'))}
             style={{ animationDelay: `${(i % 4) * 0.7}s` }}
           />
         ))}
@@ -255,6 +291,8 @@ export function RaeHero({
           sunCx={90}
           sunCy={part === 'evening' ? 118 : 68}
         />
+
+        <RoomGrowthDecor items={unlocked} newest={newest?.item ?? null} reveal={revealNewestUnlock} />
       </svg>
 
       {pots.length > 0 && (

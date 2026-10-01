@@ -23,6 +23,7 @@ import { RecapEntry } from '../components/RecapEntry'
 import { shouldOfferPlanWeek } from '../../domain/schedule/planWeek'
 import { bloomStreakLabel, calculateWeekStreak, nextMilestone, weeklyGoal, weekProgress } from '../../domain/progress/stats'
 import { buildGarden, type GardenFlower } from '../../domain/progress/garden'
+import { computeXp, levelFor } from '../../domain/progress/xp'
 import { MomentumStrip, useMomentumEntrance } from '../components/TodayMomentum'
 import { dayPart, greeting, longDate } from '../greeting'
 import { raeSays } from '../raeSays'
@@ -58,16 +59,20 @@ type TodayData = {
   raeLine: string
   // Every flower grown so far, oldest first; RaeHero shows the newest few.
   gardenFlowers: GardenFlower[]
+  // Bloom level (xp.ts), used by RaeHero to grow her room's decor.
+  level: number
 }
 
 async function loadToday(now: Date): Promise<TodayData> {
   // First, so a workout abandoned long ago is finished (at its last action)
   // before history is read: it counts, and never blocks today.
   const resumable = await settleOpenSessions(now)
-  const [results, schedule, custom] = await Promise.all([
+  const [results, schedule, custom, plans, events] = await Promise.all([
     db.sessionResults.toArray(),
     getWeeklySchedule(),
     listCustomTemplates(),
+    db.sessionPlans.toArray(),
+    db.sessionEvents.toArray(),
   ])
 
   // A/B rotation: the template after the most recent curated one.
@@ -184,6 +189,7 @@ async function loadToday(now: Date): Promise<TodayData> {
       dateKey: localDateKey(now),
     }),
     gardenFlowers: buildGarden(results).flowers,
+    level: levelFor(computeXp({ plans, results, events }, weeklyGoal(schedule)).total).level,
   }
 }
 
@@ -251,7 +257,7 @@ export function TodayScreen() {
       {/* Rae's room with today's one thing to do joined underneath it, so
           the stage reads as her presenting it. */}
       <section className="today-stage" aria-label="Today">
-        <RaeHero part={dayPart(now)} says={data?.raeLine} flowers={data?.gardenFlowers} />
+        <RaeHero part={dayPart(now)} says={data?.raeLine} flowers={data?.gardenFlowers} level={data?.level ?? 1} />
         {data ? (
           <TodayMission
             mission={data.mission}
