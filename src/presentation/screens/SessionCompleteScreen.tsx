@@ -15,6 +15,10 @@ import { RaeFace } from '../components/Rae'
 import { BackupNudge } from '../components/BackupNudge'
 import { PixelBloom } from '../components/PixelBloom'
 import { CompleteHighlights } from '../components/CompleteHighlights'
+import { BloomReveal } from '../components/BloomReveal'
+import { useCountUp } from '../components/CountUp'
+import { sessionBloom, type GardenSpecies } from '../../domain/progress/garden'
+import { db } from '../../infrastructure/db/schema'
 import { bookendsFor } from '../../domain/content/workoutEstimate'
 import { templateById } from '../../domain/content/fixtures/foundationStrengthStarter'
 import type { WorkoutTemplate } from '../../domain/content/types'
@@ -35,6 +39,10 @@ export function SessionCompleteScreen() {
   const [candidateError, setCandidateError] = useState<string | null>(null)
   const [unit] = useWeightUnit()
   const [coolDown, setCoolDown] = useState<WorkoutTemplate | undefined>(undefined)
+  // This workout's garden flower. `undefined` while it loads, so the flower
+  // waits and grows once in its own colours instead of switching mid-bloom;
+  // `null` if it couldn't be read (the default pink bloom grows instead).
+  const [bloom, setBloom] = useState<{ species: GardenSpecies; isNew: boolean } | null | undefined>(undefined)
 
   useEffect(() => {
     if (!sessionId) return
@@ -42,6 +50,10 @@ export function SessionCompleteScreen() {
     getResult(sessionId)
       .then((loaded) => setResult(loaded ?? null))
       .catch(() => setResult(null))
+    db.sessionResults
+      .toArray()
+      .then((all) => setBloom(sessionBloom(all, sessionId)))
+      .catch(() => setBloom(null))
     loadStats(sessionId)
       .then(setStats)
       .catch(() => setStats(null))
@@ -100,11 +112,17 @@ export function SessionCompleteScreen() {
       <div className="mx-auto flex max-w-xs items-end justify-center gap-3" data-testid="complete-celebration">
         <RaeFace expression="cheer" size={112} motion="pop" />
         <div className="flex flex-col items-center">
-          <PixelBloom bloomed={result !== null} size={100} label="This week's new flower, in bloom" />
+          <PixelBloom
+            bloomed={result !== null && bloom !== undefined}
+            size={100}
+            species={bloom?.species}
+            label={bloom ? `This week's new flower, in bloom: ${bloom.species.name}` : "This week's new flower, in bloom"}
+          />
         </div>
       </div>
       <div aria-hidden="true" className="mx-auto -mt-4 h-2 max-w-[15rem] rounded-full bg-[#e9c6a9]" />
       <p className="text-3xl font-extrabold">Workout complete</p>
+      {result && bloom && <BloomReveal species={bloom.species} isNew={bloom.isNew} />}
       {result && (
         <p className="text-ink-muted">
           {result.totalSetsCompleted} of {result.totalSetsPlanned} sets completed
@@ -202,9 +220,12 @@ export function SessionCompleteScreen() {
 
 // Same tile as Progress's totals, on the mint finish field.
 function Stat({ value, label }: { value: number; label: string }) {
+  const shown = useCountUp(value)
   return (
     <div className="flex-1 field-info p-3 text-center">
-      <p className="hud-num text-3xl font-bold">{value}</p>
+      <p className="hud-num text-3xl font-bold" aria-label={String(value)}>
+        {shown}
+      </p>
       <p className="text-xs text-ink-muted">{label}</p>
     </div>
   )

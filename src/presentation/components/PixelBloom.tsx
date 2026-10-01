@@ -8,6 +8,8 @@
 // so delays are zeroed here too, or the petals would wait unseen. `bloomed=false` shows the pot with its sprout
 // while the result is still loading.
 
+import type { GardenSpecies } from '../../domain/progress/garden'
+
 const PETAL = '#ff8fb8'
 const PETAL_DARK = '#f06a9e'
 const LEAF = '#5bbf8a'
@@ -18,17 +20,34 @@ const SPARKLE = '#ffc58a'
 
 const STYLE = `
 .pixel-bloom * { transform-box: fill-box; }
-.pixel-bloom__stem { transform-origin: 50% 100%; animation: pixel-bloom-rise 0.45s steps(5, end) 0.25s both; }
-.pixel-bloom__leaf-l { transform-origin: 100% 50%; animation: pixel-bloom-pop 0.35s cubic-bezier(0.2, 0.9, 0.3, 1.3) 0.65s both; }
-.pixel-bloom__leaf-r { transform-origin: 0% 50%; animation: pixel-bloom-pop 0.35s cubic-bezier(0.2, 0.9, 0.3, 1.3) 0.75s both; }
-.pixel-bloom__head { transform-origin: 50% 100%; animation: pixel-bloom-pop 0.5s cubic-bezier(0.2, 0.9, 0.3, 1.35) 0.95s both; }
-.pixel-bloom__sparkle { opacity: 0; animation: pixel-bloom-twinkle 1.2s ease-out both; }
+.pixel-bloom .pixel-bloom__stem { transform-origin: 50% 100%; animation: pixel-bloom-rise 0.45s steps(5, end) 0.25s both; }
+.pixel-bloom .pixel-bloom__leaf-l { transform-origin: 100% 50%; animation: pixel-bloom-pop 0.35s cubic-bezier(0.2, 0.9, 0.3, 1.3) 0.65s both; }
+.pixel-bloom .pixel-bloom__leaf-r { transform-origin: 0% 50%; animation: pixel-bloom-pop 0.35s cubic-bezier(0.2, 0.9, 0.3, 1.3) 0.75s both; }
+.pixel-bloom .pixel-bloom__head { transform-origin: 50% 100%; animation: pixel-bloom-pop 0.5s cubic-bezier(0.2, 0.9, 0.3, 1.35) 0.95s both; }
+.pixel-bloom .pixel-bloom__sparkle { opacity: 0; animation: pixel-bloom-twinkle 1.2s ease-out both; }
 [data-motion='reduced'] .pixel-bloom *, [data-motion='off'] .pixel-bloom * { animation-delay: 0s !important; }
 @media (prefers-reduced-motion: reduce) { [data-motion='full'] .pixel-bloom * { animation-delay: 0s !important; } }
 @keyframes pixel-bloom-rise { from { transform: scaleY(0); } to { transform: scaleY(1); } }
 @keyframes pixel-bloom-pop { from { transform: scale(0); } to { transform: scale(1); } }
 @keyframes pixel-bloom-twinkle { 0% { opacity: 0; } 30% { opacity: 1; } 100% { opacity: 0; } }
+.pixel-bloom__shimmer { animation: pixel-bloom-shimmer 1.6s ease-in-out 1.5s infinite both; }
+@keyframes pixel-bloom-shimmer { 0%, 100% { opacity: 0.25; } 50% { opacity: 1; } }
+[data-motion='reduced'] .pixel-bloom__shimmer, [data-motion='off'] .pixel-bloom__shimmer { animation: none; opacity: 1; }
+@media (prefers-reduced-motion: reduce) { .pixel-bloom__shimmer { animation: none; opacity: 1; } }
 `
+
+// Rare and legendary species keep a few sparkles around the head: they
+// twinkle under full motion and simply stay lit when motion is reduced/off.
+function Shimmer({ color }: { color: string }) {
+  return (
+    <g className="pixel-bloom__shimmer" fill={color}>
+      <rect x="1" y="2" width="1" height="1" />
+      <rect x="14" y="4" width="1" height="1" />
+      <rect x="2" y="8" width="1" height="1" />
+      <rect x="13" y="0" width="1" height="1" />
+    </g>
+  )
+}
 
 function Sparkle({ x, y, delay }: { x: number; y: number; delay: number }) {
   return (
@@ -39,10 +58,29 @@ function Sparkle({ x, y, delay }: { x: number; y: number; delay: number }) {
   )
 }
 
-export function PixelBloom({ bloomed = true, size = 120, label }: { bloomed?: boolean; size?: number; label?: string }) {
+export function PixelBloom({
+  bloomed = true,
+  size = 120,
+  label,
+  species,
+  animate = true,
+}: {
+  bloomed?: boolean
+  size?: number
+  label?: string
+  // Garden species palette; the default is the original pink bloom.
+  species?: GardenSpecies
+  // false renders the grown flower at rest (collection grids, lists).
+  animate?: boolean
+}) {
+  const petal = species?.petal ?? PETAL
+  const petalDark = species?.petalDark ?? PETAL_DARK
+  const center = species?.center ?? CENTER
+  const centerDark = species?.centerDark ?? CENTER_DARK
+  const sparkly = species?.rarity === 'rare' || species?.rarity === 'legendary'
   return (
     <svg
-      className="pixel-bloom"
+      className={animate ? 'pixel-bloom' : 'pixel-bloom-static'}
       viewBox="0 0 16 22"
       width={size}
       height={(size * 22) / 16}
@@ -50,7 +88,7 @@ export function PixelBloom({ bloomed = true, size = 120, label }: { bloomed?: bo
       role="img"
       aria-label={label ?? (bloomed ? 'A flower in bloom' : 'A sprout in a pot')}
     >
-      <style>{STYLE}</style>
+      {animate || sparkly ? <style>{STYLE}</style> : null}
       {bloomed ? (
         <>
           <rect className="pixel-bloom__stem" x="7" y="7" width="2" height="9" fill={LEAF_DARK} />
@@ -63,20 +101,25 @@ export function PixelBloom({ bloomed = true, size = 120, label }: { bloomed?: bo
             <rect x="10" y="11" width="2" height="1" fill={LEAF} />
           </g>
           <g className="pixel-bloom__head">
-            <rect x="6" y="0" width="4" height="2" fill={PETAL} />
-            <rect x="4" y="2" width="2" height="4" fill={PETAL} />
-            <rect x="10" y="2" width="2" height="4" fill={PETAL} />
-            <rect x="6" y="6" width="4" height="1" fill={PETAL} />
-            <rect x="5" y="1" width="1" height="1" fill={PETAL_DARK} />
-            <rect x="10" y="1" width="1" height="1" fill={PETAL_DARK} />
-            <rect x="5" y="6" width="1" height="1" fill={PETAL_DARK} />
-            <rect x="10" y="6" width="1" height="1" fill={PETAL_DARK} />
-            <rect x="6" y="2" width="4" height="4" fill={CENTER} />
-            <rect x="7" y="3" width="2" height="2" fill={CENTER_DARK} />
+            <rect x="6" y="0" width="4" height="2" fill={petal} />
+            <rect x="4" y="2" width="2" height="4" fill={petal} />
+            <rect x="10" y="2" width="2" height="4" fill={petal} />
+            <rect x="6" y="6" width="4" height="1" fill={petal} />
+            <rect x="5" y="1" width="1" height="1" fill={petalDark} />
+            <rect x="10" y="1" width="1" height="1" fill={petalDark} />
+            <rect x="5" y="6" width="1" height="1" fill={petalDark} />
+            <rect x="10" y="6" width="1" height="1" fill={petalDark} />
+            <rect x="6" y="2" width="4" height="4" fill={center} />
+            <rect x="7" y="3" width="2" height="2" fill={centerDark} />
           </g>
-          <Sparkle x={2} y={3} delay={1.25} />
-          <Sparkle x={13} y={1} delay={1.4} />
-          <Sparkle x={14} y={8} delay={1.55} />
+          {animate && (
+            <>
+              <Sparkle x={2} y={3} delay={1.25} />
+              <Sparkle x={13} y={1} delay={1.4} />
+              <Sparkle x={14} y={8} delay={1.55} />
+            </>
+          )}
+          {sparkly && <Shimmer color={species!.rarity === 'legendary' ? '#ffd23f' : SPARKLE} />}
         </>
       ) : (
         <>

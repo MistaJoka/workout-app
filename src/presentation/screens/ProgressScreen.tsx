@@ -14,6 +14,8 @@ import { BodyWeightCard } from '../components/BodyWeightCard'
 import { buildHistoryRows, type HistoryRow } from './progressHistoryRows'
 import { RaeNote } from '../components/RaeNote'
 import { MonthBlooms } from '../components/MonthBlooms'
+import { GardenCard } from '../components/GardenCard'
+import { buildGarden, type Garden } from '../../domain/progress/garden'
 import { Skeleton, SkeletonBlock, SkeletonList, SkeletonTiles } from '../components/Skeleton'
 
 type Snapshot = {
@@ -25,6 +27,7 @@ type Snapshot = {
   streak: number
   weeks: WeekTotal[]
   records: PersonalRecord[]
+  garden: Garden
   // Where "Start a workout" goes before there's any history: today's
   // planned workout, else the first of the A/B rotation (as Today suggests
   // with no history), or Today itself on a planned rest day.
@@ -71,6 +74,7 @@ export function ProgressScreen() {
       streak: calculateWeekStreak(results, weeklyGoal(schedule), now),
       weeks: weeklyTotals(results, now, 8),
       records: [...detectPersonalRecords(setRecords).values()].sort((a, b) => a.exerciseName.localeCompare(b.exerciseName)),
+      garden: buildGarden(results),
     }
   }
 
@@ -134,6 +138,8 @@ export function ProgressScreen() {
             <Stat value={totalSets} label="sets done" />
             <WeekGoalStat {...snapshot.week} />
           </div>
+
+          <GardenCard garden={snapshot.garden} />
 
           <section className="card p-3">
             <p className="text-xs text-ink-muted">Workouts per week, last 8 weeks</p>
