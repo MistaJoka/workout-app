@@ -2,7 +2,10 @@ import { useCallback, useEffect, useRef, useState } from 'react'
 import { newId } from '../../shared/id'
 import { Link, useNavigate, useParams } from 'react-router-dom'
 import { getCurrentState, getPlan, recordEvent } from '../../application/sessionService'
-import type { SessionPlan, SessionPlanExercise, SessionState } from '../../domain/session/types'
+import { getEventsForSession } from '../../infrastructure/db/repositories/sessionRepository'
+import type { SessionEvent, SessionPlan, SessionPlanExercise, SessionState } from '../../domain/session/types'
+import { flowStatus } from '../../domain/session/flow'
+import { FlowChip } from '../components/FlowChip'
 import { getExercises } from '../../domain/content/catalog'
 import { getFamiliarExerciseIds } from '../../application/familiarity'
 import type { Exercise } from '../../domain/content/types'
@@ -79,6 +82,19 @@ export function WorkoutPlayerScreen() {
   // open for the rest of this session (not persisted).
   const [familiarIds, setFamiliarIds] = useState<ReadonlySet<string>>(new Set())
   const [openedIds, setOpenedIds] = useState<ReadonlySet<string>>(new Set())
+  // The stored events, kept only for the flow chip's run (domain/session/flow.ts):
+  // how many met sets landed in a row just now. Refetched whenever a set is
+  // completed or taken back — the only actions that can move it.
+  const [events, setEvents] = useState<SessionEvent[]>([])
+
+  const refreshFlowEvents = useCallback(async () => {
+    if (!sessionId) return
+    try {
+      setEvents(await getEventsForSession(sessionId))
+    } catch {
+      // The flow chip is a nicety; a failed read just leaves it off.
+    }
+  }, [sessionId])
 
   const refresh = useCallback(async () => {
     if (!sessionId) return
@@ -93,6 +109,7 @@ export function WorkoutPlayerScreen() {
       setLoadFailed(true)
       return
     }
+    void refreshFlowEvents()
     // Steps and media are extras: the sets and timers work without them
     // (e.g. the library chunk isn't cached yet and the phone is offline).
     if (loadedPlan) {
@@ -152,6 +169,7 @@ export function WorkoutPlayerScreen() {
     try {
       const next = await recordEvent(sessionId, type, newId(), payload)
       if (type === 'SET_COMPLETED') celebrateSet(state, next)
+      if (type === 'SET_COMPLETED' || type === 'SET_UNDONE') void refreshFlowEvents()
       setState(next)
       setAwaitingRepCheck(false)
       setShortReps(null)
@@ -352,6 +370,7 @@ export function WorkoutPlayerScreen() {
   const weighted = exercise.weightKg != null
   const setWeightKg = loggedWeightKg ?? exercise.weightKg ?? 0
   const progress = workoutProgress(plan, state.currentExerciseIndex, state.currentSetNumber)
+  const flowRun = flowStatus(plan, events).run
   const exerciseLabel = `Exercise ${state.currentExerciseIndex + 1} of ${plan.exercises.length}`
   const timed = exercise.reps == null && exercise.timeSeconds != null
   const holding = timed && state.holdStartedAt !== null
@@ -471,7 +490,10 @@ export function WorkoutPlayerScreen() {
               {weighted && <span className="hud-num text-lg font-bold">@ {formatWeight(setWeightKg, unit)}</span>}
             </p>
             <div className="flex-none space-y-1 pb-1">
-              <SetDots total={exercise.sets} current={state.currentSetNumber} animate={fullMotion} />
+              <div className="flex items-center justify-end gap-1.5">
+                <FlowChip key={flowRun} run={flowRun} />
+                <SetDots total={exercise.sets} current={state.currentSetNumber} animate={fullMotion} />
+              </div>
               <p className="text-sm font-semibold text-ink-muted">
                 Set {state.currentSetNumber} of {exercise.sets}
               </p>

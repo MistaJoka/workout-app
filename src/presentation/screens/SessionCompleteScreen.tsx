@@ -17,6 +17,8 @@ import { BackupNudge } from '../components/BackupNudge'
 import { PixelBloom } from '../components/PixelBloom'
 import { CompleteHighlights } from '../components/CompleteHighlights'
 import { AchievementUnlocks } from '../components/AchievementUnlocks'
+import { PerfectStamp } from '../components/PerfectStamp'
+import { NextUpTeaser } from '../components/NextUpTeaser'
 import { GoalMetBanner, LevelUpMoment, XpGainChip, loadSessionXp } from '../components/XpCelebration'
 import type { SessionXpGain } from '../../domain/progress/xp'
 import { BloomReveal } from '../components/BloomReveal'
@@ -146,11 +148,13 @@ export function SessionCompleteScreen() {
           <Stat value={stats.moves} label={stats.moves === 1 ? 'move' : 'moves'} />
         </div>
       )}
+      {result && sessionId && <PerfectStamp sessionId={sessionId} />}
       {result && xp && <XpGainChip gain={xp} />}
       {result && xp?.goalMet && <GoalMetBanner />}
       {result && xp?.leveledUp && <LevelUpMoment to={xp.to} />}
       {result && sessionId && <CompleteHighlights sessionId={sessionId} />}
       {result && sessionId && <AchievementUnlocks sessionId={sessionId} />}
+      {result && <NextUpTeaser />}
       {result && (
         // Ties the finish to Today's week: every finished workout grows a
         // flower there (WeekBlooms), ended-early ones included.
