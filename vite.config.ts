@@ -49,6 +49,9 @@ function swBuildManifest(): Plugin {
 const pkg = JSON.parse(readFileSync(path.resolve(__dirname, 'package.json'), 'utf8')) as { version: string }
 
 export default defineConfig({
+  // GitHub Pages project sites live under /<repo>/. Local and Capacitor builds
+  // remain rooted at /. The Pages workflow sets this environment variable.
+  base: process.env.VITE_BASE_PATH || '/',
   plugins: [react(), swBuildManifest()],
   define: {
     __APP_VERSION__: JSON.stringify(pkg.version),
