@@ -384,3 +384,81 @@ input[type='range'] {
     transition-duration: 0.01ms !important;
   }
 }
+
+
+/* ---- Motion polish: route and sheet entrances --------------------------
+   Screens fade and rise a few px on route change (RouteFade); bottom
+   sheets slide up over a fading backdrop. Entrance only: closing unmounts
+   at once. Nothing here blocks taps, and fill-mode is `backwards` so no
+   animated value lingers once it ends. Page entrances animate opacity and
+   margin, never transform (a transformed ancestor would capture the
+   screens' fixed ThumbBars). The panel's slide is short (32px) so a tap
+   aimed mid-slide still lands on its button.
+   `.fixed.inset-0.items-end` also catches the sheets that predate the
+   `sheet-backdrop` class (ProfileSwitcher, Import, Add to a routine).
+   Motion: full = all of it; reduced (or the OS setting) = fade only;
+   off = none (the global override above). */
+@keyframes route-enter {
+  from {
+    opacity: 0;
+    margin-top: 8px;
+  }
+  to {
+    opacity: 1;
+    margin-top: 0;
+  }
+}
+
+@keyframes motion-fade-in {
+  from {
+    opacity: 0;
+  }
+}
+
+@keyframes sheet-backdrop-in {
+  from {
+    background-color: rgb(0 0 0 / 0);
+  }
+}
+
+@keyframes sheet-panel-in {
+  from {
+    opacity: 0;
+    transform: translateY(32px);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+.route-enter {
+  animation: route-enter 180ms ease-out backwards;
+}
+
+:is(.sheet-backdrop, .fixed.inset-0.items-end) {
+  animation: sheet-backdrop-in 180ms ease-out backwards;
+}
+
+:is(.sheet-backdrop, .fixed.inset-0.items-end) > [role='dialog'] {
+  animation: sheet-panel-in 200ms cubic-bezier(0.2, 0.8, 0.2, 1) backwards;
+}
+
+/* Reduced: fade only. Out-specifies the global reduced override. */
+[data-motion='reduced'] .route-enter,
+[data-motion='reduced'] :is(.sheet-backdrop, .fixed.inset-0.items-end) > [role='dialog'] {
+  animation: motion-fade-in 150ms ease-out backwards !important;
+}
+[data-motion='reduced'] :is(.sheet-backdrop, .fixed.inset-0.items-end) {
+  animation: sheet-backdrop-in 150ms ease-out backwards !important;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  [data-motion='full'] .route-enter,
+  [data-motion='full'] :is(.sheet-backdrop, .fixed.inset-0.items-end) > [role='dialog'] {
+    animation: motion-fade-in 150ms ease-out backwards !important;
+  }
+  [data-motion='full'] :is(.sheet-backdrop, .fixed.inset-0.items-end) {
+    animation: sheet-backdrop-in 150ms ease-out backwards !important;
+  }
+}

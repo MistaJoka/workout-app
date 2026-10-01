@@ -34,7 +34,7 @@ export function ConfirmSheet({
   }, { initialFocus: cancelRef })
 
   return (
-    <div className="fixed inset-0 z-40 flex items-end bg-black/40" onClick={busy ? undefined : onCancel}>
+    <div className="sheet-backdrop fixed inset-0 z-40 flex items-end bg-black/40" onClick={busy ? undefined : onCancel}>
       <div
         ref={sheetRef}
         className="w-full space-y-3 rounded-t-[var(--radius-panel)] bg-surface p-4 text-center"

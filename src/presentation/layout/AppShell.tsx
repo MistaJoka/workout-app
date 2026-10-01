@@ -1,11 +1,15 @@
 import { NavLink, Outlet, useNavigate } from 'react-router-dom'
 import { guardNavigation } from '../components/unsavedGuard'
+import { RouteFade } from './RouteFade'
 
 export function AppShell() {
   return (
     <div className="min-h-screen bg-bg text-ink flex flex-col">
       <main className="flex-1 pb-20">
-        <Outlet />
+        {/* The tab bar stays put; only the screen above it fades in. */}
+        <RouteFade>
+          <Outlet />
+        </RouteFade>
       </main>
       {/* Fixed height so screens with their own bottom CTA can sit at bottom-16. */}
       {/* Order is right-thumb reach, hardest to easiest, not visit frequency:
