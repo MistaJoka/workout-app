@@ -13,6 +13,7 @@
     "e2e:webkit": "sh scripts/e2e-webkit.sh",
     "e2e:install": "playwright install chromium",
     "generate:icons": "node scripts/generate-icons.mjs",
+    "generate:splash": "python3 scripts/generate-splash.py",
     "import:free-exercise-db": "tsx scripts/content/run-import-free-exercise-db.ts",
     "library:review": "tsx scripts/content/list-library-candidates.ts",
     "generate:library": "tsx scripts/content/generate-library.ts",
