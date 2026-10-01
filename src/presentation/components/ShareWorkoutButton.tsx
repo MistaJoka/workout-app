@@ -7,7 +7,8 @@ import { getAllSessionHistory } from '../../infrastructure/db/repositories/sessi
 import { activeProfile } from '../../infrastructure/profiles'
 import { hasRealName } from '../greeting'
 import { completeStats } from '../screens/completeStats'
-import { CARD_HEIGHT, CARD_WIDTH, buildCardModel, cardFilename, drawCard, type CardModel } from '../shareCard'
+import { buildCardModel, cardFilename, drawCard, type CardModel } from '../shareCard'
+import { ShareIcon, loadRaeCheer, renderCardToBlob } from './ShareCardButton'
 import { shareOrDownload } from './shareOrDownload'
 
 // "Share" on the finish screen: paints this workout's card (shareCard.ts)
@@ -74,38 +75,9 @@ export async function renderWorkoutCard(sessionId: string): Promise<{ blob: Blob
     highlight,
   })
 
-  // The app's own font, if it's loaded; the canvas falls back otherwise.
-  await document.fonts?.load(`800 64px 'Nunito Variable'`).catch(() => undefined)
-  const rae = await loadImage('/rae/expr-cheer.png').catch(() => null)
-
-  const canvas = document.createElement('canvas')
-  canvas.width = CARD_WIDTH
-  canvas.height = CARD_HEIGHT
-  const ctx = canvas.getContext('2d')
-  if (!ctx) throw new Error('No canvas')
-  drawCard(ctx, model, species, rae)
-  const blob = await new Promise<Blob>((resolve, reject) =>
-    canvas.toBlob((b) => (b ? resolve(b) : reject(new Error('Encoding failed'))), 'image/png')
-  )
+  // The app's own font, if it's loaded, and Rae's cheering image, loaded
+  // and painted together via the shared card-rendering code.
+  const rae = await loadRaeCheer()
+  const blob = await renderCardToBlob((ctx) => drawCard(ctx, model, species, rae))
   return { blob, filename: cardFilename(result.endedAt), model }
-}
-
-// Same-origin art only, so the canvas stays exportable.
-function loadImage(src: string): Promise<HTMLImageElement> {
-  return new Promise((resolve, reject) => {
-    const img = new Image()
-    img.onload = () => resolve(img)
-    img.onerror = () => reject(new Error(`Couldn't load ${src}`))
-    img.src = src
-  })
-}
-
-function ShareIcon() {
-  return (
-    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
-      <path d="M12 3v12" />
-      <path d="M7 8l5-5 5 5" />
-      <path d="M5 13v6a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2v-6" />
-    </svg>
-  )
 }

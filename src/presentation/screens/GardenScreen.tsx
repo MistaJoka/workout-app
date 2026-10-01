@@ -4,6 +4,7 @@ import { LoreSheet, type LoreSheetTarget } from '../components/LoreSheet'
 import { Meadow } from '../components/Meadow'
 import { PixelBloom } from '../components/PixelBloom'
 import { RaeNote } from '../components/RaeNote'
+import { ShareCardButton } from '../components/ShareCardButton'
 import { Skeleton, SkeletonBlock, SkeletonHeading } from '../components/Skeleton'
 import {
   GARDEN_SPECIES,
@@ -175,14 +176,17 @@ export function GardenScreen() {
   return (
     <div className="p-4 pb-24 space-y-4">
       <BackButton />
-      <div>
-        <h1 className="text-2xl font-bold">Your garden</h1>
-        {garden && (
-          <p className="text-sm text-ink-muted">
-            {garden.flowers.length} {garden.flowers.length === 1 ? 'flower' : 'flowers'} grown, {garden.discovered} of{' '}
-            {garden.total} kinds found
-          </p>
-        )}
+      <div className="flex items-start justify-between gap-3">
+        <div>
+          <h1 className="text-2xl font-bold">Your garden</h1>
+          {garden && (
+            <p className="text-sm text-ink-muted">
+              {garden.flowers.length} {garden.flowers.length === 1 ? 'flower' : 'flowers'} grown, {garden.discovered} of{' '}
+              {garden.total} kinds found
+            </p>
+          )}
+        </div>
+        {garden && <ShareCardButton label="Share" aria-label="Share your garden" data={{ kind: 'garden', garden }} />}
       </div>
 
       {failed && <p>Couldn't open your garden on this device.</p>}
