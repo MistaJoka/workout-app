@@ -82,10 +82,18 @@ const MARK_WORDS: Record<DayMark, string> = {
   open: 'nothing planned',
 }
 
-export function WeekBlooms({ week }: { week: WeekDay[] }) {
+// The header reads progress toward the week's goal (weeklyGoal), never a
+// bare count: "1 of 2 this week", then a gentle "Goal met" once reached.
+export function weekSummary(done: number, goal: number): string {
+  if (done >= goal) return `Goal met, ${done} of ${goal}`
+  if (done === 0) return `Goal: ${goal} this week`
+  return `${done} of ${goal} this week`
+}
+
+export function WeekBlooms({ week, goal }: { week: WeekDay[]; goal: number }) {
   const done = week.reduce((sum, d) => sum + d.count, 0)
-  const summary =
-    done === 0 ? 'Grow your first flower' : done === 1 ? '1 workout this week' : `${done} workouts this week`
+  const met = done >= goal
+  const summary = weekSummary(done, goal)
   return (
     <Link
       to="/schedule"
@@ -93,8 +101,23 @@ export function WeekBlooms({ week }: { week: WeekDay[] }) {
       aria-label={`${summary}. ${week.map((d) => `${d.letter}: ${MARK_WORDS[d.mark]}`).join(', ')}. Edit your week.`}
     >
       <div className="flex items-baseline justify-between px-1">
-        <p className="font-bold">{summary}</p>
+        <p className="flex items-center gap-2 font-bold">
+          {met && (
+            <span className="flex h-6 w-6 items-center justify-center rounded-full bg-field-success text-sm" aria-hidden>
+              ✓
+            </span>
+          )}
+          {summary}
+        </p>
         <span className="text-sm font-semibold text-primary-ink">Plan</span>
+      </div>
+      <div className="mt-1 flex gap-1 px-1" aria-hidden>
+        {Array.from({ length: goal }, (_, i) => (
+          <span
+            key={i}
+            className={`h-1.5 flex-1 rounded-full ${i < done ? 'bg-primary' : 'bg-[var(--color-border)]'}`}
+          />
+        ))}
       </div>
       <ol className="mt-1 grid grid-cols-7">
         {week.map((day, i) => (

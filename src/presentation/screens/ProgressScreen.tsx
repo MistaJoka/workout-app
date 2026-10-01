@@ -3,7 +3,7 @@ import { Link } from 'react-router-dom'
 import { getAllSessionHistory } from '../../infrastructure/db/repositories/sessionRepository'
 import { getTemplate } from '../../domain/content/catalog'
 import { projectSetRecords } from '../../domain/progress/history'
-import { calculateWeekStreak, detectPersonalRecords, weeklyGoal, weeklyTotals } from '../../domain/progress/stats'
+import { calculateWeekStreak, detectPersonalRecords, weekProgress, weeklyGoal, weeklyTotals } from '../../domain/progress/stats'
 import { getWeeklySchedule } from '../../infrastructure/db/repositories/scheduleRepository'
 import type { PersonalRecord, WeekTotal } from '../../domain/progress/types'
 import { formatWeight } from '../units'
@@ -14,8 +14,10 @@ import { RaeNote } from '../components/RaeNote'
 
 type Snapshot = {
   rows: HistoryRow[]
-  // Weeks in a row with at least `goal` workouts (weeklyGoal).
-  goal: number
+  // This week's finished workouts against weeklyGoal, and the weeks in a
+  // row that met it. Progress leads with the week, so a first workout reads
+  // "1 of 2", never "0 week streak".
+  week: { done: number; goal: number; met: boolean }
   streak: number
   weeks: WeekTotal[]
   records: PersonalRecord[]
@@ -49,7 +51,7 @@ export function ProgressScreen() {
     const now = new Date()
     return {
       rows,
-      goal: weeklyGoal(schedule),
+      week: weekProgress(results, schedule, now),
       streak: calculateWeekStreak(results, weeklyGoal(schedule), now),
       weeks: weeklyTotals(results, now, 8),
       records: [...detectPersonalRecords(setRecords).values()].sort((a, b) => a.exerciseName.localeCompare(b.exerciseName)),
@@ -83,7 +85,12 @@ export function ProgressScreen() {
           <span className="font-semibold">
             {totalWorkouts === 1 ? '1 workout' : `${totalWorkouts} workouts`} and {totalSets} sets so far.
           </span>{' '}
-          {snapshot.streak >= 2 ? `${snapshot.streak} weeks in a row. ` : ''}Proud of you.
+          {snapshot.streak >= 2
+            ? `${snapshot.streak} weeks in a row. `
+            : snapshot.week.met
+              ? 'Goal met this week. '
+              : ''}
+          Proud of you.
         </RaeNote>
       )}
 
@@ -92,11 +99,7 @@ export function ProgressScreen() {
           <div className="flex gap-3">
             <Stat value={totalWorkouts} label={totalWorkouts === 1 ? 'workout' : 'workouts'} />
             <Stat value={totalSets} label="sets done" />
-            <Stat
-              value={snapshot.streak}
-              label="week streak"
-              hint={`Weeks with ${snapshot.goal}+ workouts`}
-            />
+            <WeekGoalStat {...snapshot.week} />
           </div>
 
           <section className="card p-3">
@@ -165,6 +168,39 @@ function Stat({ value, label, hint }: { value: number; label: string; hint?: str
       <p className="hud-num text-3xl font-bold">{value}</p>
       <p className="text-xs text-ink-muted">{label}</p>
       {hint && <p className="sr-only">{hint}</p>}
+    </div>
+  )
+}
+
+// This week toward the goal: a ring that fills per workout, "1 of 2" inside.
+// Static (no animation), so every motion setting shows the same thing.
+function WeekGoalStat({ done, goal, met }: { done: number; goal: number; met: boolean }) {
+  const r = 15
+  const circumference = 2 * Math.PI * r
+  const filled = Math.min(done / goal, 1) * circumference
+  return (
+    <div className={`flex-1 p-3 text-center ${met ? 'field-success' : 'field-info'}`}>
+      <svg viewBox="0 0 40 40" className="mx-auto h-11 w-11" aria-hidden>
+        <circle cx="20" cy="20" r={r} fill="none" stroke="var(--color-border)" strokeWidth="5" />
+        <circle
+          cx="20"
+          cy="20"
+          r={r}
+          fill="none"
+          stroke="var(--color-primary)"
+          strokeWidth="5"
+          strokeLinecap="round"
+          strokeDasharray={`${filled} ${circumference}`}
+          transform="rotate(-90 20 20)"
+        />
+      </svg>
+      <p className="hud-num text-sm font-bold">
+        {done} of {goal}
+      </p>
+      <p className="text-xs text-ink-muted">{met ? 'goal met' : 'this week'}</p>
+      <p className="sr-only">
+        {done} of {goal} workouts this week{met ? ', goal met' : ''}
+      </p>
     </div>
   )
 }

@@ -18,6 +18,7 @@ import { WelcomeCard } from '../components/WelcomeCard'
 import { RaeHero } from '../components/RaeHero'
 import { TodayMission, type Mission } from '../components/TodayMission'
 import { WeekBlooms } from '../components/WeekBlooms'
+import { weeklyGoal } from '../../domain/progress/stats'
 import { dayPart, greeting, longDate } from '../greeting'
 import { activeProfile } from '../../infrastructure/profiles'
 import { raeStillFor } from '../components/raeLoops'
@@ -41,6 +42,8 @@ function describe(template: WorkoutTemplate): string {
 type TodayData = {
   mission: Mission
   week: WeekDay[]
+  // Workouts this week should reach (weeklyGoal: planned days, or 2).
+  weekGoal: number
   // Everything you could start instead, primary pick excluded.
   others: { template: WorkoutTemplate; custom: boolean }[]
   // Any workout ever finished on this profile (retires the welcome card).
@@ -145,6 +148,7 @@ async function loadToday(now: Date): Promise<TodayData> {
   return {
     mission,
     week: buildWeek(results, schedule, now),
+    weekGoal: weeklyGoal(schedule),
     others,
     hasFinished: results.length > 0,
     resumeId: mode === 'resume' ? (resumable?.id ?? null) : null,
@@ -224,7 +228,7 @@ export function TodayScreen() {
 
       <WelcomeCard finished={data ? data.hasFinished : null} />
 
-      {data && <WeekBlooms week={data.week} />}
+      {data && <WeekBlooms week={data.week} goal={data.weekGoal} />}
 
       {data && data.others.length > 0 && (
         <section className="space-y-2">

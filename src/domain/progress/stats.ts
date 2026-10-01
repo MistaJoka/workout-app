@@ -129,6 +129,19 @@ export function calculateWeekStreak(results: readonly SessionResult[], goal: num
   return streak
 }
 
+// This Monday-start week's finished workouts against the weekly goal, so a
+// first workout reads "1 of 2", never "0 week streak".
+export function weekProgress(
+  results: readonly SessionResult[],
+  schedule: WeeklySchedule | null,
+  now: Date
+): { done: number; goal: number; met: boolean } {
+  const week = localDayKey(isoWeekStart(now))
+  const done = results.filter((r) => localDayKey(isoWeekStart(new Date(r.endedAt))) === week).length
+  const goal = weeklyGoal(schedule)
+  return { done, goal, met: done >= goal }
+}
+
 function isoWeekStart(date: Date): Date {
   const day = date.getDay() // 0 = Sunday
   const offset = day === 0 ? -6 : 1 - day

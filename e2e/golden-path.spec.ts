@@ -38,7 +38,7 @@ test.describe('golden path', () => {
     // Today says it's done and a flower bloomed; Progress recorded it.
     await expect(page.locator('.today-mission')).toContainText('Done for today')
     await expect(page.locator('.today-mission')).toContainText('Full-Body A, 10 sets')
-    await expect(page.getByText('1 workout this week')).toBeVisible()
+    await expect(page.getByText('1 of 2 this week')).toBeVisible()
     await page.getByRole('link', { name: 'Progress' }).click()
     await expect(page.getByText('workout', { exact: true })).toBeVisible()
     await expect(page.getByText('10', { exact: true }).first()).toBeVisible()
