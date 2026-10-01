@@ -21,4 +21,9 @@ describe('needsBackupNudge', () => {
   it('treats an unreadable date as never backed up', () => {
     expect(needsBackupNudge('garbage', 1, now)).toBe(true)
   })
+
+  it('can wait for more history before asking (Complete waits for the 3rd workout)', () => {
+    expect(needsBackupNudge(null, 2, now, 3)).toBe(false)
+    expect(needsBackupNudge(null, 3, now, 3)).toBe(true)
+  })
 })

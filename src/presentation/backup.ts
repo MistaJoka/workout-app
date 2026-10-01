@@ -9,8 +9,16 @@ export const LAST_EXPORT_KEY = 'lastExportAt'
 // finished workout to lose), the app asks for one.
 export const BACKUP_NUDGE_DAYS = 14
 
-export function needsBackupNudge(lastExportAt: string | null, finishedWorkouts: number, now: Date = new Date()): boolean {
-  if (finishedWorkouts < 1) return false
+// `minFinished` lets a screen wait for more history before asking: the
+// Complete screen holds off until the 3rd workout so a first finish stays
+// a celebration, while Settings asks from the first.
+export function needsBackupNudge(
+  lastExportAt: string | null,
+  finishedWorkouts: number,
+  now: Date = new Date(),
+  minFinished = 1
+): boolean {
+  if (finishedWorkouts < Math.max(1, minFinished)) return false
   const last = lastExportAt ? Date.parse(lastExportAt) : NaN
   if (Number.isNaN(last)) return true
   return now.getTime() - last > BACKUP_NUDGE_DAYS * 86_400_000

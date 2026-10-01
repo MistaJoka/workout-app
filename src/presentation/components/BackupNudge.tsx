@@ -13,9 +13,12 @@ import { BACKUP_NUDGE_DAYS, LAST_EXPORT_KEY, exportAndRecord, needsBackupNudge }
 export function BackupNudge({
   lastExportAt,
   onSaved,
+  minFinished = 1,
 }: {
   lastExportAt?: string | null
   onSaved?: (at: string) => void
+  // Finished workouts needed before the card can show at all.
+  minFinished?: number
 }) {
   const [loaded, setLoaded] = useState<{ last: string | null; finished: number } | null>(null)
   const [busy, setBusy] = useState(false)
@@ -35,7 +38,7 @@ export function BackupNudge({
 
   if (!loaded) return null
   const last = lastExportAt !== undefined ? lastExportAt : loaded.last
-  if (!needsBackupNudge(last, loaded.finished)) return null
+  if (!needsBackupNudge(last, loaded.finished, new Date(), minFinished)) return null
 
   async function handleBackup() {
     setBusy(true)
