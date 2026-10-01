@@ -19,6 +19,7 @@ import { RaeNote } from '../components/RaeNote'
 import { ExerciseThumb } from '../components/ExerciseThumb'
 import { ThumbBar } from '../components/ThumbBar'
 import { ConfirmSheet } from '../components/ConfirmSheet'
+import { Skeleton, SkeletonBlock, SkeletonList } from '../components/Skeleton'
 
 type Row = EditRow
 
@@ -171,7 +172,14 @@ export function RoutineBuilderScreen() {
     }
   }
 
-  if (!loaded) return <div className="p-4">Loading…</div>
+  if (!loaded) {
+    return (
+      <Skeleton className="p-4 space-y-4">
+        <SkeletonBlock className="h-12 rounded-panel" />
+        <SkeletonList rows={3} thumb />
+      </Skeleton>
+    )
+  }
 
   if (picking) {
     return (
@@ -423,7 +431,11 @@ function ExercisePicker({
         )}
       </FilterSheet>
       </div>
-      {library === null && !loadFailed && <p className="text-ink-muted">Loading library…</p>}
+      {library === null && !loadFailed && (
+        <Skeleton label="Loading library">
+          <SkeletonList rows={6} thumb />
+        </Skeleton>
+      )}
       {loadFailed && <p className="text-ink-muted">Couldn't load the library. Check back when you're online.</p>}
       <ul className="space-y-2">
         {results.slice(0, limit).map((exercise) => (

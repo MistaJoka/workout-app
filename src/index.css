@@ -462,3 +462,35 @@ input[type='range'] {
     animation: sheet-backdrop-in 150ms ease-out backwards !important;
   }
 }
+
+/* ---- Skeleton loading (components/Skeleton.tsx) ------------------------
+   Shaped placeholders while IndexedDB reads land. A soft pink-grey block,
+   with a slow sheen under full motion only; reduced/off get the plain
+   block (the shape alone says "loading", so no information is lost). */
+.skeleton {
+  background-color: var(--color-border);
+  opacity: 0.6;
+}
+
+@keyframes skeleton-sheen {
+  from {
+    background-position: 150% 0;
+  }
+  to {
+    background-position: -50% 0;
+  }
+}
+
+[data-motion='full'] .skeleton {
+  background-image: linear-gradient(100deg, transparent 30%, rgba(255, 255, 255, 0.75) 50%, transparent 70%);
+  background-size: 200% 100%;
+  background-repeat: no-repeat;
+  animation: skeleton-sheen 1.4s ease-in-out infinite;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  [data-motion='full'] .skeleton {
+    animation: none !important;
+    background-image: none;
+  }
+}

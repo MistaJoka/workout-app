@@ -23,6 +23,7 @@ import { useFeedbackSettings } from '../components/useFeedbackSettings'
 import { useWeightUnit } from '../components/useWeightUnit'
 import { useWakeLock } from '../pwa/useWakeLock'
 import { formatWeight, kgToUnit, roundToStep, stepInUnit, unitToKg } from '../units'
+import { Skeleton, SkeletonBlock, SkeletonHeading } from '../components/Skeleton'
 
 type ActionType =
   | 'SET_COMPLETED'
@@ -220,7 +221,16 @@ export function WorkoutPlayerScreen() {
   }
 
   if (!plan || !state) {
-    return <div className="p-4">Loading…</div>
+    return (
+      <Skeleton className="p-6 space-y-4">
+        <SkeletonBlock className="h-2 rounded-full" />
+        <SkeletonHeading />
+        <SkeletonBlock className="h-16 w-1/3 rounded-panel" />
+        <SkeletonBlock className="h-64 rounded-panel" />
+        <SkeletonBlock className="h-4 w-5/6 rounded-full" />
+        <SkeletonBlock className="h-4 w-4/6 rounded-full" />
+      </Skeleton>
+    )
   }
 
   if (state.status === 'PAUSED') {

@@ -13,6 +13,7 @@ import { useWeightUnit } from '../components/useWeightUnit'
 import { BodyWeightCard } from '../components/BodyWeightCard'
 import { buildHistoryRows, type HistoryRow } from './progressHistoryRows'
 import { RaeNote } from '../components/RaeNote'
+import { Skeleton, SkeletonBlock, SkeletonList, SkeletonTiles } from '../components/Skeleton'
 
 type Snapshot = {
   rows: HistoryRow[]
@@ -80,7 +81,14 @@ export function ProgressScreen() {
     <div className="p-4 space-y-4">
       <h1 className="text-xl font-bold">Progress</h1>
 
-      {snapshot === null && !failed && <p className="text-ink-muted">Loading…</p>}
+      {snapshot === null && !failed && (
+        <Skeleton className="space-y-4">
+          <SkeletonBlock className="h-12 rounded-panel" />
+          <SkeletonTiles count={3} />
+          <SkeletonBlock className="h-32 rounded-panel" />
+          <SkeletonList rows={3} trailing />
+        </Skeleton>
+      )}
       {snapshot === null && failed && (
         <div className="card space-y-3 p-4 text-center">
           <p className="font-bold">Couldn't load your progress.</p>

@@ -9,6 +9,7 @@ import type { SessionPlan } from '../../domain/session/types'
 import { getProgression } from '../../infrastructure/db/repositories/familiarityProgressionRepository'
 import { BackButton } from '../components/BackButton'
 import { ThumbBar } from '../components/ThumbBar'
+import { Skeleton, SkeletonBlock, SkeletonHeading, SkeletonList } from '../components/Skeleton'
 import { ExerciseThumb } from '../components/ExerciseThumb'
 import { MovementMedia } from '../components/MovementMedia'
 import { bookendsFor, estimateMinutes } from '../../domain/content/workoutEstimate'
@@ -100,7 +101,15 @@ export function CheckInScreen() {
       </div>
     )
   }
-  if (loaded === undefined) return <div className="p-4">Loading…</div>
+  if (loaded === undefined) {
+    return (
+      <Skeleton className="p-4 space-y-4">
+        <SkeletonHeading />
+        <SkeletonBlock className="h-48 rounded-panel" />
+        <SkeletonList rows={4} thumb />
+      </Skeleton>
+    )
+  }
   if (loaded === null || !preview) {
     return (
       <div className="p-4 space-y-2">

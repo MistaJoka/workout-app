@@ -9,6 +9,7 @@ import { useWeightUnit } from '../components/useWeightUnit'
 import { BackButton } from '../components/BackButton'
 import { RaeNote } from '../components/RaeNote'
 import { layoutHistoryBars } from './historyBars'
+import { Skeleton, SkeletonBlock, SkeletonHeading, SkeletonList, SkeletonTiles } from '../components/Skeleton'
 
 type View = {
   name: string
@@ -36,7 +37,16 @@ export function ExerciseHistoryScreen() {
     return { name, record: detectPersonalRecords(records).get(id), points }
   }
 
-  if (view === undefined) return <div className="p-4">Loading…</div>
+  if (view === undefined) {
+    return (
+      <Skeleton className="p-4 space-y-4">
+        <SkeletonHeading />
+        <SkeletonTiles count={3} />
+        <SkeletonBlock className="h-40 rounded-panel" />
+        <SkeletonList rows={3} trailing />
+      </Skeleton>
+    )
+  }
   if (view === null) {
     return (
       <div className="p-4 space-y-2">

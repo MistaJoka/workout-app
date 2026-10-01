@@ -6,6 +6,7 @@ import { getEventsForSession, getPlan, getResult } from '../../infrastructure/db
 import { formatWeight, type WeightUnit } from '../units'
 import { useWeightUnit } from '../components/useWeightUnit'
 import { BackButton } from '../components/BackButton'
+import { Skeleton, SkeletonHeading, SkeletonList } from '../components/Skeleton'
 
 type Loaded = { name: string; endedAt: string; detail: SessionDetail }
 
@@ -45,7 +46,14 @@ export function SessionDetailScreen() {
       </div>
     )
   }
-  if (loaded === undefined) return <div className="p-4">Loading…</div>
+  if (loaded === undefined) {
+    return (
+      <Skeleton className="p-4 space-y-4">
+        <SkeletonHeading />
+        <SkeletonList rows={5} trailing />
+      </Skeleton>
+    )
+  }
   if (loaded === null) {
     return (
       <div className="p-4 space-y-4">
