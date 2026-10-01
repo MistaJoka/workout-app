@@ -34,7 +34,10 @@ test('a mis-tapped set is undone from the rest screen and counts nowhere', async
   await page.getByRole('button', { name: 'Pause' }).click()
   await page.getByRole('button', { name: 'End workout' }).click()
   await page.getByRole('dialog', { name: 'End workout?' }).getByRole('button', { name: 'End workout' }).click()
-  await expect(page.getByText('1 of 10 sets completed (ended early)')).toBeVisible()
+  // Sets stat tile folds "N of M" into its own value, with an early-end
+  // note in its label instead of a separate sentence (Complete rewrite).
+  await expect(page.getByText('1/10')).toBeVisible()
+  await expect(page.getByText(/ended early/)).toBeVisible()
 })
 
 test('the undo is gone once the rest is over', async ({ page }) => {

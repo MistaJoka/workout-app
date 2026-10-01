@@ -46,7 +46,8 @@ test('a curated workout runs start to finish with the network off', async ({ pag
   expect(await page.evaluate(() => document.images.length)).toBeGreaterThan(0)
 
   await finishWorkout(page)
-  await expect(page.getByText(/sets completed/)).toBeVisible()
+  // Sets stat tile folds "N of M" into its own value (Complete rewrite).
+  await expect(page.getByText(/^\d+\/\d+$/)).toBeVisible()
 
   // The finished workout was saved locally and shows on Today, still offline.
   await page.getByRole('link', { name: 'Back to Today' }).click()

@@ -30,7 +30,10 @@ test('ending early asks first, then finishes on the Complete screen', async ({ p
   await page.getByRole('dialog', { name: 'End workout?' }).getByRole('button', { name: 'End workout' }).click()
 
   await expect(page.getByText('Workout complete')).toBeVisible()
-  await expect(page.getByText('1 of 10 sets completed (ended early)')).toBeVisible()
+  // Sets stat tile folds "N of M" into its own value, and marks an early
+  // end in its label instead of a separate sentence (Complete rewrite).
+  await expect(page.getByText('1/10')).toBeVisible()
+  await expect(page.getByText(/ended early/)).toBeVisible()
   await page.getByRole('link', { name: 'See your progress' }).click()
   await expect(page.getByText('Full-Body A')).toBeVisible()
 })
@@ -44,5 +47,6 @@ test('a paused workout can be ended from the pause screen', async ({ page }) => 
   await page.getByRole('dialog', { name: 'End workout?' }).getByRole('button', { name: 'End workout' }).click()
 
   await expect(page.getByText('Workout complete')).toBeVisible()
-  await expect(page.getByText('0 of 10 sets completed (ended early)')).toBeVisible()
+  await expect(page.getByText('0/10')).toBeVisible()
+  await expect(page.getByText(/ended early/)).toBeVisible()
 })
