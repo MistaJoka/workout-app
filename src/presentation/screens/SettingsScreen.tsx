@@ -1,16 +1,15 @@
 import { Link } from 'react-router-dom'
-import { useEffect, useRef, useState } from 'react'
+import { useEffect, useRef, useState, type ReactNode } from 'react'
 import { importAll, isOtherProfile, parseExportBundle, type ExportBundle } from '../../infrastructure/exportImport/exportImport'
 import { getSetting } from '../../infrastructure/db/repositories/settingsRepository'
 import { db } from '../../infrastructure/db/schema'
 import { activeProfile, loadProfiles } from '../../infrastructure/profiles'
 import { storageErrorMessage } from '../../infrastructure/storageErrors'
-import { BackupNudge } from '../components/BackupNudge'
 import { ProfileSwitcher } from '../components/ProfileSwitcher'
 import { useFeedbackSettings } from '../components/useFeedbackSettings'
 import { useWeightUnit } from '../components/useWeightUnit'
 import { RaeFace } from '../components/Rae'
-import { LAST_EXPORT_KEY, exportAndRecord } from '../backup'
+import { BACKUP_NUDGE_DAYS, LAST_EXPORT_KEY, exportAndRecord, needsBackupNudge } from '../backup'
 import { canVibrate } from '../../application/restFeedback'
 
 export function SettingsScreen() {
@@ -20,6 +19,9 @@ export function SettingsScreen() {
   const [status, setStatus] = useState<string | null>(null)
   // undefined until read, so the backup nudge doesn't flash before it knows.
   const [lastExportAt, setLastExportAt] = useState<string | null | undefined>(undefined)
+  // Finished workouts, for the backup-due rule (nothing to lose, no ask).
+  const [finished, setFinished] = useState<number | undefined>(undefined)
+  const [saving, setSaving] = useState(false)
   const [resetText, setResetText] = useState('')
   const [resetting, setResetting] = useState(false)
   const [resetError, setResetError] = useState<string | null>(null)
@@ -35,11 +37,16 @@ export function SettingsScreen() {
     getSetting<string>(LAST_EXPORT_KEY)
       .then((value) => setLastExportAt(value ?? null))
       .catch(() => {})
+    db.sessionResults
+      .count()
+      .then(setFinished)
+      .catch(() => {})
   }, [])
 
   // Every failure below is local (IndexedDB or the file picker), never the
   // network, and the copy says so.
   async function handleExport() {
+    setSaving(true)
     try {
       const at = await exportAndRecord()
       if (at) {
@@ -50,6 +57,8 @@ export function SettingsScreen() {
       }
     } catch (error) {
       setStatus(storageErrorMessage(error, 'read'))
+    } finally {
+      setSaving(false)
     }
   }
 
@@ -100,75 +109,85 @@ export function SettingsScreen() {
     }
   }
 
+  const backupDue = lastExportAt !== undefined && finished !== undefined && needsBackupNudge(lastExportAt, finished)
+
   return (
     <div className="p-4 space-y-6">
       <h1 className="text-xl font-bold">Settings</h1>
 
-      <section className="space-y-2">
-        <p className="font-semibold">Who's working out</p>
+      <SettingsGroup title="You">
         <ProfileSwitcher />
-      </section>
+      </SettingsGroup>
 
-      <section className="space-y-2">
-        <p className="font-semibold">Weight unit</p>
-        <div className="flex justify-end gap-2">
-          <ChoiceChip label="lb" active={unit === 'lb'} onClick={() => setUnit('lb')} />
-          <ChoiceChip label="kg" active={unit === 'kg'} onClick={() => setUnit('kg')} />
-        </div>
-      </section>
-
-      <section className="space-y-2">
-        <p className="font-semibold">Rest timer</p>
-        <div className="flex justify-end gap-2">
-          <ChoiceChip
-            label={`Sound ${feedback.sound ? 'on' : 'off'}`}
-            active={feedback.sound}
-            onClick={() => updateFeedback({ sound: !feedback.sound })}
-          />
-          {/* iPhone Safari has no navigator.vibrate, so the toggle would do
-              nothing there. */}
-          {canVibrate() && (
+      <SettingsGroup title="Workout">
+        <div className="card divide-y-2 divide-[var(--color-border)]">
+          <SettingsRow label="Weight unit">
+            <ChoiceChip label="lb" active={unit === 'lb'} onClick={() => setUnit('lb')} />
+            <ChoiceChip label="kg" active={unit === 'kg'} onClick={() => setUnit('kg')} />
+          </SettingsRow>
+          <SettingsRow label="Rest timer">
             <ChoiceChip
-              label={`Vibration ${feedback.vibration ? 'on' : 'off'}`}
-              active={feedback.vibration}
-              onClick={() => updateFeedback({ vibration: !feedback.vibration })}
+              label={`Sound ${feedback.sound ? 'on' : 'off'}`}
+              active={feedback.sound}
+              onClick={() => updateFeedback({ sound: !feedback.sound })}
             />
-          )}
+            {/* iPhone Safari has no navigator.vibrate, so the toggle would do
+                nothing there. */}
+            {canVibrate() && (
+              <ChoiceChip
+                label={`Vibration ${feedback.vibration ? 'on' : 'off'}`}
+                active={feedback.vibration}
+                onClick={() => updateFeedback({ vibration: !feedback.vibration })}
+              />
+            )}
+          </SettingsRow>
         </div>
-      </section>
+      </SettingsGroup>
 
-      <section className="space-y-2">
-        <p className="font-semibold">Backup</p>
-        {lastExportAt !== undefined && <BackupNudge lastExportAt={lastExportAt} onSaved={setLastExportAt} />}
-        <div className="flex justify-end gap-2">
-          <button className="btn-secondary" onClick={handleExport}>
-            Export data
+      <SettingsGroup title="Backup">
+        {/* One way to back up. When a backup is due (BackupNudge's rule) the
+            card itself becomes the reminder instead of adding a second
+            "save" button above the first. */}
+        <section
+          className={`${backupDue ? 'field-notice' : 'card'} space-y-3 p-4`}
+          {...(backupDue ? { role: 'region', 'aria-label': 'Backup reminder' } : {})}
+        >
+          {backupDue && (
+            <div>
+              <p className="font-bold">Back up your workouts</p>
+              <p className="text-sm">
+                Everything lives on this phone. {lastExportAt ? `No backup in ${BACKUP_NUDGE_DAYS} days.` : 'No backup yet.'}
+              </p>
+            </div>
+          )}
+          <button type="button" className="btn-primary w-full" disabled={saving} onClick={() => void handleExport()}>
+            {saving ? 'Saving…' : 'Save a backup'}
           </button>
-          <button className="btn-secondary" onClick={() => fileInputRef.current?.click()}>
+          <button type="button" className="btn-secondary w-full" onClick={() => fileInputRef.current?.click()}>
             Import data
           </button>
-        </div>
-        <p className="text-sm text-ink-muted">
-          Last backup: {lastExportAt ? new Date(lastExportAt).toLocaleString() : 'never'}
-        </p>
-        <input
-          ref={fileInputRef}
-          type="file"
-          accept="application/json"
-          className="hidden"
-          onChange={(event) => {
-            const file = event.target.files?.[0]
-            // Clear it so picking the same file again still fires onChange.
-            event.target.value = ''
-            if (file) void handleImportFile(file)
-          }}
-        />
-        {status && (
-          <p className="text-sm text-ink-muted" role="status">
-            {status}
+          <p className="text-sm text-ink-muted">
+            Last backup: {lastExportAt ? new Date(lastExportAt).toLocaleString() : 'never'}
           </p>
-        )}
-      </section>
+          <input
+            ref={fileInputRef}
+            type="file"
+            accept="application/json"
+            className="hidden"
+            onChange={(event) => {
+              const file = event.target.files?.[0]
+              // Clear it so picking the same file again still fires onChange.
+              event.target.value = ''
+              if (file) void handleImportFile(file)
+            }}
+          />
+          {status && (
+            <p className="text-sm" role="status">
+              {status}
+            </p>
+          )}
+        </section>
+      </SettingsGroup>
 
       {pendingImport && (
         <ImportSheet
@@ -181,29 +200,38 @@ export function SettingsScreen() {
         />
       )}
 
-
-      <section className="space-y-2">
-        <Link to="/rae" className="card flex w-full items-center gap-3 p-3">
-          <RaeFace expression="wink" size={44} motion="none" />
-          <span className="flex-1 font-semibold">Meet Rae, your coach</span>
-          <span className="text-xl text-ink-muted" aria-hidden>
-            ›
-          </span>
-        </Link>
-        <Link to="/about" className="btn-secondary w-full">
-          About, animations, credits
-        </Link>
-      </section>
+      <SettingsGroup title="More">
+        <div className="card divide-y-2 divide-[var(--color-border)]">
+          <Link to="/rae" className="flex min-h-14 w-full items-center gap-3 px-3 py-2">
+            <RaeFace expression="wink" size={40} motion="none" />
+            <span className="flex-1 font-semibold">Meet Rae, your coach</span>
+            <span className="text-xl text-ink-muted" aria-hidden>
+              ›
+            </span>
+          </Link>
+          <Link to="/about" className="flex min-h-14 w-full items-center gap-3 px-3 py-2">
+            <span className="flex-1 font-semibold">About, animations, credits</span>
+            <span className="text-xl text-ink-muted" aria-hidden>
+              ›
+            </span>
+          </Link>
+        </div>
+      </SettingsGroup>
 
       {/* Collapsed and last: nobody should meet this on the way to
           something else. */}
-      <details className="card p-3 [&_summary]:cursor-pointer">
-        <summary className="font-semibold">Danger zone</summary>
+      <details className="group card p-3 [&_summary]:cursor-pointer">
+        <summary className="flex min-h-11 list-none items-center justify-between font-semibold [&::-webkit-details-marker]:hidden">
+          Danger zone
+          <span className="text-ink-muted transition-transform group-open:rotate-90" aria-hidden>
+            ›
+          </span>
+        </summary>
         <div className="space-y-2 pt-3">
           <p className="font-semibold">Reset all data</p>
           <p className="text-sm text-ink-muted">
             Erases every workout, routine and setting for {profile.name}.
-            {otherPeople ? ' Other people on this device keep their data.' : ''} Export a backup first.
+            {otherPeople ? ' Other people on this device keep their data.' : ''} Save a backup first.
           </p>
           <input
             type="text"
@@ -225,6 +253,25 @@ export function SettingsScreen() {
           )}
         </div>
       </details>
+    </div>
+  )
+}
+
+function SettingsGroup({ title, children }: { title: string; children: ReactNode }) {
+  return (
+    <section className="space-y-2" aria-label={title}>
+      <h2 className="px-1 text-sm font-semibold text-ink-muted">{title}</h2>
+      {children}
+    </section>
+  )
+}
+
+// Label left, controls right: every adjustable setting reads the same way.
+function SettingsRow({ label, children }: { label: string; children: ReactNode }) {
+  return (
+    <div className="flex min-h-14 flex-wrap items-center justify-between gap-2 px-3 py-2">
+      <p className="font-semibold">{label}</p>
+      <div className="flex flex-wrap justify-end gap-2">{children}</div>
     </div>
   )
 }
