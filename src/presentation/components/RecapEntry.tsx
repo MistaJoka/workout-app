@@ -128,8 +128,33 @@ export function RecapEntry() {
 }
 
 // For Progress: the recap of the week so far (Monday shows last week), plus
-// a second link to the month story.
-export function RecapLink() {
+// a second link to the month story. `compact` renders both as small square
+// tiles (same accessible names) for the "Your collection" grid instead of
+// two full-width rows.
+export function RecapLink({ compact = false }: { compact?: boolean } = {}) {
+  if (compact) {
+    return (
+      <>
+        <Link
+          to="/recap"
+          className="card flex min-h-11 flex-col items-center gap-1 p-3 text-center active:bg-field-primary"
+        >
+          <RecapGlyph />
+          <span className="block font-semibold">Your week in bloom</span>
+          <span className="block text-xs text-ink-muted">Week</span>
+        </Link>
+        <Link
+          to={`/recap?month=${monthKey(monthStartOf(new Date()))}`}
+          className="card flex min-h-11 flex-col items-center gap-1 p-3 text-center active:bg-field-primary"
+        >
+          <RecapGlyph />
+          <span className="block font-semibold">Monthly recap</span>
+          <span className="block text-xs text-ink-muted">Month</span>
+        </Link>
+      </>
+    )
+  }
+
   return (
     <>
       <Link to="/recap" className="card flex min-h-11 items-center justify-between px-4 py-3">
@@ -151,5 +176,19 @@ export function RecapLink() {
         </span>
       </Link>
     </>
+  )
+}
+
+// A tiny book-like glyph for the compact recap tiles — just enough visual
+// weight to tell the two tiles apart from plain text links, on the same
+// pixel palette as the rest of Progress.
+function RecapGlyph() {
+  return (
+    <svg aria-hidden="true" viewBox="0 0 16 16" width="28" height="28" shapeRendering="crispEdges">
+      <rect x="2" y="3" width="12" height="10" rx="1" fill="var(--color-accent)" />
+      <rect x="2" y="3" width="12" height="2" fill="var(--color-primary)" />
+      <rect x="4" y="7" width="8" height="1" fill="var(--color-on-accent)" opacity="0.6" />
+      <rect x="4" y="9" width="6" height="1" fill="var(--color-on-accent)" opacity="0.6" />
+    </svg>
   )
 }
