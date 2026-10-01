@@ -10,12 +10,20 @@ import type { SessionEvent, SessionPlan, SessionState } from './types'
 // Replays through the machine itself and keeps a SET_COMPLETED only if it
 // changed where the session is (set pointer or status), so this stays
 // right whatever the machine's acceptance rules are.
+//
+// An applied SET_UNDONE takes back the last counted set: that SET_COMPLETED
+// is dropped too, so an undone mis-tap never counts anywhere.
 export function withoutIneffectiveSets(plan: SessionPlan, events: SessionEvent[]): SessionEvent[] {
   let state = initSessionState()
   const kept: SessionEvent[] = []
   for (const event of events) {
     const next = applyEvent(plan, state, event)
-    if (event.type !== 'SET_COMPLETED' || moved(state, next)) kept.push(event)
+    if (event.type === 'SET_UNDONE' && moved(state, next)) {
+      const last = kept.map((e) => e.type).lastIndexOf('SET_COMPLETED')
+      if (last >= 0) kept.splice(last, 1)
+    } else if (event.type !== 'SET_COMPLETED' || moved(state, next)) {
+      kept.push(event)
+    }
     state = next
   }
   return kept
@@ -64,6 +72,8 @@ export function effectiveSetSlots(plan: SessionPlan, sessionEvents: readonly Ses
     const next = applyEvent(plan, state, event)
     if (event.type === 'SET_COMPLETED' && moved(state, next)) {
       out.push({ event, exerciseIndex: state.currentExerciseIndex, setNumber: state.currentSetNumber })
+    } else if (event.type === 'SET_UNDONE' && moved(state, next)) {
+      out.pop()
     }
     state = next
   }

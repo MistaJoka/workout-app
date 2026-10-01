@@ -36,8 +36,77 @@ describe('initSessionState', () => {
       restEndsAt: null,
       holdStartedAt: null,
       pausedAt: null,
+      lastSet: null,
       appliedEventIds: [],
     })
+  })
+})
+
+describe('SET_UNDONE', () => {
+  const start = event({ eventId: 'start', type: 'SESSION_STARTED' })
+  const set1 = event({ eventId: 'set1', type: 'SET_COMPLETED', timestamp: '2026-09-13T00:01:00.000Z' })
+  const undo = (eventId = 'undo') => event({ eventId, type: 'SET_UNDONE' })
+
+  it('during the rest a set started, returns to ACTIVE on that same set and clears the rest', () => {
+    expect(replayEvents(plan, [start, set1, undo()])).toMatchObject({
+      status: 'ACTIVE',
+      currentExerciseIndex: 0,
+      currentSetNumber: 1,
+      restStartedAt: null,
+      restEndsAt: null,
+      lastSet: null,
+    })
+  })
+
+  it('also works after the rest was extended, and moves back across an exercise boundary', () => {
+    const state = replayEvents(plan, [
+      start,
+      set1,
+      event({ eventId: 'skip1', type: 'REST_SKIPPED' }),
+      event({ eventId: 'set2', type: 'SET_COMPLETED' }),
+      event({ eventId: 'ext', type: 'REST_EXTENDED', payload: { byMs: 15000 } }),
+      undo(),
+    ])
+    expect(state).toMatchObject({ status: 'ACTIVE', currentExerciseIndex: 0, currentSetNumber: 2, restEndsAt: null })
+  })
+
+  it('is ignored once the rest is over, while active, while paused, or after the end', () => {
+    expect(replayEvents(plan, [start, set1, event({ eventId: 'skip', type: 'REST_SKIPPED' }), undo()])).toMatchObject({
+      status: 'ACTIVE',
+      currentExerciseIndex: 0,
+      currentSetNumber: 2,
+    })
+    expect(replayEvents(plan, [start, undo()])).toMatchObject({ status: 'ACTIVE', currentExerciseIndex: 0, currentSetNumber: 1 })
+    expect(replayEvents(plan, [start, set1, event({ eventId: 'p', type: 'PAUSED' }), undo()]).status).toBe('PAUSED')
+    const finished = replayEvents(plan, [
+      start,
+      set1,
+      event({ eventId: 's1', type: 'REST_SKIPPED' }),
+      event({ eventId: 'set2', type: 'SET_COMPLETED' }),
+      event({ eventId: 's2', type: 'REST_SKIPPED' }),
+      event({ eventId: 'set3', type: 'SET_COMPLETED' }),
+      undo(),
+    ])
+    expect(finished.status).toBe('COMPLETED')
+  })
+
+  it('undoes only once: a second undo changes nothing more', () => {
+    expect(replayEvents(plan, [start, set1, undo('u1'), undo('u2')])).toMatchObject({
+      status: 'ACTIVE',
+      currentExerciseIndex: 0,
+      currentSetNumber: 1,
+    })
+  })
+
+  it('survives a pause during the rest: undo after resuming still works', () => {
+    const state = replayEvents(plan, [
+      start,
+      set1,
+      event({ eventId: 'p', type: 'PAUSED', timestamp: '2026-09-13T00:01:10.000Z' }),
+      event({ eventId: 'r', type: 'RESUMED', timestamp: '2026-09-13T00:02:00.000Z' }),
+      undo(),
+    ])
+    expect(state).toMatchObject({ status: 'ACTIVE', currentExerciseIndex: 0, currentSetNumber: 1, restEndsAt: null })
   })
 })
 
