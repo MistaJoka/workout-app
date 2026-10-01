@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react'
 import type { EvaluatedAchievement } from '../../domain/progress/achievements'
 import { AchievementBadge, loadAchievements } from '../components/AchievementUnlocks'
 import { BackButton } from '../components/BackButton'
+import { ShareCardButton } from '../components/ShareCardButton'
 import { Skeleton, SkeletonBlock, SkeletonHeading } from '../components/Skeleton'
 
 // The badge collection. Earned badges are in colour with the day they were
@@ -71,9 +72,18 @@ export function AchievementsScreen() {
         {ordered.map((a) => (
           <li
             key={a.id}
-            className={`card flex flex-col items-center gap-2 p-3 text-center ${a.unlockedAt ? '' : 'opacity-80'}`}
+            className={`card relative flex flex-col items-center gap-2 p-3 text-center ${a.unlockedAt ? '' : 'opacity-80'}`}
             aria-label={a.unlockedAt ? `${a.title}, earned ${shortDate(a.unlockedAt)}` : `${a.title}, not yet: ${a.description}`}
           >
+            {a.unlockedAt && (
+              <div className="absolute right-1.5 top-1.5">
+                <ShareCardButton
+                  compact
+                  aria-label={`Share ${a.title} badge`}
+                  data={{ kind: 'badge', id: a.id, title: a.title, description: a.description, icon: a.icon, unlockedAt: a.unlockedAt }}
+                />
+              </div>
+            )}
             <AchievementBadge icon={a.icon} locked={!a.unlockedAt} size={56} />
             <p className={`font-bold leading-tight ${a.unlockedAt ? '' : 'text-ink-muted'}`}>{a.title}</p>
             <p className="text-xs text-ink-muted leading-snug">{a.unlockedAt ? shortDate(a.unlockedAt) : a.description}</p>

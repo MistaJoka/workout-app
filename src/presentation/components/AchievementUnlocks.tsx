@@ -10,6 +10,7 @@ import { weeklyGoal } from '../../domain/progress/stats'
 import { getAllSessionHistory } from '../../infrastructure/db/repositories/sessionRepository'
 import { getWeeklySchedule } from '../../infrastructure/db/repositories/scheduleRepository'
 import { playCelebration } from '../../application/celebrationSounds'
+import { ShareCardButton } from './ShareCardButton'
 import { useFeedbackSettings } from './useFeedbackSettings'
 
 // Every achievement, evaluated from this profile's history. Read-only and
@@ -117,10 +118,17 @@ export function AchievementUnlocks({ sessionId }: { sessionId: string }) {
         {[first, ...rest.slice(0, 2)].map((a) => (
           <li key={a.id} className="flex items-center gap-3">
             <AchievementBadge icon={a.icon} size={40} />
-            <span className="min-w-0">
+            <span className="min-w-0 flex-1">
               <span className="block text-xs font-semibold text-ink-muted">Unlocked</span>
               <span className="block font-bold">{a.title}</span>
             </span>
+            {a.unlockedAt && (
+              <ShareCardButton
+                compact
+                aria-label={`Share ${a.title} badge`}
+                data={{ kind: 'badge', id: a.id, title: a.title, description: a.description, icon: a.icon, unlockedAt: a.unlockedAt }}
+              />
+            )}
           </li>
         ))}
       </ul>
