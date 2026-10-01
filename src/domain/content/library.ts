@@ -91,6 +91,23 @@ export function filterExercises(exercises: readonly Exercise[], filters: Library
   })
 }
 
+// Browse order for a list of moves: when searching, names that start with
+// the search come first; then moves Rae demonstrates (so the list leads
+// with her art, not stock photos); then alphabetical. `hasRae` is passed in
+// so this stays free of the presentation layer's loop index.
+export function orderForBrowsing(
+  exercises: readonly Exercise[],
+  hasRae: (exerciseId: string) => boolean,
+  query?: string
+): Exercise[] {
+  const q = query ? normalize(query) : ''
+  const rank = (e: Exercise): [number, number] => [q && normalize(e.name).startsWith(q) ? 0 : 1, hasRae(e.id) ? 0 : 1]
+  return [...exercises].sort((a, b) => {
+    const [ra, rb] = [rank(a), rank(b)]
+    return ra[0] - rb[0] || ra[1] - rb[1] || a.name.localeCompare(b.name)
+  })
+}
+
 export function muscleGroupLabel(muscle: string): string {
   return MUSCLE_GROUPS.find((g) => g.muscles.includes(muscle))?.label ?? capitalize(muscle)
 }
