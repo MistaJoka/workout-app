@@ -35,11 +35,6 @@ export function WelcomeCard({ finished, onNamed }: { finished: boolean | null; o
   return (
     <div className="field-notice p-4 space-y-2">
       <p className="font-bold">Welcome</p>
-      <ul className="space-y-1 text-sm text-ink-muted">
-        <li>Tap Start workout to begin. Up next keeps your workouts alternating.</li>
-        <li>During a workout, every screen shows the movement and its steps.</li>
-        <li>Every workout you finish grows a flower in your week.</li>
-      </ul>
       {!named && (
         <form
           className="flex items-end gap-2 pt-1"
@@ -67,6 +62,11 @@ export function WelcomeCard({ finished, onNamed }: { finished: boolean | null; o
           </button>
         </form>
       )}
+      <ul className="space-y-1 text-sm text-ink-muted">
+        <li>Tap Start workout to begin. Up next keeps your workouts alternating.</li>
+        <li>During a workout, every screen shows the movement and its steps.</li>
+        <li>Every workout you finish grows a flower in your week.</li>
+      </ul>
       <button
         className="btn-primary"
         onClick={() => {
