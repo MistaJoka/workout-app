@@ -24,6 +24,13 @@ import { LevelBar } from '../components/XpCelebration'
 import { labelFor, nextRoomUnlock } from '../roomUnlocks'
 import { compareWeeks, type WeekCompare } from '../../domain/progress/weekCompare'
 import { WeekCompareCard } from '../components/WeekCompareCard'
+import { evaluateAchievements, type AchievementIcon } from '../../domain/progress/achievements'
+import { AchievementBadge } from '../components/AchievementUnlocks'
+
+// How many rows "By exercise" and "History" show before "Show all" — short
+// enough that Progress doesn't turn into a mile of scrolling once there's
+// real history, long enough that a typical week is all there at a glance.
+const LIST_PREVIEW_COUNT = 5
 
 type Snapshot = {
   rows: HistoryRow[]
@@ -39,6 +46,10 @@ type Snapshot = {
   level: LevelInfo
   // "This week vs last": positive-only highlights, never a decline.
   compare: WeekCompare
+  // Badge collection summary for the compact "Your collection" tile: how
+  // many are earned, how many exist, and the most recently earned icon (or
+  // a neutral trophy before any are earned).
+  badges: { earned: number; total: number; icon: AchievementIcon }
   // Where "Start a workout" goes before there's any history: today's
   // planned workout, else the first of the A/B rotation (as Today suggests
   // with no history), or Today itself on a planned rest day.
@@ -50,6 +61,8 @@ export function ProgressScreen() {
   const [failed, setFailed] = useState(false)
   const [attempt, setAttempt] = useState(0)
   const [unit] = useWeightUnit()
+  const [showAllExercises, setShowAllExercises] = useState(false)
+  const [showAllHistory, setShowAllHistory] = useState(false)
 
   useEffect(() => {
     let cancelled = false
@@ -78,22 +91,30 @@ export function ProgressScreen() {
         : (await getTemplate(resolution.templateId).catch(() => undefined))
           ? resolution.templateId
           : ROTATION[0]
+    const goal = weeklyGoal(schedule)
+    const achievements = evaluateAchievements({ plans, results, events }, goal)
+    const earnedAchievements = achievements.filter((a) => a.unlockedAt)
+    const newestBadge = [...earnedAchievements].sort((a, b) => (b.unlockedAt ?? '').localeCompare(a.unlockedAt ?? ''))[0]
     return {
       startHref: startId ? `/checkin/${encodeURIComponent(startId)}` : '/',
       rows,
       week: weekProgress(results, schedule, now),
-      streak: calculateWeekStreak(results, weeklyGoal(schedule), now),
+      streak: calculateWeekStreak(results, goal, now),
       weeks: weeklyTotals(results, now, 8),
       records: [...detectPersonalRecords(setRecords).values()].sort((a, b) => a.exerciseName.localeCompare(b.exerciseName)),
       garden: buildGarden(results),
-      level: levelFor(computeXp({ plans, results, events }, weeklyGoal(schedule)).total),
-      compare: compareWeeks({ plans, results, events }, weeklyGoal(schedule), now),
+      level: levelFor(computeXp({ plans, results, events }, goal).total),
+      compare: compareWeeks({ plans, results, events }, goal, now),
+      badges: { earned: earnedAchievements.length, total: achievements.length, icon: newestBadge?.icon ?? 'trophy' },
     }
   }
 
   const rows = snapshot?.rows ?? null
   const totalWorkouts = rows?.length ?? 0
   const totalSets = rows?.reduce((sum, r) => sum + r.totalSetsCompleted, 0) ?? 0
+  const exerciseRecords = snapshot?.records ?? []
+  const shownRecords = showAllExercises ? exerciseRecords : exerciseRecords.slice(0, LIST_PREVIEW_COUNT)
+  const shownHistory = rows ? (showAllHistory ? rows : rows.slice(0, LIST_PREVIEW_COUNT)) : []
 
   return (
     <div className="p-4 space-y-4">
@@ -146,18 +167,22 @@ export function ProgressScreen() {
 
       {snapshot && rows && rows.length > 0 && (
         <>
+          {/* This week: level + unlock + a small share, the three headline
+              tiles, and how this week compares to last. */}
           <section className="card p-3" data-testid="progress-level">
             <LevelBar level={snapshot.level} />
-            {(() => {
-              const unlock = nextRoomUnlock(snapshot.level.level)
-              return unlock ? (
-                <p className="mt-1 text-xs text-ink-muted" data-testid="next-room-unlock">
-                  Next unlock: {labelFor(unlock.item)} at level {unlock.level}
-                </p>
-              ) : null
-            })()}
-            <div className="mt-2 flex justify-end">
-              <ShareCardButton data={{ kind: 'level', level: snapshot.level }} aria-label="Share your level" />
+            <div className="mt-2 flex items-center justify-between gap-2">
+              {(() => {
+                const unlock = nextRoomUnlock(snapshot.level.level)
+                return unlock ? (
+                  <p className="min-w-0 flex-1 truncate text-xs text-ink-muted" data-testid="next-room-unlock">
+                    Next unlock: {labelFor(unlock.item)} at level {unlock.level}
+                  </p>
+                ) : (
+                  <span />
+                )
+              })()}
+              <ShareCardButton data={{ kind: 'level', level: snapshot.level }} compact aria-label="Share your level" />
             </div>
           </section>
           <div className="flex gap-3">
@@ -168,25 +193,33 @@ export function ProgressScreen() {
 
           <WeekCompareCard compare={snapshot.compare} />
 
-          <GardenCard garden={snapshot.garden} />
-          <Link to="/achievements" className="card flex min-h-11 items-center justify-between px-4 py-3">
-            <span className="font-semibold">Your badges</span>
-            <span aria-hidden="true" className="text-ink-muted">›</span>
-          </Link>
-          <RecapLink />
-
-          <section className="card p-3">
-            <p className="text-xs text-ink-muted">Workouts per week, last 8 weeks</p>
-            <WeekBars weeks={snapshot.weeks} />
+          {/* Your collection: garden, badges and recaps as a compact tile
+              grid instead of four full-width rows. */}
+          <section className="space-y-2">
+            <p className="text-sm font-semibold text-ink-muted">Your collection</p>
+            <div className="grid grid-cols-2 gap-3">
+              <GardenCard garden={snapshot.garden} compact />
+              <BadgesTile earned={snapshot.badges.earned} total={snapshot.badges.total} icon={snapshot.badges.icon} />
+              <RecapLink compact />
+            </div>
           </section>
 
-          <MonthBlooms workouts={rows} />
+          {/* Activity: the month calendar leads, the 8-week bar chart is a
+              compact footnote underneath. */}
+          <section className="space-y-2">
+            <p className="text-sm font-semibold text-ink-muted">Activity</p>
+            <MonthBlooms workouts={rows} />
+            <section className="card p-3">
+              <p className="text-xs text-ink-muted">Last 8 weeks</p>
+              <WeekBars weeks={snapshot.weeks} />
+            </section>
+          </section>
 
-          {snapshot.records.length > 0 && (
+          {exerciseRecords.length > 0 && (
             <section className="space-y-2">
               <p className="text-sm font-semibold text-ink-muted">By exercise</p>
               <ul className="space-y-2">
-                {snapshot.records.map((record) => (
+                {shownRecords.map((record) => (
                   <li key={record.exerciseId}>
                     <Link
                       to={`/progress/${encodeURIComponent(record.exerciseId)}`}
@@ -203,6 +236,12 @@ export function ProgressScreen() {
                   </li>
                 ))}
               </ul>
+              <ShowAllButton
+                total={exerciseRecords.length}
+                shown={LIST_PREVIEW_COUNT}
+                expanded={showAllExercises}
+                onClick={() => setShowAllExercises((v) => !v)}
+              />
             </section>
           )}
         </>
@@ -216,7 +255,7 @@ export function ProgressScreen() {
         <section className="space-y-2">
           <p className="text-sm font-semibold text-ink-muted">History</p>
           <ul className="space-y-2">
-            {rows.map((row) => (
+            {shownHistory.map((row) => (
               <li key={row.sessionId}>
                 <Link to={`/history/${encodeURIComponent(row.sessionId)}`} className="block card p-3">
                   <div className="flex items-baseline justify-between gap-2">
@@ -231,9 +270,56 @@ export function ProgressScreen() {
               </li>
             ))}
           </ul>
+          <ShowAllButton
+            total={rows.length}
+            shown={LIST_PREVIEW_COUNT}
+            expanded={showAllHistory}
+            onClick={() => setShowAllHistory((v) => !v)}
+          />
         </section>
       )}
     </div>
+  )
+}
+
+// A compact collection tile for the badge count, matching GardenCard's
+// compact tile (same grid, same tap target, same "open the collection"
+// pattern). The icon is the most recently earned badge, or a neutral
+// trophy before any are earned.
+function BadgesTile({ earned, total, icon }: { earned: number; total: number; icon: AchievementIcon }) {
+  return (
+    <Link
+      to="/achievements"
+      className="card flex min-h-11 flex-col items-center gap-1 p-3 text-center active:bg-field-primary"
+      aria-label={`Your badges: ${earned} of ${total} earned. Open your badges`}
+    >
+      <AchievementBadge icon={icon} locked={earned === 0} size={34} />
+      <p className="font-bold">Your badges</p>
+      <p className="text-xs text-ink-muted">
+        {earned} of {total}
+      </p>
+    </Link>
+  )
+}
+
+// "Show all (N)" / "Show less" for a list previewed to its first few rows.
+// Renders nothing once everything already fits in the preview.
+function ShowAllButton({
+  total,
+  shown,
+  expanded,
+  onClick,
+}: {
+  total: number
+  shown: number
+  expanded: boolean
+  onClick: () => void
+}) {
+  if (total <= shown) return null
+  return (
+    <button type="button" className="btn-secondary min-h-11 w-full" aria-expanded={expanded} onClick={onClick}>
+      {expanded ? 'Show less' : `Show all (${total})`}
+    </button>
   )
 }
 
@@ -281,13 +367,14 @@ function WeekGoalStat({ done, goal, met }: { done: number; goal: number; met: bo
 }
 
 // Inline SVG, no chart library; colors come from the theme's CSS variables.
+// Sized as a compact footnote under MonthBlooms, not a headline chart.
 function WeekBars({ weeks }: { weeks: WeekTotal[] }) {
   const width = 320
-  const height = 72
+  const height = 56
   const gap = 6
   const barWidth = (width - gap * (weeks.length - 1)) / weeks.length
   const max = Math.max(1, ...weeks.map((w) => w.sessions))
-  const plotHeight = height - 18
+  const plotHeight = height - 16
 
   return (
     <svg viewBox={`0 0 ${width} ${height}`} className="mt-2 w-full" role="img" aria-label="Workouts per week">
@@ -311,7 +398,7 @@ function WeekBars({ weeks }: { weeks: WeekTotal[] }) {
                 {week.sessions}
               </text>
             )}
-            <text x={x + barWidth / 2} y={height - 4} textAnchor="middle" fontSize="9" fill="var(--color-text-muted)">
+            <text x={x + barWidth / 2} y={height - 3} textAnchor="middle" fontSize="9" fill="var(--color-text-muted)">
               {weekLabel(week.weekStart)}
             </text>
           </g>
