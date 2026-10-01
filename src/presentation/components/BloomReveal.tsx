@@ -1,5 +1,15 @@
+import { useEffect, useRef } from 'react'
 import { Link } from 'react-router-dom'
 import { RARITY_LABEL, type GardenSpecies } from '../../domain/progress/garden'
+import { playCelebration } from '../../application/celebrationSounds'
+import { useFeedbackSettings } from './useFeedbackSettings'
+import { useTheme } from '../theme/ThemeContext'
+import { effectiveMotion, usePrefersReducedMotion } from './MovementMedia'
+
+// The chip pops in 1.45s after mount under full motion (see .bloom-reveal
+// below); the chime is timed to land with it instead of firing silently
+// into a still-hidden chip.
+const REVEAL_DELAY_MS = 1450
 
 // The species this workout grew, named once the flower has popped open on
 // the Complete screen: a small chip with a dot in the species' own petal
@@ -15,6 +25,21 @@ const STYLE = `
 
 export function BloomReveal({ species, isNew }: { species: GardenSpecies; isNew: boolean }) {
   const special = species.rarity === 'rare' || species.rarity === 'legendary'
+  const [feedback] = useFeedbackSettings()
+  const { motion } = useTheme()
+  const osPrefersReduced = usePrefersReducedMotion()
+  const fullMotion = effectiveMotion(motion, osPrefersReduced) === 'full'
+  const played = useRef(false)
+
+  useEffect(() => {
+    if (played.current) return
+    played.current = true
+    const delay = fullMotion ? REVEAL_DELAY_MS : 0
+    const timer = window.setTimeout(() => playCelebration('bloom', feedback, { rare: special }), delay)
+    return () => window.clearTimeout(timer)
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [])
+
   return (
     <Link
       to="/garden"

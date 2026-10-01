@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import { Link } from 'react-router-dom'
 import {
   evaluateAchievements,
@@ -9,6 +9,8 @@ import {
 import { weeklyGoal } from '../../domain/progress/stats'
 import { getAllSessionHistory } from '../../infrastructure/db/repositories/sessionRepository'
 import { getWeeklySchedule } from '../../infrastructure/db/repositories/scheduleRepository'
+import { playCelebration } from '../../application/celebrationSounds'
+import { useFeedbackSettings } from './useFeedbackSettings'
 
 // Every achievement, evaluated from this profile's history. Read-only and
 // derived each time, so nothing can drift or be lost.
@@ -81,6 +83,8 @@ const STYLE = `
 // new or history can't be read (a missing celebration is never an error).
 export function AchievementUnlocks({ sessionId }: { sessionId: string }) {
   const [unlocked, setUnlocked] = useState<EvaluatedAchievement[] | null>(null)
+  const [feedback] = useFeedbackSettings()
+  const played = useRef(false)
 
   useEffect(() => {
     let cancelled = false
@@ -95,6 +99,14 @@ export function AchievementUnlocks({ sessionId }: { sessionId: string }) {
       cancelled = true
     }
   }, [sessionId])
+
+  // The card just appeared with at least one unlock: play its sparkle once.
+  useEffect(() => {
+    if (played.current || !unlocked || unlocked.length === 0) return
+    played.current = true
+    playCelebration('badge', feedback)
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [unlocked])
 
   if (!unlocked || unlocked.length === 0) return null
   const [first, ...rest] = unlocked

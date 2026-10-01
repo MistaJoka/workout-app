@@ -2,6 +2,9 @@ import { useEffect, useMemo, useState } from 'react'
 import { newId } from '../../shared/id'
 import { Link, useNavigate, useParams } from 'react-router-dom'
 import { startSession } from '../../application/sessionService'
+import { primeAudio } from '../../application/restFeedback'
+import { playCelebration } from '../../application/celebrationSounds'
+import { useFeedbackSettings } from '../components/useFeedbackSettings'
 import { getExercises, getTemplate } from '../../domain/content/catalog'
 import type { Exercise, WorkoutTemplate } from '../../domain/content/types'
 import { createSessionPlanFromTemplate } from '../../domain/session/createSessionPlan'
@@ -64,6 +67,7 @@ export function CheckInScreen() {
   const { templateId } = useParams()
   const navigate = useNavigate()
   const [unit] = useWeightUnit()
+  const [feedback] = useFeedbackSettings()
   const [loaded, setLoaded] = useState<Loaded | null | undefined>(undefined)
   const [loadFailed, setLoadFailed] = useState(false)
   const [attempt, setAttempt] = useState(0)
@@ -129,6 +133,10 @@ export function CheckInScreen() {
 
   async function handleStart() {
     if (!loaded) return
+    // User gesture: unlock audio (iOS) and give a gentle whoosh-up before
+    // the player loads.
+    if (feedback.sound) primeAudio()
+    playCelebration('start', feedback)
     setStarting(true)
     setError(null)
     // A fresh id/timestamp at the moment of starting: this is the
