@@ -12,6 +12,7 @@ import { ExerciseThumb } from '../components/ExerciseThumb'
 import { RaeNote } from '../components/RaeNote'
 import { RAE_LOOPS, raeLoopForExercise } from '../components/raeLoops'
 import { DRAFT_TEMPLATE_IDS } from '../../domain/content/fixtures/raeDraftTemplates'
+import { Skeleton, SkeletonList } from '../components/Skeleton'
 import { DraftTag } from '../components/DraftTag'
 
 const PAGE = 40
@@ -171,7 +172,11 @@ export function LibraryScreen() {
           </FilterSheet>
         </div>
 
-        {library === null && !loadFailed && <p className="text-ink-muted">Loading library…</p>}
+        {library === null && !loadFailed && (
+          <Skeleton label="Loading library">
+            <SkeletonList rows={6} thumb />
+          </Skeleton>
+        )}
         {loadFailed && (
           <RaeNote expression="surprised">The full library isn't saved on this phone yet. Open it once while online.</RaeNote>
         )}

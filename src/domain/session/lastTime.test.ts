@@ -42,19 +42,19 @@ describe('summarizeLastTime', () => {
   it('collapses an all-met reps session into one trailing check', () => {
     const plans = [plan('s1', [{ exerciseId: 'ex', reps: 10 }])]
     const events = [set('s1', 1, { exerciseId: 'ex', met: true }), set('s1', 2, { exerciseId: 'ex', met: true })]
-    expect(summarizeLastTime(plans, [result('s1', '2026-09-18T01:00:00.000Z')], events, 'ex')).toBe('Last time: 10 · 10 ✓')
+    expect(summarizeLastTime(plans, [result('s1', '2026-09-18T01:00:00.000Z')], events, 'ex')).toBe('Last time: 10, 10 ✓')
   })
 
   it('marks each set when any set was missed', () => {
     const plans = [plan('s1', [{ exerciseId: 'ex', reps: 10 }])]
     const events = [set('s1', 1, { exerciseId: 'ex', met: true }), set('s1', 2, { exerciseId: 'ex', met: false })]
-    expect(summarizeLastTime(plans, [result('s1', '2026-09-18T01:00:00.000Z')], events, 'ex')).toBe('Last time: 10 ✓ · 10 ✗')
+    expect(summarizeLastTime(plans, [result('s1', '2026-09-18T01:00:00.000Z')], events, 'ex')).toBe('Last time: 10 ✓, 10 ✗')
   })
 
   it('shows seconds, without marks, for time-based sets', () => {
     const plans = [plan('s1', [{ exerciseId: 'ex', timeSeconds: 20 }])]
     const events = [set('s1', 1, { exerciseId: 'ex' }), set('s1', 2, { exerciseId: 'ex' })]
-    expect(summarizeLastTime(plans, [result('s1', '2026-09-18T01:00:00.000Z')], events, 'ex')).toBe('Last time: 20s · 20s')
+    expect(summarizeLastTime(plans, [result('s1', '2026-09-18T01:00:00.000Z')], events, 'ex')).toBe('Last time: 20s, 20s')
   })
 
   it('uses the most recent session that actually performed the exercise, ignoring newer ones that did not reach it', () => {
@@ -94,6 +94,6 @@ describe('summarizeLastTime with stray sets', () => {
       ],
       'ex'
     )
-    expect(summary).toBe('Last time: 10 · 10 ✓')
+    expect(summary).toBe('Last time: 10, 10 ✓')
   })
 })

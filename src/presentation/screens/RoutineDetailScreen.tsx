@@ -13,6 +13,7 @@ import { ConfirmSheet } from '../components/ConfirmSheet'
 import { DraftTag } from '../components/DraftTag'
 import { ExerciseThumb } from '../components/ExerciseThumb'
 import { ThumbBar } from '../components/ThumbBar'
+import { Skeleton, SkeletonHeading, SkeletonList } from '../components/Skeleton'
 import { plannedDaysLabel, routineSummary } from './routineSummary'
 
 export function RoutineDetailScreen() {
@@ -79,7 +80,13 @@ export function RoutineDetailScreen() {
       </div>
     )
   }
-  if (template === undefined) return <div className="p-4">Loading…</div>
+  if (template === undefined)
+    return (
+      <Skeleton className="p-4 space-y-4">
+        <SkeletonHeading />
+        <SkeletonList rows={5} thumb trailing />
+      </Skeleton>
+    )
   if (template === null) {
     return (
       <div className="p-4 space-y-4">

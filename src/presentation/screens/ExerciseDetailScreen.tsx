@@ -10,6 +10,7 @@ import {
 import { MovementMedia } from '../components/MovementMedia'
 import { ExerciseYou } from '../components/ExerciseYou'
 import { BackButton } from '../components/BackButton'
+import { Skeleton, SkeletonBlock, SkeletonHeading, SkeletonList } from '../components/Skeleton'
 import { defaultPrescription } from './routineBuilderRows'
 
 export function ExerciseDetailScreen() {
@@ -26,7 +27,14 @@ export function ExerciseDetailScreen() {
     getExercise(exerciseId).then((e) => setExercise(e ?? null))
   }, [exerciseId])
 
-  if (exercise === undefined) return <div className="p-4">Loading…</div>
+  if (exercise === undefined)
+    return (
+      <Skeleton className="p-4 space-y-4">
+        <SkeletonHeading />
+        <SkeletonBlock className="h-56 rounded-panel" />
+        <SkeletonList rows={3} />
+      </Skeleton>
+    )
   if (exercise === null) {
     return (
       <div className="p-4 space-y-2">

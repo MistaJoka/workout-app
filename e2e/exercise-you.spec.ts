@@ -18,7 +18,7 @@ test('Exercise Detail shows "You" only once the move has history, and links to i
   await expect(you).toBeVisible()
   await expect(you.getByText(/1 session, last/)).toBeVisible()
   await expect(you.getByText('10 reps')).toBeVisible()
-  await expect(you.getByText('10 · 10 ✓')).toBeVisible()
+  await expect(you.getByText('10, 10 ✓')).toBeVisible()
 
   await you.getByRole('link', { name: 'See your history' }).click()
   await expect(page.getByRole('heading', { name: 'Bodyweight Squat' })).toBeVisible()

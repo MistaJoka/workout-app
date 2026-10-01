@@ -2,9 +2,9 @@ import type { SessionEvent, SessionPlan, SessionResult } from './types'
 import { effectiveSets } from './appliedEvents'
 
 // One-line summary of the most recent completed session that actually
-// performed this exercise, e.g. "Last time: 10 · 10 ✓" (all sets met),
-// "Last time: 10 ✓ · 10 ✗" (mixed), "Last time: 20s · 20s" (time-based), or
-// "Last time: 8 × 40 kg · 8 × 40 kg ✓" (weighted, via formatWeight).
+// performed this exercise, e.g. "Last time: 10, 10 ✓" (all sets met),
+// "Last time: 10 ✓, 10 ✗" (mixed), "Last time: 20s, 20s" (time-based), or
+// "Last time: 8 × 40 kg, 8 × 40 kg ✓" (weighted, via formatWeight).
 // Pure: the caller supplies plans/results/events.
 export function summarizeLastTime(
   plans: readonly SessionPlan[],
@@ -29,7 +29,7 @@ export function summarizeLastTime(
 
     if (exercise.reps == null) {
       const seconds = exercise.timeSeconds ?? 0
-      return `Last time: ${sets.map(() => `${seconds}s`).join(' · ')}`
+      return `Last time: ${sets.map(() => `${seconds}s`).join(', ')}`
     }
 
     const describe = (s: SessionEvent): string => {
@@ -40,9 +40,9 @@ export function summarizeLastTime(
     const marks = sets.map((s) => s.payload.met)
     const allMet = marks.every((m) => m === true)
     if (allMet) {
-      return `Last time: ${sets.map(describe).join(' · ')} ✓`
+      return `Last time: ${sets.map(describe).join(', ')} ✓`
     }
-    return `Last time: ${sets.map((s, i) => `${describe(s)}${marks[i] === true ? ' ✓' : marks[i] === false ? ' ✗' : ''}`).join(' · ')}`
+    return `Last time: ${sets.map((s, i) => `${describe(s)}${marks[i] === true ? ' ✓' : marks[i] === false ? ' ✗' : ''}`).join(', ')}`
   }
 
   return null
