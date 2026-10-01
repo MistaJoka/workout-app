@@ -16,7 +16,7 @@ async function startQuick10(page: Page): Promise<void> {
 test('a damaged backup is refused and nothing changes', async ({ page }) => {
   await page.goto('/#/settings')
   const downloading = page.waitForEvent('download')
-  await page.getByRole('button', { name: 'Export data' }).click()
+  await page.getByRole('button', { name: 'Save a backup' }).click()
   const backup = JSON.parse(await readFile(await (await downloading).path(), 'utf8'))
 
   // A hand-edited row: a progression level that isn't a number.

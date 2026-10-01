@@ -103,7 +103,7 @@ test("importing another person's backup keeps this person's workouts", async ({ 
   const meEvents = await countEvents(page)
   await page.goto('/#/settings')
   const downloading = page.waitForEvent('download')
-  await page.getByRole('button', { name: 'Export data' }).click()
+  await page.getByRole('button', { name: 'Save a backup' }).click()
   const download = await downloading
   expect(download.suggestedFilename()).toMatch(/^workout-app-backup-me-\d{4}-\d{2}-\d{2}\.json$/)
   const backupPath = await download.path()
