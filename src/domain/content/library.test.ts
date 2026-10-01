@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest'
-import { EQUIPMENT_FILTER_OPTIONS, equipmentLabel, equipmentOf, exerciseMeta, filterExercises, isShownNow, searchHaystack } from './library'
+import { EQUIPMENT_FILTER_OPTIONS, equipmentLabel, equipmentOf, exerciseMeta, filterExercises, isShownNow, orderForBrowsing, searchHaystack } from './library'
 import type { Exercise } from './types'
 
 function exercise(overrides: Partial<Exercise> & { id: string; name: string }): Exercise {
@@ -116,5 +116,35 @@ describe('friendly exercise labels', () => {
   it('skips a missing muscle and capitalizes an unmapped one', () => {
     expect(exerciseMeta(exercise({ id: 'lib.E', name: 'E', taxonomy: { category: 'strength', equipment: ['bodyweight'], primaryMuscles: [] } }))).toEqual(['No equipment'])
     expect(exerciseMeta(exercise({ id: 'lib.F', name: 'F', taxonomy: { category: 'strength', equipment: ['bodyweight'], primaryMuscles: ['wrists'] } }))).toEqual(['Wrists', 'No equipment'])
+  })
+})
+
+describe('orderForBrowsing', () => {
+  const list = [
+    exercise({ id: 'p1', name: 'Wall Sit' }),
+    exercise({ id: 'r1', name: 'Mini Squat' }),
+    exercise({ id: 'p2', name: 'Air Bike' }),
+    exercise({ id: 'r2', name: 'Bodyweight Squat' }),
+  ]
+  const hasRae = (id: string) => id.startsWith('r')
+
+  it('puts moves Rae demonstrates first, then the rest, each alphabetically', () => {
+    expect(orderForBrowsing(list, hasRae).map((e) => e.name)).toEqual(['Bodyweight Squat', 'Mini Squat', 'Air Bike', 'Wall Sit'])
+  })
+
+  it('ranks names starting with the search first, with Rae winning ties', () => {
+    const squats = [
+      exercise({ id: 'p3', name: 'Squat Jump' }),
+      exercise({ id: 'r3', name: 'Squat Hold' }),
+      exercise({ id: 'r1', name: 'Mini Squat' }),
+      exercise({ id: 'p4', name: 'Split Squat' }),
+    ]
+    expect(orderForBrowsing(squats, hasRae, 'squat').map((e) => e.name)).toEqual(['Squat Hold', 'Squat Jump', 'Mini Squat', 'Split Squat'])
+  })
+
+  it('does not mutate its input', () => {
+    const copy = [...list]
+    orderForBrowsing(list, hasRae)
+    expect(list).toEqual(copy)
   })
 })

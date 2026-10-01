@@ -2,7 +2,7 @@ import { countLabel } from '../format'
 import { useDeferredValue, useEffect, useMemo, useState } from 'react'
 import { Link } from 'react-router-dom'
 import { getExercises, loadLibrary } from '../../domain/content/catalog'
-import { EQUIPMENT_FILTER_OPTIONS, MUSCLE_GROUPS, exerciseMeta, filterExercises, isShownNow, type LibraryFilters } from '../../domain/content/library'
+import { EQUIPMENT_FILTER_OPTIONS, MUSCLE_GROUPS, exerciseMeta, filterExercises, isShownNow, orderForBrowsing, type LibraryFilters } from '../../domain/content/library'
 import type { Exercise } from '../../domain/content/types'
 import { foundationStrengthStarterTemplates } from '../../domain/content/fixtures/foundationStrengthStarter'
 import { listCustomTemplates } from '../../infrastructure/db/repositories/customTemplateRepository'
@@ -10,12 +10,16 @@ import type { WorkoutTemplate } from '../../domain/content/types'
 import { FilterSheet } from '../components/FilterSheet'
 import { ExerciseThumb } from '../components/ExerciseThumb'
 import { RaeNote } from '../components/RaeNote'
-import { RAE_LOOPS } from '../components/raeLoops'
+import { RAE_LOOPS, raeLoopForExercise } from '../components/raeLoops'
 import { DRAFT_TEMPLATE_IDS } from '../../domain/content/fixtures/raeDraftTemplates'
 import { DraftTag } from '../components/DraftTag'
 
 const PAGE = 40
 const LEVELS = ['beginner', 'intermediate', 'expert'] as const
+
+function hasRaeLoop(exerciseId: string): boolean {
+  return raeLoopForExercise(exerciseId) !== undefined
+}
 
 export function LibraryScreen() {
   const [library, setLibrary] = useState<Exercise[] | null>(null)
@@ -42,11 +46,16 @@ export function LibraryScreen() {
   // Filtering the library is deferred so the keystroke paints first and the
   // list catches up; the input itself stays bound to the live filters.
   const deferredFilters = useDeferredValue(filters)
-  const results = useMemo(
-    () => (library ? filterExercises(library, deferredFilters) : []),
+  const [raeOnly, setRaeOnly] = useState(false)
+  // Moves Rae demonstrates lead the list (orderForBrowsing); "Rae demos"
+  // narrows to just those.
+  const matched = useMemo(
+    () => (library ? orderForBrowsing(filterExercises(library, deferredFilters), hasRaeLoop, deferredFilters.query) : []),
     [library, deferredFilters]
   )
-  const filtering = Boolean(filters.query || filters.muscle || filters.equipment || filters.level)
+  const raeCount = useMemo(() => matched.filter((e) => hasRaeLoop(e.id)).length, [matched])
+  const results = useMemo(() => (raeOnly ? matched.filter((e) => hasRaeLoop(e.id)) : matched), [matched, raeOnly])
+  const filtering = Boolean(filters.query || filters.muscle || filters.equipment || filters.level || raeOnly)
   // The moves Rae demonstrates herself (the curated starter set, which
   // lives outside the discovery library), leading the page when you're
   // browsing rather than searching.
@@ -167,9 +176,22 @@ export function LibraryScreen() {
           <RaeNote expression="surprised">The full library isn't saved on this phone yet. Open it once while online.</RaeNote>
         )}
         {library && (
-          <p className="text-xs text-ink-muted">
-            {countLabel(results.length, 'exercise')}
-          </p>
+          <div className="flex items-center justify-between gap-2">
+            <p className="text-xs text-ink-muted">{countLabel(results.length, 'exercise')}</p>
+            {raeCount > 0 && (
+              <button
+                type="button"
+                aria-pressed={raeOnly}
+                onClick={() => {
+                  setLimit(PAGE)
+                  setRaeOnly((on) => !on)
+                }}
+                className={`chip ${raeOnly ? 'chip-active' : ''}`}
+              >
+                Rae demos ({raeCount})
+              </button>
+            )}
+          </div>
         )}
         {library && results.length === 0 && (
           <RaeNote expression="surprised">Nothing matches that. Try a shorter search or fewer filters.</RaeNote>
