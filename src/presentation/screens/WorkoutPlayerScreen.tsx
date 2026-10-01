@@ -11,6 +11,7 @@ import { RaeExerciseLoop, RaeFace } from '../components/Rae'
 import { raeLoopForExercise } from '../components/raeLoops'
 import { useTheme } from '../theme/ThemeContext'
 import { ThumbBar } from '../components/ThumbBar'
+import { RepPicks } from '../components/RepPicks'
 import { ConfirmSheet } from '../components/ConfirmSheet'
 import { ExerciseThumb } from '../components/ExerciseThumb'
 import { RestRing } from '../components/RestRing'
@@ -52,6 +53,8 @@ export function WorkoutPlayerScreen() {
   const [awaitingRepCheck, setAwaitingRepCheck] = useState(false)
   // "No, fell short": the reps actually done, logged with the set.
   const [shortReps, setShortReps] = useState<number | null>(null)
+  // "Other" on the quick picks: the stepper, for counts further off.
+  const [repsOther, setRepsOther] = useState(false)
   const [exerciseById, setExerciseById] = useState<Map<string, Exercise>>(new Map())
   const [lastTime, setLastTime] = useState<string | null>(null)
   const [feedback] = useFeedbackSettings()
@@ -141,6 +144,7 @@ export function WorkoutPlayerScreen() {
       setState(next)
       setAwaitingRepCheck(false)
       setShortReps(null)
+      setRepsOther(false)
       return true
     } catch {
       setError(SAVE_ERROR)
@@ -460,10 +464,27 @@ export function WorkoutPlayerScreen() {
           fixed bottom bar so it's always in thumb reach regardless of how
           much media/instruction content is above it. */}
       <ThumbBar
-        armKey={`${state.currentExerciseIndex}:${state.currentSetNumber}:${awaitingRepCheck}:${shortReps !== null}:${holding}`}
+        armKey={`${state.currentExerciseIndex}:${state.currentSetNumber}:${awaitingRepCheck}:${shortReps !== null}:${repsOther}:${holding}`}
         className="space-y-2"
       >
-        {shortReps !== null ? (
+        {shortReps !== null && !repsOther ? (
+          <>
+            <p className="text-center text-xl font-bold">How many reps?</p>
+            <RepPicks
+              target={repTarget}
+              busy={busy}
+              onOther={() => setRepsOther(true)}
+              onPick={(reps) =>
+                handleAction('SET_COMPLETED', {
+                  exerciseId: exercise.exerciseId,
+                  met: false,
+                  reps,
+                  ...(weighted ? { weightKg: setWeightKg } : {}),
+                })
+              }
+            />
+          </>
+        ) : shortReps !== null ? (
           <>
             <p className="text-center text-xl font-bold">How many reps?</p>
             <div className="flex items-center gap-2">
