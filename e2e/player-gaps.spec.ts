@@ -46,6 +46,8 @@ test('"No, fell short" logs the reps actually done', async ({ page }) => {
   await tapArmed(page, 'Complete Set')
   await tapArmed(page, 'No, fell short')
   await expect(page.getByText('How many reps?')).toBeVisible()
+  // "Other" opens the stepper for counts the quick picks don't cover.
+  await tapArmed(page, 'Other')
   await expect(page.getByText('9', { exact: true })).toBeVisible()
   await page.getByRole('button', { name: 'Fewer reps' }).click()
   await tapArmed(page, 'Save reps')
