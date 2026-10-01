@@ -34,6 +34,9 @@ body {
   background-color: var(--color-background);
   color: var(--color-text);
   font-variation-settings: 'wdth' 100;
+  /* Android (Capacitor, edge-to-edge) draws under the status bar; iOS
+     standalone with the default status bar reports 0 here. */
+  padding-top: env(safe-area-inset-top);
 }
 
 h1,

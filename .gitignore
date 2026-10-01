@@ -11,3 +11,4 @@ playwright-report/
 assets/pixel-bloom/character/rae/source/exercise/library/
 content/rae-prompts/qa/
 scripts/assets/__pycache__/
+release/

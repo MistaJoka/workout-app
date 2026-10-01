@@ -1,0 +1,7 @@
+<?xml version='1.0' encoding='utf-8'?>
+<resources>
+    <string name="app_name">Foundation Strength</string>
+    <string name="title_activity_main">Foundation Strength</string>
+    <string name="package_name">app.foundationstrength.workout</string>
+    <string name="custom_url_scheme">app.foundationstrength.workout</string>
+</resources>

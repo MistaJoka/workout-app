@@ -29,9 +29,13 @@
     "rae:preview": "python3 scripts/assets/derive-rae-preview.py",
     "rae:dump": "tsx scripts/assets/dump-exercises.ts",
     "routine:generate": "node scripts/content/generate-routine-intelligence.mjs",
-    "routine:validate": "node scripts/content/validate-routine-intelligence.mjs"
+    "routine:validate": "node scripts/content/validate-routine-intelligence.mjs",
+    "apk": "bash scripts/build-apk.sh",
+    "generate:android-assets": "python3 scripts/generate-android-assets.py"
   },
   "dependencies": {
+    "@capacitor/android": "^8.5.2",
+    "@capacitor/core": "^8.5.2",
     "@fontsource-variable/nunito": "5.3.0",
     "dexie": "4.0.10",
     "react": "19.0.0",
@@ -40,6 +44,7 @@
     "zod": "3.24.1"
   },
   "devDependencies": {
+    "@capacitor/cli": "^8.5.2",
     "@playwright/test": "1.63.0",
     "@types/node": "26.6.1",
     "@types/react": "19.0.2",
