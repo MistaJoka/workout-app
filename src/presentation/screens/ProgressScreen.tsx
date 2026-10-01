@@ -20,6 +20,7 @@ import { buildGarden, type Garden } from '../../domain/progress/garden'
 import { Skeleton, SkeletonBlock, SkeletonList, SkeletonTiles } from '../components/Skeleton'
 import { computeXp, levelFor, type LevelInfo } from '../../domain/progress/xp'
 import { LevelBar } from '../components/XpCelebration'
+import { labelFor, nextRoomUnlock } from '../roomUnlocks'
 import { compareWeeks, type WeekCompare } from '../../domain/progress/weekCompare'
 import { WeekCompareCard } from '../components/WeekCompareCard'
 
@@ -146,6 +147,14 @@ export function ProgressScreen() {
         <>
           <section className="card p-3" data-testid="progress-level">
             <LevelBar level={snapshot.level} />
+            {(() => {
+              const unlock = nextRoomUnlock(snapshot.level.level)
+              return unlock ? (
+                <p className="mt-1 text-xs text-ink-muted" data-testid="next-room-unlock">
+                  Next unlock: {labelFor(unlock.item)} at level {unlock.level}
+                </p>
+              ) : null
+            })()}
           </section>
           <div className="flex gap-3">
             <Stat value={totalWorkouts} label={totalWorkouts === 1 ? 'workout' : 'workouts'} />
