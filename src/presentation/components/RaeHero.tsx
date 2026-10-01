@@ -1,12 +1,20 @@
 import { Link } from 'react-router-dom'
+import { useEffect, useRef, useState, type CSSProperties } from 'react'
 import { RaeFigure } from './Rae'
+import { PixelBloom } from './PixelBloom'
 import type { DayPart } from '../greeting'
+import type { GardenFlower } from '../../domain/progress/garden'
+import { gardenSeenKey, newestFlowers, pickTapLine, RAE_TAP_LINES, shouldRevealNewestFlower } from './raeRoom'
 
 // Today's centerpiece: Rae standing in a cozy room. Everything around her
 // is inline SVG/CSS, with no image assets: a window whose sky follows the
-// time of day, fairy lights, a plant, a warm lamp glow and a rug. It stays
-// short enough that the "Up next" card is still above the fold on a 390x844
-// phone. Taps through to Meet Rae.
+// time of day, fairy lights, a plant, a warm lamp glow and a rug - plus a
+// windowsill-level row of the newest flowers grown in the user's garden.
+// It stays short enough that the "Up next" card is still above the fold on
+// a 390x844 phone.
+//
+// Tapping Rae says hi (a hop + a random cheerful line + a petal puff); a
+// small "Meet Rae" button in the corner still opens her full page.
 
 const SKY: Record<DayPart, [string, string]> = {
   morning: ['#bfe3ff', '#fff4d6'],
@@ -15,10 +23,23 @@ const SKY: Record<DayPart, [string, string]> = {
   night: ['#3b3a6b', '#6d5fa8'],
 }
 
-// Rae's line (raeSays) sits in a pixel speech bubble on the right wall,
-// clear of her face and the window. The link's "Meet Rae" label would hide
-// anything inside it, so screen readers get the line once from a sibling.
-const SAYS_STYLE = `
+const MAX_POTS = 4
+// How long a tap's line stays up before the room's usual line returns.
+const TAP_LINE_MS = 3_000
+
+// Rae's line (raeSays, or a tap line) sits in a pixel speech bubble on the
+// right wall, clear of her face and the window. The link's "Meet Rae" label
+// would hide anything inside it, so screen readers get the line once from a
+// sibling aria-live paragraph instead.
+//
+// Garden pots sit on the rug at the lower-left, clear of Rae, the window and
+// the bubble. The newest one bounces in once (full motion), just fades in
+// under reduced motion, and is simply there when motion is off.
+//
+// Tapping Rae hops her (full motion only - the global reduced/off rules
+// already clamp the keyframe to nothing) and puffs a few petals (full
+// motion only, purely decorative).
+const ROOM_STYLE = `
 .rae-says {
   position: absolute; right: 10px; top: 54px; max-width: 128px;
   padding: 6px 8px; background: #fffdf8; color: #3d2f4f;
@@ -32,14 +53,108 @@ const SAYS_STYLE = `
 [data-motion='full'] .rae-says { animation: rae-says-pop 0.32s steps(4, end) 0.35s both; }
 @media (prefers-reduced-motion: reduce) { [data-motion='full'] .rae-says { animation-delay: 0s !important; } }
 @keyframes rae-says-pop { from { transform: scale(0.4); opacity: 0; } to { transform: scale(1); opacity: 1; } }
+
+.rae-pots { position: absolute; left: 10px; bottom: 12px; display: flex; align-items: flex-end; gap: 2px; }
+.rae-pots__new { animation: rae-pot-bounce 0.55s cubic-bezier(0.2, 0.9, 0.3, 1.3) both; transform-origin: 50% 100%; }
+:root[data-motion='reduced'] .rae-pots__new { animation: rae-pot-fade 220ms ease-out both; }
+:root[data-motion='off'] .rae-pots__new { animation: none; }
+@keyframes rae-pot-bounce { 0% { opacity: 0; transform: translateY(16px) scale(0.5); } 70% { opacity: 1; transform: translateY(-3px) scale(1.08); } 100% { opacity: 1; transform: translateY(0) scale(1); } }
+@keyframes rae-pot-fade { from { opacity: 0; } to { opacity: 1; } }
+@media (prefers-reduced-motion: reduce) { .rae-pots__new { animation: rae-pot-fade 220ms ease-out both; } }
+
+.rae-figure-btn { display: block; background: none; border: none; margin: 0; padding: 0; line-height: 0; cursor: pointer; }
+.rae-hop { display: block; transform-origin: 50% 100%; animation: rae-hop 0.5s cubic-bezier(0.3, 0.7, 0.4, 1) both; }
+@keyframes rae-hop {
+  0% { transform: translateY(0) scaleY(1); }
+  20% { transform: translateY(2px) scaleY(0.94); }
+  55% { transform: translateY(-16px) scaleY(1.05); }
+  80% { transform: translateY(0) scaleY(0.97); }
+  100% { transform: translateY(0) scaleY(1); }
+}
+
+.rae-petal-puff { position: absolute; left: 50%; top: 32%; width: 0; height: 0; pointer-events: none; }
+.rae-petal-puff i { position: absolute; left: 0; top: 0; width: 4px; height: 4px; opacity: 0; animation: rae-petal-burst 0.6s ease-out both; }
+@keyframes rae-petal-burst { 0% { opacity: 1; transform: translate(0, 0) scale(1); } 100% { opacity: 0; transform: translate(var(--px), var(--py)) scale(0.4); } }
+/* Purely decorative - gone under reduced/off, never carries information. */
+:root[data-motion='reduced'] .rae-petal-puff, :root[data-motion='off'] .rae-petal-puff { display: none; }
+@media (prefers-reduced-motion: reduce) { .rae-petal-puff { display: none; } }
+
+.rae-meet-btn { position: absolute; right: 8px; bottom: 8px; background-color: rgb(255 253 248 / 0.9); }
 `
 
-export function RaeHero({ part, says }: { part: DayPart; says?: string }) {
+const PETALS = [
+  { x: -14, y: -14, color: '#ff8fb8' },
+  { x: 10, y: -20, color: '#ffd27a' },
+  { x: -6, y: -26, color: '#c9b8ff' },
+  { x: 16, y: -6, color: '#9ee6c4' },
+  { x: -18, y: 0, color: '#ff8fb8' },
+]
+
+function PetalPuff() {
+  return (
+    <span className="rae-petal-puff" aria-hidden="true">
+      {PETALS.map((p, i) => (
+        <i key={i} style={{ background: p.color, animationDelay: `${i * 0.02}s`, '--px': `${p.x}px`, '--py': `${p.y}px` } as CSSProperties} />
+      ))}
+    </span>
+  )
+}
+
+export function RaeHero({
+  part,
+  says,
+  flowers = [],
+}: {
+  part: DayPart
+  says?: string
+  // All grown garden flowers, oldest first (as buildGarden returns them).
+  flowers?: readonly GardenFlower[]
+}) {
   const [skyTop, skyBottom] = SKY[part]
   const night = part === 'night'
+  const pots = newestFlowers(flowers, MAX_POTS)
+  const newestId = pots.length > 0 ? pots[pots.length - 1].sessionId : null
+
+  const [revealNewest, setRevealNewest] = useState(false)
+  const decided = useRef(false)
+  useEffect(() => {
+    if (newestId == null || decided.current) return
+    decided.current = true
+    let seen: string | null = null
+    try {
+      seen = localStorage.getItem(gardenSeenKey())
+    } catch {
+      // Storage blocked: never reveals, but never throws either.
+    }
+    setRevealNewest(shouldRevealNewestFlower(seen, newestId))
+    try {
+      localStorage.setItem(gardenSeenKey(), newestId)
+    } catch {
+      // Not persisted: may bounce again next time, which is harmless.
+    }
+  }, [newestId])
+
+  const [tapLine, setTapLine] = useState<string | null>(null)
+  const [hopId, setHopId] = useState(0)
+  const lastLine = useRef<string | undefined>(undefined)
+  const tapTimer = useRef<number | undefined>(undefined)
+  useEffect(() => () => window.clearTimeout(tapTimer.current), [])
+
+  function sayHi() {
+    const line = pickTapLine(RAE_TAP_LINES, Math.random, lastLine.current)
+    lastLine.current = line
+    setTapLine(line)
+    setHopId((n) => n + 1)
+    window.clearTimeout(tapTimer.current)
+    tapTimer.current = window.setTimeout(() => setTapLine(null), TAP_LINE_MS)
+  }
+
+  const line = tapLine ?? says
+
   return (
     <>
-    <Link to="/rae" aria-label="Meet Rae" className={`rae-room block rae-room--${part}`}>
+    <div className={`rae-room block rae-room--${part}`}>
+      <style>{ROOM_STYLE}</style>
       <svg
         className="rae-room__scene"
         viewBox="0 0 360 280"
@@ -121,19 +236,41 @@ export function RaeHero({ part, says }: { part: DayPart; says?: string }) {
         <rect x="306" y="208" width="40" height="6" rx="3" fill="#d4866a" />
       </svg>
 
+      {pots.length > 0 && (
+        <div className="rae-pots" aria-hidden="true" data-testid="rae-pots">
+          {pots.map((flower, i) => (
+            <span key={flower.sessionId} className={revealNewest && i === pots.length - 1 ? 'rae-pots__new' : ''}>
+              <PixelBloom size={24} animate={false} species={flower.species} />
+            </span>
+          ))}
+        </div>
+      )}
+
       <span className="rae-room__figure">
-        <RaeFigure view="front" height={250} />
+        <button type="button" className="rae-figure-btn" aria-label="Say hi to Rae" onClick={sayHi}>
+          <span key={hopId} className={hopId > 0 ? 'rae-hop' : ''}>
+            <RaeFigure view="front" height={250} />
+          </span>
+        </button>
+        {hopId > 0 && <PetalPuff key={hopId} />}
       </span>
 
-      {says && (
+      {line && (
         <span className="rae-says" aria-hidden data-testid="rae-says">
-          <style>{SAYS_STYLE}</style>
-          {says}
+          {line}
           <span className="rae-says__tail" />
         </span>
       )}
-    </Link>
-    {says && <p className="sr-only">Rae says: {says}</p>}
+
+      <Link to="/rae" aria-label="Meet Rae" className="rae-meet-btn stepper-btn">
+        ›
+      </Link>
+    </div>
+    {line && (
+      <p className="sr-only" aria-live="polite">
+        Rae says: {line}
+      </p>
+    )}
     </>
   )
 }
