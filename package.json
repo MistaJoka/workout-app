@@ -17,6 +17,7 @@
     "import:free-exercise-db": "tsx scripts/content/run-import-free-exercise-db.ts",
     "library:review": "tsx scripts/content/list-library-candidates.ts",
     "generate:library": "tsx scripts/content/generate-library.ts",
+    "generate:licenses": "node scripts/generate-licenses.mjs",
     "assets:generate": "python3 scripts/assets/generate-pixel-bloom-system.py",
     "assets:index": "node scripts/assets/build-asset-index.mjs",
     "assets:validate": "node scripts/assets/validate-assets.mjs",

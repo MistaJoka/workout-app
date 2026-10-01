@@ -16,6 +16,9 @@ import { ExerciseHistoryScreen } from './presentation/screens/ExerciseHistoryScr
 import { SessionDetailScreen } from './presentation/screens/SessionDetailScreen'
 import { SettingsScreen } from './presentation/screens/SettingsScreen'
 import { AboutScreen } from './presentation/screens/AboutScreen'
+import { PrivacyScreen } from './presentation/screens/PrivacyScreen'
+import { TermsScreen } from './presentation/screens/TermsScreen'
+import { LicensesScreen } from './presentation/screens/LicensesScreen'
 import { MeetRaeScreen } from './presentation/screens/MeetRaeScreen'
 import { GardenScreen } from './presentation/screens/GardenScreen'
 import { AchievementsScreen } from './presentation/screens/AchievementsScreen'
@@ -41,6 +44,9 @@ export default function App() {
             <Route path="/history/:sessionId" element={<SessionDetailScreen />} />
             <Route path="/settings" element={<SettingsScreen />} />
             <Route path="/about" element={<AboutScreen />} />
+            <Route path="/privacy" element={<PrivacyScreen />} />
+            <Route path="/terms" element={<TermsScreen />} />
+            <Route path="/licenses" element={<LicensesScreen />} />
             <Route path="/rae" element={<MeetRaeScreen />} />
             <Route path="/garden" element={<GardenScreen />} />
             <Route path="/achievements" element={<AchievementsScreen />} />

@@ -269,6 +269,24 @@ export function SettingsScreen() {
               ›
             </span>
           </Link>
+          <Link to="/privacy" className="flex min-h-14 w-full items-center gap-3 px-3 py-2">
+            <span className="flex-1 font-semibold">Privacy</span>
+            <span className="text-xl text-ink-muted" aria-hidden>
+              ›
+            </span>
+          </Link>
+          <Link to="/terms" className="flex min-h-14 w-full items-center gap-3 px-3 py-2">
+            <span className="flex-1 font-semibold">Terms</span>
+            <span className="text-xl text-ink-muted" aria-hidden>
+              ›
+            </span>
+          </Link>
+          <Link to="/licenses" className="flex min-h-14 w-full items-center gap-3 px-3 py-2">
+            <span className="flex-1 font-semibold">Open-source licenses</span>
+            <span className="text-xl text-ink-muted" aria-hidden>
+              ›
+            </span>
+          </Link>
         </div>
       </SettingsGroup>
 

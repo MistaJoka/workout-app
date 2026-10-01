@@ -1,4 +1,5 @@
 import { useEffect, useState } from 'react'
+import { Link } from 'react-router-dom'
 import { BackButton } from '../components/BackButton'
 import { useTheme } from '../theme/ThemeContext'
 import {
@@ -85,6 +86,27 @@ export function AboutScreen() {
       <p className="text-xs text-ink-muted">
         Not a substitute for guidance from a qualified professional. Stop any movement that causes pain.
       </p>
+
+      <section className="card divide-y-2 divide-[var(--color-border)]">
+        <Link to="/privacy" className="flex min-h-14 w-full items-center gap-3 px-3 py-2">
+          <span className="flex-1 font-semibold">Privacy policy</span>
+          <span className="text-xl text-ink-muted" aria-hidden>
+            ›
+          </span>
+        </Link>
+        <Link to="/terms" className="flex min-h-14 w-full items-center gap-3 px-3 py-2">
+          <span className="flex-1 font-semibold">Terms of use</span>
+          <span className="text-xl text-ink-muted" aria-hidden>
+            ›
+          </span>
+        </Link>
+        <Link to="/licenses" className="flex min-h-14 w-full items-center gap-3 px-3 py-2">
+          <span className="flex-1 font-semibold">Open-source licenses</span>
+          <span className="text-xl text-ink-muted" aria-hidden>
+            ›
+          </span>
+        </Link>
+      </section>
     </div>
   )
 }
