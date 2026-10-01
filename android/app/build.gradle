@@ -1,5 +1,57 @@
 apply plugin: 'com.android.application'
 
+// --- Versioning: derived from package.json, not hand-maintained here. ---
+// versionName is package.json's "version" verbatim (e.g. "0.7.0").
+// versionCode is deterministic: (major*10000 + minor*100 + patch) * 100 + BUILD_NUMBER,
+// where BUILD_NUMBER is an optional env var in 0..99 (default 0) letting the same
+// app version be rebuilt/resubmitted without bumping the semver. This keeps
+// versionCode strictly increasing across releases as long as semver increases,
+// while leaving two digits of headroom per version for re-uploads.
+def packageJson = new groovy.json.JsonSlurper().parseText(rootProject.file('../package.json').text)
+def appVersionName = packageJson.version
+def versionTokens = appVersionName.tokenize('.')
+def verMajor = versionTokens.size() > 0 ? versionTokens[0].toInteger() : 0
+def verMinor = versionTokens.size() > 1 ? versionTokens[1].toInteger() : 0
+def verPatch = versionTokens.size() > 2 ? versionTokens[2].toInteger() : 0
+def buildNumber = (System.getenv('BUILD_NUMBER') ?: '0').toInteger()
+if (buildNumber < 0 || buildNumber > 99) {
+    throw new GradleException("BUILD_NUMBER must be between 0 and 99, got: ${buildNumber}")
+}
+def appVersionCode = (verMajor * 10000 + verMinor * 100 + verPatch) * 100 + buildNumber
+
+// --- Release signing: android/keystore.properties (git-ignored) or env vars. ---
+// keystore.properties (see scripts/make-keystore.sh) holds: storeFile, storePassword,
+// keyAlias, keyPassword. Env var fallback (e.g. CI): FS_KEYSTORE, FS_KEYSTORE_PASSWORD,
+// FS_KEY_ALIAS, FS_KEY_PASSWORD. Neither present -> debug builds are unaffected, but any
+// release-signing build (assembleRelease/bundleRelease) fails fast with a clear message.
+def keystorePropertiesFile = rootProject.file('keystore.properties')
+def keystoreProperties = new Properties()
+if (keystorePropertiesFile.exists()) {
+    keystorePropertiesFile.withInputStream { keystoreProperties.load(it) }
+}
+
+def releaseStoreFilePath = keystoreProperties.getProperty('storeFile') ?: System.getenv('FS_KEYSTORE')
+def releaseStorePassword = keystoreProperties.getProperty('storePassword') ?: System.getenv('FS_KEYSTORE_PASSWORD')
+def releaseKeyAlias = keystoreProperties.getProperty('keyAlias') ?: System.getenv('FS_KEY_ALIAS')
+def releaseKeyPassword = keystoreProperties.getProperty('keyPassword') ?: System.getenv('FS_KEY_PASSWORD')
+def hasReleaseSigning = releaseStoreFilePath && releaseStorePassword && releaseKeyAlias && releaseKeyPassword
+
+// Fail fast (with a clear message) only when a release-signing task is actually
+// requested, so plain debug builds and unrelated tasks (e.g. `gradlew tasks`) never fail.
+gradle.taskGraph.whenReady { taskGraph ->
+    def buildingSignedRelease = taskGraph.allTasks.any { task ->
+        (task.name == 'assembleRelease' || task.name == 'bundleRelease')
+    }
+    if (buildingSignedRelease && !hasReleaseSigning) {
+        throw new GradleException(
+            "Release signing is not configured. Create android/keystore.properties " +
+            "(storeFile, storePassword, keyAlias, keyPassword — see scripts/make-keystore.sh), " +
+            "or set the FS_KEYSTORE, FS_KEYSTORE_PASSWORD, FS_KEY_ALIAS, FS_KEY_PASSWORD env vars. " +
+            "Debug builds (npm run apk) do not need this."
+        )
+    }
+}
+
 android {
     namespace = "app.foundationstrength.workout"
     compileSdk = rootProject.ext.compileSdkVersion
@@ -7,8 +59,8 @@ android {
         applicationId "app.foundationstrength.workout"
         minSdkVersion rootProject.ext.minSdkVersion
         targetSdkVersion rootProject.ext.targetSdkVersion
-        versionCode 1
-        versionName "0.7.0"
+        versionCode appVersionCode
+        versionName appVersionName
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
         aaptOptions {
              // Files and dirs to omit from the packaged assets dir, modified to accommodate modern web apps.
@@ -16,10 +68,25 @@ android {
             ignoreAssetsPattern = '!.svn:!.git:!.ds_store:!*.scc:.*:!CVS:!thumbs.db:!picasa.ini:!*~'
         }
     }
+    signingConfigs {
+        if (hasReleaseSigning) {
+            release {
+                storeFile rootProject.file(releaseStoreFilePath)
+                storePassword releaseStorePassword
+                keyAlias releaseKeyAlias
+                keyPassword releaseKeyPassword
+            }
+        }
+    }
     buildTypes {
         release {
+            // Minify/shrink (R8) is left off for now; revisit once release builds are
+            // routine and there's a plan to verify the shrunk APK still works end to end.
             minifyEnabled false
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
+            if (hasReleaseSigning) {
+                signingConfig signingConfigs.release
+            }
         }
     }
 }

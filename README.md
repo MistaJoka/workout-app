@@ -1,4 +1,4 @@
-# Bespoke Fitness PWA
+# Foundation Strength
 
 A private, local-first, iPhone-first fitness PWA for guided workouts, exercise discovery, custom routines, durable history and deterministic progression.
 
@@ -73,6 +73,28 @@ Install Playwright browsers when needed:
 ```bash
 npm run e2e:install
 ```
+
+## Build & release
+
+**Dev:** `npm run dev` (Vite dev server, hot reload).
+
+**PWA deploy:** `npm run build && systemctl --user restart workout-app.service` — serves the built PWA over the tailnet (`https://nomad.tailed9e33.ts.net:8443`) and LAN (`http://<this machine's DHCP IP>:4173`).
+
+**Android APK (debug, sideload):** `npm run apk` — builds the web app, syncs Capacitor, and runs a Gradle debug build. Needs JDK 21 and the Android SDK locally (`~/Android/jdk21`, `~/Android/Sdk`). Output: `release/foundation-strength-<version>.apk`, unsigned, install directly on a device with "unknown sources" allowed.
+
+**Release signing (one-time, owner only):** Play Store releases must be signed with a stable upload key the owner holds — never commit it.
+
+1. `scripts/make-keystore.sh` generates the key with `keytool` into `~/Android/keys/` (outside the repo) and writes `android/keystore.properties` (git-ignored) with `storeFile`/`storePassword`/`keyAlias`/`keyPassword`.
+2. Back up the generated `.jks` file and its passwords immediately (password manager + an offline copy) — losing them means you can't publish updates to the same Play Store listing again.
+3. Alternatively (e.g. CI), set `FS_KEYSTORE`, `FS_KEYSTORE_PASSWORD`, `FS_KEY_ALIAS`, `FS_KEY_PASSWORD` env vars instead of `keystore.properties`.
+
+Without either, `npm run apk:release` / `npm run aab` fail fast with a clear error; `npm run apk` (debug) is unaffected.
+
+**Android APK (signed release):** `npm run apk:release` -> `release/foundation-strength-<version>-release.apk`.
+
+**Android App Bundle (what Play Store requires):** `npm run aab` -> `release/foundation-strength-<version>.aab`.
+
+versionName comes from `package.json`'s `version`; versionCode is derived deterministically from it (see the comment in `android/app/build.gradle`).
 
 ## Architecture
 
