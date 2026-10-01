@@ -18,6 +18,8 @@ import { WelcomeCard } from '../components/WelcomeCard'
 import { RaeHero } from '../components/RaeHero'
 import { TodayMission, type Mission } from '../components/TodayMission'
 import { WeekBlooms } from '../components/WeekBlooms'
+import { PlanWeekCard } from '../components/PlanWeekCard'
+import { shouldOfferPlanWeek } from '../../domain/schedule/planWeek'
 import { weeklyGoal } from '../../domain/progress/stats'
 import { dayPart, greeting, longDate } from '../greeting'
 import { activeProfile } from '../../infrastructure/profiles'
@@ -50,6 +52,8 @@ type TodayData = {
   hasFinished: boolean
   // The open workout offered for resume, if any.
   resumeId: string | null
+  // No day planned yet, after the first workout (shouldOfferPlanWeek).
+  offerPlanWeek: boolean
 }
 
 async function loadToday(now: Date): Promise<TodayData> {
@@ -152,6 +156,7 @@ async function loadToday(now: Date): Promise<TodayData> {
     others,
     hasFinished: results.length > 0,
     resumeId: mode === 'resume' ? (resumable?.id ?? null) : null,
+    offerPlanWeek: shouldOfferPlanWeek(results.length > 0, schedule),
   }
 }
 
@@ -229,6 +234,8 @@ export function TodayScreen() {
       <WelcomeCard finished={data ? data.hasFinished : null} />
 
       {data && <WeekBlooms week={data.week} goal={data.weekGoal} />}
+
+      {data?.offerPlanWeek && <PlanWeekCard />}
 
       {data && data.others.length > 0 && (
         <section className="space-y-2">
