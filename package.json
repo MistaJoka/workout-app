@@ -30,7 +30,9 @@
     "rae:dump": "tsx scripts/assets/dump-exercises.ts",
     "routine:generate": "node scripts/content/generate-routine-intelligence.mjs",
     "routine:validate": "node scripts/content/validate-routine-intelligence.mjs",
-    "apk": "bash scripts/build-apk.sh",
+    "apk": "bash scripts/build-apk.sh debug",
+    "apk:release": "bash scripts/build-apk.sh release",
+    "aab": "bash scripts/build-apk.sh aab",
     "generate:android-assets": "python3 scripts/generate-android-assets.py"
   },
   "dependencies": {

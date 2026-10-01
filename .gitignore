@@ -12,3 +12,8 @@ assets/pixel-bloom/character/rae/source/exercise/library/
 content/rae-prompts/qa/
 scripts/assets/__pycache__/
 release/
+
+# Android release signing secrets — never commit (see scripts/make-keystore.sh)
+android/keystore.properties
+*.jks
+*.keystore
