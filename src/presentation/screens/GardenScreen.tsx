@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react'
 import { BackButton } from '../components/BackButton'
+import { LoreSheet, type LoreSheetTarget } from '../components/LoreSheet'
 import { Meadow } from '../components/Meadow'
 import { PixelBloom } from '../components/PixelBloom'
 import { RaeNote } from '../components/RaeNote'
@@ -11,6 +12,7 @@ import {
   buildGarden,
   buildGardenSets,
   type Garden,
+  type GardenFlower,
   type Rarity,
   type TierProgress,
 } from '../../domain/progress/garden'
@@ -46,6 +48,16 @@ function saveSeenSets(seen: ReadonlySet<Rarity>): void {
 
 function formatCompletedAt(iso: string): string {
   return new Date(iso).toLocaleDateString(undefined, { month: 'short', day: 'numeric', year: 'numeric' })
+}
+
+// Earliest endedAt each species was grown, for the lore card's "First
+// grown" line. flowers are oldest-first, so the first match per id wins.
+function firstGrownMap(flowers: readonly GardenFlower[]): Map<string, string> {
+  const map = new Map<string, string>()
+  for (const flower of flowers) {
+    if (!map.has(flower.species.id)) map.set(flower.species.id, flower.endedAt)
+  }
+  return map
 }
 
 const CELEBRATE_STYLE = `
@@ -135,6 +147,7 @@ export function GardenScreen() {
   const [garden, setGarden] = useState<Garden | null>(null)
   const [failed, setFailed] = useState(false)
   const [celebrating, setCelebrating] = useState<TierProgress[]>([])
+  const [loreTarget, setLoreTarget] = useState<LoreSheetTarget | null>(null)
 
   useEffect(() => {
     db.sessionResults
@@ -157,6 +170,7 @@ export function GardenScreen() {
 
   const sets = garden ? buildGardenSets(garden) : null
   const completeRarities = new Set<Rarity>(sets ? sets.tiers.filter((t) => t.complete).map((t) => t.rarity) : [])
+  const firstGrownAt = garden ? firstGrownMap(garden.flowers) : new Map<string, string>()
 
   return (
     <div className="p-4 pb-24 space-y-4">
@@ -206,29 +220,46 @@ export function GardenScreen() {
                     return (
                       <li
                         key={sp.id}
-                        className="card flex flex-col items-center p-2 text-center"
                         aria-label={
                           found
                             ? `${sp.name}, ${rarityLabel}, grown ${count} ${count === 1 ? 'time' : 'times'}${golden ? ', set complete' : ''}`
                             : `Not found yet, ${rarityLabel}`
                         }
                       >
-                        {found ? (
-                          <PixelBloom size={52} animate={false} species={sp} golden={golden} />
-                        ) : (
-                          <div
-                            aria-hidden="true"
-                            className="flex h-[71px] w-[52px] items-center justify-center rounded-control bg-field-info text-2xl font-bold text-ink-muted"
-                          >
-                            ?
-                          </div>
-                        )}
-                        <p aria-hidden="true" className="mt-1 text-xs font-bold leading-tight">
-                          {found ? sp.name : '???'}
-                        </p>
-                        <p aria-hidden="true" className="text-[11px] text-ink-muted">
-                          {found ? `x${count}` : rarityLabel}
-                        </p>
+                        <button
+                          type="button"
+                          className="card flex min-h-11 w-full flex-col items-center p-2 text-center"
+                          onClick={() =>
+                            setLoreTarget(
+                              found
+                                ? {
+                                    kind: 'discovered',
+                                    species: sp,
+                                    count,
+                                    firstGrownAt: firstGrownAt.get(sp.id)!,
+                                    golden,
+                                  }
+                                : { kind: 'undiscovered', rarity: sp.rarity }
+                            )
+                          }
+                        >
+                          {found ? (
+                            <PixelBloom size={52} animate={false} species={sp} golden={golden} />
+                          ) : (
+                            <div
+                              aria-hidden="true"
+                              className="flex h-[71px] w-[52px] items-center justify-center rounded-control bg-field-info text-2xl font-bold text-ink-muted"
+                            >
+                              ?
+                            </div>
+                          )}
+                          <p aria-hidden="true" className="mt-1 text-xs font-bold leading-tight">
+                            {found ? sp.name : '???'}
+                          </p>
+                          <p aria-hidden="true" className="text-[11px] text-ink-muted">
+                            {found ? `x${count}` : rarityLabel}
+                          </p>
+                        </button>
                       </li>
                     )
                   })}
@@ -238,6 +269,8 @@ export function GardenScreen() {
           })}
         </>
       )}
+
+      {loreTarget && <LoreSheet target={loreTarget} onClose={() => setLoreTarget(null)} />}
     </div>
   )
 }
