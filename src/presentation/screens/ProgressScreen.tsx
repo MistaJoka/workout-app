@@ -20,6 +20,8 @@ import { buildGarden, type Garden } from '../../domain/progress/garden'
 import { Skeleton, SkeletonBlock, SkeletonList, SkeletonTiles } from '../components/Skeleton'
 import { computeXp, levelFor, type LevelInfo } from '../../domain/progress/xp'
 import { LevelBar } from '../components/XpCelebration'
+import { compareWeeks, type WeekCompare } from '../../domain/progress/weekCompare'
+import { WeekCompareCard } from '../components/WeekCompareCard'
 
 type Snapshot = {
   rows: HistoryRow[]
@@ -33,6 +35,8 @@ type Snapshot = {
   garden: Garden
   // Bloom XP level (only ever goes up).
   level: LevelInfo
+  // "This week vs last": positive-only highlights, never a decline.
+  compare: WeekCompare
   // Where "Start a workout" goes before there's any history: today's
   // planned workout, else the first of the A/B rotation (as Today suggests
   // with no history), or Today itself on a planned rest day.
@@ -81,6 +85,7 @@ export function ProgressScreen() {
       records: [...detectPersonalRecords(setRecords).values()].sort((a, b) => a.exerciseName.localeCompare(b.exerciseName)),
       garden: buildGarden(results),
       level: levelFor(computeXp({ plans, results, events }, weeklyGoal(schedule)).total),
+      compare: compareWeeks({ plans, results, events }, weeklyGoal(schedule), now),
     }
   }
 
@@ -147,6 +152,8 @@ export function ProgressScreen() {
             <Stat value={totalSets} label="sets done" />
             <WeekGoalStat {...snapshot.week} />
           </div>
+
+          <WeekCompareCard compare={snapshot.compare} />
 
           <GardenCard garden={snapshot.garden} />
           <Link to="/achievements" className="card flex min-h-11 items-center justify-between px-4 py-3">
