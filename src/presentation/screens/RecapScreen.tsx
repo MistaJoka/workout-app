@@ -1,6 +1,17 @@
 import { useCallback, useEffect, useMemo, useRef, useState, type ReactNode } from 'react'
 import { Link, useNavigate, useSearchParams } from 'react-router-dom'
-import { buildWeekRecap, defaultRecapWeek, parseWeekParam, type WeekRecap } from '../../domain/progress/recap'
+import {
+  buildMonthRecap,
+  buildWeekRecap,
+  defaultRecapWeek,
+  parseMonthParam,
+  parseWeekParam,
+  type MonthRecap,
+  type RecapBadge,
+  type WeekRecap,
+} from '../../domain/progress/recap'
+import { RARITY_LABEL, speciesFor } from '../../domain/progress/garden'
+import { monthGrid } from '../../domain/progress/monthGrid'
 import { weeklyGoal } from '../../domain/progress/stats'
 import type { PersonalRecord } from '../../domain/progress/types'
 import { getAllSessionHistory } from '../../infrastructure/db/repositories/sessionRepository'
@@ -14,9 +25,10 @@ import { Skeleton, SkeletonBlock, SkeletonHeading } from '../components/Skeleton
 import { useWeightUnit } from '../components/useWeightUnit'
 import { useTheme } from '../theme/ThemeContext'
 import { formatWeight, type WeightUnit } from '../units'
-import { markRecapSeen } from '../recapSeen'
+import { markRecapSeen, markRecapSeenMonth } from '../recapSeen'
 
-// "Your week in bloom": the week told back as a few full-screen story
+// "Your week in bloom" (and its month-flavored sibling, "Your month in
+// bloom"): a week or calendar month told back as a few full-screen story
 // slides. Tap the right side for next, the left for back; press and hold to
 // pause. Under full motion each slide advances on its own (~4s); reduced or
 // off motion never auto-advances, so it is always the reader's pace.
@@ -35,12 +47,21 @@ async function loadRecap(week: Date): Promise<WeekRecap> {
   return buildWeekRecap(history, achievements, weeklyGoal(schedule), week)
 }
 
+async function loadMonthRecap(month: Date): Promise<MonthRecap> {
+  const [history, achievements] = await Promise.all([getAllSessionHistory(), loadAchievements().catch(() => [])])
+  return buildMonthRecap(history, achievements, month)
+}
+
 function rangeLabel(recap: WeekRecap): string {
   const fmt = (key: string) => {
     const [y, m, d] = key.split('-').map(Number)
     return new Date(y, m - 1, d).toLocaleDateString(undefined, { month: 'short', day: 'numeric' })
   }
   return `${fmt(recap.weekStart)} – ${fmt(recap.weekEnd)}`
+}
+
+function monthLabel(recap: MonthRecap): string {
+  return new Date(recap.year, recap.month, 1).toLocaleDateString(undefined, { month: 'long' })
 }
 
 function bestLabel(best: PersonalRecord, unit: WeightUnit): string {
@@ -153,59 +174,203 @@ function buildSlides(recap: WeekRecap, unit: WeightUnit): Slide[] {
     })
   }
 
-  if (recap.badges.length > 0 || recap.bests.length > 0) {
-    slides.push({
-      id: 'wins',
-      label: [
-        recap.badges.length ? `Badges: ${recap.badges.map((b) => b.title).join(', ')}.` : '',
-        recap.bests.length ? `New bests: ${recap.bests.map((b) => b.exerciseName).join(', ')}.` : '',
-      ]
-        .filter(Boolean)
-        .join(' '),
-      body: (
-        <div className="space-y-6 text-center">
-          <h2 className="text-2xl font-extrabold">This week's wins</h2>
-          {recap.badges.length > 0 && (
-            <ul className="flex flex-wrap justify-center gap-4">
-              {recap.badges.map((b) => (
-                <li key={b.id} className="flex w-24 flex-col items-center gap-1">
-                  <AchievementBadge icon={b.icon} size={56} />
-                  <span className="text-sm font-bold leading-tight">{b.title}</span>
-                </li>
-              ))}
-            </ul>
-          )}
-          {recap.bests.length > 0 && (
-            <ul className="space-y-2">
-              {recap.bests.map((b) => (
-                <li key={b.exerciseId} className="rounded-panel bg-surface px-4 py-2 font-semibold">
-                  New best: {b.exerciseName}, {bestLabel(b, unit)}
-                </li>
-              ))}
-            </ul>
-          )}
-        </div>
-      ),
-    })
-  }
+  const wins = buildWinsSlide(recap.badges, recap.bests, unit, "This week's wins")
+  if (wins) slides.push(wins)
 
-  slides.push({
+  slides.push(signOffSlide(recap.signOff, recap.quiet, recap.flowers.length > 0))
+
+  return slides
+}
+
+// Shared by both the week and month stories: the badges unlocked and new
+// bests beaten, when there are any.
+function buildWinsSlide(badges: RecapBadge[], bests: PersonalRecord[], unit: WeightUnit, heading: string): Slide | null {
+  if (badges.length === 0 && bests.length === 0) return null
+  return {
+    id: 'wins',
+    label: [
+      badges.length ? `Badges: ${badges.map((b) => b.title).join(', ')}.` : '',
+      bests.length ? `New bests: ${bests.map((b) => b.exerciseName).join(', ')}.` : '',
+    ]
+      .filter(Boolean)
+      .join(' '),
+    body: (
+      <div className="space-y-6 text-center">
+        <h2 className="text-2xl font-extrabold">{heading}</h2>
+        {badges.length > 0 && (
+          <ul className="flex flex-wrap justify-center gap-4">
+            {badges.map((b) => (
+              <li key={b.id} className="flex w-24 flex-col items-center gap-1">
+                <AchievementBadge icon={b.icon} size={56} />
+                <span className="text-sm font-bold leading-tight">{b.title}</span>
+              </li>
+            ))}
+          </ul>
+        )}
+        {bests.length > 0 && (
+          <ul className="space-y-2">
+            {bests.map((b) => (
+              <li key={b.exerciseId} className="rounded-panel bg-surface px-4 py-2 font-semibold">
+                New best: {b.exerciseName}, {bestLabel(b, unit)}
+              </li>
+            ))}
+          </ul>
+        )}
+      </div>
+    ),
+  }
+}
+
+// Shared by both the week and month stories: Rae's sign-off.
+function signOffSlide(signOff: string, quiet: boolean, hasGardenLink: boolean): Slide {
+  return {
     id: 'signoff',
-    label: recap.signOff,
+    label: signOff,
     body: (
       <div className="space-y-5 text-center">
         <div className="flex justify-center">
-          <RaeFace expression={recap.quiet ? 'smile' : 'laugh'} size={120} />
+          <RaeFace expression={quiet ? 'smile' : 'laugh'} size={120} />
         </div>
-        <p className="text-2xl font-extrabold leading-snug">{recap.signOff}</p>
-        {recap.flowers.length > 0 && (
+        <p className="text-2xl font-extrabold leading-snug">{signOff}</p>
+        {hasGardenLink && (
           <Link to="/garden" className="pointer-events-auto btn-secondary inline-flex min-h-11 items-center">
             See your garden
           </Link>
         )}
       </div>
     ),
+  }
+}
+
+// A small, non-interactive calendar of this month's flowers: one coloured
+// dot per day with a finished workout, reusing the same monthGrid domain
+// helper Progress's MonthBlooms is built on.
+function MonthCalendar({ recap }: { recap: MonthRecap }) {
+  const grid = useMemo(() => monthGrid({ year: recap.year, month: recap.month }, recap.flowers, new Date()), [recap])
+  return (
+    <div aria-hidden="true" className="mx-auto max-w-[240px]">
+      <div className="grid grid-cols-7 gap-1.5">
+        {grid.weeks.flat().map((cell) => {
+          if (!cell.inMonth) return <span key={cell.key} />
+          const done = cell.sessions.length > 0
+          const species = done ? speciesFor(cell.sessions[0].sessionId) : null
+          return (
+            <span
+              key={cell.key}
+              className="flex h-7 w-7 items-center justify-center rounded-full text-[10px] font-bold"
+              style={species ? { backgroundColor: species.petal, color: species.centerDark } : undefined}
+            >
+              {species ? '' : cell.day}
+            </span>
+          )
+        })}
+      </div>
+    </div>
+  )
+}
+
+function buildMonthSlides(recap: MonthRecap, unit: WeightUnit): Slide[] {
+  const slides: Slide[] = []
+  const workoutWord = recap.workouts === 1 ? 'workout' : 'workouts'
+  const title = monthLabel(recap)
+
+  slides.push({
+    id: 'month',
+    label: recap.quiet ? `A quiet ${title}. Rest months count too.` : `${recap.workouts} ${workoutWord} in ${title}.`,
+    body: (
+      <div className="space-y-6 text-center">
+        <p className="text-sm font-semibold text-ink-muted">{recap.year}</p>
+        <h1 className="text-3xl font-extrabold">{title} in bloom</h1>
+        {recap.quiet ? (
+          <div className="space-y-3">
+            <PixelBloom bloomed={false} size={96} animate={false} label="A sprout, resting" />
+            <p className="text-xl font-bold">A quiet month</p>
+            <p className="text-ink-muted">Rest months count too.</p>
+          </div>
+        ) : (
+          <div className="space-y-4">
+            <BigNumber value={recap.workouts} label={workoutWord} />
+            {recap.longestWeekStreak > 1 && <p className="text-lg font-bold">{recap.longestWeekStreak}-week streak</p>}
+          </div>
+        )}
+      </div>
+    ),
   })
+
+  if (!recap.quiet) {
+    slides.push({
+      id: 'numbers',
+      label: `${recap.sets} sets and ${recap.minutes} minutes of movement.`,
+      body: (
+        <div className="space-y-10">
+          <BigNumber value={recap.sets} label={recap.sets === 1 ? 'set done' : 'sets done'} />
+          <BigNumber value={recap.minutes} label={recap.minutes === 1 ? 'minute moving' : 'minutes moving'} />
+        </div>
+      ),
+    })
+  }
+
+  if (recap.flowers.length > 0) {
+    slides.push({
+      id: 'calendar',
+      label: `${recap.flowers.length} days in bloom this month${
+        recap.newSpecies.length ? `, new: ${recap.newSpecies.map((s) => s.name).join(', ')}` : ''
+      }.`,
+      body: (
+        <div className="space-y-5 text-center">
+          <h2 className="text-2xl font-extrabold">{title} at a glance</h2>
+          <MonthCalendar recap={recap} />
+          <p className="font-semibold">
+            {recap.flowers.length} {recap.flowers.length === 1 ? 'flower' : 'flowers'} grew
+          </p>
+          {recap.newSpecies.length > 0 && (
+            <p className="font-semibold">New to your garden: {recap.newSpecies.map((s) => s.name).join(', ')}</p>
+          )}
+        </div>
+      ),
+    })
+  }
+
+  if (recap.topWeekday) {
+    slides.push({
+      id: 'topday',
+      label: `Your top day: ${recap.topWeekday.label}.`,
+      body: (
+        <div className="space-y-4 text-center">
+          <h2 className="text-2xl font-extrabold">Your top day</h2>
+          <p className="text-4xl font-extrabold text-primary">{recap.topWeekday.label}</p>
+          <p className="text-ink-muted">
+            {recap.topWeekday.count} {recap.topWeekday.count === 1 ? 'workout' : 'workouts'}
+          </p>
+        </div>
+      ),
+    })
+  }
+
+  if (recap.rarestFlower) {
+    const rarest = recap.rarestFlower
+    slides.push({
+      id: 'rarest',
+      label: `Your rarest flower: ${rarest.species.name}.`,
+      body: (
+        <div className="space-y-4 text-center">
+          <h2 className="text-2xl font-extrabold">Rarest bloom</h2>
+          <div className="flex justify-center">
+            <PixelBloom species={rarest.species} size={96} animate={false} label={rarest.species.name} />
+          </div>
+          <p className="text-xl font-bold">{rarest.species.name}</p>
+          {rarest.species.rarity !== 'common' && (
+            <p className="inline-block rounded-full bg-field-notice px-3 py-1 text-sm font-bold">{RARITY_LABEL[rarest.species.rarity]}</p>
+          )}
+        </div>
+      ),
+    })
+  }
+
+  const wins = buildWinsSlide(recap.badges, recap.bests, unit, "This month's wins")
+  if (wins) slides.push(wins)
+
+  slides.push(signOffSlide(recap.signOff, recap.quiet, recap.flowers.length > 0))
 
   return slides
 }
@@ -213,8 +378,10 @@ function buildSlides(recap: WeekRecap, unit: WeightUnit): Slide[] {
 export function RecapScreen() {
   const navigate = useNavigate()
   const [params] = useSearchParams()
-  const week = useMemo(() => parseWeekParam(params.get('week')) ?? defaultRecapWeek(new Date()), [params])
+  const month = useMemo(() => parseMonthParam(params.get('month')), [params])
+  const week = useMemo(() => (month ? null : parseWeekParam(params.get('week')) ?? defaultRecapWeek(new Date())), [params, month])
   const [recap, setRecap] = useState<WeekRecap | null>(null)
+  const [monthRecap, setMonthRecap] = useState<MonthRecap | null>(null)
   const [failed, setFailed] = useState(false)
   const [unit] = useWeightUnit()
   const { motion } = useTheme()
@@ -223,17 +390,27 @@ export function RecapScreen() {
 
   useEffect(() => {
     let cancelled = false
-    loadRecap(week)
-      .then((r) => {
-        if (cancelled) return
-        setRecap(r)
-        markRecapSeen(r.weekStart)
-      })
-      .catch(() => !cancelled && setFailed(true))
+    if (month) {
+      loadMonthRecap(month)
+        .then((r) => {
+          if (cancelled) return
+          setMonthRecap(r)
+          markRecapSeenMonth(r.monthKey)
+        })
+        .catch(() => !cancelled && setFailed(true))
+    } else if (week) {
+      loadRecap(week)
+        .then((r) => {
+          if (cancelled) return
+          setRecap(r)
+          markRecapSeen(r.weekStart)
+        })
+        .catch(() => !cancelled && setFailed(true))
+    }
     return () => {
       cancelled = true
     }
-  }, [week])
+  }, [month, week])
 
   const close = useCallback(() => {
     const idx = (window.history.state as { idx?: number } | null)?.idx ?? 0
@@ -244,14 +421,15 @@ export function RecapScreen() {
   if (failed) {
     return (
       <div className="flex min-h-[100dvh] flex-col items-center justify-center gap-4 p-6 text-center">
-        <p className="font-bold">Couldn't load your week.</p>
+        <p className="font-bold">Couldn't load your {month ? 'month' : 'week'}.</p>
         <button type="button" className="btn-primary min-h-11" onClick={close}>
           Close
         </button>
       </div>
     )
   }
-  if (!recap) {
+  const data = month ? monthRecap : recap
+  if (!data) {
     return (
       <Skeleton className="space-y-6 p-6 pt-16">
         <SkeletonHeading />
@@ -260,10 +438,21 @@ export function RecapScreen() {
       </Skeleton>
     )
   }
-  return <Story slides={buildSlides(recap, unit)} autoAdvance={autoAdvance} onClose={close} />
+  const slides = month ? buildMonthSlides(monthRecap!, unit) : buildSlides(recap!, unit)
+  return <Story slides={slides} autoAdvance={autoAdvance} onClose={close} closeLabel={month ? 'Close your month' : 'Close your week'} />
 }
 
-function Story({ slides, autoAdvance, onClose }: { slides: Slide[]; autoAdvance: boolean; onClose: () => void }) {
+function Story({
+  slides,
+  autoAdvance,
+  onClose,
+  closeLabel,
+}: {
+  slides: Slide[]
+  autoAdvance: boolean
+  onClose: () => void
+  closeLabel: string
+}) {
   const [index, setIndex] = useState(0)
   const [progress, setProgress] = useState(0) // 0..1 of the current slide
   const [paused, setPaused] = useState(false)
@@ -351,7 +540,7 @@ function Story({ slides, autoAdvance, onClose }: { slides: Slide[]; autoAdvance:
         <button
           type="button"
           onClick={onClose}
-          aria-label="Close your week"
+          aria-label={closeLabel}
           className="flex h-11 w-11 items-center justify-center rounded-full text-2xl font-bold"
         >
           ×
