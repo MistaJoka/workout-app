@@ -8,8 +8,13 @@ const WEEKDAYS = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Frida
 // several), and an empty day opens the planner.
 test('week flowers open the day: start what is planned, then read back what was done', async ({ page }) => {
   test.setTimeout(150_000)
-  const today = WEEKDAYS[new Date().getDay()]
-  const other = WEEKDAYS[(new Date().getDay() + 1) % 7]
+  // Pin the page's clock to midday so a run that crosses midnight can't
+  // change "today" between planning and checking (time still flows).
+  const noon = new Date()
+  noon.setHours(12, 0, 0, 0)
+  await page.clock.install({ time: noon })
+  const today = WEEKDAYS[noon.getDay()]
+  const other = WEEKDAYS[(noon.getDay() + 1) % 7]
 
   await page.goto('/#/schedule')
   await page.getByRole('button', { name: new RegExp(`^${today}`) }).click()
