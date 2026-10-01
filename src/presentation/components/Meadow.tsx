@@ -3,6 +3,7 @@ import { Link } from 'react-router-dom'
 import { dayPart, type DayPart } from '../greeting'
 import { layoutMeadow } from '../../domain/progress/meadowLayout'
 import { PixelBloom } from './PixelBloom'
+import { MeadowCritters } from './MeadowCritters'
 import type { GardenFlower, Rarity } from '../../domain/progress/garden'
 
 // The garden's meadow: every flower a finished workout has ever grown,
@@ -122,6 +123,7 @@ export function Meadow({
   return (
     <div className="meadow card relative overflow-hidden" data-testid="meadow">
       <style>{STYLE}</style>
+      <MeadowCritters flowerCount={flowers.length} />
       <div
         className="meadow__sky relative h-24"
         style={{ backgroundImage: `linear-gradient(to bottom, ${skyTop}, ${skyBottom})` }}
