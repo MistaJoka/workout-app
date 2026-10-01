@@ -17,6 +17,7 @@ import { ExerciseThumb } from '../components/ExerciseThumb'
 import { RestRing } from '../components/RestRing'
 import { SetDots } from '../components/SetDots'
 import { WorkoutProgressBar } from '../components/WorkoutProgressBar'
+import { WorkoutOverviewSheet } from '../components/WorkoutOverviewSheet'
 import { useCountdown } from '../components/useCountdown'
 import { getLastTimeSummary } from '../../application/lastTime'
 import { primeAudio, restEndFeedback } from '../../application/restFeedback'
@@ -68,6 +69,7 @@ export function WorkoutPlayerScreen() {
   const [confirmingEnd, setConfirmingEnd] = useState(false)
   const [endError, setEndError] = useState<string | null>(null)
   const [confirmingSkip, setConfirmingSkip] = useState(false)
+  const [showingOverview, setShowingOverview] = useState(false)
   const [loadFailed, setLoadFailed] = useState(false)
   // Familiar moves start with their steps folded away; opening one keeps it
   // open for the rest of this session (not persisted).
@@ -357,13 +359,24 @@ export function WorkoutPlayerScreen() {
           ended the session), and mid-set there's no timer to pause, so
           Pause only crowded Complete Set. */}
       <div className="space-y-2">
-        <div className="flex items-center justify-between">
-          <div className="flex items-center gap-2">
+        {/* Above the bar's overlay button, so Pause/End keep their full area. */}
+        <div className="relative z-10 flex items-center justify-between">
+          {/* "1 of 5" opens the whole workout (view-only overview sheet). */}
+          <button
+            type="button"
+            className="-ml-2 flex min-h-11 items-center gap-2 rounded-control px-2 active:bg-field-primary"
+            aria-haspopup="dialog"
+            aria-label={`${exerciseLabel}. See the whole workout`}
+            onClick={() => setShowingOverview(true)}
+          >
             <RaeFace expression="focused" size={36} motion="none" />
-            <p className="text-sm font-semibold text-ink-muted">
+            <span className="text-sm font-semibold text-ink-muted">
               {state.currentExerciseIndex + 1} of {plan.exercises.length}
-            </p>
-          </div>
+            </span>
+            <span aria-hidden="true" className="text-xs text-ink-muted">
+              ▾
+            </span>
+          </button>
           <div className="-mr-3 flex">
             <button className="btn-ghost min-h-11" disabled={busy} onClick={() => handleAction('PAUSED')}>
               Pause
@@ -373,7 +386,28 @@ export function WorkoutPlayerScreen() {
             </button>
           </div>
         </div>
-        <WorkoutProgressBar done={progress.done} total={progress.total} label={exerciseLabel} />
+        {/* The bar is a tap target too: an invisible 44px button laid over
+            it, so the layout doesn't grow and the progressbar keeps its own
+            reading for screen readers. */}
+        <div className="relative">
+          <WorkoutProgressBar done={progress.done} total={progress.total} label={exerciseLabel} />
+          <button
+            type="button"
+            className="absolute inset-x-0 top-1/2 h-11 -translate-y-1/2"
+            aria-haspopup="dialog"
+            aria-label="See the whole workout"
+            onClick={() => setShowingOverview(true)}
+          />
+        </div>
+        {showingOverview && sessionId && (
+          <WorkoutOverviewSheet
+            sessionId={sessionId}
+            plan={plan}
+            state={state}
+            exerciseById={exerciseById}
+            onClose={() => setShowingOverview(false)}
+          />
+        )}
       </div>
 
       {/* The target, readable from the floor: a big number, what it counts,
