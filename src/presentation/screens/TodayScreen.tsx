@@ -27,6 +27,7 @@ import { computeXp, levelFor } from '../../domain/progress/xp'
 import { MomentumStrip, useMomentumEntrance } from '../components/TodayMomentum'
 import { dayPart, greeting, hasRealName, longDate } from '../greeting'
 import { raeSays } from '../raeSays'
+import { buildRaeMemory } from '../raeMemory'
 import { activeProfile } from '../../infrastructure/profiles'
 import { raeStillFor } from '../components/raeLoops'
 import { estimateMinutes } from '../../domain/content/workoutEstimate'
@@ -170,6 +171,11 @@ async function loadToday(now: Date): Promise<TodayData> {
     if (plan) sessionNames[s.sessionId] = templateNames[plan.templateId] ?? (await getTemplate(plan.templateId))?.name ?? 'Workout'
   }
 
+  // What Rae might remember about recent history, for raeSays' memory
+  // lines; uses the same plans/results/events/templateNames Today already
+  // loaded above for everything else.
+  const memory = buildRaeMemory({ plans, results, events, templateNames, now })
+
   return {
     mission,
     week,
@@ -188,6 +194,7 @@ async function loadToday(now: Date): Promise<TodayData> {
       goalMet: weekProgress(results, schedule, now).met,
       part: dayPart(now),
       dateKey: localDateKey(now),
+      memory,
     }),
     gardenFlowers: buildGarden(results).flowers,
     level: levelFor(computeXp({ plans, results, events }, weeklyGoal(schedule)).total).level,
