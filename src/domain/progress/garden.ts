@@ -110,3 +110,58 @@ export const RARITY_LABEL: Record<Rarity, string> = {
   rare: 'Rare!',
   legendary: 'Legendary!',
 }
+
+// Sets: a full tier of species is its own small collection to complete,
+// separate from the overall garden. A tier is "complete" once every one of
+// its species has grown at least once; its completedAt is the endedAt of
+// the session that grew the last species the tier needed — whichever
+// session that turns out to be, found by looking at when each species in
+// the tier was first seen and taking the latest of those.
+
+export const TIER_ORDER: readonly Rarity[] = ['common', 'uncommon', 'rare', 'legendary']
+
+export const TIER_LABEL: Record<Rarity, string> = {
+  common: 'Commons',
+  uncommon: 'Uncommons',
+  rare: 'Rares',
+  legendary: 'Legendary',
+}
+
+export type TierProgress = {
+  rarity: Rarity
+  label: string
+  discovered: number
+  total: number
+  complete: boolean
+  // endedAt of the session that completed the tier, or null while incomplete.
+  completedAt: string | null
+}
+
+export type GardenSets = {
+  tiers: TierProgress[]
+  overallComplete: boolean
+}
+
+export function buildGardenSets(garden: Garden): GardenSets {
+  // Earliest endedAt each species was grown (flowers are oldest-first).
+  const firstSeenAt = new Map<string, string>()
+  for (const flower of garden.flowers) {
+    if (!firstSeenAt.has(flower.species.id)) firstSeenAt.set(flower.species.id, flower.endedAt)
+  }
+
+  const tiers = TIER_ORDER.map((rarity): TierProgress => {
+    const species = GARDEN_SPECIES.filter((s) => s.rarity === rarity)
+    const discovered = species.filter((s) => garden.counts.has(s.id)).length
+    const total = species.length
+    const complete = discovered === total
+    const completedAt = complete
+      ? species.reduce<string | null>((latest, s) => {
+          const seenAt = firstSeenAt.get(s.id)!
+          return latest === null || seenAt > latest ? seenAt : latest
+        }, null)
+      : null
+    return { rarity, label: TIER_LABEL[rarity], discovered, total, complete, completedAt }
+  })
+
+  return { tiers, overallComplete: tiers.every((t) => t.complete) }
+}

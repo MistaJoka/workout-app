@@ -3,7 +3,7 @@ import { Link } from 'react-router-dom'
 import { dayPart, type DayPart } from '../greeting'
 import { layoutMeadow } from '../../domain/progress/meadowLayout'
 import { PixelBloom } from './PixelBloom'
-import type { GardenFlower } from '../../domain/progress/garden'
+import type { GardenFlower, Rarity } from '../../domain/progress/garden'
 
 // The garden's meadow: every flower a finished workout has ever grown,
 // planted together, oldest at the back and newest at the front. Placement
@@ -66,9 +66,10 @@ function flowerLabel(flower: GardenFlower): string {
   return `${flower.species.name}${rare}, grown ${when}. Open this workout.`
 }
 
-function FlowerSpot({ flower, size, tiltDeg, liftPx, driftPx, swayDelaySec, swayDurationSec }: {
+function FlowerSpot({ flower, size, golden, tiltDeg, liftPx, driftPx, swayDelaySec, swayDurationSec }: {
   flower: GardenFlower
   size: number
+  golden: boolean
   tiltDeg: number
   liftPx: number
   driftPx: number
@@ -92,12 +93,19 @@ function FlowerSpot({ flower, size, tiltDeg, liftPx, driftPx, swayDelaySec, sway
         } as CSSProperties
       }
     >
-      <PixelBloom size={size} animate={false} species={flower.species} />
+      <PixelBloom size={size} animate={false} species={flower.species} golden={golden} />
     </Link>
   )
 }
 
-export function Meadow({ flowers }: { flowers: readonly GardenFlower[] }) {
+export function Meadow({
+  flowers,
+  completeRarities = new Set(),
+}: {
+  flowers: readonly GardenFlower[]
+  // Rarity tiers that are fully collected: their flowers grow in golden pots.
+  completeRarities?: ReadonlySet<Rarity>
+}) {
   const part = dayPart(new Date())
   const [skyTop, skyBottom] = SKY[part]
   const [grassBack, grassFront] = GRASS[part]
@@ -180,6 +188,7 @@ export function Meadow({ flowers }: { flowers: readonly GardenFlower[] }) {
                         key={spot.sessionId}
                         flower={flower}
                         size={size}
+                        golden={completeRarities.has(flower.species.rarity)}
                         tiltDeg={spot.tiltDeg}
                         liftPx={spot.liftPx}
                         driftPx={spot.driftPx}
@@ -207,7 +216,7 @@ export function Meadow({ flowers }: { flowers: readonly GardenFlower[] }) {
                   to={`/history/${flower.sessionId}`}
                   className="flex min-h-11 items-center gap-2 rounded-control px-1 active:bg-field-primary"
                 >
-                  <PixelBloom size={24} animate={false} species={flower.species} />
+                  <PixelBloom size={24} animate={false} species={flower.species} golden={completeRarities.has(flower.species.rarity)} />
                   <span className="text-sm">
                     {flower.species.name} · {new Date(flower.endedAt).toLocaleDateString(undefined, { month: 'short', day: 'numeric' })}
                   </span>
