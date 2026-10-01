@@ -21,10 +21,12 @@ import { GardenScreen } from './presentation/screens/GardenScreen'
 import { AchievementsScreen } from './presentation/screens/AchievementsScreen'
 import { RecapScreen } from './presentation/screens/RecapScreen'
 import { ProfilePickGate } from './presentation/components/ProfilePickGate'
+import { OnboardingGate } from './presentation/components/OnboardingGate'
 
 export default function App() {
   return (
     <ThemeProvider>
+      <OnboardingGate />
       <ProfilePickGate />
       <HashRouter>
         <Routes>

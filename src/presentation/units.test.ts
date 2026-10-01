@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest'
-import { formatWeight, kgToUnit, roundToStep, unitToKg } from './units'
+import { defaultWeightUnitForLocale, formatWeight, kgToUnit, roundToStep, unitToKg } from './units'
 
 describe('units', () => {
   it('round-trips kg through lb within rounding', () => {
@@ -15,5 +15,17 @@ describe('units', () => {
   it('rounds to the plate step for the unit', () => {
     expect(roundToStep(88.18, 'lb')).toBe(90)
     expect(roundToStep(41, 'kg')).toBe(40)
+  })
+})
+
+describe('defaultWeightUnitForLocale', () => {
+  it('defaults en-US to lb', () => {
+    expect(defaultWeightUnitForLocale('en-US')).toBe('lb')
+  })
+
+  it('defaults every other locale to kg', () => {
+    expect(defaultWeightUnitForLocale('en-GB')).toBe('kg')
+    expect(defaultWeightUnitForLocale('fr-FR')).toBe('kg')
+    expect(defaultWeightUnitForLocale(undefined)).toBe('kg')
   })
 })
