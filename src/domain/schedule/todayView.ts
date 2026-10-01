@@ -7,12 +7,36 @@ import type { Weekday, WeeklySchedule } from './weeklySchedule'
 
 export type DayMark = 'done' | 'planned' | 'rest' | 'open'
 
+export type WeekSession = { sessionId: string; planId: string; endedAt: string }
+
 export type WeekDay = {
   weekday: Weekday
   letter: string
   isToday: boolean
+  // Before today (a planned day that passed opens the planner, not Start).
+  isPast: boolean
   mark: DayMark
   count: number
+  // That day's finished workouts, newest first.
+  sessions: WeekSession[]
+  // The workout planned for the day; null for rest or nothing planned.
+  plannedTemplateId: string | null
+}
+
+// Where tapping a day goes: the workout done that day (a pick if there
+// were several), a planned workout still ahead to its Start screen, and
+// anything else (rest, empty, a planned day that passed) to the planner.
+export type WeekDayTarget =
+  | { kind: 'session'; sessionId: string }
+  | { kind: 'pick'; sessions: WeekSession[] }
+  | { kind: 'start'; templateId: string }
+  | { kind: 'schedule' }
+
+export function weekDayTarget(day: WeekDay): WeekDayTarget {
+  if (day.sessions.length === 1) return { kind: 'session', sessionId: day.sessions[0].sessionId }
+  if (day.sessions.length > 1) return { kind: 'pick', sessions: day.sessions }
+  if (day.plannedTemplateId && !day.isPast) return { kind: 'start', templateId: day.plannedTemplateId }
+  return { kind: 'schedule' }
 }
 
 export type TodayMode = 'resume' | 'done' | 'rest' | 'ready'
@@ -30,19 +54,32 @@ function mondayOf(date: Date): Date {
 }
 
 export function buildWeek(results: readonly SessionResult[], schedule: WeeklySchedule | null, now: Date): WeekDay[] {
-  const counts = new Map<string, number>()
-  for (const r of results) {
+  const byDay = new Map<string, WeekSession[]>()
+  for (const r of [...results].sort((a, b) => b.endedAt.localeCompare(a.endedAt))) {
     const key = dayKey(new Date(r.endedAt))
-    counts.set(key, (counts.get(key) ?? 0) + 1)
+    const list = byDay.get(key) ?? []
+    list.push({ sessionId: r.sessionId, planId: r.planId, endedAt: r.endedAt })
+    byDay.set(key, list)
   }
   const monday = mondayOf(now)
   const todayKey = dayKey(now)
+  const todayStart = new Date(now.getFullYear(), now.getMonth(), now.getDate()).getTime()
   return MONDAY_FIRST.map((weekday, i) => {
     const date = new Date(monday.getFullYear(), monday.getMonth(), monday.getDate() + i)
-    const count = counts.get(dayKey(date)) ?? 0
+    const sessions = byDay.get(dayKey(date)) ?? []
+    const count = sessions.length
     const plan = schedule?.[weekday] ?? null
     const mark: DayMark = count > 0 ? 'done' : plan === 'rest' ? 'rest' : plan ? 'planned' : 'open'
-    return { weekday, letter: LETTERS[weekday], isToday: dayKey(date) === todayKey, mark, count }
+    return {
+      weekday,
+      letter: LETTERS[weekday],
+      isToday: dayKey(date) === todayKey,
+      isPast: date.getTime() < todayStart,
+      mark,
+      count,
+      sessions,
+      plannedTemplateId: plan && plan !== 'rest' ? plan : null,
+    }
   })
 }
 

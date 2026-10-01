@@ -1,5 +1,51 @@
 import { describe, expect, it } from 'vitest'
-import { weekSummary } from './WeekBlooms'
+import { dayLabel, weekSummary } from './WeekBlooms'
+import type { WeekDay } from '../../domain/schedule/todayView'
+
+function day(overrides: Partial<WeekDay>): WeekDay {
+  return {
+    weekday: 3,
+    letter: 'W',
+    isToday: false,
+    isPast: false,
+    mark: 'open',
+    count: 0,
+    sessions: [],
+    plannedTemplateId: null,
+    ...overrides,
+  }
+}
+
+const names = { sessions: { s1: 'Full-Body A', s2: 'Quick 10' }, templates: { 'fs.full-body-a': 'Full-Body A' } }
+
+describe('dayLabel', () => {
+  it('names the workout done that day', () => {
+    const done = day({ mark: 'done', count: 1, sessions: [{ sessionId: 's1', planId: 'p1', endedAt: '' }] })
+    expect(dayLabel(done, names)).toBe('Wednesday, Full-Body A done')
+  })
+
+  it('counts several workouts on one day', () => {
+    const sessions = [
+      { sessionId: 's2', planId: 'p2', endedAt: '' },
+      { sessionId: 's1', planId: 'p1', endedAt: '' },
+    ]
+    expect(dayLabel(day({ mark: 'done', count: 2, sessions }), names)).toBe('Wednesday, 2 workouts done')
+  })
+
+  it('names a planned workout, and says rest or nothing planned otherwise', () => {
+    expect(dayLabel(day({ mark: 'planned', plannedTemplateId: 'fs.full-body-a' }), names)).toBe(
+      'Wednesday, Full-Body A planned'
+    )
+    expect(dayLabel(day({ mark: 'rest' }), names)).toBe('Wednesday, rest day')
+    expect(dayLabel(day({ mark: 'open' }), names)).toBe('Wednesday, nothing planned')
+  })
+
+  it('marks today, and falls back to a generic name', () => {
+    expect(dayLabel(day({ isToday: true, mark: 'planned', plannedTemplateId: 'x' }), names)).toBe(
+      'Wednesday, today, workout planned'
+    )
+  })
+})
 
 describe('weekSummary', () => {
   it('names the goal before the first workout of the week', () => {

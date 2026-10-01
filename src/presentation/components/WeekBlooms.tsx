@@ -1,12 +1,15 @@
+import { useRef, useState } from 'react'
 import { Link } from 'react-router-dom'
-import type { DayMark, WeekDay } from '../../domain/schedule/todayView'
+import { weekDayTarget, type DayMark, type WeekDay, type WeekDayTarget } from '../../domain/schedule/todayView'
+import { WEEKDAY_LABELS } from '../../domain/schedule/weeklySchedule'
+import { useSheetFocus } from './useSheetFocus'
 
 // This week as seven little pots on Rae's windowsill: a flower blooms on
 // every day with a finished workout. Planned days hold a sprout, rest days
 // a sleeping bud, empty days just soil. Nothing wilts: a day that passed
 // without a workout is simply still a sprout. Pixel art on a 16px grid,
-// drawn with the same crisp edges as the room above. Taps through to the
-// week planner.
+// drawn with the same crisp edges as the room above. Each pot opens that
+// day (weekDayTarget); the header opens the week planner.
 
 const PETALS = ['#ff8fb8', '#c9b8ff', '#ffc58a']
 const LEAF = '#5bbf8a'
@@ -75,11 +78,24 @@ function Plant({ mark, count, petal }: { mark: DayMark; count: number; petal: st
   return <rect x="5" y="13" width="6" height="1" fill="#8a5a44" />
 }
 
-const MARK_WORDS: Record<DayMark, string> = {
-  done: 'worked out',
-  planned: 'planned',
-  rest: 'rest day',
-  open: 'nothing planned',
+// Workout names for labels and the pick sheet, keyed by session id (what
+// was done) and template id (what is planned). Missing names fall back to
+// "workout", so a deleted routine never breaks the week.
+export type WeekNames = { sessions: Record<string, string>; templates: Record<string, string> }
+
+const NO_NAMES: WeekNames = { sessions: {}, templates: {} }
+
+// What a screen reader hears for one day, e.g. "Wednesday, Full-Body A
+// done" or "Thursday, today, Quick 10 planned".
+export function dayLabel(day: WeekDay, names: WeekNames): string {
+  const prefix = `${WEEKDAY_LABELS[day.weekday]}${day.isToday ? ', today' : ''}`
+  if (day.mark === 'done') {
+    if (day.sessions.length > 1) return `${prefix}, ${day.sessions.length} workouts done`
+    return `${prefix}, ${names.sessions[day.sessions[0]?.sessionId ?? ''] ?? 'workout'} done`
+  }
+  if (day.mark === 'planned') return `${prefix}, ${names.templates[day.plannedTemplateId ?? ''] ?? 'workout'} planned`
+  if (day.mark === 'rest') return `${prefix}, rest day`
+  return `${prefix}, nothing planned`
 }
 
 // The header reads progress toward the week's goal (weeklyGoal), never a
@@ -90,17 +106,28 @@ export function weekSummary(done: number, goal: number): string {
   return `${done} of ${goal} this week`
 }
 
-export function WeekBlooms({ week, goal }: { week: WeekDay[]; goal: number }) {
+function hrefFor(target: WeekDayTarget): string | null {
+  if (target.kind === 'session') return `/history/${target.sessionId}`
+  if (target.kind === 'start') return `/checkin/${target.templateId}`
+  if (target.kind === 'schedule') return '/schedule'
+  return null
+}
+
+// Each pot is a door: the workout done that day, a planned workout still
+// ahead, or the planner. The header ("1 of 2 this week ... Plan") is its own
+// link to the planner.
+export function WeekBlooms({ week, goal, names = NO_NAMES }: { week: WeekDay[]; goal: number; names?: WeekNames }) {
+  const [picking, setPicking] = useState<WeekDay | null>(null)
   const done = week.reduce((sum, d) => sum + d.count, 0)
   const met = done >= goal
   const summary = weekSummary(done, goal)
   return (
-    <Link
-      to="/schedule"
-      className="week-blooms block card px-3 pb-2 pt-3"
-      aria-label={`${summary}. ${week.map((d) => `${d.letter}: ${MARK_WORDS[d.mark]}`).join(', ')}. Edit your week.`}
-    >
-      <div className="flex items-baseline justify-between px-1">
+    <div className="week-blooms card px-3 pb-2 pt-1">
+      <Link
+        to="/schedule"
+        className="flex min-h-11 items-center justify-between rounded-control px-1 active:bg-field-primary"
+        aria-label={`${summary}. Plan your week.`}
+      >
         <p className="flex items-center gap-2 font-bold">
           {met && (
             <span className="flex h-6 w-6 items-center justify-center rounded-full bg-field-success text-sm" aria-hidden>
@@ -110,8 +137,8 @@ export function WeekBlooms({ week, goal }: { week: WeekDay[]; goal: number }) {
           {summary}
         </p>
         <span className="text-sm font-semibold text-primary-ink">Plan</span>
-      </div>
-      <div className="mt-1 flex gap-1 px-1" aria-hidden>
+      </Link>
+      <div className="flex gap-1 px-1" aria-hidden>
         {Array.from({ length: goal }, (_, i) => (
           <span
             key={i}
@@ -120,28 +147,90 @@ export function WeekBlooms({ week, goal }: { week: WeekDay[]; goal: number }) {
         ))}
       </div>
       <ol className="mt-1 grid grid-cols-7">
-        {week.map((day, i) => (
-          <li key={day.weekday} className="flex flex-col items-center" aria-hidden>
-            <svg
-              viewBox="0 0 16 20"
-              width="40"
-              height="50"
-              shapeRendering="crispEdges"
-              className={day.mark === 'done' && day.isToday ? 'week-blooms__new' : ''}
-            >
-              <Plant mark={day.mark} count={day.count} petal={PETALS[i % PETALS.length]} />
-              <Pot />
-            </svg>
-            <span
-              className={`mt-0.5 flex h-6 w-6 items-center justify-center rounded-full text-xs font-bold ${
-                day.isToday ? 'bg-primary text-on-primary' : 'text-ink-muted'
-              }`}
-            >
-              {day.letter}
-            </span>
-          </li>
-        ))}
+        {week.map((day, i) => {
+          const target = weekDayTarget(day)
+          const href = hrefFor(target)
+          const cellClass =
+            'flex min-h-11 w-full flex-col items-center rounded-control pb-0.5 active:bg-field-primary focus-visible:outline focus-visible:outline-2 focus-visible:outline-[var(--color-primary-ink)]'
+          const face = (
+            <>
+              <svg
+                viewBox="0 0 16 20"
+                width="40"
+                height="50"
+                shapeRendering="crispEdges"
+                aria-hidden
+                className={day.mark === 'done' && day.isToday ? 'week-blooms__new' : ''}
+              >
+                <Plant mark={day.mark} count={day.count} petal={PETALS[i % PETALS.length]} />
+                <Pot />
+              </svg>
+              <span
+                aria-hidden
+                className={`mt-0.5 flex h-6 w-6 items-center justify-center rounded-full text-xs font-bold ${
+                  day.isToday ? 'bg-primary text-on-primary' : 'text-ink-muted'
+                }`}
+              >
+                {day.letter}
+              </span>
+            </>
+          )
+          return (
+            <li key={day.weekday} className="flex justify-center">
+              {href ? (
+                <Link to={href} className={cellClass} aria-label={dayLabel(day, names)}>
+                  {face}
+                </Link>
+              ) : (
+                <button type="button" className={cellClass} aria-label={dayLabel(day, names)} onClick={() => setPicking(day)}>
+                  {face}
+                </button>
+              )}
+            </li>
+          )
+        })}
       </ol>
-    </Link>
+      {picking && <PickSheet day={picking} names={names} onClose={() => setPicking(null)} />}
+    </div>
+  )
+}
+
+// A day with more than one finished workout: pick which to open.
+function PickSheet({ day, names, onClose }: { day: WeekDay; names: WeekNames; onClose: () => void }) {
+  const sheetRef = useRef<HTMLDivElement>(null)
+  useSheetFocus(sheetRef, onClose)
+  const title = `${WEEKDAY_LABELS[day.weekday]}'s workouts`
+  return (
+    <div className="sheet-backdrop fixed inset-0 z-40 flex items-end bg-black/40" onClick={onClose}>
+      <div
+        ref={sheetRef}
+        className="w-full space-y-3 rounded-t-[var(--radius-panel)] bg-surface p-4"
+        style={{ paddingBottom: 'calc(env(safe-area-inset-bottom) + 1.5rem)' }}
+        onClick={(e) => e.stopPropagation()}
+        role="dialog"
+        aria-modal="true"
+        aria-label={title}
+      >
+        <p className="text-center text-lg font-bold">{title}</p>
+        <ul className="space-y-2">
+          {day.sessions.map((s) => (
+            <li key={s.sessionId}>
+              <Link
+                to={`/history/${s.sessionId}`}
+                className="flex min-h-11 items-center justify-between card px-4 py-3 active:bg-field-primary"
+              >
+                <span className="font-semibold">{names.sessions[s.sessionId] ?? 'Workout'}</span>
+                <span className="text-sm text-ink-muted">
+                  {new Date(s.endedAt).toLocaleTimeString(undefined, { hour: 'numeric', minute: '2-digit' })}
+                </span>
+              </Link>
+            </li>
+          ))}
+        </ul>
+        <button type="button" className="btn-primary btn-lg w-full" onClick={onClose}>
+          Close
+        </button>
+      </div>
+    </div>
   )
 }
