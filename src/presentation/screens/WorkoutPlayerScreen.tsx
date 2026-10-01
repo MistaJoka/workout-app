@@ -4,14 +4,15 @@ import { Link, useNavigate, useParams } from 'react-router-dom'
 import { getCurrentState, getPlan, recordEvent } from '../../application/sessionService'
 import { getEventsForSession } from '../../infrastructure/db/repositories/sessionRepository'
 import type { SessionEvent, SessionPlan, SessionPlanExercise, SessionState } from '../../domain/session/types'
-import { flowStatus } from '../../domain/session/flow'
+import { flowStatus, isFlowMilestone } from '../../domain/session/flow'
 import { FlowChip } from '../components/FlowChip'
 import { getExercises } from '../../domain/content/catalog'
 import { getFamiliarExerciseIds } from '../../application/familiarity'
 import type { Exercise } from '../../domain/content/types'
 import { MovementMedia, effectiveMotion, usePrefersReducedMotion } from '../components/MovementMedia'
-import { RaeExerciseLoop, RaeFace } from '../components/Rae'
+import { RaeExerciseLoop, RaeFace, type RaeExpression } from '../components/Rae'
 import { raeLoopForExercise } from '../components/raeLoops'
+import { CELEBRATE_MS, raeMood } from '../raeMood'
 import { useTheme } from '../theme/ThemeContext'
 import { ThumbBar } from '../components/ThumbBar'
 import { RepPicks } from '../components/RepPicks'
@@ -86,6 +87,16 @@ export function WorkoutPlayerScreen() {
   // how many met sets landed in a row just now. Refetched whenever a set is
   // completed or taken back — the only actions that can move it.
   const [events, setEvents] = useState<SessionEvent[]>([])
+  // When the last SET_COMPLETED landed, for Rae's brief reaction
+  // (raeMood.ts); cleared back to null once CELEBRATE_MS has passed so her
+  // face settles to whatever the current phase shows on its own.
+  const [completedAt, setCompletedAt] = useState<number | null>(null)
+
+  useEffect(() => {
+    if (completedAt == null) return
+    const timer = setTimeout(() => setCompletedAt(null), CELEBRATE_MS)
+    return () => clearTimeout(timer)
+  }, [completedAt])
 
   const refreshFlowEvents = useCallback(async () => {
     if (!sessionId) return
@@ -168,7 +179,10 @@ export function WorkoutPlayerScreen() {
     setError(null)
     try {
       const next = await recordEvent(sessionId, type, newId(), payload)
-      if (type === 'SET_COMPLETED') celebrateSet(state, next)
+      if (type === 'SET_COMPLETED') {
+        celebrateSet(state, next)
+        setCompletedAt(Date.now())
+      }
       if (type === 'SET_COMPLETED' || type === 'SET_UNDONE') void refreshFlowEvents()
       setState(next)
       setAwaitingRepCheck(false)
@@ -292,14 +306,36 @@ export function WorkoutPlayerScreen() {
     )
   }
 
+  // How many met sets just landed in a row (domain/session/flow.ts), needed
+  // by every branch below to tell raeMood.ts whether a just-completed set
+  // was a flow milestone.
+  const flowRun = flowStatus(plan, events).run
+  const msSinceCompletedSet = completedAt != null ? Date.now() - completedAt : null
+
   if (state.status === 'PAUSED') {
     const paused = plan.exercises[state.currentExerciseIndex]
     const pausedContent = paused ? exerciseById.get(paused.exerciseId) : undefined
+    const pausedMood = raeMood({
+      phase: 'paused',
+      msSinceCompletedSet,
+      isFlowMilestone: isFlowMilestone(flowRun),
+      isLastSet: false,
+      isLastMove: false,
+      seed: `${state.currentExerciseIndex}:${state.currentSetNumber}:paused`,
+    })
     const timerWaiting = Boolean(state.restEndsAt || state.holdStartedAt)
     return (
       <div className="p-6 pt-10 pb-32 space-y-5">
         <div className="flex items-center gap-3">
-          <RaeFace expression="smile" size={64} motion="pop" />
+          <RaeFace
+            key={pausedMood.expression}
+            expression={pausedMood.expression}
+            size={64}
+            motion="none"
+            moodSwap
+            decorative
+            testId="rae-paused-face"
+          />
           <div>
             <p className="text-2xl font-bold">Take your time</p>
             <p className="text-sm text-ink-muted">{timerWaiting ? 'Paused. The timer waits for you.' : 'Paused.'}</p>
@@ -337,6 +373,14 @@ export function WorkoutPlayerScreen() {
 
   if (state.status === 'RESTING' && state.restEndsAt) {
     const upNext = plan.exercises[state.currentExerciseIndex]
+    const restingMood = raeMood({
+      phase: 'resting',
+      msSinceCompletedSet,
+      isFlowMilestone: isFlowMilestone(flowRun),
+      isLastSet: false,
+      isLastMove: false,
+      seed: `${state.currentExerciseIndex}:${state.currentSetNumber}:resting`,
+    })
     return (
       <RestingView
         upNext={upNext}
@@ -347,6 +391,7 @@ export function WorkoutPlayerScreen() {
         busy={busy}
         error={error}
         tick={feedback.sound}
+        moodExpression={restingMood.expression}
         onRestComplete={() => {
           restEndFeedback(feedback)
           void handleAction('REST_ENDED')
@@ -370,13 +415,20 @@ export function WorkoutPlayerScreen() {
   const weighted = exercise.weightKg != null
   const setWeightKg = loggedWeightKg ?? exercise.weightKg ?? 0
   const progress = workoutProgress(plan, state.currentExerciseIndex, state.currentSetNumber)
-  const flowRun = flowStatus(plan, events).run
   const exerciseLabel = `Exercise ${state.currentExerciseIndex + 1} of ${plan.exercises.length}`
   const timed = exercise.reps == null && exercise.timeSeconds != null
   const holding = timed && state.holdStartedAt !== null
   const target = exercise.reps != null ? { value: exercise.reps, unit: 'reps' } : exercise.timeSeconds != null ? { value: exercise.timeSeconds, unit: 'sec hold' } : null
   const nextExercise = plan.exercises[state.currentExerciseIndex + 1]
   const repTarget = exercise.reps ?? 0
+  const activeMood = raeMood({
+    phase: holding ? 'holding' : 'active',
+    msSinceCompletedSet,
+    isFlowMilestone: isFlowMilestone(flowRun),
+    isLastSet: progress.total - progress.done === 1,
+    isLastMove: state.currentExerciseIndex === plan.exercises.length - 1 && plan.exercises.length > 1,
+    seed: `${state.currentExerciseIndex}:${state.currentSetNumber}`,
+  })
 
   const skipSheet = confirmingSkip ? (
     <ConfirmSheet
@@ -409,7 +461,15 @@ export function WorkoutPlayerScreen() {
             aria-label={`${exerciseLabel}. See the whole workout`}
             onClick={() => setShowingOverview(true)}
           >
-            <RaeFace expression="focused" size={36} motion="none" />
+            <RaeFace
+              key={activeMood.expression}
+              expression={activeMood.expression}
+              size={36}
+              motion="none"
+              moodSwap
+              decorative
+              testId="rae-player-face"
+            />
             <span className="text-sm font-semibold text-ink-muted">
               {state.currentExerciseIndex + 1} of {plan.exercises.length}
             </span>
@@ -798,6 +858,7 @@ function RestingView({
   busy,
   error,
   tick,
+  moodExpression,
   onRestComplete,
   onExtend,
   onSkip,
@@ -813,6 +874,9 @@ function RestingView({
   busy: boolean
   error: string | null
   tick: boolean
+  // From raeMood.ts: usually 'tired' (breathing through rest), but briefly
+  // 'laugh'/'surprised' right after the set that started this rest.
+  moodExpression: RaeExpression
   onRestComplete: () => void
   onExtend: () => void
   onSkip: () => void
@@ -834,7 +898,15 @@ function RestingView({
   return (
     <div className="field-calm min-h-screen rounded-none p-6 pt-4 pb-32 text-center space-y-4">
       <div className="flex items-center justify-between">
-        <RaeFace expression="tired" size={48} />
+        <RaeFace
+          key={moodExpression}
+          expression={moodExpression}
+          size={48}
+          motion="none"
+          moodSwap
+          decorative
+          testId="rae-rest-face"
+        />
         <button className="btn-ghost min-h-11 -mr-3" disabled={busy} onClick={onPause}>
           Pause
         </button>
