@@ -5,6 +5,7 @@ import { summarizeBodyWeight, type BodyWeightSummary } from '../../domain/progre
 import { formatWeight, kgToUnit, unitToKg } from '../units'
 import { useWeightUnit } from './useWeightUnit'
 import { ConfirmSheet } from './ConfirmSheet'
+import { Skeleton, SkeletonBlock } from './Skeleton'
 
 // Newest entries listed under "Past entries", each deletable (a mistyped
 // weigh-in otherwise skews the trend forever).
@@ -70,7 +71,12 @@ export function BodyWeightCard() {
         )}
       </div>
 
-      {summary === undefined && <p className="text-sm text-ink-muted">Loading…</p>}
+      {summary === undefined && (
+        <Skeleton className="space-y-2">
+          <SkeletonBlock className="h-8 w-1/3 rounded-full" />
+          <SkeletonBlock className="h-3 w-1/4 rounded-full" />
+        </Skeleton>
+      )}
 
       {summary === null && !logging && <p className="text-sm text-ink-muted">Not logged yet.</p>}
 

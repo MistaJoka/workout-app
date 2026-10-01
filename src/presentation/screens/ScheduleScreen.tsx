@@ -14,6 +14,7 @@ import { getWeeklySchedule, saveWeeklySchedule } from '../../infrastructure/db/r
 import { BackButton } from '../components/BackButton'
 import { RaeNote } from '../components/RaeNote'
 import { shareOrDownload } from '../components/shareOrDownload'
+import { Skeleton, SkeletonBlock, SkeletonList } from '../components/Skeleton'
 
 // Monday-first rows; the schedule itself is keyed by JS weekday (0 = Sunday).
 const ROW_ORDER: (0 | 1 | 2 | 3 | 4 | 5 | 6)[] = [1, 2, 3, 4, 5, 6, 0]
@@ -109,7 +110,14 @@ export function ScheduleScreen() {
       </div>
     )
   }
-  if (!schedule) return <div className="p-4">Loading…</div>
+  if (!schedule) {
+    return (
+      <Skeleton className="p-4 space-y-3">
+        <SkeletonBlock className="h-14 rounded-panel" />
+        <SkeletonList rows={7} trailing />
+      </Skeleton>
+    )
+  }
 
   const hasWorkoutDay = ROW_ORDER.some((d) => schedule[d] != null && schedule[d] !== 'rest')
   const todayKey = new Date().getDay() as keyof WeeklySchedule
