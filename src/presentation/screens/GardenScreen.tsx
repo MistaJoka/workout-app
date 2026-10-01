@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react'
 import { BackButton } from '../components/BackButton'
+import { Meadow } from '../components/Meadow'
 import { PixelBloom } from '../components/PixelBloom'
 import { RaeNote } from '../components/RaeNote'
 import { Skeleton, SkeletonBlock, SkeletonHeading } from '../components/Skeleton'
@@ -44,6 +45,7 @@ export function GardenScreen() {
 
       {garden && (
         <>
+          <Meadow flowers={garden.flowers} />
           <RaeNote expression={garden.flowers.length === 0 ? 'smile' : 'laugh'}>
             {garden.flowers.length === 0
               ? 'Every workout grows a flower here. Which one will you get?'
