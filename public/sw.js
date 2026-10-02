@@ -29,6 +29,13 @@ const MEDIA_CACHE_NAME = 'workout-app-media-v1'
 const MAX_LIBRARY_PHOTOS = 300
 const UPSTREAM_PHOTO = (url) => url.hostname === 'raw.githubusercontent.com' && url.pathname.includes('/free-exercise-db/')
 
+// The registration scope's path is this worker's base: '/' locally and for
+// Capacitor, '/workout-app/' for the GitHub Pages project build
+// (vite.config.ts / registerServiceWorker.ts register it with `scope:
+// BASE_URL`). Every path this file precaches, matches or falls back to is
+// built from BASE so the same sw.js works unmodified under either base.
+const BASE = new URL(self.registration.scope).pathname
+
 // Movement photos are precached so a workout works fully offline even if
 // the user never opened every exercise while online. Keep in sync with
 // src/domain/content/fixtures/foundationStrengthStarter.ts mediaManifest.
@@ -43,21 +50,21 @@ const MEDIA_IDS = [
   'Crunches',
   'Superman',
 ]
-const MEDIA_URLS = MEDIA_IDS.flatMap((id) => [`/exercise-media/${id}/0.jpg`, `/exercise-media/${id}/1.jpg`])
+const MEDIA_URLS = MEDIA_IDS.flatMap((id) => [`${BASE}exercise-media/${id}/0.jpg`, `${BASE}exercise-media/${id}/1.jpg`])
 // Rae's images (scripts/assets/derive-rae-preview.py) show on Today, in the
 // player and at the finish, so they must be there offline too.
 const RAE_EXPRESSIONS = ['neutral', 'smile', 'happy', 'cheer', 'focused', 'determined', 'tired', 'surprised', 'laugh', 'wink']
 const RAE_URLS = [
-  ...RAE_EXPRESSIONS.map((e) => `/rae/expr-${e}.png`),
-  '/rae/full-front.png',
-  '/rae/full-3q.png',
-  '/rae/loops.json',
+  ...RAE_EXPRESSIONS.map((e) => `${BASE}rae/expr-${e}.png`),
+  `${BASE}rae/full-front.png`,
+  `${BASE}rae/full-3q.png`,
+  `${BASE}rae/loops.json`,
 ]
 // The shell must install whole (a half-installed build can't run offline);
 // media is best-effort, so one flaky image fetch never costs the app its
 // offline copy. Anything that missed is cached the first time it's shown.
-const SHELL_URLS = ['/', '/manifest.json', '/rae/loops.json', ...BUILD_ASSETS.map((f) => `/${f}`)]
-const BEST_EFFORT_URLS = [...MEDIA_URLS, ...RAE_URLS.filter((u) => u !== '/rae/loops.json')]
+const SHELL_URLS = [BASE, `${BASE}manifest.json`, `${BASE}rae/loops.json`, ...BUILD_ASSETS.map((f) => `${BASE}${f}`)]
+const BEST_EFFORT_URLS = [...MEDIA_URLS, ...RAE_URLS.filter((u) => u !== `${BASE}rae/loops.json`)]
 
 // `cache: 'reload'` skips the browser's HTTP cache, which can otherwise hand
 // the new worker an old build's index.html.
@@ -80,11 +87,11 @@ self.addEventListener('install', (event) => {
       // cache, at the exact versioned URLs the app asks for. Only the ones
       // not already there are fetched, so a deploy that didn't redraw
       // anything downloads nothing. Library loops are cached on first view.
-      const loops = await (await shell.match('/rae/loops.json')).json()
+      const loops = await (await shell.match(`${BASE}rae/loops.json`)).json()
       const media = await caches.open(MEDIA_CACHE_NAME)
       const wanted = loops
         .filter((loop) => loop.featured)
-        .flatMap((loop) => [`/rae/${loop.id}.webp`, ...loop.stills.map((f) => `/rae/${loop.id}-${f}.png`)].map((p) => `${p}?v=${loop.v}`))
+        .flatMap((loop) => [`${BASE}rae/${loop.id}.webp`, ...loop.stills.map((f) => `${BASE}rae/${loop.id}-${f}.png`)].map((p) => `${p}?v=${loop.v}`))
       const missing = []
       for (const url of wanted) if (!(await media.match(url))) missing.push(url)
       for (const url of missing) {
@@ -123,18 +130,18 @@ self.addEventListener('activate', (event) => {
 async function pruneMedia() {
   const media = await caches.open(MEDIA_CACHE_NAME)
   const shell = await caches.open(CACHE_NAME)
-  const loopsResponse = await shell.match('/rae/loops.json')
+  const loopsResponse = await shell.match(`${BASE}rae/loops.json`)
   const current = new Map()
   if (loopsResponse) {
     for (const loop of await loopsResponse.json()) {
-      current.set(`/rae/${loop.id}.webp`, loop.v)
-      for (const still of loop.stills) current.set(`/rae/${loop.id}-${still}.png`, loop.v)
+      current.set(`${BASE}rae/${loop.id}.webp`, loop.v)
+      for (const still of loop.stills) current.set(`${BASE}rae/${loop.id}-${still}.png`, loop.v)
     }
   }
   const photos = []
   for (const request of await media.keys()) {
     const url = new URL(request.url)
-    if (url.pathname.startsWith('/rae/')) {
+    if (url.pathname.startsWith(`${BASE}rae/`)) {
       if (!loopsResponse) continue
       if (current.get(url.pathname) !== url.searchParams.get('v')) await media.delete(request)
     } else if (UPSTREAM_PHOTO(url)) {
@@ -195,7 +202,7 @@ self.addEventListener('fetch', (event) => {
   // cache, matched on the full versioned URL (never ignoreSearch — a new
   // version must miss), so a move she has demonstrated once keeps working
   // offline across app updates, and a redraw replaces the old art.
-  if (url.pathname.startsWith('/rae/ex-')) {
+  if (url.pathname.startsWith(`${BASE}rae/ex-`)) {
     event.respondWith(
       caches.open(MEDIA_CACHE_NAME).then((cache) =>
         cache.match(request).then(
@@ -228,7 +235,7 @@ self.addEventListener('fetch', (event) => {
           }
           return response
         })
-        .catch(() => caches.match(request).then((cached) => cached || caches.match('/')))
+        .catch(() => caches.match(request).then((cached) => cached || caches.match(BASE)))
     )
     return
   }

@@ -121,6 +121,7 @@ Placement rules (owner-approved button pass, 2026-09-26):
 - Playwright: a hash-only `goto` does not reload the document; bounce via `about:blank` for a fresh load. Player buttons are briefly `disabled` while an action persists — drive workouts with short-timeout force clicks in a loop (`e2e/helpers.ts`).
 - `.claude/` is gitignored and excluded from vitest. Never `git add -A` with a fork worktree present.
 - Settings hooks (`useWeightUnit`, `useFeedbackSettings`) are seeded from module-level caches; a profile switch reloads the page, which is what makes those caches safe. The motion setting has no cache and starts as `full` until the stored value loads.
+- Local/Capacitor builds are rooted at `/`; the GitHub Pages project site (`.github/workflows/pages.yml`) builds with `VITE_BASE_PATH=/workout-app/` (`vite.config.ts`'s `base`). Never hardcode a root-absolute asset/route URL in app code, `index.html` or `public/manifest.json` — use `src/presentation/assetUrl.ts`'s `asset()`, Vite's `%BASE_URL%` placeholder, or a manifest path relative to the manifest itself; `public/sw.js` derives its own base from `self.registration.scope` (registered with `scope: BASE_URL` in `registerServiceWorker.ts`) since it isn't processed by Vite. Proven by the opt-in `npm run e2e:base` (`e2e/base-path.spec.ts`).
 
 ## Creative/frontend boundary
 

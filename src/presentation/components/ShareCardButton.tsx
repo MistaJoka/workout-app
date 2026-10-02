@@ -1,4 +1,5 @@
 import { useState } from 'react'
+import { asset } from '../assetUrl'
 import type { AchievementIcon } from '../../domain/progress/achievements'
 import type { Garden } from '../../domain/progress/garden'
 import type { LevelInfo } from '../../domain/progress/xp'
@@ -76,7 +77,7 @@ export async function renderCardToBlob(draw: (ctx: CanvasRenderingContext2D) => 
 }
 
 export async function loadRaeCheer(): Promise<CanvasImageSource | null> {
-  return loadImage('/rae/expr-cheer.png').catch(() => null)
+  return loadImage(asset('rae/expr-cheer.png')).catch(() => null)
 }
 
 // Same-origin art only, so the canvas stays exportable.

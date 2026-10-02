@@ -71,7 +71,10 @@ def link_tags() -> str:
             f'(device-width: {w}px) and (device-height: {h}px) and '
             f'(-webkit-device-pixel-ratio: {dpr}) and (orientation: portrait)'
         )
-        tags.append(f'    <link rel="apple-touch-startup-image" media="{media}" href="/splash/splash-{w * dpr}x{h * dpr}.png" />')
+        # %BASE_URL% (Vite's index.html placeholder) resolves to '/' locally
+        # and to the GitHub Pages project base in that build; a hardcoded
+        # '/splash/...' 404s under the latter.
+        tags.append(f'    <link rel="apple-touch-startup-image" media="{media}" href="%BASE_URL%splash/splash-{w * dpr}x{h * dpr}.png" />')
     return '\n'.join(tags)
 
 
