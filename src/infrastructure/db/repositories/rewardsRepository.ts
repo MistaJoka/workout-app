@@ -52,3 +52,26 @@ export async function updateReward(
 export async function removeReward(id: string): Promise<void> {
   await db.rewards.delete(id)
 }
+
+// Imports a reward from a gift link (domain/rewards/giftLink.ts) by its own
+// stable id, rather than minting a new one with addReward: re-accepting the
+// same gift link is then a no-op (the id already exists), instead of a
+// duplicate tile in the shop.
+export async function upsertRewardFromGift(
+  reward: { id: string; title: string; cost: number; emoji: string },
+  at: string = new Date().toISOString()
+): Promise<RewardRecord> {
+  const existing = await db.rewards.get(reward.id)
+  if (existing) return existing
+  const created: RewardRecord = {
+    id: reward.id,
+    title: reward.title.trim(),
+    cost: Math.max(0, Math.round(reward.cost)),
+    emoji: reward.emoji,
+    active: true,
+    createdAt: at,
+    updatedAt: at,
+  }
+  await db.rewards.put(created)
+  return created
+}

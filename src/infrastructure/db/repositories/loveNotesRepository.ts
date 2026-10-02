@@ -53,6 +53,31 @@ export async function removeLoveNote(id: string): Promise<void> {
   await db.loveNotes.delete(id)
 }
 
+// Imports a note from a gift link (domain/rewards/giftLink.ts) by its own
+// stable id, rather than minting a new one with addLoveNote: re-accepting
+// the same gift link is then a no-op, instead of a duplicate locked note.
+// Always lands locked (unlockedAt null) -- a gifted note is never a shortcut
+// around the usual unlock-after-a-workout surprise.
+export async function upsertLoveNoteFromGift(
+  note: { id: string; text: string; emoji: string },
+  at: string = new Date().toISOString()
+): Promise<LoveNoteRecord> {
+  const existing = await db.loveNotes.get(note.id)
+  if (existing) return existing
+  const created: LoveNoteRecord = {
+    id: note.id,
+    text: note.text.trim().slice(0, 280),
+    emoji: note.emoji,
+    createdAt: at,
+    updatedAt: at,
+    unlockedAt: null,
+    unlockedBySessionId: null,
+    readAt: null,
+  }
+  await db.loveNotes.put(created)
+  return created
+}
+
 // The envelope is opened (or reopened from the notes box): marks `readAt`
 // the first time only, so a reread never bumps it and never disturbs the
 // export/import merge's "newest wins by updatedAt" ordering on a note

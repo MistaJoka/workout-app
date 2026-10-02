@@ -12,9 +12,12 @@ import { generateSalt, hasSubtleCrypto, sha256Hex } from '../../infrastructure/p
 import { loadCarrotBalance } from '../components/CarrotCelebration'
 import { PinEntrySheet, PinSetupSheet, RedeemConfirmSheet, CouponSheet } from '../components/RewardsSheets'
 import { RewardEditorSheet, type RewardDraft } from '../components/RewardEditorSheet'
+import { GiftComposerSheet } from '../components/GiftComposerSheet'
+import { DeliveredComposerSheet } from '../components/DeliveredComposerSheet'
 import { renderCardToBlob, ShareIcon } from '../components/ShareCardButton'
 import { shareOrDownload } from '../components/shareOrDownload'
 import { buildCouponCardModel, couponCardFilename, drawCouponCard } from '../rewardsCard'
+import { couponShareMessage, shortRedemptionCode } from '../../domain/rewards/giftLink'
 import { activeProfile } from '../../infrastructure/profiles'
 import { hasRealName } from '../greeting'
 import { playCelebration } from '../../application/celebrationSounds'
@@ -24,11 +27,15 @@ import { Skeleton, SkeletonTiles } from '../components/Skeleton'
 const GIVER_NAME_KEY = 'rewardsGiverName'
 const PIN_KEY = 'rewardsHubbyPin'
 
+type PinPurpose = 'manage' | 'giftCompose' | 'deliverCompose' | { deliver: string }
+
 type Sheet =
   | { kind: 'none' }
-  | { kind: 'pinSetup' }
-  | { kind: 'pinEntry'; purpose: 'manage' | { deliver: string } }
+  | { kind: 'pinSetup'; purpose: PinPurpose }
+  | { kind: 'pinEntry'; purpose: PinPurpose }
   | { kind: 'editor' }
+  | { kind: 'giftCompose' }
+  | { kind: 'deliverCompose' }
   | { kind: 'redeemConfirm'; reward: RewardRecord }
   | { kind: 'coupon'; redemption: RedemptionRecord; emoji: string }
 
@@ -69,7 +76,7 @@ export function RewardsScreen() {
         // Settings -> "Hubby's reward shop" hands off here to start setup
         // right away, instead of landing on the plain shop view first.
         if ((location.state as { openManage?: boolean } | null)?.openManage) {
-          setSheet(loaded.pin ? { kind: 'pinEntry', purpose: 'manage' } : { kind: 'pinSetup' })
+          setSheet(loaded.pin ? { kind: 'pinEntry', purpose: 'manage' } : { kind: 'pinSetup', purpose: 'manage' })
         }
       })
       .catch(() => {
@@ -88,12 +95,27 @@ export function RewardsScreen() {
     return loaded
   }
 
-  function openManage() {
+  // Every PIN-gated entry point (managing the shop, the two gift-link
+  // composers, and marking one redemption delivered from here) goes through
+  // the same pinEntry/pinSetup sheets -- only `purpose` says where to land
+  // once the PIN checks out.
+  function requestPinFor(purpose: PinPurpose) {
     setPinError(null)
-    setSheet(data?.pin ? { kind: 'pinEntry', purpose: 'manage' } : { kind: 'pinSetup' })
+    setSheet(data?.pin ? { kind: 'pinEntry', purpose } : { kind: 'pinSetup', purpose })
   }
 
-  async function handleSetPin(pin: string, giverName: string) {
+  function openManage() {
+    requestPinFor('manage')
+  }
+
+  function landOnPurpose(purpose: PinPurpose): Sheet {
+    if (purpose === 'manage') return { kind: 'editor' }
+    if (purpose === 'giftCompose') return { kind: 'giftCompose' }
+    if (purpose === 'deliverCompose') return { kind: 'deliverCompose' }
+    return { kind: 'none' }
+  }
+
+  async function handleSetPin(pin: string, giverName: string, purpose: PinPurpose) {
     setPinBusy(true)
     setPinError(null)
     try {
@@ -102,7 +124,13 @@ export function RewardsScreen() {
       await setSetting(PIN_KEY, record)
       await setSetting(GIVER_NAME_KEY, giverName)
       await refresh()
-      setSheet({ kind: 'editor' })
+      if (typeof purpose === 'object') {
+        await markDelivered(purpose.deliver)
+        await refresh()
+        setSheet({ kind: 'none' })
+      } else {
+        setSheet(landOnPurpose(purpose))
+      }
     } catch {
       setPinError("Couldn't save on this device. Try again.")
     } finally {
@@ -110,7 +138,7 @@ export function RewardsScreen() {
     }
   }
 
-  async function handlePinSubmit(pin: string, purpose: 'manage' | { deliver: string }) {
+  async function handlePinSubmit(pin: string, purpose: PinPurpose) {
     if (!data?.pin) return
     setPinBusy(true)
     setPinError(null)
@@ -120,12 +148,12 @@ export function RewardsScreen() {
         setPinError('Wrong PIN.')
         return
       }
-      if (purpose === 'manage') {
-        setSheet({ kind: 'editor' })
-      } else {
+      if (typeof purpose === 'object') {
         await markDelivered(purpose.deliver)
         await refresh()
         setSheet({ kind: 'none' })
+      } else {
+        setSheet(landOnPurpose(purpose))
       }
     } catch {
       setPinError("Couldn't check that on this device. Try again.")
@@ -135,8 +163,7 @@ export function RewardsScreen() {
   }
 
   function requestMarkDelivered(redemptionId: string) {
-    setPinError(null)
-    setSheet({ kind: 'pinEntry', purpose: { deliver: redemptionId } })
+    requestPinFor({ deliver: redemptionId })
   }
 
   async function handleAdd(draft: RewardDraft) {
@@ -202,7 +229,16 @@ export function RewardsScreen() {
         ...(hasRealName(profileName) ? { name: profileName.trim() } : {}),
       })
       const blob = await renderCardToBlob((ctx) => drawCouponCard(ctx, model))
-      await shareOrDownload(blob, couponCardFilename(redemption.redeemedAt), 'image/png')
+      // The share message's own text carries a short coupon code (never
+      // just the image) -- it's the thing Hubby Bunny pastes into his own
+      // phone's "Mark delivered" composer (gift links round trip).
+      const message = couponShareMessage({
+        title: redemption.title,
+        emoji,
+        giverName: data.giverName,
+        code: shortRedemptionCode(redemption.id),
+      })
+      await shareOrDownload(blob, couponCardFilename(redemption.redeemedAt), 'image/png', message)
     } catch {
       setShareError("Couldn't make the coupon on this device. Try again.")
     } finally {
@@ -266,6 +302,24 @@ export function RewardsScreen() {
             </span>
           </Link>
 
+          {/* Gift links (domain/rewards/giftLink.ts): Hubby Bunny can do
+              both of these from his own phone, with no access to her data
+              at all -- "Send to her" composes rewards/notes into a link;
+              "Mark delivered" turns a coupon code she sent him into a
+              link that marks it delivered on her phone. Both PIN-gated,
+              same gate as managing the shop. */}
+          <div className="flex gap-2">
+            {/* Deliberately not "Send to ___": CouponSheet's own "Send to
+                {giverName}" button can be open on top of this same screen,
+                and e2e matches that button by a `/^Send to/` prefix. */}
+            <button type="button" className="btn-secondary min-h-11 flex-1" onClick={() => requestPinFor('giftCompose')}>
+              Send a gift 💌
+            </button>
+            <button type="button" className="btn-secondary min-h-11 flex-1" onClick={() => requestPinFor('deliverCompose')}>
+              Mark delivered
+            </button>
+          </div>
+
           {activeRewards.length === 0 ? (
             <RaeNote expression="smile">
               {data.giverName} hasn't added anything to the shop yet. Tap "{data.pin ? 'Manage shop' : 'Set up shop'}" to add
@@ -311,7 +365,7 @@ export function RewardsScreen() {
           giverNameInitial={data?.giverName ?? DEFAULT_GIVER_NAME}
           busy={pinBusy}
           error={pinError}
-          onSave={handleSetPin}
+          onSave={(pin, name) => void handleSetPin(pin, name, sheet.purpose)}
           onCancel={() => setSheet({ kind: 'none' })}
         />
       )}
@@ -331,6 +385,14 @@ export function RewardsScreen() {
           onRemove={(id) => void handleRemove(id)}
           onClose={() => setSheet({ kind: 'none' })}
         />
+      )}
+
+      {sheet.kind === 'giftCompose' && data && (
+        <GiftComposerSheet giverName={data.giverName} onClose={() => setSheet({ kind: 'none' })} />
+      )}
+
+      {sheet.kind === 'deliverCompose' && data && (
+        <DeliveredComposerSheet giverName={data.giverName} onClose={() => setSheet({ kind: 'none' })} />
       )}
 
       {sheet.kind === 'redeemConfirm' && (

@@ -1,6 +1,7 @@
 import { beforeEach, describe, expect, it } from 'vitest'
 import { db } from '../schema'
-import { listRedemptions, markDelivered, redeemReward, totalSpent } from './redemptionsRepository'
+import { listRedemptions, markDelivered, markDeliveredByCode, redeemReward, totalSpent } from './redemptionsRepository'
+import { shortRedemptionCode } from '../../../domain/rewards/giftLink'
 
 beforeEach(async () => {
   await db.redemptions.clear()
@@ -39,6 +40,32 @@ describe('markDelivered', () => {
 
   it('returns undefined for an unknown redemption id', async () => {
     expect(await markDelivered('nope')).toBeUndefined()
+  })
+})
+
+describe('markDeliveredByCode', () => {
+  it('marks every redemption whose own short code matches, leaving others untouched', async () => {
+    const a = await redeemReward({ id: 'r1', title: 'A', cost: 10 }, '2026-09-10T00:00:00.000Z')
+    const b = await redeemReward({ id: 'r2', title: 'B', cost: 10 }, '2026-09-11T00:00:00.000Z')
+    const updated = await markDeliveredByCode([shortRedemptionCode(a.id)], '2026-10-01T00:00:00.000Z')
+    expect(updated).toHaveLength(1)
+    expect(updated[0]).toMatchObject({ id: a.id, deliveredAt: '2026-10-01T00:00:00.000Z' })
+    const all = await listRedemptions()
+    expect(all.find((r) => r.id === a.id)?.deliveredAt).toBe('2026-10-01T00:00:00.000Z')
+    expect(all.find((r) => r.id === b.id)?.deliveredAt).toBeNull()
+  })
+
+  it('is a no-op (keeps the original delivery time) once already delivered', async () => {
+    const a = await redeemReward({ id: 'r1', title: 'A', cost: 10 }, '2026-09-10T00:00:00.000Z')
+    await markDeliveredByCode([shortRedemptionCode(a.id)], '2026-10-01T00:00:00.000Z')
+    const again = await markDeliveredByCode([shortRedemptionCode(a.id)], '2026-10-05T00:00:00.000Z')
+    expect(again[0].deliveredAt).toBe('2026-10-01T00:00:00.000Z')
+  })
+
+  it('matches case-insensitively and returns nothing for an unmatched code', async () => {
+    const a = await redeemReward({ id: 'r1', title: 'A', cost: 10 })
+    expect(await markDeliveredByCode([shortRedemptionCode(a.id).toLowerCase()])).toHaveLength(1)
+    expect(await markDeliveredByCode(['zzzzzz'])).toHaveLength(0)
   })
 })
 
