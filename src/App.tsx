@@ -1,3 +1,4 @@
+import { lazy } from 'react'
 import { HashRouter, Navigate, Route, Routes } from 'react-router-dom'
 import { ThemeProvider } from './presentation/theme/ThemeContext'
 import { AppShell } from './presentation/layout/AppShell'
@@ -7,26 +8,47 @@ import { CheckInScreen } from './presentation/screens/CheckInScreen'
 import { WorkoutPlayerScreen } from './presentation/screens/WorkoutPlayerScreen'
 import { SessionCompleteScreen } from './presentation/screens/SessionCompleteScreen'
 import { LibraryScreen } from './presentation/screens/LibraryScreen'
-import { ScheduleScreen } from './presentation/screens/ScheduleScreen'
-import { ExerciseDetailScreen } from './presentation/screens/ExerciseDetailScreen'
-import { RoutineBuilderScreen } from './presentation/screens/RoutineBuilderScreen'
-import { RoutineDetailScreen } from './presentation/screens/RoutineDetailScreen'
 import { ProgressScreen } from './presentation/screens/ProgressScreen'
-import { ExerciseHistoryScreen } from './presentation/screens/ExerciseHistoryScreen'
-import { SessionDetailScreen } from './presentation/screens/SessionDetailScreen'
 import { SettingsScreen } from './presentation/screens/SettingsScreen'
-import { AboutScreen } from './presentation/screens/AboutScreen'
-import { PrivacyScreen } from './presentation/screens/PrivacyScreen'
-import { TermsScreen } from './presentation/screens/TermsScreen'
-import { LicensesScreen } from './presentation/screens/LicensesScreen'
-import { MeetRaeScreen } from './presentation/screens/MeetRaeScreen'
-import { GardenScreen } from './presentation/screens/GardenScreen'
-import { AchievementsScreen } from './presentation/screens/AchievementsScreen'
-import { StoryScreen } from './presentation/screens/StoryScreen'
-import { StoryChapterScreen } from './presentation/screens/StoryChapterScreen'
-import { RecapScreen } from './presentation/screens/RecapScreen'
 import { ProfilePickGate } from './presentation/components/ProfilePickGate'
 import { OnboardingGate } from './presentation/components/OnboardingGate'
+
+// Rarely-first screens: not a tab, not on the primary guided flow
+// (Today -> Start -> Player -> Rest/Pause -> Complete -> Progress), so
+// they're split into their own chunks instead of swelling the one every
+// visit downloads. RouteFade's own Suspense boundary covers the brief gap
+// (usually nothing — the service worker precaches every chunk) with a
+// Skeleton, without unmounting the tab bar/ThumbBar around it.
+const ScheduleScreen = lazy(() => import('./presentation/screens/ScheduleScreen').then((m) => ({ default: m.ScheduleScreen })))
+const ExerciseDetailScreen = lazy(() =>
+  import('./presentation/screens/ExerciseDetailScreen').then((m) => ({ default: m.ExerciseDetailScreen }))
+)
+const RoutineBuilderScreen = lazy(() =>
+  import('./presentation/screens/RoutineBuilderScreen').then((m) => ({ default: m.RoutineBuilderScreen }))
+)
+const RoutineDetailScreen = lazy(() =>
+  import('./presentation/screens/RoutineDetailScreen').then((m) => ({ default: m.RoutineDetailScreen }))
+)
+const ExerciseHistoryScreen = lazy(() =>
+  import('./presentation/screens/ExerciseHistoryScreen').then((m) => ({ default: m.ExerciseHistoryScreen }))
+)
+const SessionDetailScreen = lazy(() =>
+  import('./presentation/screens/SessionDetailScreen').then((m) => ({ default: m.SessionDetailScreen }))
+)
+const AboutScreen = lazy(() => import('./presentation/screens/AboutScreen').then((m) => ({ default: m.AboutScreen })))
+const MeetRaeScreen = lazy(() => import('./presentation/screens/MeetRaeScreen').then((m) => ({ default: m.MeetRaeScreen })))
+const PrivacyScreen = lazy(() => import('./presentation/screens/PrivacyScreen').then((m) => ({ default: m.PrivacyScreen })))
+const TermsScreen = lazy(() => import('./presentation/screens/TermsScreen').then((m) => ({ default: m.TermsScreen })))
+const LicensesScreen = lazy(() => import('./presentation/screens/LicensesScreen').then((m) => ({ default: m.LicensesScreen })))
+const StoryScreen = lazy(() => import('./presentation/screens/StoryScreen').then((m) => ({ default: m.StoryScreen })))
+const StoryChapterScreen = lazy(() =>
+  import('./presentation/screens/StoryChapterScreen').then((m) => ({ default: m.StoryChapterScreen }))
+)
+const GardenScreen = lazy(() => import('./presentation/screens/GardenScreen').then((m) => ({ default: m.GardenScreen })))
+const AchievementsScreen = lazy(() =>
+  import('./presentation/screens/AchievementsScreen').then((m) => ({ default: m.AchievementsScreen }))
+)
+const RecapScreen = lazy(() => import('./presentation/screens/RecapScreen').then((m) => ({ default: m.RecapScreen })))
 
 export default function App() {
   return (

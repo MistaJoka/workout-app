@@ -59,6 +59,19 @@ export default defineConfig({
     // The exercise library is a deliberately separate, lazily-loaded chunk
     // (~1.4MB raw / ~185KB gzip); the default 500kB warning is noise here.
     chunkSizeWarningLimit: 1600,
+    rollupOptions: {
+      output: {
+        // Third-party code (react/react-dom/react-router-dom/dexie/zod)
+        // changes far less often than our own screens, and splitting it
+        // out shrinks the one chunk every route needs regardless of
+        // React.lazy. The service worker precaches every built chunk
+        // either way (sw-build-manifest below), so this only changes how
+        // the bytes are grouped, not whether they're all available offline.
+        manualChunks(id) {
+          if (id.includes('node_modules')) return 'vendor'
+        },
+      },
+    },
   },
   resolve: {
     alias: {

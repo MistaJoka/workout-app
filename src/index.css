@@ -22,6 +22,10 @@
   --radius-panel: 18px;
   --radius-control: 999px;
   --font-body: 'Nunito Variable', ui-rounded, 'SF Pro Rounded', system-ui, sans-serif;
+  /* Phone-first column width. Below this, every rule in the "large-screen
+     column" block further down is a no-op (max-width exceeds the
+     viewport), so phone layout is untouched. */
+  --app-column-max: 600px;
 }
 
 html {
@@ -445,6 +449,15 @@ input[type='range'] {
 
 :is(.sheet-backdrop, .fixed.inset-0.items-end) > [role='dialog'] {
   animation: sheet-panel-in 200ms cubic-bezier(0.2, 0.8, 0.2, 1) backwards;
+  /* Large screens: the backdrop dims the whole viewport (as it always
+     has), but the panel itself clamps to the app column — covers every
+     sheet built on this shared pattern (ConfirmSheet, FilterSheet, lore &
+     emblem sheets, the profile switcher, in-screen confirms) without
+     touching each one. `margin-inline: auto` centers it: these backdrops
+     are flex row containers, and an auto margin on a flex item absorbs
+     the extra main-axis space (no transform). No-op under --app-column-max. */
+  max-width: var(--app-column-max);
+  margin-inline: auto;
 }
 
 /* Reduced: fade only. Out-specifies the global reduced override. */
@@ -464,6 +477,60 @@ input[type='range'] {
   [data-motion='full'] :is(.sheet-backdrop, .fixed.inset-0.items-end) {
     animation: sheet-backdrop-in 150ms ease-out backwards !important;
   }
+}
+
+/* ---- Large-screen column (AppShell, RouteFade, ThumbBar, sheets) ------
+   Phone layout (< 640px) is untouched: --app-column-max is wider than any
+   phone viewport, so `.app-column`/`.app-column-fixed` are no-ops there
+   and the media query below never matches. At 640px+ (tablets, foldables,
+   and landscape phones) the real screen content stays phone-shaped and
+   centered instead of stretching edge to edge.
+   `body::before` paints a plain, full-height plate the exact width of the
+   column, behind everything (negative z-index, so it never needs to be
+   threaded through every screen's own background/min-height): the app's
+   own flat background now reads as a "device" sitting on a soft backdrop.
+   `.app-column` clamps the real content (AppShell's root, RouteFade's
+   root) to match the plate's width with a plain centering margin, never a
+   transform, so the fixed ThumbBar/tab bar (which RouteFade's own
+   animation must not disturb) are unaffected by this rule.
+   `.app-column-fixed` centers the fixed bars themselves (tab bar,
+   ThumbBar) to the same width: left/right/width are over-constrained with
+   auto margins, which CSS resolves by centering — see CSS2.1 §10.3.7 for
+   why that works on `position: fixed` without a transform. */
+@media (min-width: 640px) {
+  body {
+    background: linear-gradient(
+      180deg,
+      color-mix(in srgb, var(--color-field-info) 45%, var(--color-background)) 0%,
+      color-mix(in srgb, var(--color-field-calm) 35%, var(--color-background)) 45%,
+      var(--color-background) 100%
+    );
+    background-attachment: fixed;
+  }
+  body::before {
+    content: '';
+    position: fixed;
+    inset: 0;
+    left: 0;
+    right: 0;
+    margin-inline: auto;
+    max-width: var(--app-column-max);
+    background-color: var(--color-background);
+    box-shadow: 0 0 0 1px color-mix(in srgb, var(--color-text) 8%, transparent), 0 24px 64px -24px color-mix(in srgb, var(--color-text) 25%, transparent);
+    z-index: -1;
+  }
+}
+
+.app-column {
+  max-width: var(--app-column-max);
+  margin-inline: auto;
+}
+
+.app-column-fixed {
+  left: 0;
+  right: 0;
+  margin-inline: auto;
+  max-width: var(--app-column-max);
 }
 
 /* ---- Skeleton loading (components/Skeleton.tsx) ------------------------

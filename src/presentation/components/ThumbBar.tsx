@@ -32,7 +32,9 @@ export function ThumbBar({
   return (
     <div
       data-armed={armed}
-      className={`fixed ${aboveTabBar ? 'bottom-16' : 'bottom-0'} left-0 right-0 border-t-2 border-edge bg-surface p-4 ${className}`}
+      // `app-column-fixed` (index.css) clamps this fixed bar to the same
+      // centered column as the tab bar/screens on wide viewports.
+      className={`app-column-fixed fixed ${aboveTabBar ? 'bottom-16' : 'bottom-0'} border-t-2 border-edge bg-surface p-4 ${className}`}
       style={{
         paddingBottom: aboveTabBar ? undefined : 'max(1rem, env(safe-area-inset-bottom))',
         pointerEvents: armed ? undefined : 'none',

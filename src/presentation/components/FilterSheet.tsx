@@ -41,13 +41,18 @@ export function FilterSheet({
           <span>{activeCount > 0 ? activeCount : 'Filter'}</span>
         </button>
       ) : (
-        <button
-          type="button"
-          onClick={() => setOpen(true)}
-          className={`fixed ${triggerBottomClassName} right-4 z-20 min-h-11 rounded-full bg-field-primary px-4 py-2 text-sm font-bold shadow-lg`}
-        >
-          {label}
-        </button>
+        // A fixed, column-width, invisible row (`app-column-fixed`, index.css)
+        // holding the real trigger at its right edge — so on wide viewports
+        // the button hugs the centered column's edge, not the backdrop's.
+        <div className={`app-column-fixed fixed ${triggerBottomClassName} z-20 flex justify-end pointer-events-none`}>
+          <button
+            type="button"
+            onClick={() => setOpen(true)}
+            className="pointer-events-auto mr-4 min-h-11 rounded-full bg-field-primary px-4 py-2 text-sm font-bold shadow-lg"
+          >
+            {label}
+          </button>
+        </div>
       )}
 
       {/* Portaled so a sticky/stacked trigger row can't trap the sheet

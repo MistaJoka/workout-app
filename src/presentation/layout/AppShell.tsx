@@ -4,7 +4,10 @@ import { RouteFade } from './RouteFade'
 
 export function AppShell() {
   return (
-    <div className="min-h-screen bg-bg text-ink flex flex-col">
+    // `app-column`: on screens wider than ~640px this clamps the real
+    // content to a centered phone-width column over the soft backdrop
+    // (index.css, "Large-screen column"); below that it's a no-op.
+    <div className="app-column min-h-screen bg-bg text-ink flex flex-col">
       <main className="flex-1 pb-20">
         {/* The tab bar stays put; only the screen above it fades in. */}
         <RouteFade>
@@ -16,7 +19,7 @@ export function AppShell() {
           Settings (rarest) sits leftmost, Today (most-used) sits rightmost,
           the easiest slot for a right-handed one-handed grip. */}
       <nav
-        className="fixed bottom-0 left-0 right-0 z-10 flex h-16 border-t-2 border-edge bg-surface"
+        className="app-column-fixed fixed bottom-0 z-10 flex h-16 border-t-2 border-edge bg-surface"
         style={{ paddingBottom: 'env(safe-area-inset-bottom)' }}
       >
         <NavItem to="/settings" label="Settings" icon={<SettingsIcon />} />
