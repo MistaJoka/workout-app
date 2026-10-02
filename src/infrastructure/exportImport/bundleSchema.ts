@@ -148,6 +148,19 @@ const redemption = z
   })
   .passthrough()
 
+const loveNote = z
+  .object({
+    id: z.string().min(1),
+    text: z.string().max(280),
+    emoji: z.string().min(1),
+    createdAt: isoLike,
+    updatedAt: isoLike,
+    unlockedAt: isoLike.nullable(),
+    unlockedBySessionId: z.string().min(1).nullable(),
+    readAt: isoLike.nullable(),
+  })
+  .passthrough()
+
 export const exportBundleSchema = z
   .object({
     exportedAt: isoLike,
@@ -164,5 +177,6 @@ export const exportBundleSchema = z
     bodyWeight: z.array(bodyWeight).optional(),
     rewards: z.array(reward).optional(),
     redemptions: z.array(redemption).optional(),
+    loveNotes: z.array(loveNote).optional(),
   })
   .passthrough()

@@ -41,6 +41,24 @@ export type RedemptionRecord = {
   redeemedAt: string
   deliveredAt: string | null
 }
+// Hubby Bunny's surprise love notes (v5). He writes a queue of notes while
+// they're all still locked; a finished workout has a deterministic chance
+// (src/domain/rewards/loveNotes.ts) of unlocking the oldest locked one.
+// `unlockedAt`/`unlockedBySessionId` are null until that happens, then set
+// together, once, by the Complete screen's first idempotent evaluation.
+// `readAt` is set the first time the envelope is actually opened (or
+// reopened from the notes box) -- separate from unlocking so Today's badge
+// can tell "unlocked" apart from "read".
+export type LoveNoteRecord = {
+  id: string
+  text: string
+  emoji: string
+  createdAt: string
+  updatedAt: string
+  unlockedAt: string | null
+  unlockedBySessionId: string | null
+  readAt: string | null
+}
 export type ProgressionRecord = {
   exerciseId: string
   level: number
@@ -70,6 +88,7 @@ export class WorkoutDb extends Dexie {
   bodyWeight!: EntityTable<BodyWeightRecord, 'day'>
   rewards!: EntityTable<RewardRecord, 'id'>
   redemptions!: EntityTable<RedemptionRecord, 'id'>
+  loveNotes!: EntityTable<LoveNoteRecord, 'id'>
 
   // One database per profile (see src/infrastructure/profiles.ts); the
   // name is resolved once, at module load, for the active profile.
@@ -96,6 +115,10 @@ export class WorkoutDb extends Dexie {
     this.version(4).stores({
       rewards: 'id, createdAt, updatedAt',
       redemptions: 'id, rewardId, redeemedAt',
+    })
+    // v5: Hubby Bunny's surprise love notes. Additive only.
+    this.version(5).stores({
+      loveNotes: 'id, createdAt, updatedAt, unlockedAt',
     })
   }
 }

@@ -4,6 +4,7 @@ import type {
   CheckInRecord,
   CustomTemplateRecord,
   FamiliarityRecord,
+  LoveNoteRecord,
   ProgressionRecord,
   RedemptionRecord,
   RewardRecord,
@@ -32,6 +33,8 @@ export type ExportBundle = {
   // Added with DB v4 (Hubby Bunny's reward shop); optional for the same reason.
   rewards?: RewardRecord[]
   redemptions?: RedemptionRecord[]
+  // Added with DB v5 (Hubby Bunny's surprise love notes); optional for the same reason.
+  loveNotes?: LoveNoteRecord[]
 }
 
 const ALL_TABLES = () => [
@@ -46,6 +49,7 @@ const ALL_TABLES = () => [
   db.bodyWeight,
   db.rewards,
   db.redemptions,
+  db.loveNotes,
 ]
 
 // One read transaction, so a write landing mid-export can't produce a
@@ -67,6 +71,7 @@ export async function exportAll(): Promise<ExportBundle> {
     bodyWeight: await db.bodyWeight.toArray(),
     rewards: await db.rewards.toArray(),
     redemptions: await db.redemptions.toArray(),
+    loveNotes: await db.loveNotes.toArray(),
   }))
 }
 
@@ -151,6 +156,11 @@ export async function importAll(bundle: ExportBundle): Promise<ImportSummary> {
     // Hubby Bunny's shop catalog is current, mutable state like routines:
     // whichever copy was edited most recently wins.
     await putNewer<RewardRecord>(db.rewards, bundle.rewards ?? [], (r) => r.id, (r) => r.updatedAt)
+    // Love notes are the same kind of current, mutable state, but with one
+    // more wrinkle: unlocked/read is itself real history (it happened on
+    // some device), so it's never allowed to roll back even when the
+    // *text* side of a merge keeps the local copy.
+    await mergeLoveNotes(bundle.loveNotes ?? [])
   })
   return { state: other ? 'skipped-other-profile' : 'merged' }
 }
@@ -169,6 +179,31 @@ async function mergeSettings(rows: SettingsRecord[]): Promise<void> {
       await db.settings.put({ key: row.key, value: { ...(row.value as object), ...(here.value as object) } })
     }
   }
+}
+
+// Love notes merge like rewards (newest text wins by updatedAt), but
+// unlocked/read are sticky on top of that: once either side has set one,
+// the merged row keeps it, even if the side carrying the newer text/emoji
+// is the one without it (Hubby Bunny's own phone, say, never runs the
+// unlock roll for a note he wrote). The merged row's own updatedAt is the
+// later of the two, so a future merge still compares correctly.
+async function mergeLoveNotes(rows: LoveNoteRecord[]): Promise<void> {
+  if (rows.length === 0) return
+  const local = await db.loveNotes.bulkGet(rows.map((r) => r.id))
+  const merged: LoveNoteRecord[] = rows.map((incoming, i) => {
+    const here = local[i]
+    if (!here) return incoming
+    const newer = incoming.updatedAt >= here.updatedAt ? incoming : here
+    const older = newer === incoming ? here : incoming
+    return {
+      ...newer,
+      unlockedAt: newer.unlockedAt ?? older.unlockedAt,
+      unlockedBySessionId: newer.unlockedBySessionId ?? older.unlockedBySessionId,
+      readAt: newer.readAt ?? older.readAt,
+      updatedAt: newer.updatedAt > older.updatedAt ? newer.updatedAt : older.updatedAt,
+    }
+  })
+  await db.loveNotes.bulkPut(merged)
 }
 
 type StateTable<T> = {

@@ -29,6 +29,7 @@ import { AchievementBadge } from '../components/AchievementUnlocks'
 import { RAE_STORY, unlockedChapters } from '../../domain/content/raeStory'
 import { RaeFace, type RaeExpression } from '../components/Rae'
 import { loadCarrotBalance } from '../components/CarrotCelebration'
+import { loadLoveNotesSummary } from '../components/LoveNoteCelebration'
 
 // How many rows "By exercise" and "History" show before "Show all" — short
 // enough that Progress doesn't turn into a mile of scrolling once there's
@@ -209,6 +210,7 @@ export function ProgressScreen() {
               <StoryTile unlocked={snapshot.storyChapters} />
               <RecapLink compact />
               <RewardsShopTile />
+              <LoveNotesTile />
             </div>
           </section>
 
@@ -358,6 +360,41 @@ function RewardsShopTile() {
       </span>
       <p className="font-bold">Hubby's shop</p>
       <p className="hud-num text-xs text-ink-muted">{balance ?? 0} carrots</p>
+    </Link>
+  )
+}
+
+// Your collection's sixth tile: Hubby Bunny's love notes, how many have
+// been opened so far. Matches the other compact tiles' shape; locked notes
+// are never counted into the headline number shown here (that's a mystery
+// reserved for /notes' own "N sealed" line).
+function LoveNotesTile() {
+  const [summary, setSummary] = useState<{ opened: number; total: number } | null>(null)
+  useEffect(() => {
+    let cancelled = false
+    loadLoveNotesSummary()
+      .then((s) => {
+        if (!cancelled) setSummary(s)
+      })
+      .catch(() => {
+        if (!cancelled) setSummary(null)
+      })
+    return () => {
+      cancelled = true
+    }
+  }, [])
+  const opened = summary?.opened ?? 0
+  return (
+    <Link
+      to="/notes"
+      className="card flex min-h-11 flex-col items-center gap-1 p-3 text-center active:bg-field-primary"
+      aria-label={`Love notes: ${opened} opened. Open your love notes`}
+    >
+      <span aria-hidden="true" className="text-[2.125rem] leading-none">
+        💌
+      </span>
+      <p className="font-bold">Love notes</p>
+      <p className="hud-num text-xs text-ink-muted">{opened} opened</p>
     </Link>
   )
 }
