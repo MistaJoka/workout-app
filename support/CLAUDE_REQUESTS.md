@@ -142,6 +142,26 @@ Use this mailbox when implementation reaches a product/data/spec/asset/test gap 
 **Requested output:** decision per template
 **Proposed fallback if unresolved:** keep shipping them as drafts.
 
+## REQ-20261001-007 — Owner decisions needed before selling the app
+
+**Status:** OPEN
+**Blocking:** no (the app is fully usable without any of these; they block store listing/sale readiness, not local use)
+**Implementation context:** `src/presentation/legal/contact.ts` (`SUPPORT_CONTACT` placeholder), `src/presentation/screens/{PrivacyScreen,TermsScreen,LicensesScreen}.tsx` (new in-app legal pages), `support/REVIEW_QUEUE.md` (stock photo re-verification item)
+**Need:** the owner to decide each of the following before this app is listed/sold anywhere:
+1. **Support email.** `SUPPORT_CONTACT` in `src/presentation/legal/contact.ts` is a placeholder (`support@example.com`) with a `TODO` comment. Replace it with the real address the owner will monitor.
+2. **Privacy policy hosting URL.** Store listings (Apple App Store / Google Play) require a *URL* to the privacy policy, not just an in-app page. The new `/privacy` screen's text can be exported/copied as-is to wherever that gets hosted (a static page, a GitHub Pages doc, etc.) — the owner needs to pick where and set that URL in each store listing.
+3. **Rae likeness commercial consent.** Rae is a locked, authored character (`docs/RAE_CHARACTER_BIBLE_V1.md`). Selling the app is a different distribution context than private personal use; confirm there's no additional consent/rights question before Rae ships in a paid or publicly-listed product.
+4. **Stock/exercise photo licensing re-verification.** `support/REVIEW_QUEUE.md` already flags `public/exercise-media/*` (free-exercise-db imagery, credited upstream to `wrkout/exercises.json`) as "fine for this private home-only app; re-verify the `wrkout` origin before any public distribution." Selling the app is that public distribution; re-verify before listing.
+5. **Signing key custody / Play Console.** Who holds the Android signing key and the Play Console account for a sold/listed app — the owner's own account, or something else? This has no fallback once an app is published under a key.
+6. **`NO_EQUIPMENT_ONLY` for a general audience.** The current no-equipment-only library filter (REQ-20260928-005) was chosen for the owner's own household. Confirm whether a general-audience sale should keep that restriction, lift it, or make it a setting.
+7. **The three Draft workouts.** REQ-20260929-006 (Warm-up, Cool-down, Chair day) is still open. Decide per-template before they ship to anyone outside the household.
+8. **Dark mode.** Pixel Bloom is the only theme (no theme picker, owner decision 2026-09-26). Confirm whether a general-audience release needs a dark variant, or whether Pixel Bloom ships as the only look.
+9. **Pricing.** Free, paid, one-time purchase, or subscription — affects store listing setup and whether any payment/receipt flow is needed (currently none exists, and none should be added without this decision).
+**Why it matters:** these are product/business/legal decisions about a real sale, not implementation gaps Claude Code can infer or default. Guessing any of them would either misrepresent the app in a store listing or make a commitment (pricing, key custody, likeness rights) nobody but the owner can make.
+**Requested output:** decision (per item above)
+**Constraints already known:** the app's privacy/security posture (no account, no analytics, on-device storage, optional GitHub photo fetch) is accurate as of this REQ and documented in `docs/SECURITY_AND_PRIVACY.md`; the new /privacy, /terms, /licenses screens describe that posture as it exists today and must be revisited if any decision above changes it.
+**Proposed fallback if unresolved:** ship with the placeholder support email clearly marked (not listed anywhere until replaced), keep the privacy text in-app only (no external URL) until a hosting decision is made, and do not submit to any store listing until items 1-5 are resolved.
+
 ## Template
 
 ```md
