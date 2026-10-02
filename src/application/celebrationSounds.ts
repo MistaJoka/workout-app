@@ -11,7 +11,7 @@
 
 import { canVibrate, getAudioContext } from './restFeedback'
 
-export type CelebrationKind = 'start' | 'bloom' | 'badge' | 'levelUp' | 'goalMet' | 'best'
+export type CelebrationKind = 'start' | 'bloom' | 'badge' | 'levelUp' | 'goalMet' | 'best' | 'redeem'
 
 export type CelebrationOptions = {
   // 'bloom' only: a brighter, extra-sparkly take for a rare/legendary species.
@@ -104,6 +104,16 @@ export function buildBestChime(): Note[] {
   ]
 }
 
+// A bright two-note "pop" for redeeming a reward from Hubby Bunny's shop: a
+// little cheerier than the badge sparkle (it closes out a deliberate
+// choice, not a surprise unlock), still comfortably under a second.
+export function buildRedeemPop(): Note[] {
+  return [
+    { frequency: degree(3), start: 0, duration: 0.12, peak: 0.18 },
+    { frequency: degree(5), start: 0.08, duration: 0.24, peak: 0.22 },
+  ]
+}
+
 export function buildCelebrationNotes(kind: CelebrationKind, opts?: CelebrationOptions): Note[] {
   switch (kind) {
     case 'start':
@@ -118,6 +128,8 @@ export function buildCelebrationNotes(kind: CelebrationKind, opts?: CelebrationO
       return buildGoalMetChord()
     case 'best':
       return buildBestChime()
+    case 'redeem':
+      return buildRedeemPop()
   }
 }
 
@@ -130,6 +142,7 @@ const HAPTIC_PATTERN: Record<CelebrationKind, number | number[]> = {
   levelUp: [30, 50, 30, 50, 60],
   goalMet: [40, 60, 40],
   best: [20, 40, 20],
+  redeem: [25, 35, 25],
 }
 
 function playNotes(ctx: AudioContext, notes: Note[]): void {

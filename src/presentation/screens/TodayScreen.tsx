@@ -36,6 +36,7 @@ import { PixelBloom } from '../components/PixelBloom'
 import { RaeFace, type RaeExpression } from '../components/Rae'
 import { unlockedChapters, type RaeStoryChapter } from '../../domain/content/raeStory'
 import { isChapterSeen } from '../storySeen'
+import { CarrotBalanceChip } from '../components/CarrotCelebration'
 
 const QUICK_ID = 'fs.quick-10'
 
@@ -279,16 +280,19 @@ export function TodayScreen() {
 
   return (
     <div className="p-4 space-y-4">
-      <header className="px-1">
-        <p className="text-sm font-semibold text-ink-muted">{longDate(now)}</p>
-        <h1 className="flex items-center gap-1.5 text-[1.625rem] font-extrabold leading-tight">
-          <span>{greeting(now, profile.name)}</span>
-          {emblemSpecies && hasRealName(profile.name) && (
-            <span aria-hidden="true" className="inline-flex flex-none">
-              <PixelBloom size={22} animate={false} species={emblemSpecies} />
-            </span>
-          )}
-        </h1>
+      <header className="flex items-start justify-between gap-2 px-1">
+        <div>
+          <p className="text-sm font-semibold text-ink-muted">{longDate(now)}</p>
+          <h1 className="flex items-center gap-1.5 text-[1.625rem] font-extrabold leading-tight">
+            <span>{greeting(now, profile.name)}</span>
+            {emblemSpecies && hasRealName(profile.name) && (
+              <span aria-hidden="true" className="inline-flex flex-none">
+                <PixelBloom size={22} animate={false} species={emblemSpecies} />
+              </span>
+            )}
+          </h1>
+        </div>
+        <CarrotBalanceChip />
       </header>
 
       {/* Rae's room with today's one thing to do joined underneath it, so

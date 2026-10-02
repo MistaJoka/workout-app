@@ -49,6 +49,7 @@ const AchievementsScreen = lazy(() =>
   import('./presentation/screens/AchievementsScreen').then((m) => ({ default: m.AchievementsScreen }))
 )
 const RecapScreen = lazy(() => import('./presentation/screens/RecapScreen').then((m) => ({ default: m.RecapScreen })))
+const RewardsScreen = lazy(() => import('./presentation/screens/RewardsScreen').then((m) => ({ default: m.RewardsScreen })))
 
 export default function App() {
   return (
@@ -69,6 +70,7 @@ export default function App() {
             <Route path="/progress/:exerciseId" element={<ExerciseHistoryScreen />} />
             <Route path="/history/:sessionId" element={<SessionDetailScreen />} />
             <Route path="/settings" element={<SettingsScreen />} />
+            <Route path="/rewards" element={<RewardsScreen />} />
             <Route path="/about" element={<AboutScreen />} />
             <Route path="/privacy" element={<PrivacyScreen />} />
             <Route path="/terms" element={<TermsScreen />} />

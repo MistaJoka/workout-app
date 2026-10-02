@@ -1,0 +1,88 @@
+import { beforeEach, describe, expect, it } from 'vitest'
+import { db } from '../db/schema'
+import { exportAll, importAll, isValidExportBundle } from './exportImport'
+import { addReward, listRewards, updateReward } from '../db/repositories/rewardsRepository'
+import { listRedemptions, markDelivered, redeemReward } from '../db/repositories/redemptionsRepository'
+
+beforeEach(async () => {
+  await db.rewards.clear()
+  await db.redemptions.clear()
+})
+
+describe('export/import of Hubby Bunny\'s reward shop', () => {
+  it('round-trips a reward and a redemption through export and import', async () => {
+    const reward = await addReward({ title: 'Foot rub', cost: 30, emoji: '🦶' }, '2026-09-01T00:00:00.000Z')
+    await redeemReward(reward, '2026-09-05T00:00:00.000Z')
+    const bundle = await exportAll()
+    expect(bundle.rewards?.map((r) => r.id)).toEqual([reward.id])
+    expect(bundle.redemptions).toHaveLength(1)
+
+    await db.rewards.clear()
+    await db.redemptions.clear()
+    await importAll(bundle)
+    expect((await listRewards())[0]).toMatchObject({ title: 'Foot rub', cost: 30 })
+    expect((await listRedemptions())[0]).toMatchObject({ rewardId: reward.id, title: 'Foot rub', cost: 30 })
+  })
+
+  it('merges rewards newest-wins by updatedAt', async () => {
+    const reward = await addReward({ title: 'Movie night pick', cost: 20, emoji: '🎬' }, '2026-09-01T00:00:00.000Z')
+    const bundle = await exportAll() // Carries the original (older) version.
+
+    // Locally the title changes after the backup was taken.
+    await updateReward(reward.id, { title: 'Movie night pick (any genre)' }, '2026-09-10T00:00:00.000Z')
+    await importAll(bundle)
+    expect((await listRewards())[0].title).toBe('Movie night pick (any genre)')
+
+    // An even-newer incoming edit wins over the local copy.
+    const newer = { ...bundle.rewards![0], title: 'Movie night, her pick', updatedAt: '2026-09-20T00:00:00.000Z' }
+    await importAll({ ...bundle, rewards: [newer] })
+    expect((await listRewards())[0].title).toBe('Movie night, her pick')
+  })
+
+  it('imports redemptions add-only by id: a duplicate id already present is skipped, not duplicated', async () => {
+    const reward = await addReward({ title: 'Dinner date', cost: 40, emoji: '🍽️' })
+    const redemption = await redeemReward(reward, '2026-09-05T00:00:00.000Z')
+    const bundle = await exportAll()
+
+    // Delivered locally after the backup; importing the same bundle again
+    // must never revert or duplicate it.
+    await markDelivered(redemption.id, '2026-09-06T00:00:00.000Z')
+    await importAll(bundle)
+    const all = await listRedemptions()
+    expect(all).toHaveLength(1)
+    expect(all[0].deliveredAt).toBe('2026-09-06T00:00:00.000Z')
+  })
+
+  it('an other-profile backup adds its redemptions as history but leaves the local reward catalog alone', async () => {
+    const localReward = await addReward({ title: 'No-dishes pass', cost: 15, emoji: '🧼' })
+    const theirsBundle = {
+      exportedAt: '2026-09-01T00:00:00.000Z',
+      version: 1,
+      profile: { id: 'someone-else', name: 'Someone Else' },
+      settings: [],
+      checkIns: [],
+      sessionPlans: [],
+      sessionEvents: [],
+      sessionResults: [],
+      familiarity: [],
+      progression: [],
+      rewards: [{ id: 'their-reward', title: 'Their reward', cost: 99, emoji: '❓', active: true, createdAt: '2026-08-01T00:00:00.000Z', updatedAt: '2026-08-01T00:00:00.000Z' }],
+      redemptions: [{ id: 'their-redemption', rewardId: 'their-reward', title: 'Their reward', cost: 99, redeemedAt: '2026-08-02T00:00:00.000Z', deliveredAt: null }],
+    }
+    expect(isValidExportBundle(theirsBundle)).toBe(true)
+    const summary = await importAll(theirsBundle)
+    expect(summary).toEqual({ state: 'skipped-other-profile' })
+
+    // Their redemption is added as history...
+    expect((await listRedemptions()).map((r) => r.id)).toContain('their-redemption')
+    // ...but the local reward catalog (current state) is untouched.
+    expect((await listRewards()).map((r) => r.id)).toEqual([localReward.id])
+  })
+
+  it('still accepts a pre-v4 bundle that has no rewards/redemptions fields', async () => {
+    const bundle = await exportAll()
+    const { rewards: _r, redemptions: _red, ...legacy } = bundle
+    expect(isValidExportBundle(legacy)).toBe(true)
+    await expect(importAll(legacy)).resolves.toEqual({ state: 'merged' })
+  })
+})

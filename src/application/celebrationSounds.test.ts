@@ -6,6 +6,7 @@ import {
   buildCelebrationNotes,
   buildGoalMetChord,
   buildLevelUpFanfare,
+  buildRedeemPop,
   buildStartWhoosh,
   type Note,
 } from './celebrationSounds'
@@ -75,8 +76,16 @@ describe('celebration note builders', () => {
     for (let i = 1; i < notes.length; i++) expect(notes[i].frequency).toBeGreaterThan(notes[i - 1].frequency)
   })
 
+  it('redeem: a bright two-note pop under a second', () => {
+    const notes = buildRedeemPop()
+    expect(notes).toHaveLength(2)
+    expect(end(notes)).toBeLessThan(1)
+    expect(notes[1].frequency).toBeGreaterThan(notes[0].frequency)
+    for (const n of notes) expect(isPleasant(n.frequency)).toBe(true)
+  })
+
   it('none of the sequences ever startle: no note peaks past a soft 0.3 gain', () => {
-    for (const kind of ['start', 'bloom', 'badge', 'levelUp', 'goalMet', 'best'] as const) {
+    for (const kind of ['start', 'bloom', 'badge', 'levelUp', 'goalMet', 'best', 'redeem'] as const) {
       for (const n of buildCelebrationNotes(kind)) expect(n.peak ?? 0.18).toBeLessThanOrEqual(0.3)
     }
   })
@@ -89,5 +98,6 @@ describe('celebration note builders', () => {
     expect(buildCelebrationNotes('bloom', { rare: true })).toEqual(buildBloomChime(true))
     expect(buildCelebrationNotes('bloom')).toEqual(buildBloomChime(false))
     expect(buildCelebrationNotes('best')).toEqual(buildBestChime())
+    expect(buildCelebrationNotes('redeem')).toEqual(buildRedeemPop())
   })
 })

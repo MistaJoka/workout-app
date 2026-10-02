@@ -21,6 +21,8 @@ import { PerfectStamp } from '../components/PerfectStamp'
 import { NextUpTeaser } from '../components/NextUpTeaser'
 import { GoalMetBanner, LevelUpMoment, XpGainChip, loadSessionXp } from '../components/XpCelebration'
 import type { SessionXpGain } from '../../domain/progress/xp'
+import { CarrotGainChip, loadSessionCarrots } from '../components/CarrotCelebration'
+import type { SessionCarrots } from '../../domain/rewards/carrots'
 import { BloomReveal } from '../components/BloomReveal'
 import { useCountUp } from '../components/CountUp'
 import { sessionBloom, type GardenSpecies } from '../../domain/progress/garden'
@@ -59,6 +61,9 @@ export function SessionCompleteScreen() {
   // (goalBloom.ts), if any -- null while loading or if this isn't that
   // session.
   const [goalBloomSpecies, setGoalBloomSpecies] = useState<GardenSpecies | null>(null)
+  // Carrots this workout earned (Hubby Bunny's reward shop), null while
+  // loading or if it couldn't be read -- the screen never waits on it.
+  const [carrots, setCarrots] = useState<SessionCarrots | null>(null)
 
   useEffect(() => {
     if (!sessionId) return
@@ -82,6 +87,9 @@ export function SessionCompleteScreen() {
     loadCandidates(sessionId)
       .then(setCandidates)
       .catch(() => setCandidates([]))
+    loadSessionCarrots(sessionId)
+      .then(setCarrots)
+      .catch(() => setCarrots(null))
     // After a main workout, offer the optional cool-down (never after the
     // warm-up or cool-down themselves).
     getPlan(sessionId)
@@ -196,6 +204,11 @@ export function SessionCompleteScreen() {
           <RewardItem delay={270}>
             <AchievementUnlocks sessionId={sessionId} />
           </RewardItem>
+          {carrots && (
+            <RewardItem delay={360}>
+              <CarrotGainChip gain={carrots} />
+            </RewardItem>
+          )}
         </section>
       )}
       {result && xp?.leveledUp && <LevelUpMoment to={xp.to} />}
