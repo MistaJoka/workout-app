@@ -24,6 +24,7 @@ import { GoalMetBanner, LevelUpMoment, XpGainChip, loadSessionXp } from '../comp
 import type { SessionXpGain } from '../../domain/progress/xp'
 import { CarrotGainChip, loadSessionCarrots } from '../components/CarrotCelebration'
 import type { SessionCarrots } from '../../domain/rewards/carrots'
+import { LoveNoteRewardItem } from '../components/LoveNoteCelebration'
 import { BloomReveal } from '../components/BloomReveal'
 import { useCountUp } from '../components/CountUp'
 import { sessionBloom, type GardenSpecies } from '../../domain/progress/garden'
@@ -212,6 +213,9 @@ export function SessionCompleteScreen() {
           )}
           <RewardItem delay={360}>
             <BossHitReward sessionId={sessionId} />
+          </RewardItem>
+          <RewardItem delay={450}>
+            <LoveNoteRewardItem sessionId={sessionId} />
           </RewardItem>
         </section>
       )}

@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react'
-import { useLocation } from 'react-router-dom'
+import { Link, useLocation } from 'react-router-dom'
 import { BackButton } from '../components/BackButton'
 import { RaeNote } from '../components/RaeNote'
 import type { RedemptionRecord, RewardRecord } from '../../infrastructure/db/schema'
@@ -252,6 +252,19 @@ export function RewardsScreen() {
               {data.pin ? 'Manage shop' : 'Set up shop'}
             </button>
           </section>
+
+          {/* A sibling surprise, reachable from here: Hubby Bunny's love
+              notes, written and unlocked separately from the shop's
+              carrot-spending flow. */}
+          <Link to="/notes" className="card flex min-h-11 items-center gap-3 p-4" aria-label="Love notes. Open your love notes">
+            <span aria-hidden="true" className="text-2xl">
+              💌
+            </span>
+            <span className="flex-1 font-semibold">Love notes</span>
+            <span aria-hidden="true" className="text-xl text-ink-muted">
+              ›
+            </span>
+          </Link>
 
           {activeRewards.length === 0 ? (
             <RaeNote expression="smile">

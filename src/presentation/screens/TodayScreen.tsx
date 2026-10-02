@@ -38,6 +38,7 @@ import { RaeFace, type RaeExpression } from '../components/Rae'
 import { unlockedChapters, type RaeStoryChapter } from '../../domain/content/raeStory'
 import { isChapterSeen } from '../storySeen'
 import { CarrotBalanceChip } from '../components/CarrotCelebration'
+import { LoveNoteBadge } from '../components/LoveNoteCelebration'
 
 const QUICK_ID = 'fs.quick-10'
 
@@ -293,7 +294,10 @@ export function TodayScreen() {
             )}
           </h1>
         </div>
-        <CarrotBalanceChip />
+        <div className="flex items-center gap-2">
+          <LoveNoteBadge />
+          <CarrotBalanceChip />
+        </div>
       </header>
 
       {/* Rae's room with today's one thing to do joined underneath it, so

@@ -51,6 +51,9 @@ const AchievementsScreen = lazy(() =>
 const RecapScreen = lazy(() => import('./presentation/screens/RecapScreen').then((m) => ({ default: m.RecapScreen })))
 const RewardsScreen = lazy(() => import('./presentation/screens/RewardsScreen').then((m) => ({ default: m.RewardsScreen })))
 const BossScreen = lazy(() => import('./presentation/screens/BossScreen').then((m) => ({ default: m.BossScreen })))
+const LoveNotesBoxScreen = lazy(() =>
+  import('./presentation/screens/LoveNotesBoxScreen').then((m) => ({ default: m.LoveNotesBoxScreen }))
+)
 
 export default function App() {
   return (
@@ -72,6 +75,7 @@ export default function App() {
             <Route path="/history/:sessionId" element={<SessionDetailScreen />} />
             <Route path="/settings" element={<SettingsScreen />} />
             <Route path="/rewards" element={<RewardsScreen />} />
+            <Route path="/notes" element={<LoveNotesBoxScreen />} />
             <Route path="/about" element={<AboutScreen />} />
             <Route path="/privacy" element={<PrivacyScreen />} />
             <Route path="/terms" element={<TermsScreen />} />

@@ -11,7 +11,7 @@
 
 import { canVibrate, getAudioContext } from './restFeedback'
 
-export type CelebrationKind = 'start' | 'bloom' | 'badge' | 'levelUp' | 'goalMet' | 'best' | 'redeem' | 'bossHit' | 'bossDefeat'
+export type CelebrationKind = 'start' | 'bloom' | 'badge' | 'levelUp' | 'goalMet' | 'best' | 'redeem' | 'bossHit' | 'bossDefeat' | 'letter'
 
 export type CelebrationOptions = {
   // 'bloom' only: a brighter, extra-sparkly take for a rare/legendary species.
@@ -134,6 +134,15 @@ export function buildBossDefeatFanfare(): Note[] {
   ]
 }
 
+// A soft, warm two-note "aww" for opening a surprise love note: gentler and
+// slower than redeem's bright pop -- this is a quiet moment, not a win.
+export function buildLetterChime(): Note[] {
+  return [
+    { frequency: degree(2), start: 0, duration: 0.3, peak: 0.14 },
+    { frequency: degree(4), start: 0.14, duration: 0.46, peak: 0.16 },
+  ]
+}
+
 export function buildCelebrationNotes(kind: CelebrationKind, opts?: CelebrationOptions): Note[] {
   switch (kind) {
     case 'start':
@@ -154,6 +163,8 @@ export function buildCelebrationNotes(kind: CelebrationKind, opts?: CelebrationO
       return buildBossHitThunk()
     case 'bossDefeat':
       return buildBossDefeatFanfare()
+    case 'letter':
+      return buildLetterChime()
   }
 }
 
@@ -169,6 +180,7 @@ const HAPTIC_PATTERN: Record<CelebrationKind, number | number[]> = {
   redeem: [25, 35, 25],
   bossHit: [25, 20],
   bossDefeat: [20, 30, 20, 30, 40],
+  letter: [15, 40],
 }
 
 function playNotes(ctx: AudioContext, notes: Note[]): void {
