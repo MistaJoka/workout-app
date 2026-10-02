@@ -66,7 +66,7 @@ export function XpGainChip({ gain }: { gain: SessionXpGain }) {
   return (
     <div className="space-y-2 text-left" data-testid="xp-gain">
       <p className="text-center">
-        <span className="hud-num text-2xl font-extrabold text-primary-ink" aria-label={`Plus ${gain.gained} XP`}>
+        <span className="hud-num text-2xl font-extrabold text-primary-ink" role="img" aria-label={`Plus ${gain.gained} XP`}>
           +{shown} XP
         </span>
         {gain.leveledUp && (

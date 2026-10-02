@@ -107,12 +107,12 @@ export function StoryScreen() {
           return (
             <li
               key={chapter.n}
-              className="card flex min-h-11 items-center gap-3 px-4 py-3 opacity-70"
+              className="card flex min-h-11 items-center gap-3 border-dashed px-4 py-3"
               aria-label={`Chapter ${chapter.n}: ${chapter.title}, locked, unlocks after ${chapter.unlockAt} ${chapter.unlockAt === 1 ? 'workout' : 'workouts'}`}
             >
               <LockGlyph />
               <span className="min-w-0 flex-1">
-                <span className="block font-bold">{chapter.title}</span>
+                <span className="block font-bold text-ink-muted">{chapter.title}</span>
                 <span className="block text-xs text-ink-muted">
                   Unlocks after {chapter.unlockAt} {chapter.unlockAt === 1 ? 'workout' : 'workouts'}
                 </span>
