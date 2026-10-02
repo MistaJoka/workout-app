@@ -32,6 +32,9 @@ import { activeProfile } from '../../infrastructure/profiles'
 import { raeStillFor } from '../components/raeLoops'
 import { estimateMinutes } from '../../domain/content/workoutEstimate'
 import { PixelBloom } from '../components/PixelBloom'
+import { RaeFace, type RaeExpression } from '../components/Rae'
+import { unlockedChapters, type RaeStoryChapter } from '../../domain/content/raeStory'
+import { isChapterSeen } from '../storySeen'
 
 const QUICK_ID = 'fs.quick-10'
 
@@ -63,6 +66,9 @@ type TodayData = {
   gardenFlowers: GardenFlower[]
   // Bloom level (xp.ts), used by RaeHero to grow her room's decor.
   level: number
+  // The most recently unlocked story chapter, if it hasn't been opened yet
+  // (per profile). Fades away the moment it's read, not a persistent inbox.
+  newChapter: RaeStoryChapter | null
 }
 
 async function loadToday(now: Date): Promise<TodayData> {
@@ -198,7 +204,18 @@ async function loadToday(now: Date): Promise<TodayData> {
     }),
     gardenFlowers: buildGarden(results).flowers,
     level: levelFor(computeXp({ plans, results, events }, weeklyGoal(schedule)).total).level,
+    newChapter: latestUnreadChapter(results.length),
   }
+}
+
+// The newest chapter the finished-workout count has unlocked, if it's still
+// unread on this profile. Unlocking is always a leading run of chapters
+// (raeStory.ts), so the newest one is simply the last of that run.
+function latestUnreadChapter(finishedCount: number): RaeStoryChapter | null {
+  const unlocked = unlockedChapters(finishedCount)
+  const latest = unlocked[unlocked.length - 1]
+  if (!latest || isChapterSeen(latest.n)) return null
+  return latest
 }
 
 // Whole local calendar days since the last finished workout (0 = today).
@@ -303,6 +320,23 @@ export function TodayScreen() {
           animate={momentumIn}
           footer={<MomentumStrip milestone={data.milestone} streak={data.bloomStreak} animate={momentumIn} />}
         />
+      )}
+
+      {data?.newChapter && (
+        <Link
+          to={`/story/${data.newChapter.n}`}
+          className="field-info flex min-h-11 items-center gap-3 px-4 py-3"
+          aria-label={`New chapter: ${data.newChapter.title}. Open Rae's story`}
+        >
+          <RaeFace expression={data.newChapter.expression as RaeExpression} size={36} motion="none" decorative />
+          <span className="min-w-0 flex-1">
+            <span className="block font-bold">New chapter: {data.newChapter.title}</span>
+            <span className="block text-sm text-ink-muted">Rae's garden story</span>
+          </span>
+          <span aria-hidden="true" className="text-xl text-ink-muted">
+            ›
+          </span>
+        </Link>
       )}
 
       {data && <RecapEntry />}
