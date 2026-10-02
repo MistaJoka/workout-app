@@ -410,6 +410,89 @@ test.describe('settings', () => {
   })
 })
 
+// input[type=password] has no accessible "textbox" role, so it's found by
+// its accessible label instead of getByRole (same convention as
+// e2e/rewards.spec.ts, e2e/love-notes.spec.ts).
+async function enterPin(page: Page, pin: string, label: string): Promise<void> {
+  await page.getByLabel(label, { exact: true }).fill(pin)
+}
+
+test.describe('Hubby Bunny: reward shop and love notes', () => {
+  test('PIN setup/entry, the shop, redeeming, the coupon, the editors, the notes box and the envelope', async ({ page }) => {
+    test.setTimeout(240_000)
+
+    // Workout 1 earns carrots to redeem with, and finishes before any love
+    // note exists, so nothing can unlock from it either way.
+    await page.goto('/#/checkin/fs.quick-10')
+    await page.getByRole('button', { name: 'Start workout' }).click()
+    await finishWorkout(page)
+
+    // First-time PIN setup, from the shop itself.
+    await page.goto('/#/rewards')
+    await expect(page.getByRole('heading', { name: 'Shop' })).toBeVisible()
+    await checkA11y(page, 'Rewards: shop (fresh)')
+
+    await page.getByRole('button', { name: 'Set up shop' }).click()
+    await expect(page.getByText('Set a PIN')).toBeVisible()
+    await checkA11y(page, 'Rewards: PIN setup sheet')
+    await enterPin(page, '4821', 'New PIN')
+    await enterPin(page, '4821', 'Confirm PIN')
+    await page.getByRole('button', { name: 'Save PIN' }).click()
+
+    // The editor opens right away (hubby mode is unlocked for this visit).
+    await expect(page.getByText("Hubby Bunny's shop")).toBeVisible()
+    await checkA11y(page, 'Rewards: reward editor (empty, starter suggestions)')
+    await page.getByRole('button', { name: /No-dishes pass/ }).click()
+    await expect(page.getByText('No-dishes pass').first()).toBeVisible()
+    await checkA11y(page, 'Rewards: reward editor (with a reward)')
+    await page.getByRole('button', { name: 'Close', exact: true }).click()
+
+    // The "Hubby mode on" pill is visible now that he's unlocked.
+    await expect(page.getByTestId('hubby-mode-pill')).toBeVisible()
+
+    // Redeeming: confirm sheet, then the coupon.
+    await page.getByRole('button', { name: 'Redeem' }).click()
+    await expect(page.getByRole('button', { name: /Redeem for 15/ })).toBeVisible()
+    await checkA11y(page, 'Rewards: redeem confirm sheet')
+    await page.getByRole('button', { name: /Redeem for 15/ }).click()
+    await expect(page.getByTestId('coupon-card')).toBeVisible()
+    await checkA11y(page, 'Rewards: coupon sheet')
+
+    // Marking it delivered doesn't re-ask for the PIN (still unlocked), and
+    // closes the coupon back to the list, which now shows it delivered.
+    await page.getByRole('button', { name: 'Hubby: mark delivered' }).click()
+    await expect(page.getByText('Delivered').first()).toBeVisible()
+
+    // Love notes, reachable from here, same PIN/session: the editor.
+    await page.getByRole('link', { name: 'Love notes' }).click()
+    await expect(page.getByRole('heading', { name: 'Love notes' })).toBeVisible()
+    await checkA11y(page, 'Love notes: box (no notes yet)')
+    await page.getByRole('button', { name: 'Manage' }).click()
+    await expect(page.getByText('Write a love note')).toBeVisible()
+    await checkA11y(page, 'Love notes: editor (empty)')
+    await page.getByRole('button', { name: '+ Write a note' }).click()
+    await page.getByLabel('Note text').fill('Proud of you, superstar')
+    await page.getByRole('button', { name: 'Add to queue' }).click()
+    await expect(page.getByText('Locked (1)')).toBeVisible()
+    await checkA11y(page, 'Love notes: editor (one locked)')
+    await page.getByRole('button', { name: 'Close', exact: true }).click()
+    await expect(page.getByTestId('love-notes-sealed')).toContainText('1 sealed note waiting')
+
+    // Workout 2 meets the default weekly goal (2), guaranteeing the unlock.
+    await page.goto('/#/checkin/fs.quick-10')
+    await page.getByRole('button', { name: 'Start workout' }).click()
+    await finishWorkout(page)
+
+    await page.goto('/#/notes')
+    await expect(page.getByTestId('love-notes-sealed')).toContainText('All opened')
+    await checkA11y(page, 'Love notes: box (all opened, one unread)')
+    await page.getByTestId('love-note-row').click()
+    await expect(page.getByTestId('love-note-envelope')).toBeVisible()
+    await expect(page.getByTestId('love-note-text')).toContainText('Proud of you, superstar')
+    await checkA11y(page, 'Love notes: envelope (reading)')
+  })
+})
+
 test.describe('legal and info pages', () => {
   test('Privacy', async ({ page }) => {
     await page.goto('/#/privacy')

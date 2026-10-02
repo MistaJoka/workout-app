@@ -1,9 +1,10 @@
 import { beforeEach, describe, expect, it } from 'vitest'
 import { db } from '../schema'
-import { addReward, listActiveRewards, listRewards, removeReward, updateReward } from './rewardsRepository'
+import { addReward, DELETED_REWARDS_KEY, listActiveRewards, listRewards, removeReward, updateReward } from './rewardsRepository'
 
 beforeEach(async () => {
   await db.rewards.clear()
+  await db.settings.delete(DELETED_REWARDS_KEY)
 })
 
 describe('rewardsRepository', () => {
@@ -43,5 +44,12 @@ describe('rewardsRepository', () => {
     const reward = await addReward({ title: 'No-dishes pass', cost: 15, emoji: '🍽️' })
     await removeReward(reward.id)
     expect(await listRewards()).toEqual([])
+  })
+
+  it('removeReward leaves a deletedRewards tombstone, so a later import of an old backup cannot resurrect it', async () => {
+    const reward = await addReward({ title: 'Movie night pick', cost: 20, emoji: '🎬' })
+    await removeReward(reward.id, '2026-09-20T00:00:00.000Z')
+    const marks = (await db.settings.get(DELETED_REWARDS_KEY))?.value as Record<string, string>
+    expect(marks[reward.id]).toBe('2026-09-20T00:00:00.000Z')
   })
 })

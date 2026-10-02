@@ -63,13 +63,20 @@ test('earning, redeeming and delivering a Hubby Bunny reward', async ({ page }) 
   await enterPin(page, '4821', 'Confirm PIN')
   await page.getByRole('button', { name: 'Save PIN' }).click()
 
-  // The editor opens right away (he just set the PIN himself); the shop is
-  // empty, so starter suggestions are offered, never pre-created.
+  // The editor opens right away (he just set the PIN himself, so Hubby mode
+  // is unlocked for this visit -- the "Hubby mode on" pill confirms it); the
+  // shop is empty, so starter suggestions are offered, never pre-created.
   await expect(page.getByText("Hubby Bunny's shop")).toBeVisible()
   await expect(page.getByRole('button', { name: /No-dishes pass/ })).toBeVisible()
   await page.getByRole('button', { name: /No-dishes pass/ }).click()
   await expect(page.getByText('No-dishes pass').first()).toBeVisible()
   await page.getByRole('button', { name: 'Close', exact: true }).click()
+  await expect(page.getByTestId('hubby-mode-pill')).toContainText('Hubby mode on')
+
+  // Tapping Lock ends hubby mode for this visit; the next hubby action
+  // (marking delivered) re-asks the PIN, and a wrong guess is rejected.
+  await page.getByRole('button', { name: 'Lock' }).click()
+  await expect(page.getByTestId('hubby-mode-pill')).toHaveCount(0)
 
   // Back on the shop: the reward is redeemable (21 >= 15).
   await expect(page.getByTestId('rewards-balance')).toContainText('21')
@@ -84,7 +91,8 @@ test('earning, redeeming and delivering a Hubby Bunny reward', async ({ page }) 
   expect(shares[0]).toMatchObject({ type: 'image/png', width: 1080, height: 1350 })
   expect(shares[0].name).toMatch(/^coupon-\d{4}-\d{2}-\d{2}\.png$/)
 
-  // Marking it delivered is PIN-gated again; a wrong PIN is rejected.
+  // Marking it delivered is PIN-gated again now that he's locked; a wrong
+  // PIN is rejected.
   await page.getByRole('button', { name: 'Hubby: mark delivered' }).click()
   await enterPin(page, '0000', 'PIN')
   await page.getByRole('button', { name: 'Unlock' }).click()
@@ -92,9 +100,11 @@ test('earning, redeeming and delivering a Hubby Bunny reward', async ({ page }) 
   await enterPin(page, '4821', 'PIN')
   await page.getByRole('button', { name: 'Unlock' }).click()
 
-  // Back on the shop screen: balance spent, and the coupon shows delivered.
+  // Back on the shop screen: balance spent, the coupon shows delivered, and
+  // the correct guess re-unlocked hubby mode for the rest of this visit.
   await expect(page.getByTestId('rewards-balance')).toContainText('6')
   await expect(page.getByText('Delivered').first()).toBeVisible()
+  await expect(page.getByTestId('hubby-mode-pill')).toContainText('Hubby mode on')
 
   // Progress's collection grid links to the same shop.
   await page.goto('/#/progress')

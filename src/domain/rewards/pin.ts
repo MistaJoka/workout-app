@@ -45,3 +45,65 @@ export async function verifyPin(pin: string, record: PinRecord, digest: Digest):
   if (!isValidPin(pin)) return false
   return (await hashPin(pin, record.salt, digest)) === record.hash
 }
+
+// Guess cooldown: a real person fat-fingering their own PIN gets a few free
+// tries; a sustained guessing streak gets slower, not blocked forever. The
+// state is small enough to persist verbatim in a settings row (the caller's
+// job -- this module never touches storage) so a reload mid-cooldown can't
+// reset the clock.
+export const PIN_COOLDOWN_RULES = {
+  // Wrong guesses allowed before the first cooldown kicks in.
+  freeAttempts: 5,
+  // The first cooldown's length; each wrong guess from here on doubles it
+  // (30s, 60s, 120s, ...), so a determined streak slows to a crawl.
+  baseCooldownMs: 30_000,
+} as const
+
+export type PinAttemptState = {
+  // Consecutive wrong guesses since the last correct one (or ever, if none
+  // has landed yet). A correct guess resets this to zero.
+  failCount: number
+  // When the current cooldown (if any) lets guessing resume again, or null
+  // if there isn't one right now.
+  cooldownUntil: string | null
+}
+
+export const INITIAL_PIN_ATTEMPT_STATE: PinAttemptState = { failCount: 0, cooldownUntil: null }
+
+// How long a cooldown lasts for the guess that just made `failCount` wrong
+// guesses in a row -- 0 while still within the free attempts.
+export function cooldownMsFor(failCount: number): number {
+  if (failCount <= PIN_COOLDOWN_RULES.freeAttempts) return 0
+  const doublings = failCount - PIN_COOLDOWN_RULES.freeAttempts - 1
+  return PIN_COOLDOWN_RULES.baseCooldownMs * 2 ** doublings
+}
+
+// Call after a guess the caller has already found to be wrong (a malformed
+// guess isn't a real attempt and shouldn't be recorded here).
+export function recordWrongPinAttempt(state: PinAttemptState, now: Date): PinAttemptState {
+  const failCount = state.failCount + 1
+  const ms = cooldownMsFor(failCount)
+  return { failCount, cooldownUntil: ms > 0 ? new Date(now.getTime() + ms).toISOString() : null }
+}
+
+// Call after a correct guess: the slate is wiped clean.
+export function recordCorrectPinAttempt(): PinAttemptState {
+  return INITIAL_PIN_ATTEMPT_STATE
+}
+
+// Milliseconds left on the current cooldown, or 0 if none is active (either
+// there never was one, or it has already elapsed).
+export function remainingCooldownMs(state: PinAttemptState, now: Date): number {
+  if (!state.cooldownUntil) return 0
+  return Math.max(0, new Date(state.cooldownUntil).getTime() - now.getTime())
+}
+
+export function isInPinCooldown(state: PinAttemptState, now: Date): boolean {
+  return remainingCooldownMs(state, now) > 0
+}
+
+// A gentle message for the cooldown window -- never scolding, just the wait.
+export function pinCooldownMessage(remainingMs: number): string {
+  const seconds = Math.max(1, Math.ceil(remainingMs / 1000))
+  return `Take a breath -- try again in ${seconds}s.`
+}

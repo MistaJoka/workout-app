@@ -10,12 +10,25 @@ import {
   updateLoveNote,
 } from '../../infrastructure/db/repositories/loveNotesRepository'
 import { getSetting, setSetting } from '../../infrastructure/db/repositories/settingsRepository'
-import { DEFAULT_GIVER_NAME, createPinRecord, verifyPin, type PinRecord } from '../../domain/rewards/pin'
+import {
+  DEFAULT_GIVER_NAME,
+  INITIAL_PIN_ATTEMPT_STATE,
+  createPinRecord,
+  isInPinCooldown,
+  pinCooldownMessage,
+  recordCorrectPinAttempt,
+  recordWrongPinAttempt,
+  remainingCooldownMs,
+  verifyPin,
+  type PinAttemptState,
+  type PinRecord,
+} from '../../domain/rewards/pin'
 import { generateSalt, hasSubtleCrypto, sha256Hex } from '../../infrastructure/pinCrypto'
 import { PinEntrySheet, PinSetupSheet } from '../components/RewardsSheets'
 import { LoveNotesEditorSheet, type LoveNoteDraft } from '../components/LoveNotesEditorSheet'
 import { LoveNoteEnvelope } from '../components/LoveNoteEnvelope'
 import { Skeleton, SkeletonList } from '../components/Skeleton'
+import { HubbyModePill, isHubbyUnlocked, touchHubbySession, unlockHubbySession, useHubbySession } from '../components/hubbySession'
 
 // The notes box: opened love notes (reread any), and -- behind the same PIN
 // as the reward shop -- Hubby Bunny's queue editor. Locked notes are never
@@ -23,18 +36,27 @@ import { Skeleton, SkeletonList } from '../components/Skeleton'
 
 const GIVER_NAME_KEY = 'rewardsGiverName'
 const PIN_KEY = 'rewardsHubbyPin'
+// Same shared key RewardsScreen.tsx uses -- one PIN, one guess-cooldown
+// counter and one Hubby-mode session for both screens.
+const PIN_ATTEMPTS_KEY = 'rewardsHubbyPinAttempts'
 
 type Sheet = { kind: 'none' } | { kind: 'pinSetup' } | { kind: 'pinEntry' } | { kind: 'editor' }
 
-type Data = { notes: LoveNoteRecord[]; giverName: string; pin: PinRecord | null }
+type Data = { notes: LoveNoteRecord[]; giverName: string; pin: PinRecord | null; pinAttempts: PinAttemptState }
 
 async function load(): Promise<Data> {
-  const [notes, giverName, pin] = await Promise.all([
+  const [notes, giverName, pin, pinAttempts] = await Promise.all([
     listLoveNotes(),
     getSetting<string>(GIVER_NAME_KEY),
     getSetting<PinRecord>(PIN_KEY),
+    getSetting<PinAttemptState>(PIN_ATTEMPTS_KEY),
   ])
-  return { notes, giverName: giverName ?? DEFAULT_GIVER_NAME, pin: pin ?? null }
+  return {
+    notes,
+    giverName: giverName ?? DEFAULT_GIVER_NAME,
+    pin: pin ?? null,
+    pinAttempts: pinAttempts ?? INITIAL_PIN_ATTEMPT_STATE,
+  }
 }
 
 export function LoveNotesBoxScreen() {
@@ -46,6 +68,9 @@ export function LoveNotesBoxScreen() {
   const [editorError, setEditorError] = useState<string | null>(null)
   const [editorBusyId, setEditorBusyId] = useState<string | null>(null)
   const [reading, setReading] = useState<LoveNoteRecord | null>(null)
+  // Shared with RewardsScreen.tsx: hubby mode stays unlocked across both
+  // screens for the rest of this visit (see components/hubbySession.tsx).
+  const hubby = useHubbySession()
 
   useEffect(() => {
     let cancelled = false
@@ -69,7 +94,13 @@ export function LoveNotesBoxScreen() {
 
   function openManage() {
     setPinError(null)
-    setSheet(data?.pin ? { kind: 'pinEntry' } : { kind: 'pinSetup' })
+    if (!data?.pin) {
+      setSheet({ kind: 'pinSetup' })
+    } else if (isHubbyUnlocked()) {
+      setSheet({ kind: 'editor' })
+    } else {
+      setSheet({ kind: 'pinEntry' })
+    }
   }
 
   async function handleSetPin(pin: string, giverName: string) {
@@ -80,6 +111,8 @@ export function LoveNotesBoxScreen() {
       const record = await createPinRecord(pin, generateSalt(), sha256Hex, algorithm)
       await setSetting(PIN_KEY, record)
       await setSetting(GIVER_NAME_KEY, giverName)
+      await setSetting(PIN_ATTEMPTS_KEY, recordCorrectPinAttempt())
+      unlockHubbySession()
       await refresh()
       setSheet({ kind: 'editor' })
     } catch {
@@ -91,14 +124,25 @@ export function LoveNotesBoxScreen() {
 
   async function handlePinSubmit(pin: string) {
     if (!data?.pin) return
+    const now = new Date()
+    const attempts = data.pinAttempts
+    if (isInPinCooldown(attempts, now)) {
+      setPinError(pinCooldownMessage(remainingCooldownMs(attempts, now)))
+      return
+    }
     setPinBusy(true)
     setPinError(null)
     try {
       const ok = await verifyPin(pin, data.pin, sha256Hex)
       if (!ok) {
-        setPinError('Wrong PIN.')
+        const next = recordWrongPinAttempt(attempts, now)
+        await setSetting(PIN_ATTEMPTS_KEY, next)
+        await refresh()
+        setPinError(isInPinCooldown(next, now) ? pinCooldownMessage(remainingCooldownMs(next, now)) : 'Wrong PIN.')
         return
       }
+      await setSetting(PIN_ATTEMPTS_KEY, recordCorrectPinAttempt())
+      unlockHubbySession()
       setSheet({ kind: 'editor' })
     } catch {
       setPinError("Couldn't check that on this device. Try again.")
@@ -109,6 +153,7 @@ export function LoveNotesBoxScreen() {
 
   async function handleAdd(draft: LoveNoteDraft) {
     setEditorError(null)
+    touchHubbySession()
     try {
       await addLoveNote(draft)
       await refresh()
@@ -119,6 +164,7 @@ export function LoveNotesBoxScreen() {
 
   async function handleUpdate(id: string, patch: Partial<Pick<LoveNoteRecord, 'text' | 'emoji'>>) {
     setEditorError(null)
+    touchHubbySession()
     try {
       await updateLoveNote(id, patch)
       await refresh()
@@ -130,6 +176,7 @@ export function LoveNotesBoxScreen() {
   async function handleRemove(id: string) {
     setEditorError(null)
     setEditorBusyId(id)
+    touchHubbySession()
     try {
       await removeLoveNote(id)
       await refresh()
@@ -160,6 +207,8 @@ export function LoveNotesBoxScreen() {
         <BackButton />
         <h1 className="text-xl font-bold">Love notes</h1>
       </div>
+
+      <HubbyModePill unlocked={hubby.unlocked} onLock={hubby.lock} />
 
       {data === null && !failed && (
         <Skeleton className="space-y-3">

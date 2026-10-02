@@ -99,6 +99,9 @@ const LOCAL_ONLY_SETTINGS = new Set(['lastExportAt'])
 // backup can't bring them back (written by deleteCustomTemplate).
 export const DELETED_ROUTINES_KEY = 'deletedRoutines'
 
+// Same idea for Hubby Bunny's reward catalog (written by removeReward).
+export const DELETED_REWARDS_KEY = 'deletedRewards'
+
 // 'merged': the same person (or a backup too old to say whose it is):
 // history added, current state merged newest-wins. 'skipped-other-profile':
 // someone else's backup: their workouts are added as history only, and this
@@ -143,19 +146,26 @@ export async function importAll(bundle: ExportBundle): Promise<ImportSummary> {
     if (other) return
 
     await mergeSettings(bundle.settings)
-    const deleted = ((await db.settings.get(DELETED_ROUTINES_KEY))?.value ?? {}) as Record<string, string>
+    const deletedRoutines = ((await db.settings.get(DELETED_ROUTINES_KEY))?.value ?? {}) as Record<string, string>
+    const deletedRewards = ((await db.settings.get(DELETED_REWARDS_KEY))?.value ?? {}) as Record<string, string>
     await putNewer<FamiliarityRecord>(db.familiarity, bundle.familiarity, (r) => r.exerciseId, (r) => r.lastSeenAt)
     await putNewer<ProgressionRecord>(db.progression, bundle.progression, (r) => r.exerciseId, (r) => r.lastAdvancedAt)
     await putNewer<CustomTemplateRecord>(
       db.customTemplates,
-      (bundle.customTemplates ?? []).filter((r) => !(r.id in deleted)),
+      (bundle.customTemplates ?? []).filter((r) => !(r.id in deletedRoutines)),
       (r) => r.id,
       (r) => r.updatedAt
     )
     await putNewer<BodyWeightRecord>(db.bodyWeight, bundle.bodyWeight ?? [], (r) => r.day, (r) => r.recordedAt)
     // Hubby Bunny's shop catalog is current, mutable state like routines:
-    // whichever copy was edited most recently wins.
-    await putNewer<RewardRecord>(db.rewards, bundle.rewards ?? [], (r) => r.id, (r) => r.updatedAt)
+    // whichever copy was edited most recently wins, and a reward deleted
+    // here stays deleted even if the incoming copy is newer.
+    await putNewer<RewardRecord>(
+      db.rewards,
+      (bundle.rewards ?? []).filter((r) => !(r.id in deletedRewards)),
+      (r) => r.id,
+      (r) => r.updatedAt
+    )
     // Love notes are the same kind of current, mutable state, but with one
     // more wrinkle: unlocked/read is itself real history (it happened on
     // some device), so it's never allowed to roll back even when the
@@ -166,8 +176,11 @@ export async function importAll(bundle: ExportBundle): Promise<ImportSummary> {
 }
 
 // Settings carry no timestamp, so a key already set here keeps its local
-// value; keys missing here are filled in. Deleted-routine markers from both
-// sides are kept.
+// value; keys missing here are filled in. Deleted-routine/deleted-reward
+// tombstone maps from both sides are unioned (a key deleted on either side
+// stays deleted), never just one side kept.
+const UNION_SETTINGS_KEYS = new Set([DELETED_ROUTINES_KEY, DELETED_REWARDS_KEY])
+
 async function mergeSettings(rows: SettingsRecord[]): Promise<void> {
   const incoming = rows.filter((s) => !LOCAL_ONLY_SETTINGS.has(s.key))
   const local = await db.settings.bulkGet(incoming.map((s) => s.key))
@@ -175,7 +188,7 @@ async function mergeSettings(rows: SettingsRecord[]): Promise<void> {
     const here = local[i]
     if (here === undefined) {
       await db.settings.put(row)
-    } else if (row.key === DELETED_ROUTINES_KEY) {
+    } else if (UNION_SETTINGS_KEYS.has(row.key)) {
       await db.settings.put({ key: row.key, value: { ...(row.value as object), ...(here.value as object) } })
     }
   }

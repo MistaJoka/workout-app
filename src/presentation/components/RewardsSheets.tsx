@@ -91,10 +91,10 @@ export function PinSetupSheet({
   }
 
   return (
-    <SheetShell label="Set a PIN for the reward shop" busy={busy} onCancel={onCancel}>
+    <SheetShell label="Set a PIN for Hubby mode" busy={busy} onCancel={onCancel}>
       <p className="text-lg font-bold">Set a PIN</p>
       <p className="text-sm text-ink-muted">
-        This guards editing the shop and marking coupons delivered. Only you need to remember it.
+        This guards Hubby mode: editing the shop, delivering coupons, and writing love notes. Only you need to remember it.
       </p>
       <label className="block space-y-1 text-left">
         <span className="text-sm font-semibold">Your name, as the giver</span>
@@ -141,7 +141,7 @@ export function PinEntrySheet({
 }) {
   const [pin, setPin] = useState('')
   return (
-    <SheetShell label="Enter the reward-shop PIN" busy={busy} onCancel={onCancel}>
+    <SheetShell label="Enter the Hubby mode PIN" busy={busy} onCancel={onCancel}>
       <p className="text-lg font-bold">Enter PIN</p>
       <div className="flex justify-center">
         <PinInput value={pin} onChange={setPin} label="PIN" />
@@ -235,13 +235,19 @@ export function CouponSheet({
     <SheetShell label="Your coupon" onCancel={onClose}>
       <div className="relative mx-auto flex max-w-[16rem] flex-col items-center gap-1 rounded-panel bg-field-notice px-4 py-6" data-testid="coupon-card">
         <CarrotBurst />
-        <span aria-hidden="true" className="text-5xl">
-          {emoji}
-        </span>
-        <p className="text-xl font-extrabold">{title}</p>
-        <p className="hud-num text-lg font-bold">{cost} 🥕</p>
-        <p className="text-sm text-ink-muted">Redeemable with {giverName}</p>
-        {deliveredAt && <p className="text-sm font-semibold text-primary-ink">Delivered!</p>}
+        {/* z-10 keeps the coupon's own text above the burst (CarrotBurst's
+            bits are absolutely positioned at the card's midpoint, which
+            without an explicit stacking order would paint over this
+            in-flow text -- see presentation/components/CarrotCelebration.tsx). */}
+        <div className="relative z-10 flex flex-col items-center gap-1">
+          <span aria-hidden="true" className="text-5xl">
+            {emoji}
+          </span>
+          <p className="text-xl font-extrabold">{title}</p>
+          <p className="hud-num text-lg font-bold">{cost} 🥕</p>
+          <p className="text-sm text-ink-muted">Redeemable with {giverName}</p>
+          {deliveredAt && <p className="text-sm font-semibold text-primary-ink">Delivered!</p>}
+        </div>
       </div>
       {shareError && (
         <p className="text-sm text-accent" role="alert">
