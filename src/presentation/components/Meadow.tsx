@@ -64,7 +64,44 @@ const STYLE = `
 function flowerLabel(flower: GardenFlower): string {
   const when = new Date(flower.endedAt).toLocaleDateString(undefined, { month: 'short', day: 'numeric' })
   const rare = flower.species.rarity === 'rare' || flower.species.rarity === 'legendary' ? ', rare' : ''
-  return `${flower.species.name}${rare}, grown ${when}. Open this workout.`
+  const goal = flower.goal ? ', a goal bloom grown by meeting your weekly goal' : ''
+  return `${flower.species.name}${rare}${goal}, grown ${when}. Open this workout.`
+}
+
+// A goal bloom's small pixel ribbon/star -- same marker and 7x7
+// grid/crispEdges convention as LoreSheet's GoalRibbon, drawn decoratively
+// (flowerLabel/the list row already say it in words).
+function GoalRibbonIcon({ size = 10 }: { size?: number }) {
+  return (
+    <svg aria-hidden="true" viewBox="0 0 7 7" width={size} height={size} shapeRendering="crispEdges">
+      <rect x="3" y="0" width="1" height="1" fill="#ffc940" />
+      <rect x="2" y="1" width="3" height="1" fill="#ffc940" />
+      <rect x="1" y="2" width="5" height="1" fill="#ffd966" />
+      <rect x="0" y="3" width="7" height="1" fill="#ffc940" />
+      <rect x="1" y="4" width="2" height="1" fill="#f29e0c" />
+      <rect x="4" y="4" width="2" height="1" fill="#f29e0c" />
+      <rect x="0" y="5" width="2" height="1" fill="#f29e0c" />
+      <rect x="5" y="5" width="2" height="1" fill="#f29e0c" />
+      <rect x="0" y="6" width="1" height="1" fill="#f29e0c" />
+      <rect x="6" y="6" width="1" height="1" fill="#f29e0c" />
+    </svg>
+  )
+}
+
+function GoalRibbonBadge() {
+  return (
+    <span className="pointer-events-none absolute right-0 top-0">
+      <GoalRibbonIcon />
+    </span>
+  )
+}
+
+// A goal bloom reuses the real session that earned it for its link and
+// `data-session-id` (it really did grow from that workout), but needs its
+// own identity for layout/React-key purposes so it never collides with
+// that same session's ordinary flower.
+function flowerKey(flower: GardenFlower): string {
+  return flower.goal ? `${flower.sessionId}:goal` : flower.sessionId
 }
 
 function FlowerSpot({ flower, size, golden, tiltDeg, liftPx, driftPx, swayDelaySec, swayDurationSec }: {
@@ -83,7 +120,8 @@ function FlowerSpot({ flower, size, golden, tiltDeg, liftPx, driftPx, swayDelayS
       aria-label={flowerLabel(flower)}
       data-testid="meadow-flower"
       data-session-id={flower.sessionId}
-      className="meadow__flower flex min-h-11 min-w-11 shrink-0 items-end justify-center rounded-control active:bg-white/20"
+      data-goal-bloom={flower.goal ? 'true' : undefined}
+      className="meadow__flower relative flex min-h-11 min-w-11 shrink-0 items-end justify-center rounded-control active:bg-white/20"
       style={
         {
           '--tilt': `${tiltDeg}deg`,
@@ -95,6 +133,7 @@ function FlowerSpot({ flower, size, golden, tiltDeg, liftPx, driftPx, swayDelayS
       }
     >
       <PixelBloom size={size} animate={false} species={flower.species} golden={golden} />
+      {flower.goal && <GoalRibbonBadge />}
     </Link>
   )
 }
@@ -112,8 +151,12 @@ export function Meadow({
   const [grassBack, grassFront] = GRASS[part]
   const night = part === 'night'
 
-  const spots = layoutMeadow(flowers.map((f) => f.sessionId))
-  const bySessionId = new Map(flowers.map((f) => [f.sessionId, f]))
+  // layoutMeadow/the row map are keyed by flowerKey, not the raw sessionId:
+  // a goal bloom shares its triggering workout's real sessionId (so it
+  // still links to that workout), but needs its own identity here so it
+  // never collides with that same session's ordinary flower.
+  const spots = layoutMeadow(flowers.map(flowerKey))
+  const byKey = new Map(flowers.map((f) => [flowerKey(f), f]))
   const rowsUsed = spots.length === 0 ? 1 : Math.max(...spots.map((s) => s.row)) + 1
   const rows: { row: number; items: typeof spots }[] = Array.from({ length: rowsUsed }, (_, row) => ({
     row,
@@ -183,7 +226,7 @@ export function Meadow({
                   style={{ marginLeft: `${rowOffset}px` }}
                 >
                   {items.map((spot) => {
-                    const flower = bySessionId.get(spot.sessionId)
+                    const flower = byKey.get(spot.sessionId)
                     if (!flower) return null
                     return (
                       <FlowerSpot
@@ -213,15 +256,17 @@ export function Meadow({
           </summary>
           <ul className="space-y-1 pb-1">
             {[...flowers].reverse().map((flower) => (
-              <li key={flower.sessionId}>
+              <li key={flowerKey(flower)}>
                 <Link
                   to={`/history/${flower.sessionId}`}
+                  aria-label={flowerLabel(flower)}
                   className="flex min-h-11 items-center gap-2 rounded-control px-1 active:bg-field-primary"
                 >
                   <PixelBloom size={24} animate={false} species={flower.species} golden={completeRarities.has(flower.species.rarity)} />
-                  <span className="text-sm">
+                  <span aria-hidden="true" className="text-sm">
                     {flower.species.name} · {new Date(flower.endedAt).toLocaleDateString(undefined, { month: 'short', day: 'numeric' })}
                   </span>
+                  {flower.goal && <GoalRibbonIcon size={12} />}
                 </Link>
               </li>
             ))}

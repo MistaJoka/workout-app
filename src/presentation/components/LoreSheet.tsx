@@ -37,8 +37,40 @@ function RarityChip({ rarity }: { rarity: Rarity }) {
   )
 }
 
+// A small pixel star next to the lore card's "grown by goal" note -- the
+// same honest marker Meadow.tsx puts on an individual goal bloom, here
+// standing for the species card as a whole once any of its growings came
+// from meeting a weekly goal. Same 7x7 grid/crispEdges convention as
+// gardenDay.tsx/CritterIcons.tsx.
+export function GoalRibbon({ size = 14 }: { size?: number }) {
+  return (
+    <svg aria-hidden="true" viewBox="0 0 7 7" width={size} height={size} shapeRendering="crispEdges" className="inline-block">
+      <rect x="3" y="0" width="1" height="1" fill="#ffc940" />
+      <rect x="2" y="1" width="3" height="1" fill="#ffc940" />
+      <rect x="1" y="2" width="5" height="1" fill="#ffd966" />
+      <rect x="0" y="3" width="7" height="1" fill="#ffc940" />
+      <rect x="1" y="4" width="2" height="1" fill="#f29e0c" />
+      <rect x="4" y="4" width="2" height="1" fill="#f29e0c" />
+      <rect x="0" y="5" width="2" height="1" fill="#f29e0c" />
+      <rect x="5" y="5" width="2" height="1" fill="#f29e0c" />
+      <rect x="0" y="6" width="1" height="1" fill="#f29e0c" />
+      <rect x="6" y="6" width="1" height="1" fill="#f29e0c" />
+    </svg>
+  )
+}
+
 export type LoreSheetTarget =
-  | { kind: 'discovered'; species: GardenSpecies; count: number; firstGrownAt: string; golden: boolean }
+  | {
+      kind: 'discovered'
+      species: GardenSpecies
+      count: number
+      firstGrownAt: string
+      golden: boolean
+      // At least one of this species' growings was a goal bloom
+      // (garden.ts's GardenFlower `goal` flag) rather than an ordinary
+      // per-workout flower.
+      goalGrown?: boolean
+    }
   | { kind: 'undiscovered'; rarity: Rarity }
 
 export function LoreSheet({ target, onClose }: { target: LoreSheetTarget; onClose: () => void }) {
@@ -90,6 +122,12 @@ export function LoreSheet({ target, onClose }: { target: LoreSheetTarget; onClos
                 Grown {target.count} {target.count === 1 ? 'time' : 'times'}
               </span>
             </div>
+            {target.goalGrown && (
+              <p className="flex items-center justify-center gap-1.5 text-sm font-semibold text-primary-ink">
+                <GoalRibbon />
+                Grown by meeting your weekly goal
+              </p>
+            )}
           </div>
         ) : (
           <div className="-mt-8 space-y-2">

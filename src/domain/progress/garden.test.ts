@@ -60,6 +60,44 @@ describe('buildGarden / sessionBloom', () => {
   it('a session with no result still has its species, and counts as new on an empty garden', () => {
     expect(sessionBloom([], 'lonely')).toEqual({ species: speciesFor('lonely'), isNew: true })
   })
+
+  it('with no weeklyGoal passed, behaves exactly as before goal blooms existed', () => {
+    const results = [result('a', '2026-09-28T10:00:00.000Z'), result('b', '2026-09-29T10:00:00.000Z')]
+    const garden = buildGarden(results)
+    expect(garden.flowers).toHaveLength(2)
+    expect(garden.flowers.every((f) => f.goal == null)).toBe(true)
+  })
+
+  it('a week that meets the goal adds one bonus flower, flagged goal:true, right after the workout that earned it', () => {
+    const results = [
+      result('a', '2026-09-28T10:00:00.000Z'), // Monday
+      result('b', '2026-09-29T10:00:00.000Z'), // Tuesday, reaches goal 2
+    ]
+    const garden = buildGarden(results, 2)
+    expect(garden.flowers).toHaveLength(3)
+    expect(garden.flowers.map((f) => ({ sessionId: f.sessionId, goal: f.goal ?? false }))).toEqual([
+      { sessionId: 'a', goal: false },
+      { sessionId: 'b', goal: false },
+      { sessionId: 'b', goal: true },
+    ])
+    expect(garden.flowers[2].species.rarity).not.toBe('common')
+    expect(garden.flowers[2].endedAt).toBe('2026-09-29T10:00:00.000Z')
+  })
+
+  it('a goal bloom counts toward discovered species and overall counts', () => {
+    const results = [result('a', '2026-09-28T10:00:00.000Z'), result('b', '2026-09-29T10:00:00.000Z')]
+    const withoutGoal = buildGarden(results, 0)
+    const withGoal = buildGarden(results, 2)
+    expect(withGoal.flowers.length).toBe(withoutGoal.flowers.length + 1)
+    const goalFlower = withGoal.flowers.find((f) => f.goal)!
+    expect(withGoal.counts.get(goalFlower.species.id)).toBe((withoutGoal.counts.get(goalFlower.species.id) ?? 0) + 1)
+  })
+
+  it('a falling-short week never adds a bonus flower', () => {
+    const results = [result('a', '2026-09-28T10:00:00.000Z')]
+    const garden = buildGarden(results, 2)
+    expect(garden.flowers).toHaveLength(1)
+  })
 })
 
 // Finds one sessionId per species in the given rarity tier, by scanning an

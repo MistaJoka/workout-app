@@ -5,9 +5,12 @@ import { expect, test, type Page } from '@playwright/test'
 // grow a garden of a given size without playing real workouts. The app must
 // have opened its database at least once first (a prior page.goto).
 async function seedSessions(page: Page, n: number): Promise<void> {
+  // One session per week (never two in the same Monday-start week): with
+  // the default weekly goal of 2, these counts must stay exact flower
+  // counts, not also trip a goal bloom bonus flower (garden.ts/goalBloom.ts).
   const seed = Array.from({ length: n }, (_, i) => ({
     sessionId: `critter-seed-${i}`,
-    endedAt: new Date(Date.UTC(2026, 0, 1 + i, 10, 0, 0)).toISOString(),
+    endedAt: new Date(Date.UTC(2026, 0, 1 + i * 7, 10, 0, 0)).toISOString(),
   }))
   await page.evaluate(async (sessions) => {
     const db = await new Promise<IDBDatabase>((resolve, reject) => {

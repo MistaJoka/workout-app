@@ -18,6 +18,8 @@ import {
   type TierProgress,
 } from '../../domain/progress/garden'
 import { db } from '../../infrastructure/db/schema'
+import { getWeeklySchedule } from '../../infrastructure/db/repositories/scheduleRepository'
+import { weeklyGoal } from '../../domain/progress/stats'
 
 // The collection: every species a workout can grow. Found ones show their
 // flower, name and how many have grown; the rest wait as a "?" tile, a
@@ -151,9 +153,8 @@ export function GardenScreen() {
   const [loreTarget, setLoreTarget] = useState<LoreSheetTarget | null>(null)
 
   useEffect(() => {
-    db.sessionResults
-      .toArray()
-      .then((results) => setGarden(buildGarden(results)))
+    Promise.all([db.sessionResults.toArray(), getWeeklySchedule()])
+      .then(([results, schedule]) => setGarden(buildGarden(results, weeklyGoal(schedule))))
       .catch(() => setFailed(true))
   }, [])
 
@@ -172,6 +173,10 @@ export function GardenScreen() {
   const sets = garden ? buildGardenSets(garden) : null
   const completeRarities = new Set<Rarity>(sets ? sets.tiers.filter((t) => t.complete).map((t) => t.rarity) : [])
   const firstGrownAt = garden ? firstGrownMap(garden.flowers) : new Map<string, string>()
+  // Species ever grown by a goal bloom (garden.ts's GardenFlower `goal`
+  // flag), so the lore card can say so -- a species can also have ordinary
+  // growings; one goal-grown flower is enough to mention it.
+  const goalGrownSpecies = new Set<string>(garden ? garden.flowers.filter((f) => f.goal).map((f) => f.species.id) : [])
 
   return (
     <div className="p-4 pb-24 space-y-4">
@@ -242,6 +247,7 @@ export function GardenScreen() {
                                     count,
                                     firstGrownAt: firstGrownAt.get(sp.id)!,
                                     golden,
+                                    goalGrown: goalGrownSpecies.has(sp.id),
                                   }
                                 : { kind: 'undiscovered', rarity: sp.rarity }
                             )

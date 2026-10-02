@@ -51,10 +51,16 @@ function idsForTier(rarity: Rarity): string[] {
   return species.map((s) => chosen.get(s.id)!)
 }
 
+// One session per week (never two in the same Monday-start week, and
+// startDay values below are far enough apart that two different groups
+// never land in the same week either): with the default weekly goal of 2,
+// discovered counts here must stay exactly the seeded species, not also
+// pick up a goal bloom's bonus species from a different tier
+// (garden.ts/goalBloom.ts).
 function seedsFor(ids: string[], startDay: number): Seed[] {
   return ids.map((sessionId, i) => ({
     sessionId,
-    endedAt: new Date(Date.UTC(2026, 0, startDay + i, 10, 0, 0)).toISOString(),
+    endedAt: new Date(Date.UTC(2026, 0, startDay + i * 7, 10, 0, 0)).toISOString(),
   }))
 }
 
@@ -73,7 +79,7 @@ test('a partial garden shows each tier under Sets and groups the species grid by
   await openGarden(page)
   const commons = idsForTier('common').slice(0, 3)
   const uncommons = idsForTier('uncommon').slice(0, 2)
-  await seedSessions(page, [...seedsFor(commons, 1), ...seedsFor(uncommons, 10)])
+  await seedSessions(page, [...seedsFor(commons, 1), ...seedsFor(uncommons, 100)])
   await reloadGarden(page)
 
   const sets = page.getByRole('region', { name: 'Sets' })

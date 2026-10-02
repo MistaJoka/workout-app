@@ -32,10 +32,13 @@ async function seedSessions(page: Page, sessions: { sessionId: string; endedAt: 
   }, sessions)
 }
 
+// One session per week (never two in the same Monday-start week): with the
+// default weekly goal of 2, these counts must stay exact flower counts, not
+// also trip a goal bloom bonus flower (garden.ts/goalBloom.ts).
 function sessions(n: number): { sessionId: string; endedAt: string }[] {
   return Array.from({ length: n }, (_, i) => ({
     sessionId: `meadow-seed-${i}`,
-    endedAt: new Date(Date.UTC(2026, 0, 1 + i, 10, 0, 0)).toISOString(),
+    endedAt: new Date(Date.UTC(2026, 0, 1 + i * 7, 10, 0, 0)).toISOString(),
   }))
 }
 
