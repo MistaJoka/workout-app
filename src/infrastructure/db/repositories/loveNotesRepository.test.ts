@@ -7,6 +7,7 @@ import {
   markLoveNoteRead,
   removeLoveNote,
   updateLoveNote,
+  upsertLoveNoteFromGift,
 } from './loveNotesRepository'
 import { decideLoveNoteUnlock } from '../../../domain/rewards/loveNotes'
 
@@ -55,6 +56,30 @@ describe('loveNotesRepository CRUD', () => {
     expect(read?.readAt).toBe('2026-09-05T00:00:00.000Z')
     const rereadAttempt = await markLoveNoteRead(note.id, '2026-09-09T00:00:00.000Z')
     expect(rereadAttempt?.readAt).toBe('2026-09-05T00:00:00.000Z')
+  })
+})
+
+describe('upsertLoveNoteFromGift', () => {
+  it('creates a locked note with the given id, trimmed text and 280-char cap', async () => {
+    const created = await upsertLoveNoteFromGift({ id: 'n1', text: `  ${'x'.repeat(400)}  `, emoji: '💌' }, '2026-10-01T00:00:00.000Z')
+    expect(created).toEqual({
+      id: 'n1',
+      text: 'x'.repeat(280),
+      emoji: '💌',
+      createdAt: '2026-10-01T00:00:00.000Z',
+      updatedAt: '2026-10-01T00:00:00.000Z',
+      unlockedAt: null,
+      unlockedBySessionId: null,
+      readAt: null,
+    })
+    expect(await listLoveNotes()).toEqual([created])
+  })
+
+  it('is a no-op once a note with that id already exists (re-accepting the same gift link)', async () => {
+    const first = await upsertLoveNoteFromGift({ id: 'n1', text: 'Proud of you', emoji: '💌' }, '2026-10-01T00:00:00.000Z')
+    const second = await upsertLoveNoteFromGift({ id: 'n1', text: 'Different text', emoji: '🙃' }, '2026-10-05T00:00:00.000Z')
+    expect(second).toEqual(first)
+    expect(await listLoveNotes()).toHaveLength(1)
   })
 })
 

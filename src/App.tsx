@@ -54,6 +54,9 @@ const BossScreen = lazy(() => import('./presentation/screens/BossScreen').then((
 const LoveNotesBoxScreen = lazy(() =>
   import('./presentation/screens/LoveNotesBoxScreen').then((m) => ({ default: m.LoveNotesBoxScreen }))
 )
+const GiftPreviewScreen = lazy(() =>
+  import('./presentation/screens/GiftPreviewScreen').then((m) => ({ default: m.GiftPreviewScreen }))
+)
 
 export default function App() {
   return (
@@ -76,6 +79,7 @@ export default function App() {
             <Route path="/settings" element={<SettingsScreen />} />
             <Route path="/rewards" element={<RewardsScreen />} />
             <Route path="/notes" element={<LoveNotesBoxScreen />} />
+            <Route path="/gift" element={<GiftPreviewScreen />} />
             <Route path="/about" element={<AboutScreen />} />
             <Route path="/privacy" element={<PrivacyScreen />} />
             <Route path="/terms" element={<TermsScreen />} />

@@ -2,11 +2,21 @@
 // download link is clumsy, so the share sheet (Save to Files, Calendar,
 // AirDrop) is tried first; elsewhere it falls back to a download. Returns
 // false only if the user dismissed the share sheet.
-export async function shareOrDownload(content: string | Blob, filename: string, type: string): Promise<boolean> {
+//
+// `message` adds a title/text alongside the file in the share sheet itself
+// (the redeemed-coupon share includes a short code this way, giftLink.ts's
+// couponShareMessage) -- it's ignored by the download fallback, which has
+// no caption of its own to carry it.
+export async function shareOrDownload(
+  content: string | Blob,
+  filename: string,
+  type: string,
+  message?: { title?: string; text?: string }
+): Promise<boolean> {
   const file = new File([content], filename, { type })
   if (typeof navigator !== 'undefined' && navigator.canShare?.({ files: [file] }) && navigator.share) {
     try {
-      await navigator.share({ files: [file] })
+      await navigator.share({ files: [file], ...(message?.title ? { title: message.title } : {}), ...(message?.text ? { text: message.text } : {}) })
       return true
     } catch (error) {
       if (error instanceof Error && error.name === 'AbortError') return false

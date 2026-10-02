@@ -6,6 +6,7 @@ import {
   buildBossDefeatFanfare,
   buildBossHitThunk,
   buildCelebrationNotes,
+  buildGiftChime,
   buildGoalMetChord,
   buildLetterChime,
   buildLevelUpFanfare,
@@ -110,8 +111,28 @@ describe('celebration note builders', () => {
     for (const n of notes) expect(isPleasant(n.frequency)).toBe(true)
   })
 
+  it('gift: a bright three-note ta-da under a second', () => {
+    const notes = buildGiftChime()
+    expect(notes).toHaveLength(3)
+    expect(end(notes)).toBeLessThan(1)
+    for (const n of notes) expect(isPleasant(n.frequency)).toBe(true)
+    for (let i = 1; i < notes.length; i++) expect(notes[i].frequency).toBeGreaterThan(notes[i - 1].frequency)
+  })
+
   it('none of the sequences ever startle: no note peaks past a soft 0.3 gain', () => {
-    for (const kind of ['start', 'bloom', 'badge', 'levelUp', 'goalMet', 'best', 'redeem', 'bossHit', 'bossDefeat', 'letter'] as const) {
+    for (const kind of [
+      'start',
+      'bloom',
+      'badge',
+      'levelUp',
+      'goalMet',
+      'best',
+      'redeem',
+      'bossHit',
+      'bossDefeat',
+      'letter',
+      'gift',
+    ] as const) {
       for (const n of buildCelebrationNotes(kind)) expect(n.peak ?? 0.18).toBeLessThanOrEqual(0.3)
     }
   })
@@ -128,5 +149,6 @@ describe('celebration note builders', () => {
     expect(buildCelebrationNotes('bossHit')).toEqual(buildBossHitThunk())
     expect(buildCelebrationNotes('bossDefeat')).toEqual(buildBossDefeatFanfare())
     expect(buildCelebrationNotes('letter')).toEqual(buildLetterChime())
+    expect(buildCelebrationNotes('gift')).toEqual(buildGiftChime())
   })
 })

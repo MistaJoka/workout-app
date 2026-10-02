@@ -11,7 +11,18 @@
 
 import { canVibrate, getAudioContext } from './restFeedback'
 
-export type CelebrationKind = 'start' | 'bloom' | 'badge' | 'levelUp' | 'goalMet' | 'best' | 'redeem' | 'bossHit' | 'bossDefeat' | 'letter'
+export type CelebrationKind =
+  | 'start'
+  | 'bloom'
+  | 'badge'
+  | 'levelUp'
+  | 'goalMet'
+  | 'best'
+  | 'redeem'
+  | 'bossHit'
+  | 'bossDefeat'
+  | 'letter'
+  | 'gift'
 
 export type CelebrationOptions = {
   // 'bloom' only: a brighter, extra-sparkly take for a rare/legendary species.
@@ -143,6 +154,19 @@ export function buildLetterChime(): Note[] {
   ]
 }
 
+// A bright three-note "ta-da" for accepting a gift link from Hubby Bunny:
+// bigger and perkier than letter's quiet "aww" (this is a whole gift
+// landing -- rewards and/or notes arriving at once -- not one note opening),
+// but shorter than levelUp's four-note fanfare since it isn't the app's own
+// biggest moment.
+export function buildGiftChime(): Note[] {
+  return [
+    { frequency: degree(2), start: 0, duration: 0.12, peak: 0.16 },
+    { frequency: degree(4), start: 0.08, duration: 0.14, peak: 0.2 },
+    { frequency: degree(7), start: 0.16, duration: 0.3, peak: 0.22, type: 'triangle' },
+  ]
+}
+
 export function buildCelebrationNotes(kind: CelebrationKind, opts?: CelebrationOptions): Note[] {
   switch (kind) {
     case 'start':
@@ -165,6 +189,8 @@ export function buildCelebrationNotes(kind: CelebrationKind, opts?: CelebrationO
       return buildBossDefeatFanfare()
     case 'letter':
       return buildLetterChime()
+    case 'gift':
+      return buildGiftChime()
   }
 }
 
@@ -181,6 +207,7 @@ const HAPTIC_PATTERN: Record<CelebrationKind, number | number[]> = {
   bossHit: [25, 20],
   bossDefeat: [20, 30, 20, 30, 40],
   letter: [15, 40],
+  gift: [20, 30, 20, 40],
 }
 
 function playNotes(ctx: AudioContext, notes: Note[]): void {
