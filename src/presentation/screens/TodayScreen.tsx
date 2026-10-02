@@ -21,6 +21,7 @@ import { TodayMission, type Mission } from '../components/TodayMission'
 import { WeekBlooms, type WeekNames } from '../components/WeekBlooms'
 import { PlanWeekCard } from '../components/PlanWeekCard'
 import { RecapEntry } from '../components/RecapEntry'
+import { BossCard } from '../components/BossCard'
 import { shouldOfferPlanWeek } from '../../domain/schedule/planWeek'
 import { bloomStreakLabel, calculateWeekStreak, nextMilestone, weeklyGoal, weekProgress } from '../../domain/progress/stats'
 import { buildGarden, GARDEN_SPECIES, type GardenFlower } from '../../domain/progress/garden'
@@ -348,6 +349,8 @@ export function TodayScreen() {
       )}
 
       {data && <RecapEntry />}
+
+      {data && <BossCard now={now} />}
 
       {data?.offerPlanWeek && <PlanWeekCard />}
 

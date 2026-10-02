@@ -50,6 +50,7 @@ const AchievementsScreen = lazy(() =>
 )
 const RecapScreen = lazy(() => import('./presentation/screens/RecapScreen').then((m) => ({ default: m.RecapScreen })))
 const RewardsScreen = lazy(() => import('./presentation/screens/RewardsScreen').then((m) => ({ default: m.RewardsScreen })))
+const BossScreen = lazy(() => import('./presentation/screens/BossScreen').then((m) => ({ default: m.BossScreen })))
 
 export default function App() {
   return (
@@ -78,6 +79,7 @@ export default function App() {
             <Route path="/rae" element={<MeetRaeScreen />} />
             <Route path="/garden" element={<GardenScreen />} />
             <Route path="/achievements" element={<AchievementsScreen />} />
+            <Route path="/boss" element={<BossScreen />} />
             <Route path="/story" element={<StoryScreen />} />
             <Route path="/story/:n" element={<StoryChapterScreen />} />
           </Route>
