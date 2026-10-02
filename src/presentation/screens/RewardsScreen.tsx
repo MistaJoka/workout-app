@@ -7,7 +7,20 @@ import { listRewards } from '../../infrastructure/db/repositories/rewardsReposit
 import { addReward, updateReward, removeReward } from '../../infrastructure/db/repositories/rewardsRepository'
 import { listRedemptions, markDelivered, redeemReward } from '../../infrastructure/db/repositories/redemptionsRepository'
 import { getSetting, setSetting } from '../../infrastructure/db/repositories/settingsRepository'
-import { DEFAULT_GIVER_NAME, createPinRecord, isValidPin, verifyPin, type PinRecord } from '../../domain/rewards/pin'
+import {
+  DEFAULT_GIVER_NAME,
+  INITIAL_PIN_ATTEMPT_STATE,
+  createPinRecord,
+  isInPinCooldown,
+  isValidPin,
+  pinCooldownMessage,
+  recordCorrectPinAttempt,
+  recordWrongPinAttempt,
+  remainingCooldownMs,
+  verifyPin,
+  type PinAttemptState,
+  type PinRecord,
+} from '../../domain/rewards/pin'
 import { generateSalt, hasSubtleCrypto, sha256Hex } from '../../infrastructure/pinCrypto'
 import { loadCarrotBalance } from '../components/CarrotCelebration'
 import { PinEntrySheet, PinSetupSheet, RedeemConfirmSheet, CouponSheet } from '../components/RewardsSheets'
@@ -23,9 +36,11 @@ import { hasRealName } from '../greeting'
 import { playCelebration } from '../../application/celebrationSounds'
 import { useFeedbackSettings } from '../components/useFeedbackSettings'
 import { Skeleton, SkeletonTiles } from '../components/Skeleton'
+import { HubbyModePill, isHubbyUnlocked, touchHubbySession, unlockHubbySession, useHubbySession } from '../components/hubbySession'
 
 const GIVER_NAME_KEY = 'rewardsGiverName'
 const PIN_KEY = 'rewardsHubbyPin'
+const PIN_ATTEMPTS_KEY = 'rewardsHubbyPinAttempts'
 
 type PinPurpose = 'manage' | 'giftCompose' | 'deliverCompose' | { deliver: string }
 
@@ -39,17 +54,32 @@ type Sheet =
   | { kind: 'redeemConfirm'; reward: RewardRecord }
   | { kind: 'coupon'; redemption: RedemptionRecord; emoji: string }
 
-type Data = { rewards: RewardRecord[]; redemptions: RedemptionRecord[]; balance: number; giverName: string; pin: PinRecord | null }
+type Data = {
+  rewards: RewardRecord[]
+  redemptions: RedemptionRecord[]
+  balance: number
+  giverName: string
+  pin: PinRecord | null
+  pinAttempts: PinAttemptState
+}
 
 async function load(): Promise<Data> {
-  const [rewards, redemptions, balance, giverName, pin] = await Promise.all([
+  const [rewards, redemptions, balance, giverName, pin, pinAttempts] = await Promise.all([
     listRewards(),
     listRedemptions(),
     loadCarrotBalance(),
     getSetting<string>(GIVER_NAME_KEY),
     getSetting<PinRecord>(PIN_KEY),
+    getSetting<PinAttemptState>(PIN_ATTEMPTS_KEY),
   ])
-  return { rewards, redemptions, balance, giverName: giverName ?? DEFAULT_GIVER_NAME, pin: pin ?? null }
+  return {
+    rewards,
+    redemptions,
+    balance,
+    giverName: giverName ?? DEFAULT_GIVER_NAME,
+    pin: pin ?? null,
+    pinAttempts: pinAttempts ?? INITIAL_PIN_ATTEMPT_STATE,
+  }
 }
 
 export function RewardsScreen() {
@@ -65,7 +95,12 @@ export function RewardsScreen() {
   const [editorBusyId, setEditorBusyId] = useState<string | null>(null)
   const [shareBusy, setShareBusy] = useState(false)
   const [shareError, setShareError] = useState<string | null>(null)
+  const [deliverError, setDeliverError] = useState<string | null>(null)
   const [feedback] = useFeedbackSettings()
+  // Hubby mode: once he's entered the PIN, these gated actions don't ask
+  // again for the rest of this visit to the rewards area (task: see
+  // presentation/components/hubbySession.tsx).
+  const hubby = useHubbySession()
 
   useEffect(() => {
     let cancelled = false
@@ -76,7 +111,8 @@ export function RewardsScreen() {
         // Settings -> "Hubby's reward shop" hands off here to start setup
         // right away, instead of landing on the plain shop view first.
         if ((location.state as { openManage?: boolean } | null)?.openManage) {
-          setSheet(loaded.pin ? { kind: 'pinEntry', purpose: 'manage' } : { kind: 'pinSetup', purpose: 'manage' })
+          if (!loaded.pin) setSheet({ kind: 'pinSetup', purpose: 'manage' })
+          else setSheet(isHubbyUnlocked() ? { kind: 'editor' } : { kind: 'pinEntry', purpose: 'manage' })
         }
       })
       .catch(() => {
@@ -101,7 +137,15 @@ export function RewardsScreen() {
   // once the PIN checks out.
   function requestPinFor(purpose: PinPurpose) {
     setPinError(null)
-    setSheet(data?.pin ? { kind: 'pinEntry', purpose } : { kind: 'pinSetup', purpose })
+    if (!data?.pin) {
+      setSheet({ kind: 'pinSetup', purpose })
+    } else if (isHubbyUnlocked()) {
+      // Hubby mode is on: skip the PIN and go straight where it was headed.
+      if (typeof purpose === 'object') void performMarkDelivered(purpose.deliver)
+      else setSheet(landOnPurpose(purpose))
+    } else {
+      setSheet({ kind: 'pinEntry', purpose })
+    }
   }
 
   function openManage() {
@@ -123,6 +167,8 @@ export function RewardsScreen() {
       const record = await createPinRecord(pin, generateSalt(), sha256Hex, algorithm)
       await setSetting(PIN_KEY, record)
       await setSetting(GIVER_NAME_KEY, giverName)
+      await setSetting(PIN_ATTEMPTS_KEY, recordCorrectPinAttempt())
+      unlockHubbySession()
       await refresh()
       if (typeof purpose === 'object') {
         await markDelivered(purpose.deliver)
@@ -140,14 +186,25 @@ export function RewardsScreen() {
 
   async function handlePinSubmit(pin: string, purpose: PinPurpose) {
     if (!data?.pin) return
+    const now = new Date()
+    const attempts = data.pinAttempts
+    if (isInPinCooldown(attempts, now)) {
+      setPinError(pinCooldownMessage(remainingCooldownMs(attempts, now)))
+      return
+    }
     setPinBusy(true)
     setPinError(null)
     try {
       const ok = await verifyPin(pin, data.pin, sha256Hex)
       if (!ok) {
-        setPinError('Wrong PIN.')
+        const next = recordWrongPinAttempt(attempts, now)
+        await setSetting(PIN_ATTEMPTS_KEY, next)
+        await refresh()
+        setPinError(isInPinCooldown(next, now) ? pinCooldownMessage(remainingCooldownMs(next, now)) : 'Wrong PIN.')
         return
       }
+      await setSetting(PIN_ATTEMPTS_KEY, recordCorrectPinAttempt())
+      unlockHubbySession()
       if (typeof purpose === 'object') {
         await markDelivered(purpose.deliver)
         await refresh()
@@ -162,12 +219,25 @@ export function RewardsScreen() {
     }
   }
 
+  async function performMarkDelivered(redemptionId: string) {
+    setDeliverError(null)
+    try {
+      await markDelivered(redemptionId)
+      touchHubbySession()
+      await refresh()
+      setSheet({ kind: 'none' })
+    } catch {
+      setDeliverError("Couldn't mark that delivered on this device. Try again.")
+    }
+  }
+
   function requestMarkDelivered(redemptionId: string) {
     requestPinFor({ deliver: redemptionId })
   }
 
   async function handleAdd(draft: RewardDraft) {
     setEditorError(null)
+    touchHubbySession()
     try {
       await addReward(draft)
       await refresh()
@@ -178,6 +248,7 @@ export function RewardsScreen() {
 
   async function handleUpdate(id: string, patch: Partial<Pick<RewardRecord, 'title' | 'cost' | 'emoji' | 'active'>>) {
     setEditorError(null)
+    touchHubbySession()
     try {
       await updateReward(id, patch)
       await refresh()
@@ -189,6 +260,7 @@ export function RewardsScreen() {
   async function handleRemove(id: string) {
     setEditorError(null)
     setEditorBusyId(id)
+    touchHubbySession()
     try {
       await removeReward(id)
       await refresh()
@@ -262,6 +334,14 @@ export function RewardsScreen() {
         <BackButton />
         <h1 className="text-xl font-bold">{data ? `${data.giverName}'s shop` : 'Shop'}</h1>
       </div>
+
+      <HubbyModePill unlocked={hubby.unlocked} onLock={hubby.lock} />
+
+      {deliverError && (
+        <p className="text-sm text-accent" role="alert">
+          {deliverError}
+        </p>
+      )}
 
       {data === null && !failed && (
         <Skeleton className="space-y-4">

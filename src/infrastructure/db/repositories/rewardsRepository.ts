@@ -6,6 +6,12 @@ import { newId } from '../../../shared/id'
 // edits or removes rewards; both profiles on a device can read the active
 // list to shop.
 
+// Settings key for the id -> deletedAt tombstone map, same pattern as
+// customTemplateRepository.ts's 'deletedRoutines': a reward removed here
+// must stay removed even if an older backup (one from before the delete)
+// is imported later.
+export const DELETED_REWARDS_KEY = 'deletedRewards'
+
 export async function listRewards(): Promise<RewardRecord[]> {
   return db.rewards.orderBy('createdAt').toArray()
 }
@@ -49,8 +55,14 @@ export async function updateReward(
   return next
 }
 
-export async function removeReward(id: string): Promise<void> {
-  await db.rewards.delete(id)
+// Records the deletion (settings 'deletedRewards', id -> deletedAt) so an
+// older backup imported later can't bring the reward back.
+export async function removeReward(id: string, at: string = new Date().toISOString()): Promise<void> {
+  await db.transaction('rw', db.rewards, db.settings, async () => {
+    await db.rewards.delete(id)
+    const marks = ((await db.settings.get(DELETED_REWARDS_KEY))?.value ?? {}) as Record<string, string>
+    await db.settings.put({ key: DELETED_REWARDS_KEY, value: { ...marks, [id]: at } })
+  })
 }
 
 // Imports a reward from a gift link (domain/rewards/giftLink.ts) by its own

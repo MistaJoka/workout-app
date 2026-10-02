@@ -25,6 +25,8 @@ The app stores fitness history, body-weight data, routines and profile names. Tr
 
 Local profiles are organization/isolation inside the app, **not authentication**.
 
+The Hubby PIN (gating the reward shop and love notes) is the same kind of soft household gate, one notch further: a salted SHA-256 hash with an escalating guess cooldown, intended to stop casual peeking/tampering by the other person sharing the device, never a real security boundary.
+
 ## 2. Data classification
 
 ### Sensitive local user data

@@ -1,12 +1,13 @@
 import { beforeEach, describe, expect, it } from 'vitest'
 import { db } from '../db/schema'
 import { exportAll, importAll, isValidExportBundle } from './exportImport'
-import { addReward, listRewards, updateReward } from '../db/repositories/rewardsRepository'
+import { addReward, DELETED_REWARDS_KEY, listRewards, removeReward, updateReward } from '../db/repositories/rewardsRepository'
 import { listRedemptions, markDelivered, redeemReward } from '../db/repositories/redemptionsRepository'
 
 beforeEach(async () => {
   await db.rewards.clear()
   await db.redemptions.clear()
+  await db.settings.delete(DELETED_REWARDS_KEY)
 })
 
 describe('export/import of Hubby Bunny\'s reward shop', () => {
@@ -77,6 +78,30 @@ describe('export/import of Hubby Bunny\'s reward shop', () => {
     expect((await listRedemptions()).map((r) => r.id)).toContain('their-redemption')
     // ...but the local reward catalog (current state) is untouched.
     expect((await listRewards()).map((r) => r.id)).toEqual([localReward.id])
+  })
+
+  it('does not bring back a reward deleted after the backup was made', async () => {
+    const reward = await addReward({ title: 'Movie night pick', cost: 20, emoji: '🎬' }, '2026-09-01T00:00:00.000Z')
+    const old = await exportAll()
+    await removeReward(reward.id, '2026-09-10T00:00:00.000Z')
+
+    await importAll(old)
+
+    expect(await listRewards()).toEqual([])
+  })
+
+  it('a reward deleted on this device stays deleted even if the incoming copy is newer', async () => {
+    const reward = await addReward({ title: 'Dinner date', cost: 40, emoji: '🍽️' }, '2026-09-01T00:00:00.000Z')
+    await removeReward(reward.id, '2026-09-05T00:00:00.000Z')
+    const newerFromElsewhere = {
+      ...reward,
+      title: 'Dinner date (edited elsewhere)',
+      updatedAt: '2026-09-20T00:00:00.000Z',
+    }
+
+    await importAll({ ...(await exportAll()), rewards: [newerFromElsewhere] })
+
+    expect(await listRewards()).toEqual([])
   })
 
   it('still accepts a pre-v4 bundle that has no rewards/redemptions fields', async () => {
