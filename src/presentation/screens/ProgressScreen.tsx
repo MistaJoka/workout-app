@@ -26,6 +26,8 @@ import { compareWeeks, type WeekCompare } from '../../domain/progress/weekCompar
 import { WeekCompareCard } from '../components/WeekCompareCard'
 import { evaluateAchievements, type AchievementIcon } from '../../domain/progress/achievements'
 import { AchievementBadge } from '../components/AchievementUnlocks'
+import { RAE_STORY, unlockedChapters } from '../../domain/content/raeStory'
+import { RaeFace, type RaeExpression } from '../components/Rae'
 
 // How many rows "By exercise" and "History" show before "Show all" — short
 // enough that Progress doesn't turn into a mile of scrolling once there's
@@ -50,6 +52,8 @@ type Snapshot = {
   // many are earned, how many exist, and the most recently earned icon (or
   // a neutral trophy before any are earned).
   badges: { earned: number; total: number; icon: AchievementIcon }
+  // Rae's garden story: chapters unlocked so far, for the compact tile.
+  storyChapters: number
   // Where "Start a workout" goes before there's any history: today's
   // planned workout, else the first of the A/B rotation (as Today suggests
   // with no history), or Today itself on a planned rest day.
@@ -106,6 +110,7 @@ export function ProgressScreen() {
       level: levelFor(computeXp({ plans, results, events }, goal).total),
       compare: compareWeeks({ plans, results, events }, goal, now),
       badges: { earned: earnedAchievements.length, total: achievements.length, icon: newestBadge?.icon ?? 'trophy' },
+      storyChapters: unlockedChapters(results.length).length,
     }
   }
 
@@ -200,6 +205,7 @@ export function ProgressScreen() {
             <div className="grid grid-cols-2 gap-3">
               <GardenCard garden={snapshot.garden} compact />
               <BadgesTile earned={snapshot.badges.earned} total={snapshot.badges.total} icon={snapshot.badges.icon} />
+              <StoryTile unlocked={snapshot.storyChapters} />
               <RecapLink compact />
             </div>
           </section>
@@ -297,6 +303,26 @@ function BadgesTile({ earned, total, icon }: { earned: number; total: number; ic
       <p className="font-bold">Your badges</p>
       <p className="text-xs text-ink-muted">
         {earned} of {total}
+      </p>
+    </Link>
+  )
+}
+
+// A compact collection tile for Rae's garden story: how many chapters have
+// unlocked, with her face from the newest one (or a neutral face before the
+// first chapter). Matches GardenCard/BadgesTile's compact tile shape.
+function StoryTile({ unlocked }: { unlocked: number }) {
+  const newest = RAE_STORY[unlocked - 1]
+  return (
+    <Link
+      to="/story"
+      className="card flex min-h-11 flex-col items-center gap-1 p-3 text-center active:bg-field-primary"
+      aria-label={`Rae's story: ${unlocked} of ${RAE_STORY.length} chapters. Open the story`}
+    >
+      <RaeFace expression={(newest?.expression ?? 'neutral') as RaeExpression} size={34} motion="none" decorative />
+      <p className="font-bold">Rae's story</p>
+      <p className="text-xs text-ink-muted">
+        {unlocked} of {RAE_STORY.length}
       </p>
     </Link>
   )

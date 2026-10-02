@@ -22,6 +22,8 @@ import { LicensesScreen } from './presentation/screens/LicensesScreen'
 import { MeetRaeScreen } from './presentation/screens/MeetRaeScreen'
 import { GardenScreen } from './presentation/screens/GardenScreen'
 import { AchievementsScreen } from './presentation/screens/AchievementsScreen'
+import { StoryScreen } from './presentation/screens/StoryScreen'
+import { StoryChapterScreen } from './presentation/screens/StoryChapterScreen'
 import { RecapScreen } from './presentation/screens/RecapScreen'
 import { ProfilePickGate } from './presentation/components/ProfilePickGate'
 import { OnboardingGate } from './presentation/components/OnboardingGate'
@@ -52,6 +54,8 @@ export default function App() {
             <Route path="/rae" element={<MeetRaeScreen />} />
             <Route path="/garden" element={<GardenScreen />} />
             <Route path="/achievements" element={<AchievementsScreen />} />
+            <Route path="/story" element={<StoryScreen />} />
+            <Route path="/story/:n" element={<StoryChapterScreen />} />
           </Route>
           {/* Full-screen flow outside the tab bar fades in the same way. */}
           <Route element={<RouteFade />}>
