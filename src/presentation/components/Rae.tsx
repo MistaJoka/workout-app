@@ -2,6 +2,7 @@
 // canonical v1 character bible by scripts/assets/derive-rae-preview.py, so
 // nothing is redrawn and she always looks like Rae.
 
+import { asset } from '../assetUrl'
 import { raeLoopUrl, raeStillUrl } from './raeLoops'
 
 export const RAE_EXPRESSIONS = [
@@ -56,7 +57,7 @@ export function RaeFace({
     <>
       {moodSwap && <style>{MOOD_SWAP_STYLE}</style>}
       <img
-        src={`/rae/expr-${expression}.png`}
+        src={asset(`rae/expr-${expression}.png`)}
         alt={decorative ? '' : `Rae, ${expression}`}
         aria-hidden={decorative || undefined}
         data-expression={expression}
@@ -96,7 +97,7 @@ type FigureProps = {
 }
 
 export function RaeFigure({ view, height = 240 }: FigureProps) {
-  const src = view === 'front' ? '/rae/full-front.png' : '/rae/full-3q.png'
+  const src = view === 'front' ? asset('rae/full-front.png') : asset('rae/full-3q.png')
   // Source sizes: front 133x434, 3/4 119x433 (hands included).
   const aspect = view === 'front' ? 133 / 434 : 119 / 433
   return (

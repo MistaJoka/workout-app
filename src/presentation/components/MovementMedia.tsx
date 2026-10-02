@@ -1,4 +1,5 @@
 import { useEffect, useState } from 'react'
+import { asset } from '../assetUrl'
 import { useTheme } from '../theme/ThemeContext'
 import type { MotionPreference } from '../theme/tokens'
 import { RaeExerciseLoop } from './Rae'
@@ -67,18 +68,18 @@ export function MovementMedia({ name, exerciseId, start, finish }: Props) {
   if (effectiveMotion(motion, osPrefersReduced) !== 'full') {
     return (
       <div className="grid grid-cols-2 gap-2">
-        <img crossOrigin="anonymous" src={start} alt={`${name} — start position`} className="w-full rounded-panel object-cover" />
-        <img crossOrigin="anonymous" src={finish} alt={`${name} — end position`} className="w-full rounded-panel object-cover" />
+        <img crossOrigin="anonymous" src={asset(start)} alt={`${name} — start position`} className="w-full rounded-panel object-cover" />
+        <img crossOrigin="anonymous" src={asset(finish)} alt={`${name} — end position`} className="w-full rounded-panel object-cover" />
       </div>
     )
   }
 
   return (
     <div className="movement-loop relative w-full overflow-hidden rounded-panel" aria-label={`${name} movement`}>
-      <img crossOrigin="anonymous" src={start} alt={`${name} — start position`} className="max-h-[34vh] w-full object-cover" />
+      <img crossOrigin="anonymous" src={asset(start)} alt={`${name} — start position`} className="max-h-[34vh] w-full object-cover" />
       <img
         crossOrigin="anonymous"
-        src={finish}
+        src={asset(finish)}
         alt=""
         aria-hidden="true"
         className="movement-loop__finish absolute inset-0 h-full w-full object-cover"

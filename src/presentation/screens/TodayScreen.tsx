@@ -1,4 +1,5 @@
 import { DRAFT_TEMPLATE_IDS } from '../../domain/content/fixtures/raeDraftTemplates'
+import { asset } from '../assetUrl'
 import { DraftTag } from '../components/DraftTag'
 import { countLabel } from '../format'
 import { useEffect, useState } from 'react'
@@ -151,7 +152,10 @@ async function loadToday(now: Date): Promise<TodayData> {
         const exercise = exercises.get(e.exerciseId)
         // Rae doing the move when she has it, the photo otherwise.
         const rae = raeStillFor(e.exerciseId)
-        const src = rae?.src ?? exercise?.mediaManifest.start
+        // rae.src is already base-prefixed (raeLoops.ts); the exercise photo
+        // isn't yet (mediaManifest.start is domain content and stays
+        // framework-independent), so only that branch needs asset().
+        const src = rae?.src ?? (exercise?.mediaManifest.start ? asset(exercise.mediaManifest.start) : undefined)
         return src && exercise ? [{ src, alt: exercise.name, rae: rae != null }] : []
       }),
       to: `/checkin/${primary.id}`,

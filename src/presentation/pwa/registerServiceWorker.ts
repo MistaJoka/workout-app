@@ -28,8 +28,14 @@ export function applyUpdate(): void {
 export function registerServiceWorker(): void {
   if (!('serviceWorker' in navigator)) return
 
+  // BASE_URL is '/' locally and for Capacitor, and the Pages build's
+  // '/workout-app/' (vite.config.ts): the worker must register at (and be
+  // scoped to) the base path, or it controls nothing under a project site
+  // and the browser rejects a scope outside the registering script's own
+  // directory.
+  const base = import.meta.env.BASE_URL
   navigator.serviceWorker
-    .register('/sw.js')
+    .register(`${base}sw.js`, { scope: base })
     .then((registration) => {
       // A worker already waiting means a newer build was fetched on a
       // previous visit.

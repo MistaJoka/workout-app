@@ -1,3 +1,4 @@
+import { asset } from '../assetUrl'
 import RAE_LOOPS from './raeLoops.generated.json'
 
 // Rae's drawn-frame exercise loops (scripts/assets/build-rae-strips.py).
@@ -22,11 +23,11 @@ function versioned(path: string, loopId: string): string {
 }
 
 export function raeLoopUrl(loopId: string): string {
-  return versioned(`/rae/${loopId}.webp`, loopId)
+  return versioned(asset(`rae/${loopId}.webp`), loopId)
 }
 
 export function raeStillUrl(loopId: string, frame: number): string {
-  return versioned(`/rae/${loopId}-${frame}.png`, loopId)
+  return versioned(asset(`rae/${loopId}-${frame}.png`), loopId)
 }
 
 // The loop that replaces an exercise's photos, if Rae demonstrates it.

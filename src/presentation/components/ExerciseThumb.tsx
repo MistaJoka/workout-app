@@ -1,3 +1,4 @@
+import { asset } from '../assetUrl'
 import { raeStillFor } from './raeLoops'
 
 // Every thumbnail shares one frame (same rounding comes from the caller's
@@ -30,6 +31,6 @@ export function ExerciseThumb({
   const photo = exercise?.mediaManifest.start
   // crossOrigin: the service worker only keeps readable (CORS) photo
   // responses offline; the pinned upstream host sends CORS headers.
-  if (photo) return <img src={photo} alt="" loading="lazy" crossOrigin="anonymous" className={`${className} ${TILE} bg-bg object-cover`} />
+  if (photo) return <img src={asset(photo)} alt="" loading="lazy" crossOrigin="anonymous" className={`${className} ${TILE} bg-bg object-cover`} />
   return <div className={`${className} ${TILE} bg-bg`} />
 }

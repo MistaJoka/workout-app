@@ -24,7 +24,10 @@ describe('iOS launch screens', () => {
   })
 
   it.each(links)('$href exists at the size its media query asks for', ({ media, href }) => {
-    const file = resolve(root, 'public', href.replace(/^\//, ''))
+    // href is Vite's %BASE_URL% placeholder (resolved to '/' locally, the
+    // GitHub Pages project base in that build) followed by the public/
+    // path, e.g. '%BASE_URL%splash/splash-750x1334.png'.
+    const file = resolve(root, 'public', href.replace(/^%BASE_URL%/, ''))
     expect(existsSync(file)).toBe(true)
     const w = Number(/device-width: (\d+)px/.exec(media)?.[1])
     const h = Number(/device-height: (\d+)px/.exec(media)?.[1])
