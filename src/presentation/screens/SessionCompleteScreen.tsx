@@ -17,6 +17,7 @@ import { BackupNudge } from '../components/BackupNudge'
 import { PixelBloom } from '../components/PixelBloom'
 import { CompleteHighlights } from '../components/CompleteHighlights'
 import { AchievementUnlocks } from '../components/AchievementUnlocks'
+import { BossHitReward } from '../components/BossHitReward'
 import { PerfectStamp } from '../components/PerfectStamp'
 import { NextUpTeaser } from '../components/NextUpTeaser'
 import { GoalMetBanner, LevelUpMoment, XpGainChip, loadSessionXp } from '../components/XpCelebration'
@@ -195,6 +196,9 @@ export function SessionCompleteScreen() {
           </RewardItem>
           <RewardItem delay={270}>
             <AchievementUnlocks sessionId={sessionId} />
+          </RewardItem>
+          <RewardItem delay={360}>
+            <BossHitReward sessionId={sessionId} />
           </RewardItem>
         </section>
       )}

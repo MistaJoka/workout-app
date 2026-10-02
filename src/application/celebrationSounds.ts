@@ -11,7 +11,7 @@
 
 import { canVibrate, getAudioContext } from './restFeedback'
 
-export type CelebrationKind = 'start' | 'bloom' | 'badge' | 'levelUp' | 'goalMet' | 'best'
+export type CelebrationKind = 'start' | 'bloom' | 'badge' | 'levelUp' | 'goalMet' | 'best' | 'bossHit' | 'bossDefeat'
 
 export type CelebrationOptions = {
   // 'bloom' only: a brighter, extra-sparkly take for a rare/legendary species.
@@ -104,6 +104,26 @@ export function buildBestChime(): Note[] {
   ]
 }
 
+// A short, low "thunk" for landing a hit on a boss: one quick dip, not a
+// pleasant rising run (this is an impact, not a reward of its own -- the
+// badge/goalMet/levelUp sounds already cover the celebratory moments).
+export function buildBossHitThunk(): Note[] {
+  return [
+    { frequency: degree(1), start: 0, duration: 0.08, peak: 0.16, type: 'triangle' },
+    { frequency: degree(-2), start: 0.05, duration: 0.14, peak: 0.14, type: 'triangle' },
+  ]
+}
+
+// A bright little fanfare for a defeated boss, cousin to the badge sparkle
+// but one note bigger -- this is the week's own small victory lap.
+export function buildBossDefeatFanfare(): Note[] {
+  return [
+    { frequency: degree(2), start: 0, duration: 0.14, peak: 0.18 },
+    { frequency: degree(4), start: 0.09, duration: 0.16, peak: 0.2 },
+    { frequency: degree(6), start: 0.18, duration: 0.3, peak: 0.22 },
+  ]
+}
+
 export function buildCelebrationNotes(kind: CelebrationKind, opts?: CelebrationOptions): Note[] {
   switch (kind) {
     case 'start':
@@ -118,6 +138,10 @@ export function buildCelebrationNotes(kind: CelebrationKind, opts?: CelebrationO
       return buildGoalMetChord()
     case 'best':
       return buildBestChime()
+    case 'bossHit':
+      return buildBossHitThunk()
+    case 'bossDefeat':
+      return buildBossDefeatFanfare()
   }
 }
 
@@ -130,6 +154,8 @@ const HAPTIC_PATTERN: Record<CelebrationKind, number | number[]> = {
   levelUp: [30, 50, 30, 50, 60],
   goalMet: [40, 60, 40],
   best: [20, 40, 20],
+  bossHit: [25, 20],
+  bossDefeat: [20, 30, 20, 30, 40],
 }
 
 function playNotes(ctx: AudioContext, notes: Note[]): void {
