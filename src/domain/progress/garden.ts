@@ -1,4 +1,5 @@
 import type { SessionResult } from '../session/types'
+import { goalBlooms } from './goalBloom'
 
 // Every finished workout grows one flower in the user's garden. Which
 // species is a small, fixed surprise: it is seeded by the session id, so a
@@ -72,7 +73,11 @@ export function speciesFor(sessionId: string): GardenSpecies {
   return tier[Math.floor(unit(`species:${sessionId}`) * tier.length)]
 }
 
-export type GardenFlower = { sessionId: string; endedAt: string; species: GardenSpecies }
+// `goal: true` marks a bonus flower grown by meeting a week's goal
+// (goalBloom.ts), never by a workout of its own -- it carries the sessionId
+// of the workout that earned it (so it still opens a real history page),
+// but that session already has its own ordinary flower too.
+export type GardenFlower = { sessionId: string; endedAt: string; species: GardenSpecies; goal?: true }
 
 export type Garden = {
   flowers: GardenFlower[] // oldest first
@@ -81,10 +86,31 @@ export type Garden = {
   total: number
 }
 
-export function buildGarden(results: readonly SessionResult[]): Garden {
-  const flowers = [...results]
+// `weeklyGoal` is optional (default 0, meaning "never met"): callers that
+// don't pass it keep the garden exactly as it was before goal blooms
+// existed. Callers that do pass the real weekly goal get one bonus flower
+// per week it was met, slotted in right after the workout that earned it so
+// the meadow and "every flower" list still read oldest-first.
+export function buildGarden(results: readonly SessionResult[], weeklyGoal = 0): Garden {
+  const sessionFlowers = [...results]
     .sort((a, b) => a.endedAt.localeCompare(b.endedAt))
     .map((r) => ({ sessionId: r.sessionId, endedAt: r.endedAt, species: speciesFor(r.sessionId) }))
+
+  const bonusByTrigger = new Map<string, GardenSpecies[]>()
+  for (const bloom of goalBlooms(results, weeklyGoal)) {
+    const list = bonusByTrigger.get(bloom.sessionId) ?? []
+    list.push(bloom.species)
+    bonusByTrigger.set(bloom.sessionId, list)
+  }
+
+  const flowers: GardenFlower[] = []
+  for (const f of sessionFlowers) {
+    flowers.push(f)
+    for (const species of bonusByTrigger.get(f.sessionId) ?? []) {
+      flowers.push({ sessionId: f.sessionId, endedAt: f.endedAt, species, goal: true })
+    }
+  }
+
   const counts = new Map<string, number>()
   for (const f of flowers) counts.set(f.species.id, (counts.get(f.species.id) ?? 0) + 1)
   return { flowers, counts, discovered: counts.size, total: GARDEN_SPECIES.length }

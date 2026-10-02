@@ -64,10 +64,14 @@ function idsForTier(rarity: Rarity, prefix: string): string[] {
   return species.map((s) => chosen.get(s.id)!)
 }
 
+// One session per week (never two in the same Monday-start week): with the
+// default weekly goal of 2, discovered counts/species here must stay
+// exactly the seeded ones, not also pick up a goal bloom's bonus species
+// (garden.ts/goalBloom.ts).
 function seedsFor(ids: string[], startDay: number): Seed[] {
   return ids.map((sessionId, i) => ({
     sessionId,
-    endedAt: new Date(Date.UTC(2026, 0, startDay + i, 10, 0, 0)).toISOString(),
+    endedAt: new Date(Date.UTC(2026, 0, startDay + i * 7, 10, 0, 0)).toISOString(),
   }))
 }
 

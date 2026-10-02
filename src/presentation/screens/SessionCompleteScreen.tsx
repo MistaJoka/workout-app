@@ -24,6 +24,9 @@ import type { SessionXpGain } from '../../domain/progress/xp'
 import { BloomReveal } from '../components/BloomReveal'
 import { useCountUp } from '../components/CountUp'
 import { sessionBloom, type GardenSpecies } from '../../domain/progress/garden'
+import { goalBloomForSession } from '../../domain/progress/goalBloom'
+import { weeklyGoal } from '../../domain/progress/stats'
+import { getWeeklySchedule } from '../../infrastructure/db/repositories/scheduleRepository'
 import { db } from '../../infrastructure/db/schema'
 import { bookendsFor } from '../../domain/content/workoutEstimate'
 import { templateById } from '../../domain/content/fixtures/foundationStrengthStarter'
@@ -52,6 +55,10 @@ export function SessionCompleteScreen() {
   // Bloom XP this workout earned (and whether it crossed a level or met the
   // week's goal). Null until read, or if it can't be: the screen never waits.
   const [xp, setXp] = useState<SessionXpGain | null>(null)
+  // The bonus goal bloom this workout earned by reaching its week's goal
+  // (goalBloom.ts), if any -- null while loading or if this isn't that
+  // session.
+  const [goalBloomSpecies, setGoalBloomSpecies] = useState<GardenSpecies | null>(null)
 
   useEffect(() => {
     if (!sessionId) return
@@ -63,6 +70,9 @@ export function SessionCompleteScreen() {
       .toArray()
       .then((all) => setBloom(sessionBloom(all, sessionId)))
       .catch(() => setBloom(null))
+    loadGoalBloom(sessionId)
+      .then(setGoalBloomSpecies)
+      .catch(() => setGoalBloomSpecies(null))
     loadStats(sessionId)
       .then(setStats)
       .catch(() => setStats(null))
@@ -82,6 +92,11 @@ export function SessionCompleteScreen() {
   async function loadStats(id: string): Promise<CompleteStats | null> {
     const [plan, loaded, events] = await Promise.all([getPlan(id), getResult(id), getEventsForSession(id)])
     return plan && loaded ? completeStats(plan, loaded, events) : null
+  }
+
+  async function loadGoalBloom(id: string): Promise<GardenSpecies | null> {
+    const [results, schedule] = await Promise.all([db.sessionResults.toArray(), getWeeklySchedule()])
+    return goalBloomForSession(results, weeklyGoal(schedule), id)?.species ?? null
   }
 
   async function loadCandidates(id: string): Promise<Candidate[]> {
@@ -172,6 +187,7 @@ export function SessionCompleteScreen() {
             <RewardItem delay={90}>
               <XpGainChip gain={xp} />
               {xp.goalMet && <GoalMetBanner />}
+              {xp.goalMet && goalBloomSpecies && <GoalBloomReveal species={goalBloomSpecies} />}
             </RewardItem>
           )}
           <RewardItem delay={180}>
@@ -295,6 +311,52 @@ function SetsStat({ completed, planned, shortened }: { completed: number; planne
         {shown}/{planned}
       </p>
       <p className="text-xs text-ink-muted">{shortened ? 'sets (ended early)' : 'sets'}</p>
+    </div>
+  )
+}
+
+const GOAL_BLOOM_STYLE = `
+.goal-bloom-reveal { animation: goal-bloom-pop 0.4s cubic-bezier(0.2, 0.9, 0.3, 1.3) both; }
+@keyframes goal-bloom-pop { from { opacity: 0; transform: scale(0.75); } to { opacity: 1; transform: scale(1); } }
+[data-motion='reduced'] .goal-bloom-reveal, [data-motion='off'] .goal-bloom-reveal { animation: none; }
+@media (prefers-reduced-motion: reduce) { [data-motion='full'] .goal-bloom-reveal { animation: none; } }
+`
+
+// A small pixel gift box, drawn open at the lid -- the goal bloom's own
+// decoration (aria-hidden; the real information is the text beside it).
+function GiftBoxIcon() {
+  return (
+    <svg aria-hidden="true" viewBox="0 0 12 12" width="22" height="22" shapeRendering="crispEdges">
+      <rect x="1" y="5" width="10" height="6" fill="#f2b829" />
+      <rect x="1" y="9" width="10" height="2" fill="#d99a1a" />
+      <rect x="0" y="3" width="12" height="2" fill="#ff8fb8" />
+      <rect x="5" y="3" width="2" height="8" fill="#e85a7c" />
+      <rect x="3" y="0" width="2" height="3" fill="#ff8fb8" />
+      <rect x="7" y="0" width="2" height="3" fill="#ff8fb8" />
+      <rect x="4" y="1" width="1" height="1" fill="#ffb8d9" />
+      <rect x="8" y="1" width="1" height="1" fill="#ffb8d9" />
+    </svg>
+  )
+}
+
+// The bonus flower a met weekly goal earns, revealed right alongside the
+// "Goal met!" banner once this exact workout is the one that reached the
+// goal (goalBloom.ts). A gift-box pop under full motion; reduced/off motion
+// skip straight to the end state, same convention as every other Pixel
+// Bloom entrance (BloomReveal.tsx, LoreSheet.tsx).
+function GoalBloomReveal({ species }: { species: GardenSpecies }) {
+  const article = /^[aeiou]/i.test(species.name) ? 'An' : 'A'
+  return (
+    <div
+      className="goal-bloom-reveal mt-2 flex items-center justify-center gap-2 text-center"
+      role="status"
+      data-testid="goal-bloom-reveal"
+    >
+      <style>{GOAL_BLOOM_STYLE}</style>
+      <GiftBoxIcon />
+      <p className="text-sm font-bold">
+        Goal bloom! {article} {species.name} for your week
+      </p>
     </div>
   )
 }
