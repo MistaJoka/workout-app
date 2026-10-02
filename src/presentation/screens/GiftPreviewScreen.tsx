@@ -16,6 +16,7 @@ import { activeProfile } from '../../infrastructure/profiles'
 import { playCelebration } from '../../application/celebrationSounds'
 import { useFeedbackSettings } from '../components/useFeedbackSettings'
 import { Skeleton, SkeletonHeading } from '../components/Skeleton'
+import { hasRealName } from '../greeting'
 
 // Her side of a gift link (route `/gift?d=...`): decode what Hubby Bunny
 // sent, show a preview that never reveals a locked note's actual text
@@ -225,7 +226,7 @@ function GiftPreviewCard({
         </p>
       ) : (
         <p className="text-sm text-ink-muted" data-testid="gift-target-profile">
-          Adding to {profileName}'s shop.
+          {hasRealName(profileName) ? `Adding to ${profileName}'s shop.` : 'Adding to your shop.'}
         </p>
       )}
     </div>

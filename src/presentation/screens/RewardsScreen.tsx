@@ -27,6 +27,7 @@ import { PinEntrySheet, PinSetupSheet, RedeemConfirmSheet, CouponSheet } from '.
 import { RewardEditorSheet, type RewardDraft } from '../components/RewardEditorSheet'
 import { GiftComposerSheet } from '../components/GiftComposerSheet'
 import { DeliveredComposerSheet } from '../components/DeliveredComposerSheet'
+import { OpenGiftLink } from '../components/OpenGiftLink'
 import { renderCardToBlob, ShareIcon } from '../components/ShareCardButton'
 import { shareOrDownload } from '../components/shareOrDownload'
 import { buildCouponCardModel, couponCardFilename, drawCouponCard } from '../rewardsCard'
@@ -399,6 +400,8 @@ export function RewardsScreen() {
               Mark delivered
             </button>
           </div>
+
+          <OpenGiftLink />
 
           {activeRewards.length === 0 ? (
             <RaeNote expression="smile">

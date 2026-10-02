@@ -148,6 +148,14 @@ export function buildGiftLinkUrl(payload: GiftLinkPayload, location: { origin: s
   return `${location.origin}${base}#/gift?d=${encoded}`
 }
 
+// Her app may be the installed APK while his link is a web address, so the
+// shop lets her paste the link (or the whole shared message) instead of
+// tapping it. Returns the `d` payload, or null when there's no gift link.
+export function extractGiftLinkData(text: string): string | null {
+  const match = /#\/gift\?(?:[^\s#]*&)?d=([A-Za-z0-9_-]+)/.exec(text)
+  return match ? match[1] : null
+}
+
 // ---- idempotency: "already added"/"already delivered" ----
 
 // True once every reward and note id in the payload is already present

@@ -1,5 +1,6 @@
 import { expect, test, type Page } from '@playwright/test'
 import { finishWorkout } from './helpers'
+import { encodeGiftPayload } from '../src/domain/rewards/giftLink'
 
 // Gift links end to end (domain/rewards/giftLink.ts): Hubby Bunny composes
 // a gift on his own phone/profile (a completely separate browser context,
@@ -114,7 +115,9 @@ test('gift links: compose on one phone, accept on another, then round-trip a del
   expect(couponMessage).toContain('Foot rub')
 
   // --- His phone: paste her message, build a "delivered" link, send it
-  // back (no access to her data -- just the code she sent). ---
+  // back (no access to her data -- just the code she sent). A fresh load
+  // (about:blank bounce) starts Hubby mode locked, so this asks for the PIN.
+  await page.goto('about:blank')
   await page.goto('/#/rewards')
   await page.getByRole('button', { name: 'Mark delivered', exact: true }).click()
   await expect(page.getByText('Enter PIN')).toBeVisible()
@@ -146,3 +149,28 @@ test('an invalid gift link shows a friendly error', async ({ page }) => {
   await page.goto('/#/gift')
   await expect(page.getByTestId('gift-invalid')).toBeVisible()
 })
+
+// Her app can be the installed APK while his link is a web address, so the
+// shop accepts a pasted link (or his whole shared message).
+test('pasting a gift message into the shop opens the gift', async ({ page }) => {
+  const encoded = encodeGiftPayload({
+    v: 1,
+    kind: 'gift',
+    from: 'Hubby Bunny',
+    rewards: [{ id: 'paste-1', title: 'Movie night', cost: 25, emoji: '🎬' }],
+    notes: [],
+    createdAt: '2026-10-02T12:00:00.000Z',
+  })
+  await page.goto('/#/rewards')
+  await page.getByText('Got a link? Paste it here').click()
+  await page.getByLabel('Gift link').fill('nonsense')
+  await page.getByRole('button', { name: 'Open link' }).click()
+  await expect(page.getByRole('alert')).toHaveText("That doesn't look like a gift link.")
+
+  await page.getByLabel('Gift link').fill(`Hubby Bunny sent you 1 reward 💌\nhttps://example.test/#/gift?d=${encoded}`)
+  await page.getByRole('button', { name: 'Open link' }).click()
+  await expect(page).toHaveURL(/#\/gift\?d=/)
+  await expect(page.getByTestId('gift-rewards')).toContainText('Movie night')
+  await expect(page.getByTestId('gift-target-profile')).toHaveText('Adding to your shop.')
+})
+

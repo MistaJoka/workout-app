@@ -1,5 +1,6 @@
 import { describe, expect, it } from 'vitest'
 import {
+  extractGiftLinkData,
   GIFT_LINK_VERSION,
   GiftLinkTooLargeError,
   MAX_ENCODED_LENGTH,
@@ -210,5 +211,25 @@ describe('share messages', () => {
     expect(message.text).toContain('Breakfast in bed')
     expect(message.text).toContain('Hubby Bunny')
     expect(message.text).toContain('FS-AB12CD')
+  })
+})
+
+describe('extractGiftLinkData (pasting a link into the app)', () => {
+  it('pulls the payload out of a bare link', () => {
+    expect(extractGiftLinkData('https://example.ts.net:8443/#/gift?d=eyJ2IjoxfQ')).toBe('eyJ2IjoxfQ')
+  })
+
+  it('finds the link inside a whole shared message', () => {
+    const text = 'Hubby Bunny sent you 1 reward 💌\nhttps://x/workout-app/#/gift?d=ab-c_D12 '
+    expect(extractGiftLinkData(text)).toBe('ab-c_D12')
+  })
+
+  it('stops at the next query parameter', () => {
+    expect(extractGiftLinkData('https://x/#/gift?d=abc&z=1')).toBe('abc')
+  })
+
+  it('returns null for text with no gift link', () => {
+    expect(extractGiftLinkData('see you at 6')).toBeNull()
+    expect(extractGiftLinkData('https://x/#/gift?d=')).toBeNull()
   })
 })
