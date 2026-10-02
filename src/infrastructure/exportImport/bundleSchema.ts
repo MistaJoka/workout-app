@@ -125,6 +125,29 @@ const bodyWeight = z
   .object({ day: z.string().regex(/^\d{4}-\d{2}-\d{2}$/), kg: positive, recordedAt: isoLike })
   .passthrough()
 
+const reward = z
+  .object({
+    id: z.string().min(1),
+    title: z.string(),
+    cost: count,
+    emoji: z.string().min(1),
+    active: z.boolean(),
+    createdAt: isoLike,
+    updatedAt: isoLike,
+  })
+  .passthrough()
+
+const redemption = z
+  .object({
+    id: z.string().min(1),
+    rewardId: z.string().min(1),
+    title: z.string(),
+    cost: count,
+    redeemedAt: isoLike,
+    deliveredAt: isoLike.nullable(),
+  })
+  .passthrough()
+
 export const exportBundleSchema = z
   .object({
     exportedAt: isoLike,
@@ -139,5 +162,7 @@ export const exportBundleSchema = z
     progression: z.array(progression),
     customTemplates: z.array(customTemplate).optional(),
     bodyWeight: z.array(bodyWeight).optional(),
+    rewards: z.array(reward).optional(),
+    redemptions: z.array(redemption).optional(),
   })
   .passthrough()

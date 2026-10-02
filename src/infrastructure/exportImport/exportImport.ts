@@ -5,6 +5,8 @@ import type {
   CustomTemplateRecord,
   FamiliarityRecord,
   ProgressionRecord,
+  RedemptionRecord,
+  RewardRecord,
   SettingsRecord,
 } from '../db/schema'
 import type { SessionEvent, SessionPlan, SessionResult } from '../../domain/session/types'
@@ -27,6 +29,9 @@ export type ExportBundle = {
   customTemplates?: CustomTemplateRecord[]
   // Added with DB v3; optional for the same reason.
   bodyWeight?: BodyWeightRecord[]
+  // Added with DB v4 (Hubby Bunny's reward shop); optional for the same reason.
+  rewards?: RewardRecord[]
+  redemptions?: RedemptionRecord[]
 }
 
 const ALL_TABLES = () => [
@@ -39,6 +44,8 @@ const ALL_TABLES = () => [
   db.progression,
   db.customTemplates,
   db.bodyWeight,
+  db.rewards,
+  db.redemptions,
 ]
 
 // One read transaction, so a write landing mid-export can't produce a
@@ -58,6 +65,8 @@ export async function exportAll(): Promise<ExportBundle> {
     progression: await db.progression.toArray(),
     customTemplates: await db.customTemplates.toArray(),
     bodyWeight: await db.bodyWeight.toArray(),
+    rewards: await db.rewards.toArray(),
+    redemptions: await db.redemptions.toArray(),
   }))
 }
 
@@ -111,6 +120,9 @@ export async function importAll(bundle: ExportBundle): Promise<ImportSummary> {
     await addMissing<CheckInRecord>(db.checkIns, bundle.checkIns, (r) => r.id)
     await addMissing<SessionPlan>(db.sessionPlans, bundle.sessionPlans, (r) => r.id)
     await addMissing<SessionResult>(db.sessionResults, bundle.sessionResults, (r) => r.sessionId)
+    // Redemptions are append-only history (a real event, like a finished
+    // workout): added by id regardless of whose profile this backup is.
+    await addMissing<RedemptionRecord>(db.redemptions, bundle.redemptions ?? [], (r) => r.id)
 
     const incoming = [...bundle.sessionEvents].sort((a, b) => (a.seq ?? 0) - (b.seq ?? 0))
     const present = new Set(
@@ -136,6 +148,9 @@ export async function importAll(bundle: ExportBundle): Promise<ImportSummary> {
       (r) => r.updatedAt
     )
     await putNewer<BodyWeightRecord>(db.bodyWeight, bundle.bodyWeight ?? [], (r) => r.day, (r) => r.recordedAt)
+    // Hubby Bunny's shop catalog is current, mutable state like routines:
+    // whichever copy was edited most recently wins.
+    await putNewer<RewardRecord>(db.rewards, bundle.rewards ?? [], (r) => r.id, (r) => r.updatedAt)
   })
   return { state: other ? 'skipped-other-profile' : 'merged' }
 }

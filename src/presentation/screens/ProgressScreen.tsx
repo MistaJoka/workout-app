@@ -28,6 +28,7 @@ import { evaluateAchievements, type AchievementIcon } from '../../domain/progres
 import { AchievementBadge } from '../components/AchievementUnlocks'
 import { RAE_STORY, unlockedChapters } from '../../domain/content/raeStory'
 import { RaeFace, type RaeExpression } from '../components/Rae'
+import { loadCarrotBalance } from '../components/CarrotCelebration'
 
 // How many rows "By exercise" and "History" show before "Show all" — short
 // enough that Progress doesn't turn into a mile of scrolling once there's
@@ -207,6 +208,7 @@ export function ProgressScreen() {
               <BadgesTile earned={snapshot.badges.earned} total={snapshot.badges.total} icon={snapshot.badges.icon} />
               <StoryTile unlocked={snapshot.storyChapters} />
               <RecapLink compact />
+              <RewardsShopTile />
             </div>
           </section>
 
@@ -324,6 +326,38 @@ function StoryTile({ unlocked }: { unlocked: number }) {
       <p className="text-xs text-ink-muted">
         {unlocked} of {RAE_STORY.length}
       </p>
+    </Link>
+  )
+}
+
+// Your collection's fifth tile: Hubby Bunny's reward shop, carrot balance
+// as the headline number, same compact-tile shape as the other three.
+function RewardsShopTile() {
+  const [balance, setBalance] = useState<number | null>(null)
+  useEffect(() => {
+    let cancelled = false
+    loadCarrotBalance()
+      .then((b) => {
+        if (!cancelled) setBalance(b)
+      })
+      .catch(() => {
+        if (!cancelled) setBalance(null)
+      })
+    return () => {
+      cancelled = true
+    }
+  }, [])
+  return (
+    <Link
+      to="/rewards"
+      className="card flex min-h-11 flex-col items-center gap-1 p-3 text-center active:bg-field-primary"
+      aria-label={`Hubby's shop: ${balance ?? 0} carrots. Open the shop`}
+    >
+      <span aria-hidden="true" className="text-[2.125rem] leading-none">
+        🥕
+      </span>
+      <p className="font-bold">Hubby's shop</p>
+      <p className="hud-num text-xs text-ink-muted">{balance ?? 0} carrots</p>
     </Link>
   )
 }

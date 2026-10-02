@@ -16,6 +16,31 @@ export type CheckInRecord = {
   availableMinutes: number
 }
 export type FamiliarityRecord = { exerciseId: string; exposureCount: number; lastSeenAt: string | null }
+// Hubby Bunny's reward shop (v4). Carrots earned are never stored (derived
+// from history, src/domain/rewards/carrots.ts); these two tables are the
+// shop's own state: the catalog Hubby Bunny curates, and the ledger of
+// what's been redeemed/delivered.
+export type RewardRecord = {
+  id: string
+  title: string
+  cost: number
+  emoji: string
+  // Inactive rewards stay in the shop's history (a past redemption still
+  // names them) but no longer show up to redeem.
+  active: boolean
+  createdAt: string
+  updatedAt: string
+}
+export type RedemptionRecord = {
+  id: string
+  rewardId: string
+  // title/cost are a snapshot at redemption time, so editing or deleting a
+  // reward later never rewrites what a past redemption actually cost.
+  title: string
+  cost: number
+  redeemedAt: string
+  deliveredAt: string | null
+}
 export type ProgressionRecord = {
   exerciseId: string
   level: number
@@ -43,6 +68,8 @@ export class WorkoutDb extends Dexie {
   progression!: EntityTable<ProgressionRecord, 'exerciseId'>
   customTemplates!: EntityTable<CustomTemplateRecord, 'id'>
   bodyWeight!: EntityTable<BodyWeightRecord, 'day'>
+  rewards!: EntityTable<RewardRecord, 'id'>
+  redemptions!: EntityTable<RedemptionRecord, 'id'>
 
   // One database per profile (see src/infrastructure/profiles.ts); the
   // name is resolved once, at module load, for the active profile.
@@ -64,6 +91,11 @@ export class WorkoutDb extends Dexie {
     // v3: body-weight log. Additive only.
     this.version(3).stores({
       bodyWeight: 'day',
+    })
+    // v4: Hubby Bunny's reward shop. Additive only.
+    this.version(4).stores({
+      rewards: 'id, createdAt, updatedAt',
+      redemptions: 'id, rewardId, redeemedAt',
     })
   }
 }
