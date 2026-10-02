@@ -116,7 +116,11 @@ export function MonthBlooms({ workouts, now = new Date() }: { workouts: MonthWor
               ) : (
                 <span className="h-6" aria-hidden />
               )}
-              <span className={`text-xs ${cell.isFuture ? 'text-ink-muted opacity-50' : done ? 'font-bold' : 'text-ink-muted'}`}>
+              {/* opacity-90, not 50: text-ink-muted is calibrated to AA on
+                  its own (tokens.test.ts), and halving it on top of that
+                  pushed these future-day numbers under 4.5:1. 90% keeps the
+                  faded, not-yet-here look while staying compliant. */}
+              <span className={`text-xs ${cell.isFuture ? 'text-ink-muted opacity-90' : done ? 'font-bold' : 'text-ink-muted'}`}>
                 {cell.day}
               </span>
             </>

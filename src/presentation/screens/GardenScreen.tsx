@@ -226,17 +226,14 @@ export function GardenScreen() {
                     const found = count > 0
                     const rarityLabel = RARITY_LABEL[sp.rarity].replace('!', '')
                     const golden = found && completeRarities.has(sp.rarity)
+                    const tileLabel = found
+                      ? `${sp.name}, ${rarityLabel}, grown ${count} ${count === 1 ? 'time' : 'times'}${golden ? ', set complete' : ''}`
+                      : `Not found yet, ${rarityLabel}`
                     return (
-                      <li
-                        key={sp.id}
-                        aria-label={
-                          found
-                            ? `${sp.name}, ${rarityLabel}, grown ${count} ${count === 1 ? 'time' : 'times'}${golden ? ', set complete' : ''}`
-                            : `Not found yet, ${rarityLabel}`
-                        }
-                      >
+                      <li key={sp.id} aria-label={tileLabel}>
                         <button
                           type="button"
+                          aria-label={tileLabel}
                           className="card flex min-h-11 w-full flex-col items-center p-2 text-center"
                           onClick={() =>
                             setLoreTarget(

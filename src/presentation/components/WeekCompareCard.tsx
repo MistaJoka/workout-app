@@ -35,7 +35,12 @@ function HighlightChip({ highlight }: { highlight: Highlight }) {
     // The true final number is the accessible name (same technique as
     // XpCelebration's XpGainChip), so a screen reader never reads a
     // mid-animation value while the visible digits are still counting up.
-    <span className="chip gap-1.5 bg-field-success" data-testid="week-compare-chip" aria-label={highlightLabel(highlight)}>
+    <span
+      className="chip gap-1.5 bg-field-success"
+      data-testid="week-compare-chip"
+      role="img"
+      aria-label={highlightLabel(highlight)}
+    >
       <UpGlyph />
       <span aria-hidden="true">
         {highlight.prefix}
