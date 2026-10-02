@@ -27,3 +27,11 @@ export function formatWeight(kg: number, unit: WeightUnit): string {
   const rounded = Math.round(value * 10) / 10
   return `${Number.isInteger(rounded) ? rounded : rounded.toFixed(1)} ${unit}`
 }
+
+// Onboarding's starting pick for the weight unit, before anyone has chosen
+// one: en-US reads pounds, everywhere else reads metric. Only the initial
+// suggestion -- the person can still change it on the same screen, and the
+// stored setting (not this) governs every display after that.
+export function defaultWeightUnitForLocale(locale: string | undefined): WeightUnit {
+  return locale === 'en-US' ? 'lb' : 'kg'
+}

@@ -221,6 +221,14 @@ export function CheckInScreen() {
         ))}
       </ul>
 
+      {/* Safety at the point of risk, not just once on first run (see
+          OnboardingGate): this is the moment someone is about to move. */}
+      <p className="text-xs text-ink-muted">
+        Stop any movement that causes pain.{' '}
+        <Link to="/about" className="underline">
+          More
+        </Link>
+      </p>
 
       {error && <p className="text-sm text-accent">{error}</p>}
       <ThumbBar armKey="checkin">
