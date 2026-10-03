@@ -1,4 +1,5 @@
 import { Link } from 'react-router-dom'
+import { loadWeekGoals } from '../../infrastructure/db/repositories/weekGoalsRepository'
 import { useGiverName } from '../components/useGiverName'
 import { giverRole } from '../../domain/rewards/pin'
 import { useEffect, useRef, useState, type ReactNode } from 'react'
@@ -51,9 +52,10 @@ export function SettingsScreen() {
       .catch(() => {})
     db.sessionResults
       .toArray()
-      .then((results) => {
+      .then(async (results) => {
         setFinished(results.length)
-        const garden = buildGarden(results)
+        // Goal blooms included, so a goal-bloom-only species can be an emblem.
+        const garden = buildGarden(results, await loadWeekGoals({ results }))
         setDiscoveredSpecies(GARDEN_SPECIES.filter((s) => garden.counts.has(s.id)))
       })
       .catch(() => {})

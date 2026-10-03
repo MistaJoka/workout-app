@@ -111,7 +111,7 @@ export function ProgressScreen() {
       streak: calculateWeekStreak(results, goal, now),
       weeks: weeklyTotals(results, now, 8),
       records: [...detectPersonalRecords(setRecords).values()].sort((a, b) => a.exerciseName.localeCompare(b.exerciseName)),
-      garden: buildGarden(results),
+      garden: buildGarden(results, goal),
       level: levelFor(computeXp({ plans, results, events }, goal).total),
       compare: compareWeeks({ plans, results, events }, goal, now),
       badges: { earned: earnedAchievements.length, total: achievements.length, icon: newestBadge?.icon ?? 'trophy' },

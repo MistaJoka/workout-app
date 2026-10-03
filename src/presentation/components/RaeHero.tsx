@@ -310,7 +310,7 @@ export function RaeHero({
             const isNewest = i === pots.length - 1
             return (
               <span
-                key={flower.sessionId}
+                key={flower.goal ? `${flower.sessionId}:goal` : flower.sessionId}
                 className={revealNewest && isNewest ? 'rae-pots__new' : ''}
                 style={isNewest && afterglow ? { position: 'relative', display: 'inline-block' } : undefined}
               >

@@ -39,7 +39,7 @@ export function GardenCard({ garden, compact = false }: { garden: Garden; compac
       </div>
       <div aria-hidden="true" className="mt-1 flex items-end gap-1">
         {recent.map((flower) => (
-          <PixelBloom key={flower.sessionId} size={34} animate={false} species={flower.species} />
+          <PixelBloom key={flower.goal ? `${flower.sessionId}:goal` : flower.sessionId} size={34} animate={false} species={flower.species} />
         ))}
         <p className="ml-auto self-center text-sm text-ink-muted">
           {garden.flowers.length} {garden.flowers.length === 1 ? 'flower' : 'flowers'}

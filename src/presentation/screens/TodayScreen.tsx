@@ -213,7 +213,7 @@ async function loadToday(now: Date): Promise<TodayData> {
       dateKey: localDateKey(now),
       memory,
     }),
-    gardenFlowers: buildGarden(results).flowers,
+    gardenFlowers: buildGarden(results, goals).flowers,
     level: levelFor(computeXp({ plans, results, events }, goals).total).level,
     newChapter: latestUnreadChapter(results.length),
   }

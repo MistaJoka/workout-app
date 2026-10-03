@@ -60,6 +60,10 @@ test('the workout that meets the week goal reveals a bonus goal bloom on Complet
   const sheet = page.getByTestId('lore-sheet')
   await expect(sheet).toBeVisible()
   await expect(sheet.getByText('Grown by meeting your weekly goal')).toBeVisible()
+
+  // Progress counts the bonus flower too: same flower total as the garden.
+  await page.goto('/#/progress')
+  await expect(page.getByRole('link', { name: /^Your garden: 3 flowers, / })).toBeVisible()
 })
 
 test('with motion off, the goal bloom reveal is still there at once', async ({ page }) => {
