@@ -24,9 +24,9 @@ test('tiers, prices in workouts, and saving for a big reward', async ({ page }) 
   await page.getByRole('button', { name: 'Add', exact: true }).click()
   await page.getByRole('button', { name: 'Close', exact: true }).click()
 
-  // Grouped by tier, cheapest first.
-  await expect(page.getByText('Little treats')).toBeVisible()
-  await expect(page.getByText('Big dreams')).toBeVisible()
+  // Cheapest first, each tile tagged with its tier.
+  await expect(page.getByText('Little treat', { exact: true })).toBeVisible()
+  await expect(page.getByText('Big dream', { exact: true }).first()).toBeVisible()
 
   // Save for the big one: a goal card appears, and on Today too.
   await page.getByRole('button', { name: 'Save for this' }).last().click()

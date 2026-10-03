@@ -1,4 +1,6 @@
 import { db } from '../db/schema'
+import { mergeWishBooks, WISHES_KEY } from '../db/repositories/wishesRepository'
+import type { WishBook } from '../../domain/rewards/wishes'
 import type {
   BodyWeightRecord,
   CheckInRecord,
@@ -188,6 +190,8 @@ async function mergeSettings(rows: SettingsRecord[]): Promise<void> {
     const here = local[i]
     if (here === undefined) {
       await db.settings.put(row)
+    } else if (row.key === WISHES_KEY) {
+      await db.settings.put({ key: row.key, value: mergeWishBooks(here.value as WishBook, row.value as WishBook) })
     } else if (UNION_SETTINGS_KEYS.has(row.key)) {
       await db.settings.put({ key: row.key, value: { ...(row.value as object), ...(here.value as object) } })
     }

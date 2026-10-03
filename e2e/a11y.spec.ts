@@ -493,6 +493,37 @@ test.describe('Hubby Bunny: reward shop and love notes', () => {
   })
 })
 
+test.describe('Hubby Bunny: wishlist', () => {
+  test('make-a-wish sheet, the waiting wish, the price sheet, and a granted wish', async ({ page }) => {
+    await page.goto('/#/rewards')
+    await page.getByRole('button', { name: 'Set up shop' }).click()
+    await page.getByLabel('New PIN', { exact: true }).fill('4821')
+    await page.getByLabel('Confirm PIN', { exact: true }).fill('4821')
+    await page.getByRole('button', { name: 'Save PIN' }).click()
+    await page.getByRole('button', { name: 'Close', exact: true }).click()
+
+    await page.getByRole('button', { name: 'Make a wish ✨' }).click()
+    await checkA11y(page, 'Wishlist: make-a-wish sheet')
+    await page.getByLabel('Wish', { exact: true }).fill('Spa day')
+    await page.getByRole('button', { name: 'Make a wish', exact: true }).click()
+    await expect(page.getByTestId('wish-made')).toBeVisible()
+    await checkA11y(page, 'Wishlist: wish made')
+    await page.getByRole('button', { name: 'Done' }).click()
+    await checkA11y(page, 'Wishlist: shop with a waiting wish')
+
+    // Still in Hubby mode from setup, so pricing opens straight away.
+    await page.getByRole('button', { name: 'Hubby: price Spa day' }).click()
+    await expect(page.getByRole('button', { name: 'Add to the shop' })).toBeVisible()
+    await checkA11y(page, 'Wishlist: price sheet')
+    await page.getByRole('button', { name: 'Add to the shop' }).click()
+    await expect(page.getByText('In the shop! ✨')).toBeVisible()
+    await checkA11y(page, 'Wishlist: wish granted')
+    await page.getByRole('button', { name: 'Done' }).click()
+    await expect(page.getByText('✨ Your wish')).toBeVisible()
+    await checkA11y(page, 'Wishlist: shop with a granted wish')
+  })
+})
+
 test.describe('legal and info pages', () => {
   test('Privacy', async ({ page }) => {
     await page.goto('/#/privacy')

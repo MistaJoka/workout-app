@@ -9,7 +9,7 @@ import type { RewardRecord } from '../../infrastructure/db/schema'
 // one-finger-friendly; cute starter suggestions are offered only while the
 // shop is empty, one tap to add -- never pre-created.
 
-const EMOJI_CHOICES = ['🥕', '🍓', '🍿', '🎬', '🛁', '💆', '🧹', '🍕', '☕', '🎮', '🌸', '💝']
+export const EMOJI_CHOICES = ['🥕', '🍓', '🍿', '🎬', '🛁', '💆', '🧹', '🍕', '☕', '🎮', '🌸', '💝']
 
 export type RewardDraft = { title: string; cost: number; emoji: string }
 

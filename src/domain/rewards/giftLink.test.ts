@@ -1,6 +1,7 @@
 import { describe, expect, it } from 'vitest'
 import {
   extractGiftLinkData,
+  wishShareMessage,
   GIFT_LINK_VERSION,
   GiftLinkTooLargeError,
   MAX_ENCODED_LENGTH,
@@ -233,3 +234,26 @@ describe('extractGiftLinkData (pasting a link into the app)', () => {
     expect(extractGiftLinkData('https://x/#/gift?d=')).toBeNull()
   })
 })
+
+describe('wish links (her wish, sent to him)', () => {
+  const wish = {
+    v: 1 as const,
+    kind: 'wish' as const,
+    from: 'Your bunny',
+    wishes: [{ id: 'w1', title: 'Spa day', emoji: '🛁' }],
+    createdAt: '2026-10-03T10:00:00.000Z',
+  }
+
+  it('round-trips through the same codec as gifts', () => {
+    expect(decodeGiftLinkPayload(encodeGiftPayload(wish))).toEqual({ ok: true, payload: wish })
+  })
+
+  it('rejects a wish with no wishes in it', () => {
+    expect(decodeGiftLinkPayload(encodeGiftPayload({ ...wish, wishes: [] })).ok).toBe(false)
+  })
+
+  it('has a share message naming the wish', () => {
+    expect(wishShareMessage(wish)).toEqual({ title: 'A wish from Your bunny', text: 'Your bunny wishes for: 🛁 Spa day ✨' })
+  })
+})
+

@@ -31,6 +31,9 @@ import { OpenGiftLink } from '../components/OpenGiftLink'
 import { SAVING_FOR_KEY, SavingGoalBar, savingGoalReward } from '../components/SavingGoal'
 import { rewardTier, type RewardTier } from '../../domain/rewards/pricing'
 import { newId } from '../../shared/id'
+import { GrantWishSheet, MakeWishSheet, type WishLite } from '../components/WishSheets'
+import { dismissWish, getWishBook } from '../../infrastructure/db/repositories/wishesRepository'
+import { grantedWishIds, pendingWishes, type WishBook } from '../../domain/rewards/wishes'
 import { renderCardToBlob, ShareIcon } from '../components/ShareCardButton'
 import { shareOrDownload } from '../components/shareOrDownload'
 import { buildCouponCardModel, couponCardFilename, drawCouponCard } from '../rewardsCard'
@@ -46,7 +49,7 @@ const GIVER_NAME_KEY = 'rewardsGiverName'
 const PIN_KEY = 'rewardsHubbyPin'
 const PIN_ATTEMPTS_KEY = 'rewardsHubbyPinAttempts'
 
-type PinPurpose = 'manage' | 'giftCompose' | 'deliverCompose' | { deliver: string }
+type PinPurpose = 'manage' | 'giftCompose' | 'deliverCompose' | { deliver: string } | { grant: WishLite }
 
 type Sheet =
   | { kind: 'none' }
@@ -56,6 +59,8 @@ type Sheet =
   | { kind: 'giftCompose' }
   | { kind: 'deliverCompose' }
   | { kind: 'redeemConfirm'; reward: RewardRecord; attemptId: string }
+  | { kind: 'makeWish' }
+  | { kind: 'grantWish'; wish: WishLite }
   | { kind: 'coupon'; redemption: RedemptionRecord; emoji: string }
 
 type Data = {
@@ -66,10 +71,11 @@ type Data = {
   pin: PinRecord | null
   pinAttempts: PinAttemptState
   savingFor: string | null
+  wishes: WishBook
 }
 
 async function load(): Promise<Data> {
-  const [rewards, redemptions, balance, giverName, pin, pinAttempts, savingFor] = await Promise.all([
+  const [rewards, redemptions, balance, giverName, pin, pinAttempts, savingFor, wishes] = await Promise.all([
     listRewards(),
     listRedemptions(),
     loadCarrotBalance(),
@@ -77,6 +83,7 @@ async function load(): Promise<Data> {
     getSetting<PinRecord>(PIN_KEY),
     getSetting<PinAttemptState>(PIN_ATTEMPTS_KEY),
     getSetting<string | null>(SAVING_FOR_KEY),
+    getWishBook(),
   ])
   return {
     rewards,
@@ -86,6 +93,7 @@ async function load(): Promise<Data> {
     pin: pin ?? null,
     pinAttempts: pinAttempts ?? INITIAL_PIN_ATTEMPT_STATE,
     savingFor: savingFor ?? null,
+    wishes,
   }
 }
 
@@ -117,7 +125,12 @@ export function RewardsScreen() {
         setData(loaded)
         // Settings -> "Hubby's reward shop" hands off here to start setup
         // right away, instead of landing on the plain shop view first.
-        if ((location.state as { openManage?: boolean } | null)?.openManage) {
+        // A wish link opened on his phone hands its wish over to price.
+        const grantWish = (location.state as { grantWish?: WishLite } | null)?.grantWish
+        if (grantWish) {
+          if (!loaded.pin) setSheet({ kind: 'pinSetup', purpose: { grant: grantWish } })
+          else setSheet(isHubbyUnlocked() ? { kind: 'grantWish', wish: grantWish } : { kind: 'pinEntry', purpose: { grant: grantWish } })
+        } else if ((location.state as { openManage?: boolean } | null)?.openManage) {
           if (!loaded.pin) setSheet({ kind: 'pinSetup', purpose: 'manage' })
           else setSheet(isHubbyUnlocked() ? { kind: 'editor' } : { kind: 'pinEntry', purpose: 'manage' })
         }
@@ -148,7 +161,7 @@ export function RewardsScreen() {
       setSheet({ kind: 'pinSetup', purpose })
     } else if (isHubbyUnlocked()) {
       // Hubby mode is on: skip the PIN and go straight where it was headed.
-      if (typeof purpose === 'object') void performMarkDelivered(purpose.deliver)
+      if (typeof purpose === 'object' && 'deliver' in purpose) void performMarkDelivered(purpose.deliver)
       else setSheet(landOnPurpose(purpose))
     } else {
       setSheet({ kind: 'pinEntry', purpose })
@@ -160,6 +173,7 @@ export function RewardsScreen() {
   }
 
   function landOnPurpose(purpose: PinPurpose): Sheet {
+    if (typeof purpose === 'object') return 'grant' in purpose ? { kind: 'grantWish', wish: purpose.grant } : { kind: 'none' }
     if (purpose === 'manage') return { kind: 'editor' }
     if (purpose === 'giftCompose') return { kind: 'giftCompose' }
     if (purpose === 'deliverCompose') return { kind: 'deliverCompose' }
@@ -177,7 +191,7 @@ export function RewardsScreen() {
       await setSetting(PIN_ATTEMPTS_KEY, recordCorrectPinAttempt())
       unlockHubbySession()
       await refresh()
-      if (typeof purpose === 'object') {
+      if (typeof purpose === 'object' && 'deliver' in purpose) {
         await markDelivered(purpose.deliver)
         await refresh()
         setSheet({ kind: 'none' })
@@ -212,7 +226,7 @@ export function RewardsScreen() {
       }
       await setSetting(PIN_ATTEMPTS_KEY, recordCorrectPinAttempt())
       unlockHubbySession()
-      if (typeof purpose === 'object') {
+      if (typeof purpose === 'object' && 'deliver' in purpose) {
         await markDelivered(purpose.deliver)
         await refresh()
         setSheet({ kind: 'none' })
@@ -340,6 +354,16 @@ export function RewardsScreen() {
     setSheet({ kind: 'redeemConfirm', reward, attemptId: newId() })
   }
 
+  async function handleDismissWish(id: string) {
+    try {
+      await dismissWish(id)
+      await refresh()
+      setSheet({ kind: 'none' })
+    } catch {
+      setRedeemError("Couldn't save that on this device. Try again.")
+    }
+  }
+
   // Her choice, no PIN: pin one reward to save for, or tap again to unpin.
   async function toggleSavingFor(reward: RewardRecord) {
     try {
@@ -358,9 +382,9 @@ export function RewardsScreen() {
 
   const activeRewards = [...(data?.rewards.filter((r) => r.active) ?? [])].sort((a, b) => a.cost - b.cost)
   const goalReward = data ? savingGoalReward(data.rewards, data.savingFor) : null
-  const tiers = TIER_ORDER.map((tier) => ({ tier, rewards: activeRewards.filter((r) => rewardTier(r.cost) === tier) })).filter(
-    (t) => t.rewards.length > 0
-  )
+  const rewardIds = new Set(data?.rewards.map((r) => r.id) ?? [])
+  const wishesPending = pendingWishes(data?.wishes, rewardIds)
+  const wishesGranted = grantedWishIds(data?.wishes, rewardIds)
   const pending = data?.redemptions.filter((r) => !r.deliveredAt) ?? []
   const delivered = data?.redemptions.filter((r) => r.deliveredAt) ?? []
 
@@ -405,6 +429,101 @@ export function RewardsScreen() {
             </button>
           </section>
 
+          {activeRewards.length === 0 ? (
+            <RaeNote expression="smile">
+              {data.giverName} hasn't added anything to the shop yet. Tap "{data.pin ? 'Manage shop' : 'Set up shop'}" to add
+              the first reward.
+            </RaeNote>
+          ) : (
+            <>
+              {goalReward && (
+                <section className="card flex items-center gap-3 p-4" data-testid="saving-goal">
+                  <span aria-hidden="true" className="text-3xl">
+                    {goalReward.emoji}
+                  </span>
+                  <span className="min-w-0 flex-1">
+                    <span className="block text-xs font-semibold text-ink-muted">Saving for</span>
+                    <span className="block truncate font-bold">{goalReward.title}</span>
+                    <SavingGoalBar reward={goalReward} balance={data.balance} />
+                  </span>
+                </section>
+              )}
+              <div className="grid grid-cols-2 gap-3">
+                {activeRewards.map((reward) => (
+                  <RewardTile
+                    key={reward.id}
+                    reward={reward}
+                    balance={data.balance}
+                    saving={data.savingFor === reward.id}
+                    wished={wishesGranted.has(reward.id)}
+                    onRedeem={() => openRedeem(reward)}
+                    onToggleSaving={() => void toggleSavingFor(reward)}
+                  />
+                ))}
+              </div>
+            </>
+          )}
+
+          {/* Her wishlist: she proposes, he prices behind the PIN. */}
+          <section className="space-y-2" data-testid="wishlist">
+            {wishesPending.length > 0 && <p className="text-sm font-semibold text-ink-muted">Wishes</p>}
+            {wishesPending.map((wish) => (
+              <div key={wish.id} className="card flex items-center gap-2 p-3">
+                <span aria-hidden="true" className="text-2xl">
+                  {wish.emoji}
+                </span>
+                <span className="min-w-0 flex-1">
+                  <span className="block truncate font-semibold">{wish.title}</span>
+                  <span className="block text-xs text-ink-muted">Waiting for {data.giverName}</span>
+                </span>
+                <button
+                  type="button"
+                  className="btn-secondary min-h-11 px-3 text-sm"
+                  aria-label={`Hubby: price ${wish.title}`}
+                  onClick={() => requestPinFor({ grant: { id: wish.id, title: wish.title, emoji: wish.emoji } })}
+                >
+                  Price it
+                </button>
+                <button
+                  type="button"
+                  className="btn-ghost min-h-11 min-w-11 p-0"
+                  aria-label={`Remove wish ${wish.title}`}
+                  onClick={() => void handleDismissWish(wish.id)}
+                >
+                  ✕
+                </button>
+              </div>
+            ))}
+            <button type="button" className="btn-secondary min-h-11 w-full" onClick={() => setSheet({ kind: 'makeWish' })}>
+              Make a wish ✨
+            </button>
+          </section>
+
+          {data.redemptions.length > 0 && (
+            <section className="space-y-2">
+              <p className="text-sm font-semibold text-ink-muted">Pending</p>
+              {pending.length === 0 ? (
+                <p className="text-sm text-ink-muted">Nothing waiting on {data.giverName} right now.</p>
+              ) : (
+                <ul className="space-y-2">
+                  {pending.map((r) => (
+                    <RedemptionRow key={r.id} redemption={r} onOpen={() => openCoupon(r)} onMarkDelivered={() => requestMarkDelivered(r.id)} />
+                  ))}
+                </ul>
+              )}
+              {delivered.length > 0 && (
+                <>
+                  <p className="pt-2 text-sm font-semibold text-ink-muted">Delivered</p>
+                  <ul className="space-y-2">
+                    {delivered.map((r) => (
+                      <RedemptionRow key={r.id} redemption={r} onOpen={() => openCoupon(r)} onMarkDelivered={() => requestMarkDelivered(r.id)} />
+                    ))}
+                  </ul>
+                </>
+              )}
+            </section>
+          )}
+
           {/* A sibling surprise, reachable from here: Hubby Bunny's love
               notes, written and unlocked separately from the shop's
               carrot-spending flow. */}
@@ -437,70 +556,6 @@ export function RewardsScreen() {
           </div>
 
           <OpenGiftLink />
-
-          {activeRewards.length === 0 ? (
-            <RaeNote expression="smile">
-              {data.giverName} hasn't added anything to the shop yet. Tap "{data.pin ? 'Manage shop' : 'Set up shop'}" to add
-              the first reward.
-            </RaeNote>
-          ) : (
-            <>
-              {goalReward && (
-                <section className="card flex items-center gap-3 p-4" data-testid="saving-goal">
-                  <span aria-hidden="true" className="text-3xl">
-                    {goalReward.emoji}
-                  </span>
-                  <span className="min-w-0 flex-1">
-                    <span className="block text-xs font-semibold text-ink-muted">Saving for</span>
-                    <span className="block truncate font-bold">{goalReward.title}</span>
-                    <SavingGoalBar reward={goalReward} balance={data.balance} />
-                  </span>
-                </section>
-              )}
-              {tiers.map(({ tier, rewards }) => (
-                <section key={tier} className="space-y-2">
-                  {tiers.length > 1 && <p className="text-sm font-semibold text-ink-muted">{TIER_LABELS[tier]}</p>}
-                  <div className="grid grid-cols-2 gap-3">
-                    {rewards.map((reward) => (
-                      <RewardTile
-                        key={reward.id}
-                        reward={reward}
-                        balance={data.balance}
-                        saving={data.savingFor === reward.id}
-                        onRedeem={() => openRedeem(reward)}
-                        onToggleSaving={() => void toggleSavingFor(reward)}
-                      />
-                    ))}
-                  </div>
-                </section>
-              ))}
-            </>
-          )}
-
-          {data.redemptions.length > 0 && (
-            <section className="space-y-2">
-              <p className="text-sm font-semibold text-ink-muted">Pending</p>
-              {pending.length === 0 ? (
-                <p className="text-sm text-ink-muted">Nothing waiting on {data.giverName} right now.</p>
-              ) : (
-                <ul className="space-y-2">
-                  {pending.map((r) => (
-                    <RedemptionRow key={r.id} redemption={r} onOpen={() => openCoupon(r)} onMarkDelivered={() => requestMarkDelivered(r.id)} />
-                  ))}
-                </ul>
-              )}
-              {delivered.length > 0 && (
-                <>
-                  <p className="pt-2 text-sm font-semibold text-ink-muted">Delivered</p>
-                  <ul className="space-y-2">
-                    {delivered.map((r) => (
-                      <RedemptionRow key={r.id} redemption={r} onOpen={() => openCoupon(r)} onMarkDelivered={() => requestMarkDelivered(r.id)} />
-                    ))}
-                  </ul>
-                </>
-              )}
-            </section>
-          )}
         </>
       )}
 
@@ -539,6 +594,23 @@ export function RewardsScreen() {
         <DeliveredComposerSheet giverName={data.giverName} onClose={() => setSheet({ kind: 'none' })} />
       )}
 
+      {sheet.kind === 'makeWish' && data && (
+        <MakeWishSheet giverName={data.giverName} onDone={() => void refresh()} onClose={() => setSheet({ kind: 'none' })} />
+      )}
+
+      {sheet.kind === 'grantWish' && data && (
+        <GrantWishSheet
+          wish={sheet.wish}
+          giverName={data.giverName}
+          onGranted={() => {
+            touchHubbySession()
+            void refresh()
+          }}
+          onNotNow={() => void handleDismissWish(sheet.wish.id)}
+          onClose={() => setSheet({ kind: 'none' })}
+        />
+      )}
+
       {sheet.kind === 'redeemConfirm' && (
         <RedeemConfirmSheet
           title={sheet.reward.title}
@@ -569,19 +641,21 @@ export function RewardsScreen() {
   )
 }
 
-const TIER_ORDER: RewardTier[] = ['small', 'medium', 'big']
-const TIER_LABELS: Record<RewardTier, string> = { small: 'Little treats', medium: 'Bigger treats', big: 'Big dreams' }
+// A small tag on each tile; the grid itself stays one list, cheapest first.
+const TIER_LABELS: Record<RewardTier, string> = { small: 'Little treat', medium: 'Bigger treat', big: 'Big dream' }
 
 function RewardTile({
   reward,
   balance,
   saving,
+  wished,
   onRedeem,
   onToggleSaving,
 }: {
   reward: RewardRecord
   balance: number
   saving: boolean
+  wished: boolean
   onRedeem: () => void
   onToggleSaving: () => void
 }) {
@@ -589,10 +663,12 @@ function RewardTile({
   const pct = reward.cost > 0 ? Math.min(100, Math.round((balance / reward.cost) * 100)) : 100
   return (
     <div className="card space-y-2 p-3 text-center">
+      <p className="text-xs font-semibold uppercase tracking-wide text-ink-muted">{TIER_LABELS[rewardTier(reward.cost)]}</p>
       <span aria-hidden="true" className="text-3xl">
         {reward.emoji}
       </span>
       <p className="font-bold leading-tight">{reward.title}</p>
+      {wished && <p className="text-xs font-semibold text-primary-ink">✨ Your wish</p>}
       <p className="hud-num text-sm text-ink-muted">{reward.cost} 🥕</p>
       {affordable ? (
         <button type="button" className="btn-primary min-h-11 w-full" onClick={onRedeem}>

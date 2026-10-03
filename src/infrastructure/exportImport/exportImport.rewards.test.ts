@@ -111,3 +111,19 @@ describe('export/import of Hubby Bunny\'s reward shop', () => {
     await expect(importAll(legacy)).resolves.toEqual({ state: 'merged' })
   })
 })
+
+describe('export/import of her wishlist', () => {
+  it('unions wishes from both sides and keeps a dismissal from either', async () => {
+    const { addWish, dismissWish, getWishBook, WISHES_KEY } = await import('../db/repositories/wishesRepository')
+    await db.settings.delete(WISHES_KEY)
+    const kept = await addWish({ title: 'Spa day', emoji: '🛁' }, '2026-10-01T00:00:00.000Z')
+    const bundle = await exportAll()
+    await dismissWish(kept.id, '2026-10-02T00:00:00.000Z')
+    const local = await addWish({ title: 'Pizza night', emoji: '🍕' }, '2026-10-03T00:00:00.000Z')
+    await importAll(bundle)
+    const book = await getWishBook()
+    expect(Object.keys(book).sort()).toEqual([kept.id, local.id].sort())
+    expect(book[kept.id].dismissedAt).toBe('2026-10-02T00:00:00.000Z')
+  })
+})
+

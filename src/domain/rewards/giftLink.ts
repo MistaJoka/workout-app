@@ -53,13 +53,26 @@ const deliveredPayloadSchema = z.object({
   createdAt: z.string().min(1),
 })
 
-const giftLinkPayloadSchema = z.discriminatedUnion('kind', [giftPayloadSchema, deliveredPayloadSchema])
+// Her wish, sent to him: he prices it and sends it back as a gift whose
+// reward carries the wish's id (domain/rewards/wishes.ts).
+const wishPayloadSchema = z.object({
+  v: z.literal(GIFT_LINK_VERSION),
+  kind: z.literal('wish'),
+  from: z.string().min(1),
+  wishes: z
+    .array(z.object({ id: z.string().min(1), title: z.string().min(1), emoji: z.string().min(1) }))
+    .min(1),
+  createdAt: z.string().min(1),
+})
+
+const giftLinkPayloadSchema = z.discriminatedUnion('kind', [giftPayloadSchema, deliveredPayloadSchema, wishPayloadSchema])
 
 export type GiftReward = z.infer<typeof giftRewardSchema>
 export type GiftNote = z.infer<typeof giftNoteSchema>
 export type GiftPayload = z.infer<typeof giftPayloadSchema>
 export type DeliveredPayload = z.infer<typeof deliveredPayloadSchema>
-export type GiftLinkPayload = GiftPayload | DeliveredPayload
+export type WishPayload = z.infer<typeof wishPayloadSchema>
+export type GiftLinkPayload = GiftPayload | DeliveredPayload | WishPayload
 
 // ---- base64url, byte-for-byte (no btoa/atob: this module stays pure and
 // environment-agnostic, running the same in the browser and under vitest). ----
@@ -257,3 +270,9 @@ export function couponShareMessage(input: { title: string; emoji: string; giverN
     text: `I redeemed ${input.emoji} ${input.title}! Show ${input.giverName} this when it's delivered -- coupon code FS-${input.code}.`,
   }
 }
+
+export function wishShareMessage(payload: WishPayload): { title: string; text: string } {
+  const list = payload.wishes.map((w) => `${w.emoji} ${w.title}`).join(', ')
+  return { title: `A wish from ${payload.from}`, text: `${payload.from} wishes for: ${list} ✨` }
+}
+

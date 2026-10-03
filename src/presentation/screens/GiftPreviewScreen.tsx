@@ -8,6 +8,7 @@ import {
   matchRedemptionsByCode,
   type DeliveredPayload,
   type GiftPayload,
+  type WishPayload,
 } from '../../domain/rewards/giftLink'
 import { listRewards, upsertRewardFromGift } from '../../infrastructure/db/repositories/rewardsRepository'
 import { listLoveNotes, upsertLoveNoteFromGift } from '../../infrastructure/db/repositories/loveNotesRepository'
@@ -33,7 +34,9 @@ type DeliveredState = {
   alreadyApplied: boolean
   nothingMatched: boolean
 }
-type State = { kind: 'loading' } | { kind: 'invalid' } | GiftState | DeliveredState
+// Her wish, opened on his phone: he prices it (behind the PIN) in the shop.
+type WishState = { kind: 'wish'; payload: WishPayload; grantedIds: Set<string> }
+type State = { kind: 'loading' } | { kind: 'invalid' } | GiftState | DeliveredState | WishState
 
 export function GiftPreviewScreen() {
   const [params] = useSearchParams()
@@ -58,6 +61,10 @@ export function GiftPreviewScreen() {
         if (cancelled) return
         const alreadyAccepted = giftAlreadyAccepted(decoded.payload, new Set(rewards.map((r) => r.id)), new Set(notes.map((n) => n.id)))
         setState({ kind: 'gift', payload: decoded.payload, alreadyAccepted })
+      } else if (decoded.payload.kind === 'wish') {
+        const rewards = await listRewards()
+        if (cancelled) return
+        setState({ kind: 'wish', payload: decoded.payload, grantedIds: new Set(rewards.map((r) => r.id)) })
       } else {
         const redemptions = await listRedemptions()
         if (cancelled) return
@@ -152,6 +159,39 @@ export function GiftPreviewScreen() {
           )}
           <button type="button" className="btn-ghost w-full" onClick={() => navigate('/')}>
             {state.alreadyAccepted ? 'Close' : 'Not now'}
+          </button>
+        </>
+      )}
+
+      {state.kind === 'wish' && (
+        <>
+          <div className="card space-y-3 p-4 text-center" data-testid="wish-preview">
+            <p className="text-sm text-ink-muted">A wish from</p>
+            <p className="text-lg font-bold">{state.payload.from}</p>
+            <ul className="space-y-2 text-left">
+              {state.payload.wishes.map((wish) => (
+                <li key={wish.id} className="flex items-center gap-2 rounded-control bg-field-primary px-3 py-2">
+                  <span aria-hidden="true" className="text-2xl">
+                    {wish.emoji}
+                  </span>
+                  <span className="min-w-0 flex-1 font-semibold">{wish.title}</span>
+                  {state.grantedIds.has(wish.id) ? (
+                    <span className="text-sm font-semibold text-primary-ink">In the shop ✓</span>
+                  ) : (
+                    <button
+                      type="button"
+                      className="btn-primary min-h-11 px-3 text-sm"
+                      onClick={() => navigate('/rewards', { state: { grantWish: wish } })}
+                    >
+                      Price it
+                    </button>
+                  )}
+                </li>
+              ))}
+            </ul>
+          </div>
+          <button type="button" className="btn-ghost w-full" onClick={() => navigate('/')}>
+            Not now
           </button>
         </>
       )}
