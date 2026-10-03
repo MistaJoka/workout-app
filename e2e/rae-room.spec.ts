@@ -48,17 +48,21 @@ test('a finished workout grows a flower that bounces in once, then not again', a
   await expect(pots.locator('> span').first()).not.toHaveClass(/rae-pots__new/)
 })
 
-test('a second finished workout adds a second pot and bounces only the newest', async ({ page }) => {
+test('a second finished workout adds its pot (and its goal bloom) and bounces only the newest', async ({ page }) => {
   test.setTimeout(180_000)
   await finishQuick10(page)
   await page.goto('/#/')
   await finishQuick10(page)
   await page.goto('/#/')
 
+  // Two workout flowers, plus the goal bloom the second one earned (the
+  // default weekly goal is 2): the windowsill shows garden flowers, and the
+  // goal bloom is one. Only the newest pot bounces.
   const sprouts = page.getByTestId('rae-pots').locator('> span')
-  await expect(sprouts).toHaveCount(2)
+  await expect(sprouts).toHaveCount(3)
   await expect(sprouts.nth(0)).not.toHaveClass(/rae-pots__new/)
-  await expect(sprouts.nth(1)).toHaveClass(/rae-pots__new/)
+  await expect(sprouts.nth(1)).not.toHaveClass(/rae-pots__new/)
+  await expect(sprouts.nth(2)).toHaveClass(/rae-pots__new/)
 })
 
 test('with motion off, the newest pot is simply there, no bounce', async ({ page }) => {
