@@ -1,4 +1,5 @@
 import { useEffect, useRef, useState } from 'react'
+import { loadWeekGoals } from '../../infrastructure/db/repositories/weekGoalsRepository'
 import { Link } from 'react-router-dom'
 import {
   evaluateAchievements,
@@ -6,7 +7,6 @@ import {
   type AchievementIcon,
   type EvaluatedAchievement,
 } from '../../domain/progress/achievements'
-import { weeklyGoal } from '../../domain/progress/stats'
 import { getAllSessionHistory } from '../../infrastructure/db/repositories/sessionRepository'
 import { getWeeklySchedule } from '../../infrastructure/db/repositories/scheduleRepository'
 import { playCelebration } from '../../application/celebrationSounds'
@@ -17,7 +17,7 @@ import { useFeedbackSettings } from './useFeedbackSettings'
 // derived each time, so nothing can drift or be lost.
 export async function loadAchievements(): Promise<EvaluatedAchievement[]> {
   const [history, schedule] = await Promise.all([getAllSessionHistory(), getWeeklySchedule()])
-  return evaluateAchievements(history, weeklyGoal(schedule))
+  return evaluateAchievements(history, await loadWeekGoals({ ...history, schedule }))
 }
 
 // 8x8 pixel badges on the Pixel Bloom palette. Letters map to colours; '.'

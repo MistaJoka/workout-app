@@ -1,4 +1,5 @@
 import { useEffect, useState } from 'react'
+import { visibleAchievements } from '../../domain/progress/achievements'
 import type { EvaluatedAchievement } from '../../domain/progress/achievements'
 import { AchievementBadge, loadAchievements } from '../components/AchievementUnlocks'
 import { BackButton } from '../components/BackButton'
@@ -54,9 +55,10 @@ export function AchievementsScreen() {
 
   const earned = all.filter((a) => a.unlockedAt)
   // Earned first, newest first; then the rest in their natural order.
+  // Locked ladder tiers past the next one stay hidden until they're next.
   const ordered = [
     ...earned.sort((a, b) => (b.unlockedAt ?? '').localeCompare(a.unlockedAt ?? '')),
-    ...all.filter((a) => !a.unlockedAt),
+    ...visibleAchievements(all).filter((a) => !a.unlockedAt),
   ]
 
   return (

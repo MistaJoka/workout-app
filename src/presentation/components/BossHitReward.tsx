@@ -1,4 +1,5 @@
 // One rewards-card slot on the Complete screen: the hit this session just
+import { loadWeekGoals } from '../../infrastructure/db/repositories/weekGoalsRepository'
 // landed on the week's boss, with a quick shake+flash and the HP bar
 // dropping from before- to after-this-session, and a trophy burst if this
 // exact session was the one that finished it off. Renders nothing when the
@@ -17,7 +18,6 @@ import {
 } from '../../domain/game/bosses'
 import { getAllSessionHistory, getEventsForSession, getPlan, getResult } from '../../infrastructure/db/repositories/sessionRepository'
 import { getWeeklySchedule } from '../../infrastructure/db/repositories/scheduleRepository'
-import { weeklyGoal } from '../../domain/progress/stats'
 import { playCelebration } from '../../application/celebrationSounds'
 import { useFeedbackSettings } from './useFeedbackSettings'
 
@@ -42,7 +42,9 @@ async function loadHit(sessionId: string): Promise<Hit | null> {
   const { damage } = damageFromSession(plan, events)
   if (damage <= 0) return null
 
-  const goal = weeklyGoal(schedule)
+  // Built from the full history, so "before" below is judged against the
+  // same week goal as "after".
+  const goal = await loadWeekGoals({ ...history, schedule })
   const now = new Date(result.endedAt)
   const after = computeBossState(history, goal, now)
   // "Before" replays the same week with this session's own result removed,

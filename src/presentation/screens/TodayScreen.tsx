@@ -1,4 +1,5 @@
 import { DRAFT_TEMPLATE_IDS } from '../../domain/content/fixtures/raeDraftTemplates'
+import { loadWeekGoals } from '../../infrastructure/db/repositories/weekGoalsRepository'
 import { asset } from '../assetUrl'
 import { DraftTag } from '../components/DraftTag'
 import { countLabel } from '../format'
@@ -24,7 +25,7 @@ import { RecapEntry } from '../components/RecapEntry'
 import { BossCard } from '../components/BossCard'
 import { SavingGoalTodayCard } from '../components/SavingGoal'
 import { shouldOfferPlanWeek } from '../../domain/schedule/planWeek'
-import { bloomStreakLabel, calculateWeekStreak, nextMilestone, weeklyGoal, weekProgress } from '../../domain/progress/stats'
+import { bloomStreakLabel, calculateWeekStreak, nextMilestone, weekProgress } from '../../domain/progress/stats'
 import { buildGarden, GARDEN_SPECIES, type GardenFlower } from '../../domain/progress/garden'
 import { computeXp, levelFor } from '../../domain/progress/xp'
 import { MomentumStrip, useMomentumEntrance } from '../components/TodayMomentum'
@@ -51,7 +52,7 @@ type TodayData = {
   mission: Mission
   week: WeekDay[]
   weekNames: WeekNames
-  // Workouts this week should reach (weeklyGoal: planned days, or 2).
+  // Workouts this week should reach (the goal this week started with: domain/progress/weekGoals.ts).
   weekGoal: number
   // Everything you could start instead, primary pick excluded.
   others: { template: WorkoutTemplate; custom: boolean }[]
@@ -87,6 +88,8 @@ async function loadToday(now: Date): Promise<TodayData> {
     db.sessionPlans.toArray(),
     db.sessionEvents.toArray(),
   ])
+
+  const goals = await loadWeekGoals({ plans, results, schedule })
 
   // A/B rotation: the template after the most recent curated one.
   let suggestion = ROTATION[0]
@@ -194,9 +197,9 @@ async function loadToday(now: Date): Promise<TodayData> {
     mission,
     week,
     weekNames: { sessions: sessionNames, templates: templateNames },
-    weekGoal: weeklyGoal(schedule),
+    weekGoal: goals(now),
     milestone: nextMilestone(results.length),
-    bloomStreak: bloomStreakLabel(calculateWeekStreak(results, weeklyGoal(schedule), now)),
+    bloomStreak: bloomStreakLabel(calculateWeekStreak(results, goals, now)),
     others,
     hasFinished: results.length > 0,
     resumeId: mode === 'resume' ? (resumable?.id ?? null) : null,
@@ -205,13 +208,13 @@ async function loadToday(now: Date): Promise<TodayData> {
       mode,
       hasFinished: results.length > 0,
       daysSinceLast: daysSinceLast(results, now),
-      goalMet: weekProgress(results, schedule, now).met,
+      goalMet: weekProgress(results, goals, now).met,
       part: dayPart(now),
       dateKey: localDateKey(now),
       memory,
     }),
     gardenFlowers: buildGarden(results).flowers,
-    level: levelFor(computeXp({ plans, results, events }, weeklyGoal(schedule)).total).level,
+    level: levelFor(computeXp({ plans, results, events }, goals).total).level,
     newChapter: latestUnreadChapter(results.length),
   }
 }

@@ -1,4 +1,5 @@
 import { useEffect, useState } from 'react'
+import { loadWeekGoals } from '../../infrastructure/db/repositories/weekGoalsRepository'
 import { BackButton } from '../components/BackButton'
 import { LoreSheet, type LoreSheetTarget } from '../components/LoreSheet'
 import { Meadow } from '../components/Meadow'
@@ -18,8 +19,6 @@ import {
   type TierProgress,
 } from '../../domain/progress/garden'
 import { db } from '../../infrastructure/db/schema'
-import { getWeeklySchedule } from '../../infrastructure/db/repositories/scheduleRepository'
-import { weeklyGoal } from '../../domain/progress/stats'
 
 // The collection: every species a workout can grow. Found ones show their
 // flower, name and how many have grown; the rest wait as a "?" tile, a
@@ -153,8 +152,9 @@ export function GardenScreen() {
   const [loreTarget, setLoreTarget] = useState<LoreSheetTarget | null>(null)
 
   useEffect(() => {
-    Promise.all([db.sessionResults.toArray(), getWeeklySchedule()])
-      .then(([results, schedule]) => setGarden(buildGarden(results, weeklyGoal(schedule))))
+    db.sessionResults
+      .toArray()
+      .then(async (results) => setGarden(buildGarden(results, await loadWeekGoals({ results }))))
       .catch(() => setFailed(true))
   }, [])
 

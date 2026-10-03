@@ -1,4 +1,5 @@
 import { useEffect, useState, type ReactNode } from 'react'
+import { loadWeekGoals } from '../../infrastructure/db/repositories/weekGoalsRepository'
 import { Link, useParams } from 'react-router-dom'
 import { ShareWorkoutButton } from '../components/ShareWorkoutButton'
 import { getEventsForSession, getPlan, getResult } from '../../infrastructure/db/repositories/sessionRepository'
@@ -29,8 +30,6 @@ import { BloomReveal } from '../components/BloomReveal'
 import { useCountUp } from '../components/CountUp'
 import { sessionBloom, type GardenSpecies } from '../../domain/progress/garden'
 import { goalBloomForSession } from '../../domain/progress/goalBloom'
-import { weeklyGoal } from '../../domain/progress/stats'
-import { getWeeklySchedule } from '../../infrastructure/db/repositories/scheduleRepository'
 import { db } from '../../infrastructure/db/schema'
 import { bookendsFor } from '../../domain/content/workoutEstimate'
 import { templateById } from '../../domain/content/fixtures/foundationStrengthStarter'
@@ -105,8 +104,8 @@ export function SessionCompleteScreen() {
   }
 
   async function loadGoalBloom(id: string): Promise<GardenSpecies | null> {
-    const [results, schedule] = await Promise.all([db.sessionResults.toArray(), getWeeklySchedule()])
-    return goalBloomForSession(results, weeklyGoal(schedule), id)?.species ?? null
+    const results = await db.sessionResults.toArray()
+    return goalBloomForSession(results, await loadWeekGoals({ results }), id)?.species ?? null
   }
 
   async function loadCandidates(id: string): Promise<Candidate[]> {

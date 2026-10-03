@@ -1,4 +1,5 @@
 import type { SessionResult } from '../session/types'
+import { goalForWeek, type WeekGoal } from './weekGoals'
 import type { WeeklySchedule } from '../schedule/weeklySchedule'
 import type { ExerciseHistoryPoint, PersonalRecord, SetRecord, WeekTotal } from './types'
 
@@ -112,13 +113,13 @@ export function weeklyGoal(schedule: WeeklySchedule | null): number {
 // Consecutive Monday-start weeks with at least `goal` finished workouts. The
 // current week counts once it has met the goal and never breaks the streak
 // while it's still in progress, so a planned rest day costs nothing.
-export function calculateWeekStreak(results: readonly SessionResult[], goal: number, now: Date): number {
+export function calculateWeekStreak(results: readonly SessionResult[], goal: WeekGoal, now: Date): number {
   const counts = new Map<string, number>()
   for (const r of results) {
     const key = localDayKey(isoWeekStart(new Date(r.endedAt)))
     counts.set(key, (counts.get(key) ?? 0) + 1)
   }
-  const met = (week: Date) => (counts.get(localDayKey(week)) ?? 0) >= goal
+  const met = (week: Date) => (counts.get(localDayKey(week)) ?? 0) >= goalForWeek(goal, week)
   let week = isoWeekStart(now)
   let streak = met(week) ? 1 : 0
   week = shiftDays(week, -7)
@@ -133,12 +134,15 @@ export function calculateWeekStreak(results: readonly SessionResult[], goal: num
 // first workout reads "1 of 2", never "0 week streak".
 export function weekProgress(
   results: readonly SessionResult[],
-  schedule: WeeklySchedule | null,
+  goalOrSchedule: WeekGoal | WeeklySchedule | null,
   now: Date
 ): { done: number; goal: number; met: boolean } {
   const week = localDayKey(isoWeekStart(now))
   const done = results.filter((r) => localDayKey(isoWeekStart(new Date(r.endedAt))) === week).length
-  const goal = weeklyGoal(schedule)
+  const goal =
+    typeof goalOrSchedule === 'number' || typeof goalOrSchedule === 'function'
+      ? goalForWeek(goalOrSchedule, now)
+      : weeklyGoal(goalOrSchedule)
   return { done, goal, met: done >= goal }
 }
 

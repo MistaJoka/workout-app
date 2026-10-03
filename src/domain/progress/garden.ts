@@ -1,4 +1,5 @@
 import type { SessionResult } from '../session/types'
+import type { WeekGoal } from './weekGoals'
 import { goalBlooms } from './goalBloom'
 
 // Every finished workout grows one flower in the user's garden. Which
@@ -91,7 +92,7 @@ export type Garden = {
 // existed. Callers that do pass the real weekly goal get one bonus flower
 // per week it was met, slotted in right after the workout that earned it so
 // the meadow and "every flower" list still read oldest-first.
-export function buildGarden(results: readonly SessionResult[], weeklyGoal = 0): Garden {
+export function buildGarden(results: readonly SessionResult[], weeklyGoal: WeekGoal = 0): Garden {
   const sessionFlowers = [...results]
     .sort((a, b) => a.endedAt.localeCompare(b.endedAt))
     .map((r) => ({ sessionId: r.sessionId, endedAt: r.endedAt, species: speciesFor(r.sessionId) }))

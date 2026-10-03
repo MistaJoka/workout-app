@@ -1,7 +1,7 @@
 import { useEffect, useRef, useState } from 'react'
+import { loadWeekGoals } from '../../infrastructure/db/repositories/weekGoalsRepository'
 import { getAllSessionHistory } from '../../infrastructure/db/repositories/sessionRepository'
 import { getWeeklySchedule } from '../../infrastructure/db/repositories/scheduleRepository'
-import { weeklyGoal } from '../../domain/progress/stats'
 import { computeXp, levelFor, sessionXpGain, type LevelInfo, type SessionXpGain } from '../../domain/progress/xp'
 import { useTheme } from '../theme/ThemeContext'
 import { effectiveMotion, usePrefersReducedMotion } from './MovementMedia'
@@ -17,12 +17,12 @@ import { useFeedbackSettings } from './useFeedbackSettings'
 
 export async function loadSessionXp(sessionId: string): Promise<SessionXpGain> {
   const [history, schedule] = await Promise.all([getAllSessionHistory(), getWeeklySchedule()])
-  return sessionXpGain(history, weeklyGoal(schedule), sessionId)
+  return sessionXpGain(history, await loadWeekGoals({ ...history, schedule }), sessionId)
 }
 
 export async function loadLevel(): Promise<LevelInfo> {
   const [history, schedule] = await Promise.all([getAllSessionHistory(), getWeeklySchedule()])
-  return levelFor(computeXp(history, weeklyGoal(schedule)).total)
+  return levelFor(computeXp(history, await loadWeekGoals({ ...history, schedule })).total)
 }
 
 function useFullMotion(): { full: boolean; off: boolean } {

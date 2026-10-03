@@ -1,4 +1,5 @@
 import { useCallback, useEffect, useMemo, useRef, useState, type ReactNode } from 'react'
+import { loadWeekGoals } from '../../infrastructure/db/repositories/weekGoalsRepository'
 import { Link, useNavigate, useSearchParams } from 'react-router-dom'
 import {
   buildMonthRecap,
@@ -12,10 +13,8 @@ import {
 } from '../../domain/progress/recap'
 import { RARITY_LABEL, speciesFor } from '../../domain/progress/garden'
 import { monthGrid } from '../../domain/progress/monthGrid'
-import { weeklyGoal } from '../../domain/progress/stats'
 import type { PersonalRecord } from '../../domain/progress/types'
 import { getAllSessionHistory } from '../../infrastructure/db/repositories/sessionRepository'
-import { getWeeklySchedule } from '../../infrastructure/db/repositories/scheduleRepository'
 import { AchievementBadge, loadAchievements } from '../components/AchievementUnlocks'
 import { useCountUp } from '../components/CountUp'
 import { effectiveMotion, usePrefersReducedMotion } from '../components/MovementMedia'
@@ -39,12 +38,9 @@ const HOLD_MS = 250
 type Slide = { id: string; label: string; body: ReactNode }
 
 async function loadRecap(week: Date): Promise<WeekRecap> {
-  const [history, schedule, achievements] = await Promise.all([
-    getAllSessionHistory(),
-    getWeeklySchedule(),
-    loadAchievements().catch(() => []),
-  ])
-  return buildWeekRecap(history, achievements, weeklyGoal(schedule), week)
+  const [history, achievements] = await Promise.all([getAllSessionHistory(), loadAchievements().catch(() => [])])
+  const goals = await loadWeekGoals(history)
+  return buildWeekRecap(history, achievements, goals, week)
 }
 
 async function loadMonthRecap(month: Date): Promise<MonthRecap> {

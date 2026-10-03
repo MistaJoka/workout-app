@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react'
+import { loadWeekGoals } from '../../infrastructure/db/repositories/weekGoalsRepository'
 import { getAllSessionHistory } from '../../infrastructure/db/repositories/sessionRepository'
 import { getWeeklySchedule } from '../../infrastructure/db/repositories/scheduleRepository'
-import { weeklyGoal } from '../../domain/progress/stats'
 import { computeXp } from '../../domain/progress/xp'
 import { nextGoal } from '../../domain/progress/nextGoal'
 
@@ -16,9 +16,10 @@ export function NextUpTeaser() {
   useEffect(() => {
     let cancelled = false
     Promise.all([getAllSessionHistory(), getWeeklySchedule()])
-      .then(([history, schedule]) => {
+      .then(async ([history, schedule]) => {
+        const goals = await loadWeekGoals({ ...history, schedule })
         if (cancelled) return
-        const totalXp = computeXp(history, weeklyGoal(schedule)).total
+        const totalXp = computeXp(history, goals).total
         setLabel(nextGoal(history.results.length, totalXp)?.label ?? null)
       })
       .catch(() => {

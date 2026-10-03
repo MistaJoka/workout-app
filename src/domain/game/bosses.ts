@@ -1,4 +1,5 @@
 import { effectiveSetSlots } from '../session/appliedEvents'
+import { goalForWeek, type WeekGoal } from '../progress/weekGoals'
 import { flowStatus } from '../session/flow'
 import type { SessionEvent, SessionPlan, SessionResult } from '../session/types'
 
@@ -156,9 +157,9 @@ type WeekProgress = BossState & { defeatedSessionId: string | null }
 // Shared by bossState (one week, "now") and bossDefeats (every week in
 // history): tallies every finished session that landed in the Monday-start
 // week containing `weekStart`, in order, against that week's boss HP.
-function weekProgress(history: BossHistory, weeklyGoal: number, weekStart: Date, hpPerGoal: number): WeekProgress {
+function weekProgress(history: BossHistory, weeklyGoal: WeekGoal, weekStart: Date, hpPerGoal: number): WeekProgress {
   const boss = bossForWeek(weekStart)
-  const maxHp = Math.max(1, weeklyGoal) * hpPerGoal
+  const maxHp = Math.max(1, goalForWeek(weeklyGoal, weekStart)) * hpPerGoal
   const weekKey = localDayKey(mondayStart(weekStart))
 
   const planById = new Map(history.plans.map((p) => [p.id, p]))
@@ -216,7 +217,7 @@ function weekProgress(history: BossHistory, weeklyGoal: number, weekStart: Date,
 
 // This week's boss fight (the Monday-start week containing `now`): who it
 // is, how much HP is left, the day-by-day hit log, and whether it's down.
-export function bossState(history: BossHistory, weeklyGoal: number, now: Date, hpPerGoal = HP_PER_GOAL_DAY): BossState {
+export function bossState(history: BossHistory, weeklyGoal: WeekGoal, now: Date, hpPerGoal = HP_PER_GOAL_DAY): BossState {
   const { defeatedSessionId: _unused, ...state } = weekProgress(history, weeklyGoal, now, hpPerGoal)
   return state
 }
@@ -233,7 +234,7 @@ export type BossDefeat = {
 // applied to every past week alike (matching stats.ts's calculateWeekStreak,
 // which does the same for the weekly streak), since history doesn't keep a
 // per-week goal of its own.
-export function bossDefeats(history: BossHistory, weeklyGoal: number, hpPerGoal = HP_PER_GOAL_DAY): BossDefeat[] {
+export function bossDefeats(history: BossHistory, weeklyGoal: WeekGoal, hpPerGoal = HP_PER_GOAL_DAY): BossDefeat[] {
   const weekKeys = new Set(history.results.map((r) => localDayKey(mondayStart(new Date(r.endedAt)))))
   const defeats: BossDefeat[] = []
   for (const weekKey of weekKeys) {
@@ -256,7 +257,7 @@ export type BossWeekSummary = {
 // the HP is defeated; the rest simply weren't -- shown as a gentle
 // "escaped", never a loss (CLAUDE.md: an undefeated boss just leaves at
 // week's end with a friendly goodbye, no penalty).
-export function pastBossWeeks(history: BossHistory, weeklyGoal: number, now: Date, hpPerGoal = HP_PER_GOAL_DAY): BossWeekSummary[] {
+export function pastBossWeeks(history: BossHistory, weeklyGoal: WeekGoal, now: Date, hpPerGoal = HP_PER_GOAL_DAY): BossWeekSummary[] {
   const currentWeekKey = localDayKey(mondayStart(now))
   const weekKeys = new Set(
     history.results.map((r) => localDayKey(mondayStart(new Date(r.endedAt)))).filter((key) => key !== currentWeekKey)

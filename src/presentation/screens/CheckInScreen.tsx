@@ -10,6 +10,8 @@ import type { Exercise, WorkoutTemplate } from '../../domain/content/types'
 import { createSessionPlanFromTemplate } from '../../domain/session/createSessionPlan'
 import type { SessionPlan } from '../../domain/session/types'
 import { getProgression } from '../../infrastructure/db/repositories/familiarityProgressionRepository'
+import { getWeeklySchedule } from '../../infrastructure/db/repositories/scheduleRepository'
+import { weeklyGoal } from '../../domain/progress/stats'
 import { BackButton } from '../components/BackButton'
 import { ThumbBar } from '../components/ThumbBar'
 import { Skeleton, SkeletonBlock, SkeletonHeading, SkeletonList } from '../components/Skeleton'
@@ -25,6 +27,7 @@ type Loaded = {
   exercises: Exercise[]
   repsOverridesByExerciseId: Map<string, number>
   weightOverridesByExerciseId: Map<string, number>
+  weeklyGoal: number
 }
 
 // No check-in is asked: no adaptation rule reads one yet (the placeholder
@@ -39,6 +42,7 @@ function buildPlan(loaded: Loaded): SessionPlan {
     exercises: loaded.exercises,
     repsOverridesByExerciseId: loaded.repsOverridesByExerciseId,
     weightOverridesByExerciseId: loaded.weightOverridesByExerciseId,
+    weeklyGoal: loaded.weeklyGoal,
   })
 }
 
@@ -46,7 +50,11 @@ async function loadWorkout(id: string): Promise<Loaded | null> {
   const template = await getTemplate(id)
   if (!template) return null
   const ids = template.exercises.map((e) => e.exerciseId)
-  const [exercises, progressionRecords] = await Promise.all([getExercises(ids), Promise.all(ids.map(getProgression))])
+  const [exercises, progressionRecords, schedule] = await Promise.all([
+    getExercises(ids),
+    Promise.all(ids.map(getProgression)),
+    getWeeklySchedule(),
+  ])
   return {
     template,
     exercises: [...exercises.values()],
@@ -58,6 +66,7 @@ async function loadWorkout(id: string): Promise<Loaded | null> {
     weightOverridesByExerciseId: new Map(
       progressionRecords.filter((r) => r.currentWeightKg != null).map((r) => [r.exerciseId, r.currentWeightKg as number])
     ),
+    weeklyGoal: weeklyGoal(schedule),
   }
 }
 

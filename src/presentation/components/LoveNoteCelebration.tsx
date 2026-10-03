@@ -1,4 +1,5 @@
 import { useEffect, useState } from 'react'
+import { loadWeekGoals } from '../../infrastructure/db/repositories/weekGoalsRepository'
 import { Link } from 'react-router-dom'
 import type { LoveNoteRecord } from '../../infrastructure/db/schema'
 import { evaluateLoveNoteUnlockForSession, listLoveNotes, markLoveNoteRead } from '../../infrastructure/db/repositories/loveNotesRepository'
@@ -6,7 +7,6 @@ import { getSetting } from '../../infrastructure/db/repositories/settingsReposit
 import { DEFAULT_GIVER_NAME } from '../../domain/rewards/pin'
 import { getAllSessionHistory } from '../../infrastructure/db/repositories/sessionRepository'
 import { getWeeklySchedule } from '../../infrastructure/db/repositories/scheduleRepository'
-import { weeklyGoal } from '../../domain/progress/stats'
 import { goalBloomForSession } from '../../domain/progress/goalBloom'
 import { LoveNoteEnvelope } from './LoveNoteEnvelope'
 
@@ -26,7 +26,7 @@ export async function loadLoveNoteUnlockForSession(
   sessionId: string
 ): Promise<{ note: LoveNoteRecord; giverName: string } | null> {
   const [{ results }, schedule, giverName] = await Promise.all([getAllSessionHistory(), getWeeklySchedule(), loadGiverName()])
-  const goalMetThisSession = goalBloomForSession(results, weeklyGoal(schedule), sessionId) !== null
+  const goalMetThisSession = goalBloomForSession(results, await loadWeekGoals({ results, schedule }), sessionId) !== null
   const thisSessionEndedAt = results.find((r) => r.sessionId === sessionId)?.endedAt ?? new Date().toISOString()
   const note = await evaluateLoveNoteUnlockForSession(sessionId, {
     allSessionEndedAt: results.map((r) => r.endedAt),

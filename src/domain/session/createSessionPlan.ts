@@ -20,6 +20,9 @@ export type CreateSessionPlanParams = {
   // policy anchors to (see SessionPlanExercise.authoredReps).
   repsOverridesByExerciseId?: Map<string, number>
   weightOverridesByExerciseId?: Map<string, number>
+  // The weekly goal in effect at start, snapshotted onto the plan so a later
+  // schedule change can't re-score this week (domain/progress/weekGoals.ts).
+  weeklyGoal?: number
 }
 
 // A routine can outlive an exercise (the library was cut to home-friendly
@@ -40,6 +43,7 @@ export function createSessionPlanFromTemplate(params: CreateSessionPlanParams): 
     rules,
     repsOverridesByExerciseId,
     weightOverridesByExerciseId,
+    weeklyGoal,
   } = params
   const adaptations = adaptTemplate(template, checkIn, rules)
   const exerciseById = new Map(exerciseRecords.map((e) => [e.id, e]))
@@ -73,6 +77,7 @@ export function createSessionPlanFromTemplate(params: CreateSessionPlanParams): 
     createdAt,
     exercises,
     adaptations,
+    ...(weeklyGoal != null ? { weeklyGoal } : {}),
   }
 
   return { ...base, reproducibilityHash: computeReproducibilityHash(base) }

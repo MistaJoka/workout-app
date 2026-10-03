@@ -1,4 +1,5 @@
 import { useEffect, useState } from 'react'
+import { loadWeekGoals } from '../../infrastructure/db/repositories/weekGoalsRepository'
 import { useGiverName } from '../components/useGiverName'
 import { giverRole } from '../../domain/rewards/pin'
 import { Link } from 'react-router-dom'
@@ -6,7 +7,7 @@ import { RecapLink } from '../components/RecapEntry'
 import { getAllSessionHistory } from '../../infrastructure/db/repositories/sessionRepository'
 import { getTemplate } from '../../domain/content/catalog'
 import { projectSetRecords } from '../../domain/progress/history'
-import { calculateWeekStreak, detectPersonalRecords, weekProgress, weeklyGoal, weeklyTotals } from '../../domain/progress/stats'
+import { calculateWeekStreak, detectPersonalRecords, weekProgress, weeklyTotals } from '../../domain/progress/stats'
 import { getWeeklySchedule } from '../../infrastructure/db/repositories/scheduleRepository'
 import { ROTATION } from '../../domain/content/fixtures/foundationStrengthStarter'
 import { resolveToday } from '../../domain/schedule/weeklySchedule'
@@ -99,14 +100,14 @@ export function ProgressScreen() {
         : (await getTemplate(resolution.templateId).catch(() => undefined))
           ? resolution.templateId
           : ROTATION[0]
-    const goal = weeklyGoal(schedule)
+    const goal = await loadWeekGoals({ plans, results, schedule })
     const achievements = evaluateAchievements({ plans, results, events }, goal)
     const earnedAchievements = achievements.filter((a) => a.unlockedAt)
     const newestBadge = [...earnedAchievements].sort((a, b) => (b.unlockedAt ?? '').localeCompare(a.unlockedAt ?? ''))[0]
     return {
       startHref: startId ? `/checkin/${encodeURIComponent(startId)}` : '/',
       rows,
-      week: weekProgress(results, schedule, now),
+      week: weekProgress(results, goal, now),
       streak: calculateWeekStreak(results, goal, now),
       weeks: weeklyTotals(results, now, 8),
       records: [...detectPersonalRecords(setRecords).values()].sort((a, b) => a.exerciseName.localeCompare(b.exerciseName)),

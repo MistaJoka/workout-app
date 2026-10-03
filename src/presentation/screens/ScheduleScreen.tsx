@@ -11,6 +11,10 @@ import {
   type WeeklySchedule,
 } from '../../domain/schedule/weeklySchedule'
 import { getWeeklySchedule, saveWeeklySchedule } from '../../infrastructure/db/repositories/scheduleRepository'
+import { loadWeekGoals } from '../../infrastructure/db/repositories/weekGoalsRepository'
+import { weeklyGoal } from '../../domain/progress/stats'
+import { mondayKey } from '../../domain/progress/weekGoals'
+import { db } from '../../infrastructure/db/schema'
 import { BackButton } from '../components/BackButton'
 import { RaeNote } from '../components/RaeNote'
 import { shareOrDownload } from '../components/shareOrDownload'
@@ -37,6 +41,9 @@ export function ScheduleScreen() {
   const [saveError, setSaveError] = useState<string | null>(null)
   const [reminderAt, setReminderAt] = useState(REMINDER_TIMES[2])
   const [calendarNote, setCalendarNote] = useState<string | null>(null)
+  // The goal this week already started with (it holds until Monday, so a
+  // change here can't re-score anything earned: domain/progress/weekGoals.ts).
+  const [thisWeekGoal, setThisWeekGoal] = useState<number | null>(null)
 
   useEffect(() => {
     let cancelled = false
@@ -52,6 +59,13 @@ export function ScheduleScreen() {
         if (pruned !== loaded) await saveWeeklySchedule(pruned).catch(() => undefined)
         setTemplates(all)
         setSchedule(pruned)
+        // Only once this week has a workout is its goal fixed; before that a
+        // change applies right away and there's nothing to say.
+        const results = await db.sessionResults.toArray().catch(() => [])
+        const now = new Date()
+        const startedThisWeek = results.some((r) => mondayKey(new Date(r.endedAt)) === mondayKey(now))
+        const goals = startedThisWeek ? await loadWeekGoals({ results, schedule: pruned }).catch(() => null) : null
+        if (!cancelled && goals) setThisWeekGoal(goals(now))
       })
       .catch(() => {
         if (!cancelled) setLoadFailed(true)
@@ -120,6 +134,8 @@ export function ScheduleScreen() {
   }
 
   const hasWorkoutDay = ROW_ORDER.some((d) => schedule[d] != null && schedule[d] !== 'rest')
+  const nextGoal = weeklyGoal(schedule)
+  const goalChangesMonday = thisWeekGoal != null && nextGoal !== thisWeekGoal
   const todayKey = new Date().getDay() as keyof WeeklySchedule
 
   return (
@@ -129,6 +145,12 @@ export function ScheduleScreen() {
         <h1 className="text-lg font-bold">Your week</h1>
         <span className="w-12" />
       </div>
+
+      {goalChangesMonday && (
+        <p className="field-notice rounded-panel px-4 py-3 text-sm" role="status" data-testid="goal-starts-monday">
+          This week's goal stays at {thisWeekGoal}. Your new goal of {nextGoal} starts Monday.
+        </p>
+      )}
 
       <RaeNote expression="focused">Pick a workout or a rest for each day. Today will follow your plan.</RaeNote>
 

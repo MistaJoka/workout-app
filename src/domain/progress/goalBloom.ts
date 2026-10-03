@@ -1,4 +1,5 @@
 import type { SessionResult } from '../session/types'
+import { goalForWeek, type WeekGoal } from './weekGoals'
 import { GARDEN_SPECIES, type GardenSpecies, type Rarity } from './garden'
 
 // Goal bloom: a bonus flower for a week where the weekly goal was met, from
@@ -69,8 +70,7 @@ export type GoalBloom = {
 // session xp.ts's computeXp marks `goalMet` for, so Complete can reveal the
 // bonus bloom on exactly that screen. A non-positive goal never completes
 // (there is nothing to "meet").
-export function goalBlooms(results: readonly SessionResult[], weeklyGoal: number): GoalBloom[] {
-  if (weeklyGoal <= 0) return []
+export function goalBlooms(results: readonly SessionResult[], weeklyGoal: WeekGoal): GoalBloom[] {
   const ordered = [...results].sort((a, b) => a.endedAt.localeCompare(b.endedAt))
   const counts = new Map<string, number>()
   const blooms: GoalBloom[] = []
@@ -78,7 +78,8 @@ export function goalBlooms(results: readonly SessionResult[], weeklyGoal: number
     const weekStart = weekStartKey(new Date(r.endedAt))
     const count = (counts.get(weekStart) ?? 0) + 1
     counts.set(weekStart, count)
-    if (count === weeklyGoal) blooms.push({ weekStart, sessionId: r.sessionId, species: goalSpeciesFor(weekStart) })
+    const goal = goalForWeek(weeklyGoal, new Date(r.endedAt))
+    if (goal > 0 && count === goal) blooms.push({ weekStart, sessionId: r.sessionId, species: goalSpeciesFor(weekStart) })
   }
   return blooms
 }
@@ -88,7 +89,7 @@ export function goalBlooms(results: readonly SessionResult[], weeklyGoal: number
 // crossed the goal, never on an earlier or later one.
 export function goalBloomForSession(
   results: readonly SessionResult[],
-  weeklyGoal: number,
+  weeklyGoal: WeekGoal,
   sessionId: string
 ): GoalBloom | null {
   return goalBlooms(results, weeklyGoal).find((b) => b.sessionId === sessionId) ?? null

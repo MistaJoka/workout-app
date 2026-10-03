@@ -50,6 +50,10 @@ export type SessionPlan = {
   exercises: SessionPlanExercise[]
   adaptations: AdaptationDecision[]
   reproducibilityHash: string
+  // The weekly goal in effect when this workout started (absent on plans
+  // from before 2026-10-03). The first workout of a week fixes that week's
+  // goal for every derived reward (domain/progress/weekGoals.ts).
+  weeklyGoal?: number
 }
 
 export type SessionEventType =

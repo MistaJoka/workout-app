@@ -80,6 +80,12 @@ describe('createSessionPlanFromTemplate', () => {
     expect(plan.exercises[1].authoredReps).toBe(12)
   })
 
+  it('snapshots the weekly goal when given, and leaves it out otherwise', () => {
+    const base = { id: 'session-g', createdAt: '2026-10-03T00:00:00.000Z', template, exercises, checkIn, ruleVersion: 'placeholder-v0' }
+    expect(createSessionPlanFromTemplate({ ...base, weeklyGoal: 3 }).weeklyGoal).toBe(3)
+    expect('weeklyGoal' in createSessionPlanFromTemplate(base)).toBe(false)
+  })
+
   it('captures the exercise name into the immutable plan snapshot, not just its ID', () => {
     const plan = createSessionPlanFromTemplate({
       id: 'session-6',

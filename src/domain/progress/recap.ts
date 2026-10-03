@@ -1,4 +1,5 @@
 import type { SessionEvent, SessionPlan, SessionResult } from '../session/types'
+import { goalForWeek, type WeekGoal } from './weekGoals'
 import type { AchievementIcon } from './achievements'
 import { speciesFor, type GardenFlower, type GardenSpecies, type Rarity } from './garden'
 import { projectSetRecords } from './history'
@@ -79,8 +80,9 @@ function pick<T>(list: readonly T[], key: string): T {
   return list[hash % list.length]
 }
 
-export function buildWeekRecap(history: History, badges: readonly BadgeLike[], goal: number, weekStart: Date): WeekRecap {
+export function buildWeekRecap(history: History, badges: readonly BadgeLike[], weekGoal: WeekGoal, weekStart: Date): WeekRecap {
   const start = weekStartOf(weekStart)
+  const goal = goalForWeek(weekGoal, start)
   const end = shiftDays(start, 7)
   const inWeek = (iso: string) => {
     const t = new Date(iso).getTime()

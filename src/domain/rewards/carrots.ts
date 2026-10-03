@@ -1,4 +1,5 @@
 import type { SessionEvent, SessionPlan, SessionResult } from '../session/types'
+import { goalForWeek, mondayKey as weekKey, type WeekGoal } from '../progress/weekGoals'
 import { projectSetRecords } from '../progress/history'
 import { flowStatus } from '../session/flow'
 
@@ -62,7 +63,7 @@ export type EarnedCarrots = {
 // a non-empty array today.
 export function earnedCarrots(
   history: CarrotsHistory,
-  weeklyGoal: number,
+  weeklyGoal: WeekGoal,
   extraCarrotSources: readonly CarrotSource[] = []
 ): EarnedCarrots {
   const results = [...history.results].sort((a, b) => a.endedAt.localeCompare(b.endedAt))
@@ -114,11 +115,12 @@ export function earnedCarrots(
       })
     }
     previousEndedAt = result.endedAt
-    if (weeklyGoal > 0) {
+    const goal = goalForWeek(weeklyGoal, new Date(result.endedAt))
+    if (goal > 0) {
       const week = weekKey(new Date(result.endedAt))
       const inWeek = (weekCounts.get(week) ?? 0) + 1
       weekCounts.set(week, inWeek)
-      if (inWeek === weeklyGoal) {
+      if (inWeek === goal) {
         sources.push({
           id: `${result.sessionId}:weeklyGoal`,
           at: result.endedAt,
@@ -139,13 +141,6 @@ export function earnedCarrots(
 
 // What one finished session earned, or null if it isn't (yet) a finished
 // session in this history.
-export function carrotsForSession(history: CarrotsHistory, weeklyGoal: number, sessionId: string): SessionCarrots | null {
+export function carrotsForSession(history: CarrotsHistory, weeklyGoal: WeekGoal, sessionId: string): SessionCarrots | null {
   return earnedCarrots(history, weeklyGoal).bySession.find((s) => s.sessionId === sessionId) ?? null
-}
-
-// Local Monday of the week, matching xp.ts/stats.ts's Monday-start week.
-function weekKey(date: Date): string {
-  const day = date.getDay()
-  const monday = new Date(date.getFullYear(), date.getMonth(), date.getDate() + (day === 0 ? -6 : 1 - day))
-  return `${monday.getFullYear()}-${monday.getMonth() + 1}-${monday.getDate()}`
 }

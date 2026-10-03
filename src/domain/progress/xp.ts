@@ -1,4 +1,5 @@
 import type { SessionEvent, SessionPlan, SessionResult } from '../session/types'
+import { goalForWeek, mondayKey as weekKey, type WeekGoal } from './weekGoals'
 import { projectSetRecords } from './history'
 
 // Bloom XP: a running total earned from finished workouts, derived from
@@ -70,7 +71,7 @@ export type XpHistory = {
 
 export type SessionXp = { gained: number; goalMet: boolean }
 
-export function computeXp(history: XpHistory, weeklyGoal: number): { total: number; bySession: Map<string, SessionXp> } {
+export function computeXp(history: XpHistory, weeklyGoal: WeekGoal): { total: number; bySession: Map<string, SessionXp> } {
   const results = [...history.results].sort((a, b) => a.endedAt.localeCompare(b.endedAt))
   const records = projectSetRecords(history.plans, results, history.events)
   const bySession = new Map<string, SessionXp>()
@@ -82,7 +83,7 @@ export function computeXp(history: XpHistory, weeklyGoal: number): { total: numb
     const week = weekKey(new Date(result.endedAt))
     const inWeek = (weekCounts.get(week) ?? 0) + 1
     weekCounts.set(week, inWeek)
-    const goalMet = inWeek === weeklyGoal
+    const goalMet = inWeek === goalForWeek(weeklyGoal, new Date(result.endedAt))
     const gained =
       sessionRecords.length * XP_RULES.perSet +
       met * XP_RULES.perMetSet +
@@ -104,7 +105,7 @@ export type SessionXpGain = {
 
 // What one finished session added: XP before it (every session that ended
 // earlier) to XP with it, and whether that crossed a level.
-export function sessionXpGain(history: XpHistory, weeklyGoal: number, sessionId: string): SessionXpGain {
+export function sessionXpGain(history: XpHistory, weeklyGoal: WeekGoal, sessionId: string): SessionXpGain {
   const { bySession } = computeXp(history, weeklyGoal)
   const target = history.results.find((r) => r.sessionId === sessionId)
   const mine = bySession.get(sessionId)
@@ -125,11 +126,4 @@ function totalOf(bySession: Map<string, SessionXp>): number {
   let sum = 0
   for (const v of bySession.values()) sum += v.gained
   return sum
-}
-
-// Local Monday of the week, matching the weekly streak and goal.
-function weekKey(date: Date): string {
-  const day = date.getDay()
-  const monday = new Date(date.getFullYear(), date.getMonth(), date.getDate() + (day === 0 ? -6 : 1 - day))
-  return `${monday.getFullYear()}-${monday.getMonth() + 1}-${monday.getDate()}`
 }

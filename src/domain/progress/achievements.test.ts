@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest'
-import { ACHIEVEMENTS, evaluateAchievements, newlyUnlocked, type AchievementHistory } from './achievements'
+import { ACHIEVEMENTS, evaluateAchievements, newlyUnlocked, visibleAchievements, type AchievementHistory } from './achievements'
 import type { SessionEvent, SessionPlan, SessionResult } from '../session/types'
 import { fullBodyA } from '../content/fixtures/foundationStrengthStarter'
 
@@ -189,3 +189,56 @@ describe('evaluateAchievements', () => {
     expect(newlyUnlocked(evaluated, 's2').map((a) => a.id)).not.toContain('first-workout')
   })
 })
+
+describe('long-tail ladders: something new to earn well past 50 workouts', () => {
+  const many = (n: number, moves: Move[] = [{ id: 'sq', sets: 5 }]) =>
+    merge(...Array.from({ length: n }, (_, i) => session(`w${i}`, local(2026, 1, 1 + i), moves)))
+
+  it('workout counts keep going: 75, 100, 150, 200, 300', () => {
+    const u = unlocked(many(100))
+    expect(u.get('workouts-75')?.sessionId).toBe('w74')
+    expect(u.get('workouts-100')?.sessionId).toBe('w99')
+    expect(u.has('workouts-150')).toBe(false)
+  })
+
+  it('counts every week the goal was met, never a streak', () => {
+    // One workout every 3.5 days -> two per Monday-start week for 4+ weeks,
+    // with a gap week in the middle that resets nothing.
+    const days = [5, 7, 12, 14, 26, 28, 33, 35]
+    const h = merge(...days.map((d, i) => session(`g${i}`, local(2026, 1, d), [{ id: 'sq' }])))
+    const u = unlocked(h, 2)
+    expect(u.get('goal-weeks-4')?.sessionId).toBe('g7')
+    expect(u.has('goal-weeks-12')).toBe(false)
+  })
+
+  it('counted sets add up across workouts', () => {
+    const u = unlocked(many(20))
+    expect(u.get('sets-100')?.sessionId).toBe('w19')
+    expect(u.has('sets-250')).toBe(false)
+  })
+
+  it('complete workouts: ten with every planned set done', () => {
+    expect(unlocked(many(10)).get('full-sets-10')?.sessionId).toBe('w9')
+  })
+
+  it('total hold time adds up across workouts', () => {
+    const u = unlocked(many(10, [{ id: 'plank', seconds: 60 }]))
+    expect(u.get('hold-total-10')?.sessionId).toBe('w9')
+  })
+
+  it('moves explored: twenty different moves', () => {
+    const moves = Array.from({ length: 20 }, (_, i) => ({ id: `m${i}` }))
+    expect(unlocked(session('x', local(2026, 1, 1), moves)).get('moves-20')?.sessionId).toBe('x')
+  })
+
+  it('the wall shows earned badges plus only the next locked tier of each ladder', () => {
+    const shown = visibleAchievements(evaluateAchievements(many(12), 2)).map((a) => a.id)
+    expect(shown).toContain('workouts-10') // earned
+    expect(shown).toContain('workouts-25') // next tier
+    expect(shown).not.toContain('workouts-50') // further tiers wait
+    expect(shown).not.toContain('workouts-300')
+    // Stand-alone badges always show.
+    expect(shown).toContain('night-owl')
+  })
+})
+

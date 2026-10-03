@@ -1,4 +1,5 @@
 import type { SessionEvent, SessionPlan, SessionResult } from '../session/types'
+import type { WeekGoal } from './weekGoals'
 import { projectSetRecords } from './history'
 import { calculateVolume } from './stats'
 import { computeXp } from './xp'
@@ -124,7 +125,7 @@ function pushIfPositive(list: Candidate[], tier: number, delta: number, build: (
   if (delta > 0) list.push({ tier, highlight: build(delta) })
 }
 
-export function compareWeeks(history: WeekCompareHistory, weeklyGoalValue: number, now: Date): WeekCompare {
+export function compareWeeks(history: WeekCompareHistory, weeklyGoalValue: WeekGoal, now: Date): WeekCompare {
   const records = projectSetRecords(history.plans, history.results, history.events)
   const { bySession } = computeXp(history, weeklyGoalValue)
 

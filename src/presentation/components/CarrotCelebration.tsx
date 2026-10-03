@@ -1,8 +1,8 @@
 import { useEffect, useState } from 'react'
+import { loadWeekGoals } from '../../infrastructure/db/repositories/weekGoalsRepository'
 import { useGiverName } from './useGiverName'
 import { Link } from 'react-router-dom'
 import { earnedCarrots, carrotsForSession, type SessionCarrots } from '../../domain/rewards/carrots'
-import { weeklyGoal } from '../../domain/progress/stats'
 import { BOSS_ROSTER, bossDefeats } from '../../domain/game/bosses'
 import { bossCarrotSources, withBossCarrots } from '../../domain/rewards/bossCarrots'
 import { getAllSessionHistory } from '../../infrastructure/db/repositories/sessionRepository'
@@ -23,19 +23,19 @@ export async function loadCarrotBalance(): Promise<number> {
     getWeeklySchedule(),
     totalSpent(),
   ])
-  const goal = weeklyGoal(schedule)
+  const goal = await loadWeekGoals({ plans, results, schedule })
   const earned = earnedCarrots({ plans, results, events }, goal, bossSources({ plans, results, events }, goal)).total
   return earned - spent
 }
 
 export async function loadSessionCarrots(sessionId: string): Promise<SessionCarrots | null> {
   const [{ plans, results, events }, schedule] = await Promise.all([getAllSessionHistory(), getWeeklySchedule()])
-  const goal = weeklyGoal(schedule)
+  const goal = await loadWeekGoals({ plans, results, schedule })
   return withBossCarrots(carrotsForSession({ plans, results, events }, goal, sessionId), bossSources({ plans, results, events }, goal))
 }
 
 // Defeated weekly bosses pay a carrot bonus (domain/rewards/bossCarrots.ts).
-function bossSources(history: Parameters<typeof bossDefeats>[0], goal: number) {
+function bossSources(history: Parameters<typeof bossDefeats>[0], goal: Parameters<typeof bossDefeats>[1]) {
   const names = new Map(BOSS_ROSTER.map((b) => [b.id, b.name]))
   return bossCarrotSources(bossDefeats(history, goal), (id) => names.get(id) ?? 'The boss')
 }
