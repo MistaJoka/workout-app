@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from 'react'
+import { useEffect, useRef, useState, type ReactNode } from 'react'
 import { loadWeekGoals } from '../../infrastructure/db/repositories/weekGoalsRepository'
 import { getAllSessionHistory } from '../../infrastructure/db/repositories/sessionRepository'
 import { getWeeklySchedule } from '../../infrastructure/db/repositories/scheduleRepository'
@@ -61,7 +61,9 @@ export function LevelBar({ level, className = '' }: { level: LevelInfo; classNam
 }
 
 // "+N XP" counting up after the stats, with the level bar under it.
-export function XpGainChip({ gain }: { gain: SessionXpGain }) {
+// `alongside`: another earned number shown on the same line (Complete puts
+// the carrot gain here, so the two "what you earned" numbers read as one).
+export function XpGainChip({ gain, alongside }: { gain: SessionXpGain; alongside?: ReactNode }) {
   const shown = useCountUp(gain.gained, 900)
   return (
     <div className="space-y-2 text-left" data-testid="xp-gain">
@@ -69,6 +71,7 @@ export function XpGainChip({ gain }: { gain: SessionXpGain }) {
         <span className="hud-num text-2xl font-extrabold text-primary-ink" role="img" aria-label={`Plus ${gain.gained} XP`}>
           +{shown} XP
         </span>
+        {alongside}
         {gain.leveledUp && (
           <span className="ml-2 rounded-full bg-field-notice px-2 py-0.5 align-middle text-xs font-bold">Level up!</span>
         )}

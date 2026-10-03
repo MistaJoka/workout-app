@@ -81,9 +81,21 @@ export function CarrotBalanceChip() {
 // Renders nothing if this session earned no carrots (never happens today --
 // every finished session pays at least the workout bonus -- but keeps the
 // convention every other RewardItem follows).
-export function CarrotGainChip({ gain }: { gain: SessionCarrots }) {
+export function CarrotGainChip({ gain, inline = false }: { gain: SessionCarrots; inline?: boolean }) {
   const shown = useCountUp(gain.total, 900)
   if (gain.total <= 0) return null
+  if (inline) {
+    return (
+      <span className="hud-num text-2xl font-extrabold text-primary-ink" data-testid="carrot-gain">
+        <span aria-hidden="true" className="mx-2 text-ink-muted">
+          ·
+        </span>
+        <span role="img" aria-label={`Plus ${gain.total} carrots`}>
+          +{shown} 🥕
+        </span>
+      </span>
+    )
+  }
   return (
     <p className="text-center" data-testid="carrot-gain">
       <span className="hud-num text-2xl font-extrabold text-primary-ink" role="img" aria-label={`Plus ${gain.total} carrots`}>

@@ -194,7 +194,7 @@ export function SessionCompleteScreen() {
           </RewardItem>
           {xp && (
             <RewardItem delay={90}>
-              <XpGainChip gain={xp} />
+              <XpGainChip gain={xp} alongside={carrots ? <CarrotGainChip gain={carrots} inline /> : undefined} />
               {xp.goalMet && <GoalMetBanner />}
               {xp.goalMet && goalBloomSpecies && <GoalBloomReveal species={goalBloomSpecies} />}
             </RewardItem>
@@ -205,7 +205,7 @@ export function SessionCompleteScreen() {
           <RewardItem delay={270}>
             <AchievementUnlocks sessionId={sessionId} />
           </RewardItem>
-          {carrots && (
+          {carrots && !xp && (
             <RewardItem delay={360}>
               <CarrotGainChip gain={carrots} />
             </RewardItem>
