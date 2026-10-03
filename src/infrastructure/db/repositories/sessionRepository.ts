@@ -60,12 +60,45 @@ export async function getResult(sessionId: string): Promise<SessionResult | unde
   return db.sessionResults.get(sessionId)
 }
 
+type SessionHistory = { plans: SessionPlan[]; results: SessionResult[]; events: SessionEvent[] }
+
+// Callers that ask while a read is already in flight (a screen's reward
+// pieces all mounting at once) share it, and so the same arrays, which also
+// lets projectSetRecords' cache hit across them. The share ends when the
+// read settles, and any write to these tables ends it at once, so a read
+// that starts after a write always sees it.
+let inFlight: Promise<SessionHistory> | null = null
+let hooked = false
+
+function endShare(): void {
+  inFlight = null
+}
+
+function hookWrites(): void {
+  if (hooked) return
+  hooked = true
+  for (const table of [db.sessionPlans, db.sessionResults, db.sessionEvents] as const) {
+    table.hook('creating', endShare)
+    table.hook('updating', endShare)
+    table.hook('deleting', endShare)
+  }
+}
+
 // Read-only snapshot for progress projections (src/domain/progress).
-export async function getAllSessionHistory(): Promise<{
-  plans: SessionPlan[]
-  results: SessionResult[]
-  events: SessionEvent[]
-}> {
+// Callers must not mutate the arrays (they may be shared).
+export function getAllSessionHistory(): Promise<SessionHistory> {
+  hookWrites()
+  if (inFlight) return inFlight
+  const read = readSessionHistory()
+  inFlight = read
+  const settle = () => {
+    if (inFlight === read) inFlight = null
+  }
+  read.then(settle, settle)
+  return read
+}
+
+async function readSessionHistory(): Promise<SessionHistory> {
   // `type` isn't indexed; projectSetRecords filters to SET_COMPLETED itself.
   const [plans, results, events] = await Promise.all([
     db.sessionPlans.toArray(),

@@ -187,3 +187,36 @@ function startEvent(sessionId: string): SessionEvent {
     payload: {},
   }
 }
+
+describe('getAllSessionHistory read sharing', () => {
+  it('reads asked for while one is in flight share it', async () => {
+    const a = sessionRepo.getAllSessionHistory()
+    const b = sessionRepo.getAllSessionHistory()
+    expect(a).toBe(b)
+    expect((await a).events).toBe((await b).events)
+  })
+
+  it('a read started after a write sees the write', async () => {
+    // Even a write that lands while a shared read is still in flight.
+    const inFlight = sessionRepo.getAllSessionHistory()
+    await db.sessionPlans.put({ id: 'hook-probe' } as never)
+    const fresh = sessionRepo.getAllSessionHistory()
+    expect(fresh).not.toBe(inFlight)
+    await Promise.all([inFlight, fresh])
+    await db.sessionPlans.delete('hook-probe')
+
+    const before = await sessionRepo.getAllSessionHistory()
+    await db.sessionResults.add({
+      sessionId: 'shared-read',
+      planId: 'p',
+      status: 'COMPLETED',
+      startedAt: '2026-10-03T00:00:00.000Z',
+      endedAt: '2026-10-03T00:10:00.000Z',
+      totalSetsCompleted: 1,
+      totalSetsPlanned: 1,
+    })
+    const after = await sessionRepo.getAllSessionHistory()
+    expect(after.results.length).toBe(before.results.length + 1)
+  })
+})
+
