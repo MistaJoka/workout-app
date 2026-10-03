@@ -28,6 +28,9 @@ import { RewardEditorSheet, type RewardDraft } from '../components/RewardEditorS
 import { GiftComposerSheet } from '../components/GiftComposerSheet'
 import { DeliveredComposerSheet } from '../components/DeliveredComposerSheet'
 import { OpenGiftLink } from '../components/OpenGiftLink'
+import { SAVING_FOR_KEY, SavingGoalBar, savingGoalReward } from '../components/SavingGoal'
+import { rewardTier, type RewardTier } from '../../domain/rewards/pricing'
+import { newId } from '../../shared/id'
 import { renderCardToBlob, ShareIcon } from '../components/ShareCardButton'
 import { shareOrDownload } from '../components/shareOrDownload'
 import { buildCouponCardModel, couponCardFilename, drawCouponCard } from '../rewardsCard'
@@ -52,7 +55,7 @@ type Sheet =
   | { kind: 'editor' }
   | { kind: 'giftCompose' }
   | { kind: 'deliverCompose' }
-  | { kind: 'redeemConfirm'; reward: RewardRecord }
+  | { kind: 'redeemConfirm'; reward: RewardRecord; attemptId: string }
   | { kind: 'coupon'; redemption: RedemptionRecord; emoji: string }
 
 type Data = {
@@ -62,16 +65,18 @@ type Data = {
   giverName: string
   pin: PinRecord | null
   pinAttempts: PinAttemptState
+  savingFor: string | null
 }
 
 async function load(): Promise<Data> {
-  const [rewards, redemptions, balance, giverName, pin, pinAttempts] = await Promise.all([
+  const [rewards, redemptions, balance, giverName, pin, pinAttempts, savingFor] = await Promise.all([
     listRewards(),
     listRedemptions(),
     loadCarrotBalance(),
     getSetting<string>(GIVER_NAME_KEY),
     getSetting<PinRecord>(PIN_KEY),
     getSetting<PinAttemptState>(PIN_ATTEMPTS_KEY),
+    getSetting<string | null>(SAVING_FOR_KEY),
   ])
   return {
     rewards,
@@ -80,6 +85,7 @@ async function load(): Promise<Data> {
     giverName: giverName ?? DEFAULT_GIVER_NAME,
     pin: pin ?? null,
     pinAttempts: pinAttempts ?? INITIAL_PIN_ATTEMPT_STATE,
+    savingFor: savingFor ?? null,
   }
 }
 
@@ -272,11 +278,21 @@ export function RewardsScreen() {
     }
   }
 
-  async function handleRedeem(reward: RewardRecord) {
+  // `attemptId` comes from the confirm sheet (one per opening): a double tap
+  // or retry lands on the same redemption. The balance is re-read fresh, so
+  // a stale screen (say, a second tab that already spent it) can't overspend.
+  async function handleRedeem(reward: RewardRecord, attemptId: string) {
     setRedeemBusy(true)
     setRedeemError(null)
     try {
-      const redemption = await redeemReward(reward)
+      const alreadyRedeemed = data?.redemptions.some((r) => r.id === attemptId)
+      if (!alreadyRedeemed && (await loadCarrotBalance()) < reward.cost) {
+        await refresh()
+        setRedeemError('Not enough carrots for this one yet.')
+        return
+      }
+      const redemption = await redeemReward(reward, undefined, attemptId)
+      if (data?.savingFor === reward.id) await setSetting(SAVING_FOR_KEY, null)
       playCelebration('redeem', feedback)
       await refresh()
       setSheet({ kind: 'coupon', redemption, emoji: reward.emoji })
@@ -319,13 +335,32 @@ export function RewardsScreen() {
     }
   }
 
+  function openRedeem(reward: RewardRecord) {
+    setRedeemError(null)
+    setSheet({ kind: 'redeemConfirm', reward, attemptId: newId() })
+  }
+
+  // Her choice, no PIN: pin one reward to save for, or tap again to unpin.
+  async function toggleSavingFor(reward: RewardRecord) {
+    try {
+      await setSetting(SAVING_FOR_KEY, data?.savingFor === reward.id ? null : reward.id)
+      await refresh()
+    } catch {
+      setRedeemError("Couldn't save that on this device. Try again.")
+    }
+  }
+
   function openCoupon(redemption: RedemptionRecord) {
     const reward = data?.rewards.find((r) => r.id === redemption.rewardId)
     setShareError(null)
     setSheet({ kind: 'coupon', redemption, emoji: reward?.emoji ?? '🥕' })
   }
 
-  const activeRewards = data?.rewards.filter((r) => r.active) ?? []
+  const activeRewards = [...(data?.rewards.filter((r) => r.active) ?? [])].sort((a, b) => a.cost - b.cost)
+  const goalReward = data ? savingGoalReward(data.rewards, data.savingFor) : null
+  const tiers = TIER_ORDER.map((tier) => ({ tier, rewards: activeRewards.filter((r) => rewardTier(r.cost) === tier) })).filter(
+    (t) => t.rewards.length > 0
+  )
   const pending = data?.redemptions.filter((r) => !r.deliveredAt) ?? []
   const delivered = data?.redemptions.filter((r) => r.deliveredAt) ?? []
 
@@ -409,11 +444,37 @@ export function RewardsScreen() {
               the first reward.
             </RaeNote>
           ) : (
-            <div className="grid grid-cols-2 gap-3">
-              {activeRewards.map((reward) => (
-                <RewardTile key={reward.id} reward={reward} balance={data.balance} onRedeem={() => setSheet({ kind: 'redeemConfirm', reward })} />
+            <>
+              {goalReward && (
+                <section className="card flex items-center gap-3 p-4" data-testid="saving-goal">
+                  <span aria-hidden="true" className="text-3xl">
+                    {goalReward.emoji}
+                  </span>
+                  <span className="min-w-0 flex-1">
+                    <span className="block text-xs font-semibold text-ink-muted">Saving for</span>
+                    <span className="block truncate font-bold">{goalReward.title}</span>
+                    <SavingGoalBar reward={goalReward} balance={data.balance} />
+                  </span>
+                </section>
+              )}
+              {tiers.map(({ tier, rewards }) => (
+                <section key={tier} className="space-y-2">
+                  {tiers.length > 1 && <p className="text-sm font-semibold text-ink-muted">{TIER_LABELS[tier]}</p>}
+                  <div className="grid grid-cols-2 gap-3">
+                    {rewards.map((reward) => (
+                      <RewardTile
+                        key={reward.id}
+                        reward={reward}
+                        balance={data.balance}
+                        saving={data.savingFor === reward.id}
+                        onRedeem={() => openRedeem(reward)}
+                        onToggleSaving={() => void toggleSavingFor(reward)}
+                      />
+                    ))}
+                  </div>
+                </section>
               ))}
-            </div>
+            </>
           )}
 
           {data.redemptions.length > 0 && (
@@ -485,7 +546,7 @@ export function RewardsScreen() {
           cost={sheet.reward.cost}
           busy={redeemBusy}
           error={redeemError}
-          onConfirm={() => void handleRedeem(sheet.reward)}
+          onConfirm={() => void handleRedeem(sheet.reward, sheet.attemptId)}
           onCancel={() => setSheet({ kind: 'none' })}
         />
       )}
@@ -508,7 +569,22 @@ export function RewardsScreen() {
   )
 }
 
-function RewardTile({ reward, balance, onRedeem }: { reward: RewardRecord; balance: number; onRedeem: () => void }) {
+const TIER_ORDER: RewardTier[] = ['small', 'medium', 'big']
+const TIER_LABELS: Record<RewardTier, string> = { small: 'Little treats', medium: 'Bigger treats', big: 'Big dreams' }
+
+function RewardTile({
+  reward,
+  balance,
+  saving,
+  onRedeem,
+  onToggleSaving,
+}: {
+  reward: RewardRecord
+  balance: number
+  saving: boolean
+  onRedeem: () => void
+  onToggleSaving: () => void
+}) {
   const affordable = balance >= reward.cost
   const pct = reward.cost > 0 ? Math.min(100, Math.round((balance / reward.cost) * 100)) : 100
   return (
@@ -531,6 +607,14 @@ function RewardTile({ reward, balance, onRedeem }: { reward: RewardRecord; balan
             />
           </div>
           <p className="text-xs text-ink-muted">{reward.cost - balance} more 🥕</p>
+          <button
+            type="button"
+            className={`${saving ? 'btn-primary' : 'btn-secondary'} min-h-11 w-full text-sm`}
+            aria-pressed={saving}
+            onClick={onToggleSaving}
+          >
+            {saving ? 'Saving ⭐' : 'Save for this'}
+          </button>
         </div>
       )}
     </div>

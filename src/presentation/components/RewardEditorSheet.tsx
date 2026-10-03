@@ -1,3 +1,4 @@
+import { workoutsFor } from '../../domain/rewards/pricing'
 import { useRef, useState } from 'react'
 import { useSheetFocus } from './useSheetFocus'
 import type { RewardRecord } from '../../infrastructure/db/schema'
@@ -13,12 +14,21 @@ const EMOJI_CHOICES = ['🥕', '🍓', '🍿', '🎬', '🛁', '💆', '🧹', '
 export type RewardDraft = { title: string; cost: number; emoji: string }
 
 const STARTER_SUGGESTIONS: RewardDraft[] = [
-  { title: 'Breakfast in bed', emoji: '🍳', cost: 25 },
-  { title: 'Foot rub', emoji: '💆', cost: 20 },
-  { title: 'Movie night pick', emoji: '🎬', cost: 15 },
-  { title: 'Dinner date', emoji: '🍽️', cost: 40 },
-  { title: 'No-dishes pass', emoji: '🧹', cost: 15 },
+  // Priced in workouts (~25 carrots each, domain/rewards/pricing.ts): a mix
+  // of little treats, a bigger one and a big dream to save for.
+  { title: 'No-dishes pass', emoji: '🧹', cost: 20 },
+  { title: 'Movie night pick', emoji: '🎬', cost: 25 },
+  { title: 'Foot rub', emoji: '💆', cost: 30 },
+  { title: 'Breakfast in bed', emoji: '🍳', cost: 60 },
+  { title: 'Dinner date', emoji: '🍽️', cost: 150 },
 ]
+
+// One tap to a sensible price per tier (domain/rewards/pricing.ts limits).
+const PRICE_PRESETS = [
+  { label: 'Little', cost: 25 },
+  { label: 'Bigger', cost: 60 },
+  { label: 'Big', cost: 150 },
+] as const
 
 export function RewardEditorSheet({
   rewards,
@@ -43,10 +53,10 @@ export function RewardEditorSheet({
   useSheetFocus(sheetRef, onClose)
   const [editingId, setEditingId] = useState<string | null>(null)
   const [adding, setAdding] = useState(false)
-  const [draft, setDraft] = useState<RewardDraft>({ title: '', cost: 20, emoji: EMOJI_CHOICES[0] })
+  const [draft, setDraft] = useState<RewardDraft>({ title: '', cost: 25, emoji: EMOJI_CHOICES[0] })
 
   function startAdd(preset?: Partial<RewardDraft>) {
-    setDraft({ title: '', cost: 20, emoji: EMOJI_CHOICES[0], ...preset })
+    setDraft({ title: '', cost: 25, emoji: EMOJI_CHOICES[0], ...preset })
     setAdding(true)
     setEditingId(null)
   }
@@ -160,6 +170,22 @@ export function RewardEditorSheet({
                   +
                 </button>
               </div>
+            </div>
+            <p className="text-right text-sm text-ink-muted" data-testid="cost-in-workouts">
+              ≈ {workoutsFor(draft.cost)} {workoutsFor(draft.cost) === 1 ? 'workout' : 'workouts'}
+            </p>
+            <div className="flex gap-2" role="group" aria-label="Quick prices">
+              {PRICE_PRESETS.map((preset) => (
+                <button
+                  key={preset.cost}
+                  type="button"
+                  className={`${draft.cost === preset.cost ? 'btn-primary' : 'btn-secondary'} min-h-11 flex-1 px-2 text-sm`}
+                  aria-pressed={draft.cost === preset.cost}
+                  onClick={() => setDraft((d) => ({ ...d, cost: preset.cost }))}
+                >
+                  {preset.label} {preset.cost}
+                </button>
+              ))}
             </div>
             {error && (
               <p className="text-sm text-accent" role="alert">

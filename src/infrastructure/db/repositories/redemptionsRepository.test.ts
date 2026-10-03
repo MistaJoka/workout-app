@@ -24,6 +24,20 @@ describe('redeemReward / listRedemptions', () => {
   })
 })
 
+describe('redeemReward idempotency', () => {
+  it('a retried redeem with the same id records one redemption and returns it', async () => {
+    const reward = { id: 'r1', title: 'Foot rub', cost: 20 }
+    const [a, b] = await Promise.all([
+      redeemReward(reward, '2026-09-10T00:00:00.000Z', 'attempt-1'),
+      redeemReward(reward, '2026-09-10T00:00:01.000Z', 'attempt-1'),
+    ])
+    expect(a.id).toBe('attempt-1')
+    expect(b).toEqual(a)
+    expect(await listRedemptions()).toHaveLength(1)
+    expect(await totalSpent()).toBe(20)
+  })
+})
+
 describe('markDelivered', () => {
   it('sets deliveredAt once', async () => {
     const redemption = await redeemReward(reward, '2026-09-10T00:00:00.000Z')

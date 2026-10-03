@@ -353,7 +353,7 @@ function RewardsShopTile() {
     <Link
       to="/rewards"
       className="card flex min-h-11 flex-col items-center gap-1 p-3 text-center active:bg-field-primary"
-      aria-label={`Hubby's shop: ${balance ?? 0} carrots. Open the shop`}
+      aria-label={`Hubby's shop: ${balance ?? 0} ${(balance ?? 0) === 1 ? 'carrot' : 'carrots'}. Open the shop`}
     >
       <span aria-hidden="true" className="text-[2.125rem] leading-none">
         🥕

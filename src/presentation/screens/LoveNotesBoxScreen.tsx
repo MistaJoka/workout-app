@@ -242,6 +242,15 @@ export function LoveNotesBoxScreen() {
             </button>
           </section>
 
+          {/* How notes unlock, said plainly (domain/rewards/loveNotes.ts):
+              the odds are never hidden. */}
+          {sealedCount > 0 && (
+            <p className="text-sm text-ink-muted" data-testid="love-notes-how">
+              Any workout can open one. The odds climb each time, and one always opens within 4 workouts or when you hit
+              your weekly goal.
+            </p>
+          )}
+
           {opened.length === 0 ? (
             <RaeNote expression="smile">
               {sealedCount > 0

@@ -3,6 +3,7 @@ import {
   decideLoveNoteUnlock,
   evaluateLoveNoteUnlock,
   LOVE_NOTE_RULES,
+  loveNoteChance,
   pickNoteToUnlock,
   sessionsSinceLastUnlock,
   type LoveNoteUnlockContext,
@@ -173,3 +174,23 @@ describe('evaluateLoveNoteUnlock', () => {
     expect(result).toBeNull()
   })
 })
+
+describe('soft pity: the chance climbs with each workout since the last unlock', () => {
+  it('rises 40% -> 55% -> 75%, then the hard guarantee takes over', () => {
+    expect(loveNoteChance(0)).toBe(0.4)
+    expect(loveNoteChance(1)).toBe(0.55)
+    expect(loveNoteChance(2)).toBe(0.75)
+    expect(loveNoteChance(LOVE_NOTE_RULES.pityAfterWorkouts)).toBe(1)
+    expect(loveNoteChance(9)).toBe(1)
+  })
+
+  it('a session that misses at 40% can land once two workouts have passed', () => {
+    const ids = Array.from({ length: 200 }, (_, i) => `soft-${i}`)
+    const roll = (id: string, since: number) => decideLoveNoteUnlock({ ...baseCtx, sessionId: id, sessionsSinceLastUnlock: since }).unlock
+    // The same seeded roll is compared against a higher bar, so anything that
+    // unlocked at 40% still unlocks at 75%, and some new ones join.
+    for (const id of ids) if (roll(id, 0)) expect(roll(id, 2)).toBe(true)
+    expect(ids.some((id) => !roll(id, 0) && roll(id, 2))).toBe(true)
+  })
+})
+

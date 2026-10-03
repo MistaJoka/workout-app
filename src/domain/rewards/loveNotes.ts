@@ -5,8 +5,10 @@
 // calling this more than once for the same session.
 
 export const LOVE_NOTE_RULES = {
-  // A flat per-workout chance when nothing else guarantees an unlock.
-  chancePerWorkout: 0.4,
+  // Soft pity: the per-workout chance, indexed by finished workouts since
+  // the last unlock (0, 1, 2). It climbs toward the hard guarantee below,
+  // the two-stage shape gacha games use, so a dry spell eases off gradually.
+  chanceBySessionsSince: [0.4, 0.55, 0.75],
   // Guaranteed once this many finished workouts have passed since the last
   // unlock (or since the beginning, if nothing has ever unlocked) without
   // one -- so a long unlucky streak never goes on forever.
@@ -38,7 +40,15 @@ export function decideLoveNoteUnlock(ctx: LoveNoteUnlockContext): LoveNoteUnlock
   if (ctx.lockedCount <= 0) return { unlock: false }
   if (ctx.sessionsSinceLastUnlock >= LOVE_NOTE_RULES.pityAfterWorkouts) return { unlock: true, reasonCode: 'pity' }
   if (ctx.goalMetThisSession) return { unlock: true, reasonCode: 'weeklyGoal' }
-  return seededRoll(ctx.sessionId) < LOVE_NOTE_RULES.chancePerWorkout ? { unlock: true, reasonCode: 'chance' } : { unlock: false }
+  return seededRoll(ctx.sessionId) < loveNoteChance(ctx.sessionsSinceLastUnlock) ? { unlock: true, reasonCode: 'chance' } : { unlock: false }
+}
+
+// This workout's chance of a note, given how many finished workouts passed
+// since the last one unlocked: soft pity first, then the hard guarantee.
+export function loveNoteChance(sessionsSince: number): number {
+  if (sessionsSince >= LOVE_NOTE_RULES.pityAfterWorkouts) return 1
+  const table = LOVE_NOTE_RULES.chanceBySessionsSince
+  return table[Math.max(0, Math.min(sessionsSince, table.length - 1))]
 }
 
 export type LoveNoteQueueItem = { id: string; createdAt: string }

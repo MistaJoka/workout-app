@@ -452,9 +452,9 @@ test.describe('Hubby Bunny: reward shop and love notes', () => {
 
     // Redeeming: confirm sheet, then the coupon.
     await page.getByRole('button', { name: 'Redeem' }).click()
-    await expect(page.getByRole('button', { name: /Redeem for 15/ })).toBeVisible()
+    await expect(page.getByRole('button', { name: /Redeem for 20/ })).toBeVisible()
     await checkA11y(page, 'Rewards: redeem confirm sheet')
-    await page.getByRole('button', { name: /Redeem for 15/ }).click()
+    await page.getByRole('button', { name: /Redeem for 20/ }).click()
     await expect(page.getByTestId('coupon-card')).toBeVisible()
     await checkA11y(page, 'Rewards: coupon sheet')
 

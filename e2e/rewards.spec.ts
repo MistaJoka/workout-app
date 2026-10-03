@@ -78,11 +78,11 @@ test('earning, redeeming and delivering a Hubby Bunny reward', async ({ page }) 
   await page.getByRole('button', { name: 'Lock' }).click()
   await expect(page.getByTestId('hubby-mode-pill')).toHaveCount(0)
 
-  // Back on the shop: the reward is redeemable (21 >= 15).
+  // Back on the shop: the reward is redeemable (21 >= 20).
   await expect(page.getByTestId('rewards-balance')).toContainText('21')
   await expect(page.getByText('No-dishes pass')).toBeVisible()
   await page.getByRole('button', { name: 'Redeem' }).click()
-  await page.getByRole('button', { name: /Redeem for 15/ }).click()
+  await page.getByRole('button', { name: /Redeem for 20/ }).click()
 
   // The coupon appears; sharing it hands over a 1080x1350 PNG named for the day.
   await expect(page.getByTestId('coupon-card')).toContainText('No-dishes pass')
@@ -102,11 +102,11 @@ test('earning, redeeming and delivering a Hubby Bunny reward', async ({ page }) 
 
   // Back on the shop screen: balance spent, the coupon shows delivered, and
   // the correct guess re-unlocked hubby mode for the rest of this visit.
-  await expect(page.getByTestId('rewards-balance')).toContainText('6')
+  await expect(page.getByTestId('rewards-balance')).toContainText('1 🥕')
   await expect(page.getByText('Delivered').first()).toBeVisible()
   await expect(page.getByTestId('hubby-mode-pill')).toContainText('Hubby mode on')
 
   // Progress's collection grid links to the same shop.
   await page.goto('/#/progress')
-  await expect(page.getByRole('link', { name: /Hubby's shop: 6 carrots/ })).toBeVisible()
+  await expect(page.getByRole('link', { name: /Hubby's shop: 1 carrot\./ })).toBeVisible()
 })

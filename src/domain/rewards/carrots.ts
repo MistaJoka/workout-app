@@ -14,10 +14,16 @@ export const CARROT_RULES = {
   perSet: 1,
   perfectBonus: 5,
   weeklyGoalBonus: 20,
+  // Welcome back: the first workout after a gap of this many days pays a
+  // bonus. It rewards the comeback (the StepUp megastudy's best arm) and
+  // never takes anything away for the time off.
+  welcomeBackBonus: 15,
+  welcomeBackGapDays: 7,
 } as const
 
 // One source of carrots within a finished session: a workout bonus, a sets
-// bonus, a perfect-workout bonus, or the once-a-week goal bonus. `id` is
+// bonus, a perfect-workout bonus, a welcome-back bonus, or the once-a-week
+// goal bonus. `id` is
 // stable per session (never reused across sessions) so a UI can key a list
 // of these without extra bookkeeping.
 export type CarrotSource = {
@@ -73,6 +79,7 @@ export function earnedCarrots(
   const bySession: SessionCarrots[] = []
   let total = 0
 
+  let previousEndedAt: string | null = null
   for (const result of results) {
     const sessionRecords = records.filter((r) => r.sessionId === result.sessionId)
     const sources: CarrotSource[] = [
@@ -95,6 +102,18 @@ export function earnedCarrots(
         label: 'Perfect workout',
       })
     }
+    if (
+      previousEndedAt !== null &&
+      Date.parse(result.endedAt) - Date.parse(previousEndedAt) >= CARROT_RULES.welcomeBackGapDays * 24 * 60 * 60 * 1000
+    ) {
+      sources.push({
+        id: `${result.sessionId}:welcomeBack`,
+        at: result.endedAt,
+        amount: CARROT_RULES.welcomeBackBonus,
+        label: 'Welcome back',
+      })
+    }
+    previousEndedAt = result.endedAt
     if (weeklyGoal > 0) {
       const week = weekKey(new Date(result.endedAt))
       const inWeek = (weekCounts.get(week) ?? 0) + 1

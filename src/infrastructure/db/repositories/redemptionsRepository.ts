@@ -7,20 +7,28 @@ import { matchRedemptionsByCode } from '../../../domain/rewards/giftLink'
 // deterministic formula to replay, unlike earnedCarrots), so it lives here
 // as its own row rather than being derived.
 
+// `id` is the idempotency key: the confirm sheet mints one per opening, so
+// a double tap or a retry of the same confirm lands on the same row instead
+// of spending twice (the first write wins; later ones return it).
 export async function redeemReward(
   reward: Pick<RewardRecord, 'id' | 'title' | 'cost'>,
-  at: string = new Date().toISOString()
+  at: string = new Date().toISOString(),
+  id: string = newId()
 ): Promise<RedemptionRecord> {
   const redemption: RedemptionRecord = {
-    id: newId(),
+    id,
     rewardId: reward.id,
     title: reward.title,
     cost: reward.cost,
     redeemedAt: at,
     deliveredAt: null,
   }
-  await db.redemptions.add(redemption)
-  return redemption
+  return db.transaction('rw', db.redemptions, async () => {
+    const existing = await db.redemptions.get(id)
+    if (existing) return existing
+    await db.redemptions.add(redemption)
+    return redemption
+  })
 }
 
 // Newest first, so a freshly redeemed coupon appears at the top of the list.

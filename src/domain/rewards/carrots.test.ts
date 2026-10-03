@@ -140,3 +140,34 @@ describe('carrotsForSession', () => {
     expect(carrotsForSession(history, 0, 'nope')).toBeNull()
   })
 })
+
+describe('welcome-back bonus', () => {
+  const day = (d: string) => `2026-09-${d}T10:00:00.000Z`
+
+  it('pays on the first workout after a gap of 7+ days, and only then', () => {
+    const history = {
+      plans: [plan('a', 1), plan('b', 1), plan('c', 1)],
+      // a -> b is 7 days apart (pays); b -> c is 2 days (doesn't).
+      results: [result('a', day('01'), 1, 1), result('b', day('08'), 1, 1), result('c', day('10'), 1, 1)],
+      events: [...sets('a', [true]), ...sets('b', [true]), ...sets('c', [true])],
+    }
+    const earned = earnedCarrots(history, 0)
+    const welcome = earned.bySession.flatMap((s) => s.sources).filter((s) => s.id.endsWith(':welcomeBack'))
+    expect(welcome).toEqual([{ id: 'b:welcomeBack', at: day('08'), amount: CARROT_RULES.welcomeBackBonus, label: 'Welcome back' }])
+  })
+
+  it('the very first workout ever is not a comeback', () => {
+    const history = { plans: [plan('a', 1)], results: [result('a', day('20'), 1, 1)], events: sets('a', [true]) }
+    expect(earnedCarrots(history, 0).bySession[0].sources.some((s) => s.id.endsWith(':welcomeBack'))).toBe(false)
+  })
+
+  it('a gap just under 7 days pays nothing', () => {
+    const history = {
+      plans: [plan('a', 1), plan('b', 1)],
+      results: [result('a', '2026-09-01T10:00:00.000Z', 1, 1), result('b', '2026-09-08T09:59:59.000Z', 1, 1)],
+      events: [...sets('a', [true]), ...sets('b', [true])],
+    }
+    expect(earnedCarrots(history, 0).bySession[1].sources.some((s) => s.id.endsWith(':welcomeBack'))).toBe(false)
+  })
+})
+
