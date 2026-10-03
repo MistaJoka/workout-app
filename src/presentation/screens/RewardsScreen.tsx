@@ -9,6 +9,7 @@ import { listRedemptions, markDelivered, redeemReward } from '../../infrastructu
 import { getSetting, setSetting } from '../../infrastructure/db/repositories/settingsRepository'
 import {
   DEFAULT_GIVER_NAME,
+  giverRole,
   INITIAL_PIN_ATTEMPT_STATE,
   createPinRecord,
   isInPinCooldown,
@@ -32,6 +33,7 @@ import { SAVING_FOR_KEY, SavingGoalBar, savingGoalReward } from '../components/S
 import { rewardTier, type RewardTier } from '../../domain/rewards/pricing'
 import { newId } from '../../shared/id'
 import { GrantWishSheet, MakeWishSheet, type WishLite } from '../components/WishSheets'
+import { ThanksSheet } from '../components/ThanksSheet'
 import { dismissWish, getWishBook } from '../../infrastructure/db/repositories/wishesRepository'
 import { grantedWishIds, pendingWishes, type WishBook } from '../../domain/rewards/wishes'
 import { renderCardToBlob, ShareIcon } from '../components/ShareCardButton'
@@ -46,6 +48,8 @@ import { Skeleton, SkeletonTiles } from '../components/Skeleton'
 import { HubbyModePill, isHubbyUnlocked, touchHubbySession, unlockHubbySession, useHubbySession } from '../components/hubbySession'
 
 const GIVER_NAME_KEY = 'rewardsGiverName'
+// His one spotlighted reward (RewardEditorSheet's ⭐), shown first.
+const FEATURED_KEY = 'rewardsFeatured'
 const PIN_KEY = 'rewardsHubbyPin'
 const PIN_ATTEMPTS_KEY = 'rewardsHubbyPinAttempts'
 
@@ -60,8 +64,9 @@ type Sheet =
   | { kind: 'deliverCompose' }
   | { kind: 'redeemConfirm'; reward: RewardRecord; attemptId: string }
   | { kind: 'makeWish' }
+  | { kind: 'thanks'; redemption: RedemptionRecord; emoji: string }
   | { kind: 'grantWish'; wish: WishLite }
-  | { kind: 'coupon'; redemption: RedemptionRecord; emoji: string }
+  | { kind: 'coupon'; redemption: RedemptionRecord; emoji: string; fresh?: boolean }
 
 type Data = {
   rewards: RewardRecord[]
@@ -72,10 +77,11 @@ type Data = {
   pinAttempts: PinAttemptState
   savingFor: string | null
   wishes: WishBook
+  featured: string | null
 }
 
 async function load(): Promise<Data> {
-  const [rewards, redemptions, balance, giverName, pin, pinAttempts, savingFor, wishes] = await Promise.all([
+  const [rewards, redemptions, balance, giverName, pin, pinAttempts, savingFor, wishes, featured] = await Promise.all([
     listRewards(),
     listRedemptions(),
     loadCarrotBalance(),
@@ -84,6 +90,7 @@ async function load(): Promise<Data> {
     getSetting<PinAttemptState>(PIN_ATTEMPTS_KEY),
     getSetting<string | null>(SAVING_FOR_KEY),
     getWishBook(),
+    getSetting<string | null>(FEATURED_KEY),
   ])
   return {
     rewards,
@@ -94,6 +101,7 @@ async function load(): Promise<Data> {
     pinAttempts: pinAttempts ?? INITIAL_PIN_ATTEMPT_STATE,
     savingFor: savingFor ?? null,
     wishes,
+    featured: featured ?? null,
   }
 }
 
@@ -309,7 +317,7 @@ export function RewardsScreen() {
       if (data?.savingFor === reward.id) await setSetting(SAVING_FOR_KEY, null)
       playCelebration('redeem', feedback)
       await refresh()
-      setSheet({ kind: 'coupon', redemption, emoji: reward.emoji })
+      setSheet({ kind: 'coupon', redemption, emoji: reward.emoji, fresh: true })
     } catch {
       setRedeemError("Couldn't redeem that on this device. Try again.")
     } finally {
@@ -354,6 +362,17 @@ export function RewardsScreen() {
     setSheet({ kind: 'redeemConfirm', reward, attemptId: newId() })
   }
 
+  async function handleToggleFeatured(id: string) {
+    setEditorError(null)
+    touchHubbySession()
+    try {
+      await setSetting(FEATURED_KEY, data?.featured === id ? null : id)
+      await refresh()
+    } catch {
+      setEditorError("Couldn't save on this device. Try again.")
+    }
+  }
+
   async function handleDismissWish(id: string) {
     try {
       await dismissWish(id)
@@ -374,13 +393,21 @@ export function RewardsScreen() {
     }
   }
 
+  function openThanks(redemption: RedemptionRecord) {
+    const reward = data?.rewards.find((r) => r.id === redemption.rewardId)
+    setSheet({ kind: 'thanks', redemption, emoji: reward?.emoji ?? '🥕' })
+  }
+
   function openCoupon(redemption: RedemptionRecord) {
     const reward = data?.rewards.find((r) => r.id === redemption.rewardId)
     setShareError(null)
     setSheet({ kind: 'coupon', redemption, emoji: reward?.emoji ?? '🥕' })
   }
 
-  const activeRewards = [...(data?.rewards.filter((r) => r.active) ?? [])].sort((a, b) => a.cost - b.cost)
+  // Cheapest first, with his featured pick (if any) leading.
+  const activeRewards = [...(data?.rewards.filter((r) => r.active) ?? [])].sort(
+    (a, b) => Number(b.id === data?.featured) - Number(a.id === data?.featured) || a.cost - b.cost
+  )
   const goalReward = data ? savingGoalReward(data.rewards, data.savingFor) : null
   const rewardIds = new Set(data?.rewards.map((r) => r.id) ?? [])
   const wishesPending = pendingWishes(data?.wishes, rewardIds)
@@ -395,7 +422,7 @@ export function RewardsScreen() {
         <h1 className="text-xl font-bold">{data ? `${data.giverName}'s shop` : 'Shop'}</h1>
       </div>
 
-      <HubbyModePill unlocked={hubby.unlocked} onLock={hubby.lock} />
+      <HubbyModePill unlocked={hubby.unlocked} onLock={hubby.lock} role={giverRole(data?.giverName)} />
 
       {deliverError && (
         <p className="text-sm text-accent" role="alert">
@@ -456,6 +483,7 @@ export function RewardsScreen() {
                     balance={data.balance}
                     saving={data.savingFor === reward.id}
                     wished={wishesGranted.has(reward.id)}
+                    featuredBy={reward.id === data.featured ? giverRole(data.giverName) : null}
                     onRedeem={() => openRedeem(reward)}
                     onToggleSaving={() => void toggleSavingFor(reward)}
                   />
@@ -479,7 +507,7 @@ export function RewardsScreen() {
                 <button
                   type="button"
                   className="btn-secondary min-h-11 px-3 text-sm"
-                  aria-label={`Hubby: price ${wish.title}`}
+                  aria-label={`${giverRole(data.giverName)}: price ${wish.title}`}
                   onClick={() => requestPinFor({ grant: { id: wish.id, title: wish.title, emoji: wish.emoji } })}
                 >
                   Price it
@@ -507,7 +535,13 @@ export function RewardsScreen() {
               ) : (
                 <ul className="space-y-2">
                   {pending.map((r) => (
-                    <RedemptionRow key={r.id} redemption={r} onOpen={() => openCoupon(r)} onMarkDelivered={() => requestMarkDelivered(r.id)} />
+                    <RedemptionRow
+                      key={r.id}
+                      redemption={r}
+                      onOpen={() => openCoupon(r)}
+                      onMarkDelivered={() => requestMarkDelivered(r.id)}
+                      onThanks={() => openThanks(r)}
+                    />
                   ))}
                 </ul>
               )}
@@ -516,7 +550,13 @@ export function RewardsScreen() {
                   <p className="pt-2 text-sm font-semibold text-ink-muted">Delivered</p>
                   <ul className="space-y-2">
                     {delivered.map((r) => (
-                      <RedemptionRow key={r.id} redemption={r} onOpen={() => openCoupon(r)} onMarkDelivered={() => requestMarkDelivered(r.id)} />
+                      <RedemptionRow
+                      key={r.id}
+                      redemption={r}
+                      onOpen={() => openCoupon(r)}
+                      onMarkDelivered={() => requestMarkDelivered(r.id)}
+                      onThanks={() => openThanks(r)}
+                    />
                     ))}
                   </ul>
                 </>
@@ -570,7 +610,7 @@ export function RewardsScreen() {
       )}
 
       {sheet.kind === 'pinEntry' && (
-        <PinEntrySheet busy={pinBusy} error={pinError} onSubmit={(pin) => void handlePinSubmit(pin, sheet.purpose)} onCancel={() => setSheet({ kind: 'none' })} />
+        <PinEntrySheet role={giverRole(data?.giverName)} busy={pinBusy} error={pinError} onSubmit={(pin) => void handlePinSubmit(pin, sheet.purpose)} onCancel={() => setSheet({ kind: 'none' })} />
       )}
 
       {sheet.kind === 'editor' && data && (
@@ -582,6 +622,8 @@ export function RewardsScreen() {
           onAdd={(draft) => void handleAdd(draft)}
           onUpdate={(id, patch) => void handleUpdate(id, patch)}
           onRemove={(id) => void handleRemove(id)}
+          featuredId={data.featured}
+          onToggleFeatured={(id) => void handleToggleFeatured(id)}
           onClose={() => setSheet({ kind: 'none' })}
         />
       )}
@@ -592,6 +634,16 @@ export function RewardsScreen() {
 
       {sheet.kind === 'deliverCompose' && data && (
         <DeliveredComposerSheet giverName={data.giverName} onClose={() => setSheet({ kind: 'none' })} />
+      )}
+
+      {sheet.kind === 'thanks' && data && (
+        <ThanksSheet
+          redemption={sheet.redemption}
+          emoji={sheet.emoji}
+          giverName={data.giverName}
+          onThanked={() => void refresh()}
+          onClose={() => setSheet({ kind: 'none' })}
+        />
       )}
 
       {sheet.kind === 'makeWish' && data && (
@@ -635,6 +687,7 @@ export function RewardsScreen() {
           onShare={() => void handleShareCoupon(sheet.redemption, sheet.emoji)}
           onMarkDelivered={() => requestMarkDelivered(sheet.redemption.id)}
           onClose={() => setSheet({ kind: 'none' })}
+          unwrap={sheet.fresh}
         />
       )}
     </div>
@@ -649,6 +702,7 @@ function RewardTile({
   balance,
   saving,
   wished,
+  featuredBy,
   onRedeem,
   onToggleSaving,
 }: {
@@ -656,14 +710,22 @@ function RewardTile({
   balance: number
   saving: boolean
   wished: boolean
+  featuredBy: string | null
   onRedeem: () => void
   onToggleSaving: () => void
 }) {
   const affordable = balance >= reward.cost
   const pct = reward.cost > 0 ? Math.min(100, Math.round((balance / reward.cost) * 100)) : 100
   return (
-    <div className="card space-y-2 p-3 text-center">
-      <p className="text-xs font-semibold uppercase tracking-wide text-ink-muted">{TIER_LABELS[rewardTier(reward.cost)]}</p>
+    <div
+      className={`card space-y-2 p-3 text-center ${featuredBy ? 'border-[var(--color-primary)]' : ''}`}
+      data-testid={featuredBy ? 'featured-reward' : undefined}
+    >
+      {featuredBy ? (
+        <p className="text-xs font-semibold uppercase tracking-wide text-primary-ink">⭐ {featuredBy}'s pick</p>
+      ) : (
+        <p className="text-xs font-semibold uppercase tracking-wide text-ink-muted">{TIER_LABELS[rewardTier(reward.cost)]}</p>
+      )}
       <span aria-hidden="true" className="text-3xl">
         {reward.emoji}
       </span>
@@ -701,10 +763,12 @@ function RedemptionRow({
   redemption,
   onOpen,
   onMarkDelivered,
+  onThanks,
 }: {
   redemption: RedemptionRecord
   onOpen: () => void
   onMarkDelivered: () => void
+  onThanks: () => void
 }) {
   return (
     <li className="card flex items-center gap-2 p-3">
@@ -715,7 +779,16 @@ function RedemptionRow({
         </span>
       </button>
       {redemption.deliveredAt ? (
-        <span className="text-sm font-semibold text-primary-ink">Delivered</span>
+        <span className="flex flex-col items-end gap-1">
+          <span className="text-sm font-semibold text-primary-ink">Delivered</span>
+          {redemption.thankedAt ? (
+            <span className="text-xs text-ink-muted">Thanked 💕</span>
+          ) : (
+            <button type="button" className="btn-secondary min-h-11 px-3 text-sm" onClick={onThanks}>
+              Say thanks 💕
+            </button>
+          )}
+        </span>
       ) : (
         <button type="button" className="btn-secondary min-h-11 px-3" onClick={onMarkDelivered}>
           Mark delivered

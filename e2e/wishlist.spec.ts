@@ -86,7 +86,7 @@ test('two phones: a wish link to him, a gift link back', async ({ page, browser,
   await setUpShopPin(his)
   await his.getByRole('button', { name: 'Little 25' }).click()
   await his.getByRole('button', { name: 'Add to the shop' }).click()
-  await his.getByRole('button', { name: /Send it to her/ }).click()
+  await his.getByRole('button', { name: /Send it back/ }).click()
   const giftShare = await lastShare(his, 1)
   expect(giftShare.url).toMatch(/#\/gift\?d=/)
   await hisContext.close()

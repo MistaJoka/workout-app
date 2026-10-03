@@ -38,6 +38,8 @@ export function RewardEditorSheet({
   onAdd,
   onUpdate,
   onRemove,
+  featuredId,
+  onToggleFeatured,
   onClose,
 }: {
   rewards: RewardRecord[]
@@ -47,6 +49,10 @@ export function RewardEditorSheet({
   onAdd: (input: RewardDraft) => void
   onUpdate: (id: string, patch: Partial<Pick<RewardRecord, 'title' | 'cost' | 'emoji' | 'active'>>) => void
   onRemove: (id: string) => void
+  // One reward he spotlights at the top of the shop. No countdown, no
+  // "leaving soon": every reward stays buyable either way.
+  featuredId: string | null
+  onToggleFeatured: (id: string) => void
   onClose: () => void
 }) {
   const sheetRef = useRef<HTMLDivElement>(null)
@@ -93,7 +99,7 @@ export function RewardEditorSheet({
         aria-label={`${giverName}'s reward shop, editing`}
       >
         <p className="text-lg font-bold">{giverName}'s shop</p>
-        <p className="text-sm text-ink-muted">Add, edit or remove what she can redeem carrots for.</p>
+        <p className="text-sm text-ink-muted">Add, edit or remove what carrots can buy.</p>
 
         {!formOpen && (
           <button type="button" className="btn-primary w-full" onClick={() => startAdd()}>
@@ -229,6 +235,15 @@ export function RewardEditorSheet({
                     onClick={() => onUpdate(reward.id, { active: !reward.active })}
                   >
                     {reward.active ? 'Hide' : 'Show'}
+                  </button>
+                  <button
+                    type="button"
+                    className={`${featuredId === reward.id ? 'btn-primary' : 'btn-secondary'} min-h-11 flex-1 px-3`}
+                    aria-pressed={featuredId === reward.id}
+                    aria-label={`Feature ${reward.title}`}
+                    onClick={() => onToggleFeatured(reward.id)}
+                  >
+                    ⭐
                   </button>
                   <button
                     type="button"

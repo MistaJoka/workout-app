@@ -13,17 +13,17 @@ import { hasRealName } from '../greeting'
 
 export type WishLite = { id: string; title: string; emoji: string }
 
-function linkLocation() {
+export function linkLocation() {
   return { origin: window.location.origin, baseUrl: import.meta.env.BASE_URL }
 }
 
-function ShareStatus({ outcome }: { outcome: ShareLinkOutcome | 'idle' }) {
+export function ShareStatus({ outcome }: { outcome: ShareLinkOutcome | 'idle' }) {
   if (outcome === 'copied') return <p className="text-sm text-primary-ink" role="status">Link copied!</p>
   if (outcome === 'failed') return <p className="text-sm text-accent" role="alert">Couldn't share it. Try again.</p>
   return null
 }
 
-function Sheet({ label, onClose, children }: { label: string; onClose: () => void; children: React.ReactNode }) {
+export function Sheet({ label, onClose, children }: { label: string; onClose: () => void; children: React.ReactNode }) {
   const ref = useRef<HTMLDivElement>(null)
   useSheetFocus(ref, onClose)
   return (
@@ -41,6 +41,12 @@ function Sheet({ label, onClose, children }: { label: string; onClose: () => voi
       </div>
     </div>
   )
+}
+
+// How the person sending a wish or a thank-you is named on the other phone.
+export function senderName(): string {
+  const name = activeProfile().name
+  return hasRealName(name) ? name.trim() : 'Your bunny'
 }
 
 // Her side, no PIN: write a wish, then optionally send it to his phone.
@@ -68,11 +74,10 @@ export function MakeWishSheet({ giverName, onDone, onClose }: { giverName: strin
   }
 
   async function send(wish: WishLite) {
-    const name = activeProfile().name
     const payload = {
       v: GIFT_LINK_VERSION,
       kind: 'wish' as const,
-      from: hasRealName(name) ? name.trim() : 'Your bunny',
+      from: senderName(),
       wishes: [wish],
       createdAt: new Date().toISOString(),
     }
@@ -203,7 +208,7 @@ export function GrantWishSheet({
           {wish.emoji}
         </p>
         <p className="font-bold">{wish.title}</p>
-        <p className="text-sm text-ink-muted">{granted ? 'In the shop! ✨' : 'Her wish'}</p>
+        <p className="text-sm text-ink-muted">{granted ? 'In the shop! ✨' : 'A wish'}</p>
       </div>
       {!granted ? (
         <>
@@ -256,7 +261,7 @@ export function GrantWishSheet({
         <>
           <ShareStatus outcome={outcome} />
           <button type="button" className="btn-secondary w-full min-h-11" onClick={() => void sendBack()}>
-            On your phone? Send it to her 💌
+            On your own phone? Send it back 💌
           </button>
           <button type="button" className="btn-primary btn-lg w-full" onClick={onClose}>
             Done

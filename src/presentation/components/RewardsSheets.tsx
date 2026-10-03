@@ -1,6 +1,6 @@
 import { useRef, useState, type ReactNode } from 'react'
 import { useSheetFocus } from './useSheetFocus'
-import { isValidPin } from '../../domain/rewards/pin'
+import { giverRole, isValidPin } from '../../domain/rewards/pin'
 import { CarrotBurst } from './CarrotCelebration'
 
 // Bottom sheets for Hubby Bunny's reward shop: setting/entering his PIN,
@@ -59,6 +59,8 @@ function PinInput({ value, onChange, label }: { value: string; onChange: (v: str
 
 // First-time setup, from Settings -> "Hubby's reward shop". Sets the PIN
 // and (optionally) renames the giver away from the "Hubby Bunny" default.
+const GIVER_NAME_PICKS = ['Hubby Bunny', 'Wifey Bunny'] as const
+
 export function PinSetupSheet({
   giverNameInitial,
   busy,
@@ -91,10 +93,11 @@ export function PinSetupSheet({
   }
 
   return (
-    <SheetShell label="Set a PIN for Hubby mode" busy={busy} onCancel={onCancel}>
+    <SheetShell label={`Set a PIN for ${giverRole(giverName || giverNameInitial)} mode`} busy={busy} onCancel={onCancel}>
       <p className="text-lg font-bold">Set a PIN</p>
       <p className="text-sm text-ink-muted">
-        This guards Hubby mode: editing the shop, delivering coupons, and writing love notes. Only you need to remember it.
+        This guards {giverRole(giverName || giverNameInitial)} mode: editing the shop, delivering coupons, and writing love notes.
+        Only you need to remember it.
       </p>
       <label className="block space-y-1 text-left">
         <span className="text-sm font-semibold">Your name, as the giver</span>
@@ -107,6 +110,20 @@ export function PinSetupSheet({
           placeholder={giverNameInitial}
         />
       </label>
+      {/* Either partner can run a shop on their own phone. */}
+      <div className="flex gap-2" role="group" aria-label="Quick giver names">
+        {GIVER_NAME_PICKS.map((name) => (
+          <button
+            key={name}
+            type="button"
+            className={`${giverName === name ? 'btn-primary' : 'btn-secondary'} min-h-11 flex-1 px-2 text-sm`}
+            aria-pressed={giverName === name}
+            onClick={() => setGiverName(name)}
+          >
+            {name}
+          </button>
+        ))}
+      </div>
       <div className="flex justify-center gap-3">
         <PinInput value={pin} onChange={setPin} label="New PIN" />
         <PinInput value={confirm} onChange={setConfirm} label="Confirm PIN" />
@@ -129,11 +146,13 @@ export function PinSetupSheet({
 // Entering the PIN to unlock hubby controls (editing the shop, marking a
 // coupon delivered) for the rest of this visit to the shop.
 export function PinEntrySheet({
+  role = giverRole(undefined),
   busy,
   error,
   onSubmit,
   onCancel,
 }: {
+  role?: string
   busy: boolean
   error: string | null
   onSubmit: (pin: string) => void
@@ -141,7 +160,7 @@ export function PinEntrySheet({
 }) {
   const [pin, setPin] = useState('')
   return (
-    <SheetShell label="Enter the Hubby mode PIN" busy={busy} onCancel={onCancel}>
+    <SheetShell label={`Enter the ${role} mode PIN`} busy={busy} onCancel={onCancel}>
       <p className="text-lg font-bold">Enter PIN</p>
       <div className="flex justify-center">
         <PinInput value={pin} onChange={setPin} label="PIN" />
@@ -219,11 +238,14 @@ export function CouponSheet({
   onShare,
   onMarkDelivered,
   onClose,
+  unwrap = false,
 }: {
   title: string
   emoji: string
   cost: number
   giverName: string
+  // Just redeemed: the coupon arrives gift-wrapped and opens once.
+  unwrap?: boolean
   deliveredAt: string | null
   shareBusy: boolean
   shareError: string | null
@@ -235,6 +257,16 @@ export function CouponSheet({
     <SheetShell label="Your coupon" onCancel={onClose}>
       <div className="relative mx-auto flex max-w-[16rem] flex-col items-center gap-1 rounded-panel bg-field-notice px-4 py-6" data-testid="coupon-card">
         <CarrotBurst />
+        {/* Decorative wrap that splits open once (index.css .coupon-wrap).
+            Hidden from assistive tech, never blocks taps, and gone at once
+            under reduced/off motion, so it can't hide anything. */}
+        {unwrap && (
+          <div aria-hidden="true" className="coupon-wrap" data-testid="coupon-wrap">
+            <span className="coupon-wrap-half coupon-wrap-left" />
+            <span className="coupon-wrap-half coupon-wrap-right" />
+            <span className="coupon-wrap-bow">🎀</span>
+          </div>
+        )}
         {/* z-10 keeps the coupon's own text above the burst (CarrotBurst's
             bits are absolutely positioned at the card's midpoint, which
             without an explicit stacking order would paint over this
@@ -259,7 +291,7 @@ export function CouponSheet({
       </button>
       {!deliveredAt && (
         <button type="button" className="btn-primary w-full" onClick={onMarkDelivered}>
-          Hubby: mark delivered
+          {giverRole(giverName)}: mark delivered
         </button>
       )}
       <button type="button" className="btn-ghost w-full" onClick={onClose}>

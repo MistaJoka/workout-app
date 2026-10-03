@@ -25,7 +25,7 @@ export function DeliveredComposerSheet({ giverName, onClose }: { giverName: stri
 
   function handleBuildLink() {
     if (codes.length === 0) {
-      setError('Paste the coupon code (or her whole message) first.')
+      setError('Paste the coupon code (or the whole message) first.')
       return
     }
     setError(null)
@@ -52,7 +52,7 @@ export function DeliveredComposerSheet({ giverName, onClose }: { giverName: stri
         aria-label="Mark a coupon delivered"
       >
         <p className="text-lg font-bold">Mark delivered</p>
-        <p className="text-sm text-ink-muted">Paste the coupon code (or her whole message) she sent you.</p>
+        <p className="text-sm text-ink-muted">Paste the coupon code, or the whole message you got.</p>
 
         {!result && (
           <>

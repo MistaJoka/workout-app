@@ -10,6 +10,15 @@
 // is only the fallback shown before he's set his own.
 export const DEFAULT_GIVER_NAME = 'Hubby Bunny'
 
+// The short word for the giver's mode and labels ("Hubby mode", "Wifey
+// mode"): the first word of the giver name. Either partner can run a shop
+// on their own phone, so nothing here assumes who gives to whom.
+export function giverRole(giverName: string | undefined): string {
+  const first = (giverName ?? '').trim().split(/\s+/)[0] ?? ''
+  if (!first) return DEFAULT_GIVER_NAME.split(' ')[0]
+  return first.charAt(0).toUpperCase() + first.slice(1)
+}
+
 export type Digest = (input: string) => Promise<string>
 
 export type PinRecord = {

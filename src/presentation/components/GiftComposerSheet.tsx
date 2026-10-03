@@ -147,8 +147,8 @@ export function GiftComposerSheet({ giverName, onClose }: { giverName: string; o
         aria-modal="true"
         aria-label="Send a gift link"
       >
-        <p className="text-lg font-bold">Send to her</p>
-        <p className="text-sm text-ink-muted">Pick rewards and notes to send as a link -- no need for her phone.</p>
+        <p className="text-lg font-bold">Send a gift</p>
+        <p className="text-sm text-ink-muted">Pick rewards and notes to send as a link. Works from any phone.</p>
 
         {data === null && !failed && (
           <Skeleton className="space-y-2">

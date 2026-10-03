@@ -40,6 +40,8 @@ export type RedemptionRecord = {
   cost: number
   redeemedAt: string
   deliveredAt: string | null
+  // When she sent a thank-you for it (additive, unindexed; absent on older rows).
+  thankedAt?: string | null
 }
 // Hubby Bunny's surprise love notes (v5). He writes a queue of notes while
 // they're all still locked; a finished workout has a deterministic chance

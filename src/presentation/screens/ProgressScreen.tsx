@@ -1,4 +1,6 @@
 import { useEffect, useState } from 'react'
+import { useGiverName } from '../components/useGiverName'
+import { giverRole } from '../../domain/rewards/pin'
 import { Link } from 'react-router-dom'
 import { RecapLink } from '../components/RecapEntry'
 import { getAllSessionHistory } from '../../infrastructure/db/repositories/sessionRepository'
@@ -335,6 +337,7 @@ function StoryTile({ unlocked }: { unlocked: number }) {
 // Your collection's fifth tile: Hubby Bunny's reward shop, carrot balance
 // as the headline number, same compact-tile shape as the other three.
 function RewardsShopTile() {
+  const giverName = useGiverName()
   const [balance, setBalance] = useState<number | null>(null)
   useEffect(() => {
     let cancelled = false
@@ -353,13 +356,15 @@ function RewardsShopTile() {
     <Link
       to="/rewards"
       className="card flex min-h-11 flex-col items-center gap-1 p-3 text-center active:bg-field-primary"
-      aria-label={`Hubby's shop: ${balance ?? 0} ${(balance ?? 0) === 1 ? 'carrot' : 'carrots'}. Open the shop`}
+      aria-label={`${giverRole(giverName)}'s shop: ${balance ?? 0} ${(balance ?? 0) === 1 ? 'carrot' : 'carrots'}. Open the shop`}
     >
       <span aria-hidden="true" className="text-[2.125rem] leading-none">
         🥕
       </span>
-      <p className="font-bold">Hubby's shop</p>
-      <p className="hud-num text-xs text-ink-muted">{balance ?? 0} carrots</p>
+      <p className="font-bold">{giverRole(giverName)}'s shop</p>
+      <p className="hud-num text-xs text-ink-muted">
+        {balance ?? 0} {(balance ?? 0) === 1 ? 'carrot' : 'carrots'}
+      </p>
     </Link>
   )
 }

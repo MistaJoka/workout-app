@@ -1,5 +1,6 @@
 import { describe, expect, it } from 'vitest'
 import {
+  giverRole,
   cooldownMsFor,
   createPinRecord,
   hashPin,
@@ -133,3 +134,17 @@ describe('PIN guess cooldown', () => {
     expect(pinCooldownMessage(0)).toContain('1s')
   })
 })
+
+describe('giverRole: the short word for whoever runs the shop', () => {
+  it('is the first word of the giver name', () => {
+    expect(giverRole('Hubby Bunny')).toBe('Hubby')
+    expect(giverRole('Wifey Bunny')).toBe('Wifey')
+    expect(giverRole('  dre  ')).toBe('Dre')
+  })
+
+  it('falls back to Hubby for a blank name', () => {
+    expect(giverRole('')).toBe('Hubby')
+    expect(giverRole(undefined)).toBe('Hubby')
+  })
+})
+

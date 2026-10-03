@@ -1,4 +1,5 @@
 import { useEffect, useState } from 'react'
+import { useGiverName } from './useGiverName'
 import { Link } from 'react-router-dom'
 import { earnedCarrots, carrotsForSession, type SessionCarrots } from '../../domain/rewards/carrots'
 import { weeklyGoal } from '../../domain/progress/stats'
@@ -44,6 +45,7 @@ function bossSources(history: Parameters<typeof bossDefeats>[0], goal: number) {
 // convention as Today's other best-effort reads -- it never blocks the rest
 // of the header.
 export function CarrotBalanceChip() {
+  const giverName = useGiverName()
   const [balance, setBalance] = useState<number | null>(null)
 
   useEffect(() => {
@@ -66,7 +68,7 @@ export function CarrotBalanceChip() {
     <Link
       to="/rewards"
       className="chip bg-field-notice gap-1 px-3"
-      aria-label={`${balance} carrots. Open Hubby Bunny's reward shop`}
+      aria-label={`${balance} carrots. Open ${giverName}'s reward shop`}
       data-testid="carrot-balance-chip"
     >
       <span aria-hidden="true">🥕</span>

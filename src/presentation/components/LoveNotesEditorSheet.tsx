@@ -79,7 +79,7 @@ export function LoveNotesEditorSheet({
         aria-label={`${giverName}'s love notes, editing`}
       >
         <p className="text-lg font-bold">Write a love note</p>
-        <p className="text-sm text-ink-muted">A surprise unlocks for her after a workout, one at a time.</p>
+        <p className="text-sm text-ink-muted">A surprise unlocks after a workout, one at a time.</p>
 
         {!formOpen && (
           <button type="button" className="btn-primary w-full" onClick={startAdd}>

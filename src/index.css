@@ -564,3 +564,84 @@ input[type='range'] {
     background-image: none;
   }
 }
+
+/* ---- Coupon unwrap (CouponSheet, just after redeeming) -----------------
+   A ribbon-wrapped cover over the coupon splits left/right and fades once.
+   Purely decorative: aria-hidden, no pointer events, and it ends at
+   opacity 0 (fill forwards). Under reduced/off motion the global rule above
+   collapses the duration, and the delay is zeroed here, so the coupon shows
+   at once. Transform is fine here: it's inside the sheet, not a page. */
+.coupon-wrap {
+  position: absolute;
+  inset: 0;
+  z-index: 20;
+  pointer-events: none;
+  border-radius: inherit;
+  overflow: hidden;
+  animation: coupon-wrap-out 0.2s ease-out 0.9s forwards;
+}
+.coupon-wrap-half {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  width: 50%;
+}
+/* A ribbon cross: the vertical band is split down the middle (half on each
+   side of the seam), the horizontal band runs across both halves. */
+.coupon-wrap-left {
+  left: 0;
+  background:
+    linear-gradient(180deg, transparent 44%, var(--color-accent) 44% 56%, transparent 56%),
+    linear-gradient(90deg, var(--color-primary) 84%, var(--color-accent) 84%);
+  animation: coupon-wrap-left 0.6s cubic-bezier(0.5, 0, 0.75, 0) 0.35s forwards;
+}
+.coupon-wrap-right {
+  right: 0;
+  background:
+    linear-gradient(180deg, transparent 44%, var(--color-accent) 44% 56%, transparent 56%),
+    linear-gradient(90deg, var(--color-accent) 16%, var(--color-primary) 16%);
+  animation: coupon-wrap-right 0.6s cubic-bezier(0.5, 0, 0.75, 0) 0.35s forwards;
+}
+.coupon-wrap-bow {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  font-size: 2.5rem;
+  transform: translate(-50%, -50%);
+  animation: coupon-wrap-bow 0.45s ease-in 0.2s forwards;
+}
+@keyframes coupon-wrap-left {
+  to {
+    transform: translateX(-105%) rotate(-8deg);
+  }
+}
+@keyframes coupon-wrap-right {
+  to {
+    transform: translateX(105%) rotate(8deg);
+  }
+}
+@keyframes coupon-wrap-bow {
+  40% {
+    transform: translate(-50%, -50%) scale(1.25);
+  }
+  to {
+    transform: translate(-50%, -120%) scale(0.2);
+    opacity: 0;
+  }
+}
+@keyframes coupon-wrap-out {
+  to {
+    opacity: 0;
+    visibility: hidden;
+  }
+}
+[data-motion='reduced'] :is(.coupon-wrap, .coupon-wrap-half, .coupon-wrap-bow),
+[data-motion='off'] :is(.coupon-wrap, .coupon-wrap-half, .coupon-wrap-bow) {
+  animation-delay: 0s !important;
+}
+@media (prefers-reduced-motion: reduce) {
+  [data-motion='full'] :is(.coupon-wrap, .coupon-wrap-half, .coupon-wrap-bow) {
+    animation-delay: 0s !important;
+  }
+}
+

@@ -1,4 +1,6 @@
 import { Link } from 'react-router-dom'
+import { useGiverName } from '../components/useGiverName'
+import { giverRole } from '../../domain/rewards/pin'
 import { useEffect, useRef, useState, type ReactNode } from 'react'
 import { importAll, isOtherProfile, parseExportBundle, type ExportBundle } from '../../infrastructure/exportImport/exportImport'
 import { getSetting } from '../../infrastructure/db/repositories/settingsRepository'
@@ -16,6 +18,7 @@ import { canVibrate } from '../../application/restFeedback'
 import { GARDEN_SPECIES, buildGarden, type GardenSpecies } from '../../domain/progress/garden'
 
 export function SettingsScreen() {
+  const giverName = useGiverName()
   const [feedback, updateFeedback] = useFeedbackSettings()
   const [unit, setUnit] = useWeightUnit()
   const fileInputRef = useRef<HTMLInputElement>(null)
@@ -260,7 +263,7 @@ export function SettingsScreen() {
             <span aria-hidden="true" className="flex-none text-2xl">
               🥕
             </span>
-            <span className="flex-1 font-semibold">Hubby's reward shop</span>
+            <span className="flex-1 font-semibold">{giverRole(giverName)}'s reward shop</span>
             <span className="text-xl text-ink-muted" aria-hidden>
               ›
             </span>

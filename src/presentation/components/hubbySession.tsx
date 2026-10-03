@@ -116,11 +116,11 @@ export function useHubbySession(): { unlocked: boolean; lock: () => void } {
 
 // The "Hubby mode on -- Lock" pill, shown on both screens while unlocked.
 // Renders nothing while locked, so callers can place it unconditionally.
-export function HubbyModePill({ unlocked: isUnlocked, onLock }: { unlocked: boolean; onLock: () => void }) {
+export function HubbyModePill({ unlocked: isUnlocked, onLock, role }: { unlocked: boolean; onLock: () => void; role: string }) {
   if (!isUnlocked) return null
   return (
     <div className="chip bg-field-notice gap-2 px-3" data-testid="hubby-mode-pill">
-      <span className="font-semibold">Hubby mode on</span>
+      <span className="font-semibold">{role} mode on</span>
       <button type="button" className="underline" onClick={onLock}>
         Lock
       </button>

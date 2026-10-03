@@ -44,6 +44,15 @@ export async function markDelivered(id: string, at: string = new Date().toISOStr
   return next
 }
 
+// First thank-you wins; later taps leave the time alone.
+export async function markThanked(id: string, at: string = new Date().toISOString()): Promise<void> {
+  await db.transaction('rw', db.redemptions, async () => {
+    const existing = await db.redemptions.get(id)
+    if (!existing || existing.thankedAt) return
+    await db.redemptions.put({ ...existing, thankedAt: at })
+  })
+}
+
 // What's been spent so far: balance = earned (carrots.ts) - this.
 export async function totalSpent(): Promise<number> {
   const all = await db.redemptions.toArray()

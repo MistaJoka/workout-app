@@ -65,14 +65,34 @@ const wishPayloadSchema = z.object({
   createdAt: z.string().min(1),
 })
 
-const giftLinkPayloadSchema = z.discriminatedUnion('kind', [giftPayloadSchema, deliveredPayloadSchema, wishPayloadSchema])
+// A thank-you for a delivered coupon, sent back to the giver: a card to
+// look at, nothing to accept (gratitude binds: Algoe's find-remind-bind).
+const thanksPayloadSchema = z.object({
+  v: z.literal(GIFT_LINK_VERSION),
+  kind: z.literal('thanks'),
+  from: z.string().min(1),
+  title: z.string().min(1),
+  emoji: z.string().min(1),
+  message: z.string().min(1).max(140),
+  createdAt: z.string().min(1),
+})
+
+const giftLinkPayloadSchema = z.discriminatedUnion('kind', [
+  giftPayloadSchema,
+  deliveredPayloadSchema,
+  wishPayloadSchema,
+  thanksPayloadSchema,
+])
 
 export type GiftReward = z.infer<typeof giftRewardSchema>
 export type GiftNote = z.infer<typeof giftNoteSchema>
 export type GiftPayload = z.infer<typeof giftPayloadSchema>
 export type DeliveredPayload = z.infer<typeof deliveredPayloadSchema>
 export type WishPayload = z.infer<typeof wishPayloadSchema>
-export type GiftLinkPayload = GiftPayload | DeliveredPayload | WishPayload
+export type ThanksPayload = z.infer<typeof thanksPayloadSchema>
+export type GiftLinkPayload = GiftPayload | DeliveredPayload | WishPayload | ThanksPayload
+
+export const THANKS_MESSAGES = ['Thank you! 💕', 'Best one yet 🥰', 'Again soon? 😘', 'You spoil me 🐰'] as const
 
 // ---- base64url, byte-for-byte (no btoa/atob: this module stays pure and
 // environment-agnostic, running the same in the browser and under vitest). ----
@@ -274,5 +294,12 @@ export function couponShareMessage(input: { title: string; emoji: string; giverN
 export function wishShareMessage(payload: WishPayload): { title: string; text: string } {
   const list = payload.wishes.map((w) => `${w.emoji} ${w.title}`).join(', ')
   return { title: `A wish from ${payload.from}`, text: `${payload.from} wishes for: ${list} ✨` }
+}
+
+export function thanksShareMessage(payload: ThanksPayload): { title: string; text: string } {
+  return {
+    title: `A thank-you from ${payload.from}`,
+    text: `${payload.from} says thanks for ${payload.emoji} ${payload.title}: ${payload.message}`,
+  }
 }
 

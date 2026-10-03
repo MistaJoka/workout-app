@@ -12,6 +12,7 @@ import {
 import { getSetting, setSetting } from '../../infrastructure/db/repositories/settingsRepository'
 import {
   DEFAULT_GIVER_NAME,
+  giverRole,
   INITIAL_PIN_ATTEMPT_STATE,
   createPinRecord,
   isInPinCooldown,
@@ -208,7 +209,7 @@ export function LoveNotesBoxScreen() {
         <h1 className="text-xl font-bold">Love notes</h1>
       </div>
 
-      <HubbyModePill unlocked={hubby.unlocked} onLock={hubby.lock} />
+      <HubbyModePill unlocked={hubby.unlocked} onLock={hubby.lock} role={giverRole(data?.giverName)} />
 
       {data === null && !failed && (
         <Skeleton className="space-y-3">
@@ -293,7 +294,7 @@ export function LoveNotesBoxScreen() {
       )}
 
       {sheet.kind === 'pinEntry' && (
-        <PinEntrySheet busy={pinBusy} error={pinError} onSubmit={(pin) => void handlePinSubmit(pin)} onCancel={() => setSheet({ kind: 'none' })} />
+        <PinEntrySheet role={giverRole(data?.giverName)} busy={pinBusy} error={pinError} onSubmit={(pin) => void handlePinSubmit(pin)} onCancel={() => setSheet({ kind: 'none' })} />
       )}
 
       {sheet.kind === 'editor' && data && (

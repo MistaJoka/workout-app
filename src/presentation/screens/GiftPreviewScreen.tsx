@@ -8,6 +8,7 @@ import {
   matchRedemptionsByCode,
   type DeliveredPayload,
   type GiftPayload,
+  type ThanksPayload,
   type WishPayload,
 } from '../../domain/rewards/giftLink'
 import { listRewards, upsertRewardFromGift } from '../../infrastructure/db/repositories/rewardsRepository'
@@ -36,7 +37,8 @@ type DeliveredState = {
 }
 // Her wish, opened on his phone: he prices it (behind the PIN) in the shop.
 type WishState = { kind: 'wish'; payload: WishPayload; grantedIds: Set<string> }
-type State = { kind: 'loading' } | { kind: 'invalid' } | GiftState | DeliveredState | WishState
+type ThanksState = { kind: 'thanks'; payload: ThanksPayload }
+type State = { kind: 'loading' } | { kind: 'invalid' } | GiftState | DeliveredState | WishState | ThanksState
 
 export function GiftPreviewScreen() {
   const [params] = useSearchParams()
@@ -61,6 +63,8 @@ export function GiftPreviewScreen() {
         if (cancelled) return
         const alreadyAccepted = giftAlreadyAccepted(decoded.payload, new Set(rewards.map((r) => r.id)), new Set(notes.map((n) => n.id)))
         setState({ kind: 'gift', payload: decoded.payload, alreadyAccepted })
+      } else if (decoded.payload.kind === 'thanks') {
+        if (!cancelled) setState({ kind: 'thanks', payload: decoded.payload })
       } else if (decoded.payload.kind === 'wish') {
         const rewards = await listRewards()
         if (cancelled) return
@@ -125,7 +129,7 @@ export function GiftPreviewScreen() {
     <div className="p-4 space-y-4">
       <div className="flex items-center gap-2">
         <BackButton />
-        <h1 className="text-xl font-bold">Gift</h1>
+        <h1 className="text-xl font-bold">{state.kind === 'thanks' ? 'Thank you' : state.kind === 'wish' ? 'Wish' : 'Gift'}</h1>
       </div>
 
       {state.kind === 'loading' && (
@@ -159,6 +163,23 @@ export function GiftPreviewScreen() {
           )}
           <button type="button" className="btn-ghost w-full" onClick={() => navigate('/')}>
             {state.alreadyAccepted ? 'Close' : 'Not now'}
+          </button>
+        </>
+      )}
+
+      {state.kind === 'thanks' && (
+        <>
+          <div className="card space-y-2 p-4 text-center" data-testid="thanks-card">
+            <p className="text-sm text-ink-muted">A thank-you from</p>
+            <p className="text-lg font-bold">{state.payload.from}</p>
+            <p aria-hidden="true" className="text-5xl">
+              {state.payload.emoji}
+            </p>
+            <p className="font-semibold">{state.payload.title}</p>
+            <p className="text-xl font-bold text-primary-ink">{state.payload.message}</p>
+          </div>
+          <button type="button" className="btn-primary btn-lg w-full" onClick={() => navigate('/')}>
+            Aww 🥰
           </button>
         </>
       )}

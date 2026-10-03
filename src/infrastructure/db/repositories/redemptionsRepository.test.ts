@@ -1,6 +1,6 @@
 import { beforeEach, describe, expect, it } from 'vitest'
 import { db } from '../schema'
-import { listRedemptions, markDelivered, markDeliveredByCode, redeemReward, totalSpent } from './redemptionsRepository'
+import { listRedemptions, markDelivered, markDeliveredByCode, markThanked, redeemReward, totalSpent } from './redemptionsRepository'
 import { shortRedemptionCode } from '../../../domain/rewards/giftLink'
 
 beforeEach(async () => {
@@ -94,3 +94,13 @@ describe('totalSpent', () => {
     expect(await totalSpent()).toBe(0)
   })
 })
+
+describe('markThanked', () => {
+  it('records the first thank-you only', async () => {
+    const r = await redeemReward({ id: 'r1', title: 'A', cost: 10 }, '2026-09-10T00:00:00.000Z')
+    await markThanked(r.id, '2026-09-12T00:00:00.000Z')
+    await markThanked(r.id, '2026-09-13T00:00:00.000Z')
+    expect((await listRedemptions())[0].thankedAt).toBe('2026-09-12T00:00:00.000Z')
+  })
+})
+

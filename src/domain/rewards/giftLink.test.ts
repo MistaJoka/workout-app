@@ -1,6 +1,8 @@
 import { describe, expect, it } from 'vitest'
 import {
   extractGiftLinkData,
+  THANKS_MESSAGES,
+  thanksShareMessage,
   wishShareMessage,
   GIFT_LINK_VERSION,
   GiftLinkTooLargeError,
@@ -254,6 +256,34 @@ describe('wish links (her wish, sent to him)', () => {
 
   it('has a share message naming the wish', () => {
     expect(wishShareMessage(wish)).toEqual({ title: 'A wish from Your bunny', text: 'Your bunny wishes for: 🛁 Spa day ✨' })
+  })
+})
+
+describe('thank-you links (after a coupon is delivered)', () => {
+  const thanks = {
+    v: 1 as const,
+    kind: 'thanks' as const,
+    from: 'Your bunny',
+    title: 'Breakfast in bed',
+    emoji: '🍳',
+    message: THANKS_MESSAGES[0],
+    createdAt: '2026-10-03T10:00:00.000Z',
+  }
+
+  it('round-trips through the same codec', () => {
+    expect(decodeGiftLinkPayload(encodeGiftPayload(thanks))).toEqual({ ok: true, payload: thanks })
+  })
+
+  it('offers a few short messages, the first one plain', () => {
+    expect(THANKS_MESSAGES[0]).toBe('Thank you! 💕')
+    expect(THANKS_MESSAGES.length).toBeGreaterThanOrEqual(3)
+  })
+
+  it('has a share message with the reward and the note', () => {
+    expect(thanksShareMessage(thanks)).toEqual({
+      title: 'A thank-you from Your bunny',
+      text: 'Your bunny says thanks for 🍳 Breakfast in bed: Thank you! 💕',
+    })
   })
 })
 
