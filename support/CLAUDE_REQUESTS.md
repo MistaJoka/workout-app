@@ -162,6 +162,19 @@ Use this mailbox when implementation reaches a product/data/spec/asset/test gap 
 **Constraints already known:** the app's privacy/security posture (no account, no analytics, on-device storage, optional GitHub photo fetch) is accurate as of this REQ and documented in `docs/SECURITY_AND_PRIVACY.md`; the new /privacy, /terms, /licenses screens describe that posture as it exists today and must be revisited if any decision above changes it.
 **Proposed fallback if unresolved:** ship with the placeholder support email clearly marked (not listed anywhere until replaced), keep the privacy text in-app only (no external URL) until a hosting decision is made, and do not submit to any store listing until items 1-5 are resolved.
 
+## REQ-20261003-008 — More Rae story chapters and room unlocks for the long run
+
+**Status:** OPEN
+**Blocking:** no
+**Implementation context:** `src/domain/content/raeStory.ts` (`RAE_STORY`, 10 chapters, last at 50 finished workouts), `src/presentation/roomUnlocks.ts` (`ROOM_UNLOCKS`, 7 items, last at level 15), `src/presentation/components/roomGrowthDecor.tsx` (the items' pixel art), `src/domain/progress/xp.ts` (level curve: level 15 is about 42 workouts in at ~140 XP each).
+**Need:** in-app rewards audit (2026-10-03): nearly every authored reward runs out around 40-50 workouts, about 5-6 months at two a week. Badges now have long-tail ladders (to 300 workouts), but story chapters and room items are creative content Claude Code must not author. Requested:
+1. **Story chapters 11+** in the existing `RaeStoryChapter` shape (title, body, Rae expression, `unlockAt` finished-workout count, strictly increasing), continuing Rae's balcony-garden arc. Suggested `unlockAt`: 65, 80, 100, 125, 150, 200, 250, 300 (in step with the badge ladders).
+2. **Room items past level 15**: names, levels and approved pixel-art specs/assets for a few more items (suggested levels 18, 21, 25, 30), drawn to the Pixel Bloom asset rules.
+**Why it matters:** after the last chapter and room item, a finished workout still earns XP, carrots, flowers and boss hits, but nothing in Rae's story or room grows. That's the point where long-term players most need something to look forward to.
+**Requested output:** data (chapter text) + asset (room item art/specs)
+**Constraints already known:** chapters must keep the no-guilt tone (nothing lost by resting, no "you missed me"); Rae canon per `assets/pixel-bloom/db/rae-character-lock.v1.json` and `docs/RAE_CHARACTER_BIBLE_V1.md`; room art per `docs/PIXEL_BLOOM_ASSET_SYSTEM.md`.
+**Proposed fallback if unresolved:** none needed: the story and room simply stay complete at their current length; the badge ladders carry the long tail meanwhile.
+
 ## Template
 
 ```md
