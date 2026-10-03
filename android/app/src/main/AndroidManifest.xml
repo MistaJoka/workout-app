@@ -22,6 +22,19 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
 
+            <!-- Links to the web app (gifts, wishes, thank-yous) can open
+                 here instead of the browser. Not auto-verified (the tailnet
+                 domain can't serve App Links verification), so it's enabled
+                 once in Settings > Apps > Foundation Strength > Open by
+                 default. Routed by src/presentation/pwa/appLinks.ts. Keep in
+                 step with PUBLIC_APP_URL (src/presentation/appContext.ts). -->
+            <intent-filter>
+                <action android:name="android.intent.action.VIEW" />
+                <category android:name="android.intent.category.DEFAULT" />
+                <category android:name="android.intent.category.BROWSABLE" />
+                <data android:scheme="https" android:host="nomad.tailed9e33.ts.net" android:port="8443" />
+            </intent-filter>
+
         </activity>
 
         <provider
