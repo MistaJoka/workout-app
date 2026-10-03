@@ -194,3 +194,32 @@ describe('soft pity: the chance climbs with each workout since the last unlock',
   })
 })
 
+describe('a note only unlocks from a workout finished after it was written', () => {
+  it('ignores notes written after the workout ended', () => {
+    const result = evaluateLoveNoteUnlock({
+      sessionId: 'early-workout',
+      lockedNotes: [{ id: 'later-note', createdAt: '2026-09-10T00:00:00.000Z' }],
+      goalMetThisSession: true,
+      allSessionEndedAt: ['2026-09-05T00:00:00.000Z'],
+      lastUnlockEndedAt: null,
+      thisSessionEndedAt: '2026-09-05T00:00:00.000Z',
+    })
+    expect(result).toBeNull()
+  })
+
+  it('still picks the oldest note that existed by then', () => {
+    const result = evaluateLoveNoteUnlock({
+      sessionId: 's',
+      lockedNotes: [
+        { id: 'before', createdAt: '2026-09-01T00:00:00.000Z' },
+        { id: 'after', createdAt: '2026-09-10T00:00:00.000Z' },
+      ],
+      goalMetThisSession: true,
+      allSessionEndedAt: ['2026-09-05T00:00:00.000Z'],
+      lastUnlockEndedAt: null,
+      thisSessionEndedAt: '2026-09-05T00:00:00.000Z',
+    })
+    expect(result?.noteId).toBe('before')
+  })
+})
+

@@ -89,10 +89,13 @@ export type LoveNoteUnlockResult = { noteId: string; reasonCode: LoveNoteUnlockR
 // The combined decision: whether anything unlocks this session, and which
 // note it is -- everything the repository needs to know before it writes.
 export function evaluateLoveNoteUnlock(input: LoveNoteUnlockInput): LoveNoteUnlockResult | null {
-  if (input.lockedNotes.length === 0) return null
+  // Only notes that already existed when this workout finished: a catch-up
+  // over older workouts (loveNotesRepository) must never open a note early.
+  const lockedNotes = input.lockedNotes.filter((n) => n.createdAt <= input.thisSessionEndedAt)
+  if (lockedNotes.length === 0) return null
   const decision = decideLoveNoteUnlock({
     sessionId: input.sessionId,
-    lockedCount: input.lockedNotes.length,
+    lockedCount: lockedNotes.length,
     goalMetThisSession: input.goalMetThisSession,
     sessionsSinceLastUnlock: sessionsSinceLastUnlock(
       input.allSessionEndedAt,
@@ -101,7 +104,7 @@ export function evaluateLoveNoteUnlock(input: LoveNoteUnlockInput): LoveNoteUnlo
     ),
   })
   if (!decision.unlock) return null
-  const noteId = pickNoteToUnlock(input.lockedNotes)
+  const noteId = pickNoteToUnlock(lockedNotes)
   return noteId ? { noteId, reasonCode: decision.reasonCode } : null
 }
 

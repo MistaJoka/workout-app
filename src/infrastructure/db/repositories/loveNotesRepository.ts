@@ -164,3 +164,33 @@ export async function evaluateLoveNoteUnlockForSession(
   })
   return unlocked
 }
+
+// Catch-up: a finished workout whose Complete screen never ran (auto-
+// finished after 12h idle, or the app closed first) never got its chance at
+// a note. Evaluates those, oldest first, through the same idempotent path.
+// Cheap when nothing is locked (the usual case), and it only looks at
+// workouts that ended after the oldest locked note was written.
+export async function catchUpLoveNoteUnlocks(
+  sessions: readonly { sessionId: string; endedAt: string; goalMet: boolean }[]
+): Promise<number> {
+  const [notes, evaluated] = await Promise.all([db.loveNotes.toArray(), getSetting<string[]>(EVALUATED_SESSIONS_KEY)])
+  const locked = notes.filter((n) => n.unlockedAt === null)
+  if (locked.length === 0) return 0
+  const oldestLocked = locked.map((n) => n.createdAt).sort()[0]
+  const done = new Set([...(evaluated ?? []), ...notes.map((n) => n.unlockedBySessionId).filter((id): id is string => !!id)])
+  const allSessionEndedAt = sessions.map((s) => s.endedAt)
+  const pending = sessions
+    .filter((s) => !done.has(s.sessionId) && s.endedAt >= oldestLocked)
+    .sort((a, b) => a.endedAt.localeCompare(b.endedAt))
+  let unlocked = 0
+  for (const s of pending) {
+    const note = await evaluateLoveNoteUnlockForSession(s.sessionId, {
+      allSessionEndedAt,
+      goalMetThisSession: s.goalMet,
+      thisSessionEndedAt: s.endedAt,
+    })
+    if (note && note.unlockedBySessionId === s.sessionId) unlocked += 1
+  }
+  return unlocked
+}
+

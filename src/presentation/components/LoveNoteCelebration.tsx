@@ -2,12 +2,17 @@ import { useEffect, useState } from 'react'
 import { loadWeekGoals } from '../../infrastructure/db/repositories/weekGoalsRepository'
 import { Link } from 'react-router-dom'
 import type { LoveNoteRecord } from '../../infrastructure/db/schema'
-import { evaluateLoveNoteUnlockForSession, listLoveNotes, markLoveNoteRead } from '../../infrastructure/db/repositories/loveNotesRepository'
+import {
+  catchUpLoveNoteUnlocks,
+  evaluateLoveNoteUnlockForSession,
+  listLoveNotes,
+  markLoveNoteRead,
+} from '../../infrastructure/db/repositories/loveNotesRepository'
 import { getSetting } from '../../infrastructure/db/repositories/settingsRepository'
 import { DEFAULT_GIVER_NAME } from '../../domain/rewards/pin'
 import { getAllSessionHistory } from '../../infrastructure/db/repositories/sessionRepository'
 import { getWeeklySchedule } from '../../infrastructure/db/repositories/scheduleRepository'
-import { goalBloomForSession } from '../../domain/progress/goalBloom'
+import { goalBloomForSession, goalBlooms } from '../../domain/progress/goalBloom'
 import { LoveNoteEnvelope } from './LoveNoteEnvelope'
 
 // Love notes on screen: Today's unread badge, Complete's "a note from
@@ -36,6 +41,21 @@ export async function loadLoveNoteUnlockForSession(
   return note ? { note, giverName } : null
 }
 
+// Workouts that never reached Complete (auto-finished, or the app closed
+// first) get their chance at a note here, then any unread note shows.
+async function catchUpThenLoadUnread(): Promise<LoveNoteRecord | null> {
+  try {
+    // Nothing locked (the usual case): skip reading history at all.
+    if (!(await listLoveNotes()).some((n) => n.unlockedAt === null)) return loadUnreadLoveNote()
+    const [{ results }, schedule] = await Promise.all([getAllSessionHistory(), getWeeklySchedule()])
+    const goalSessions = new Set(goalBlooms(results, await loadWeekGoals({ results, schedule })).map((b) => b.sessionId))
+    await catchUpLoveNoteUnlocks(results.map((r) => ({ sessionId: r.sessionId, endedAt: r.endedAt, goalMet: goalSessions.has(r.sessionId) })))
+  } catch {
+    // A failed catch-up never hides an unread note that's already there.
+  }
+  return loadUnreadLoveNote()
+}
+
 export async function loadUnreadLoveNote(): Promise<LoveNoteRecord | null> {
   const notes = await listLoveNotes()
   return notes.find((n) => n.unlockedAt && !n.readAt) ?? null
@@ -55,7 +75,7 @@ export function LoveNoteBadge() {
 
   useEffect(() => {
     let cancelled = false
-    loadUnreadLoveNote()
+    catchUpThenLoadUnread()
       .then((n) => {
         if (!cancelled) setUnread(n)
       })

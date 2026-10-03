@@ -298,9 +298,11 @@ export function TodayScreen() {
             )}
           </h1>
         </div>
+        {/* After Today's own load, which first finishes any stale open
+            workout: the chips then count it (carrots, a caught-up note). */}
         <div className="flex items-center gap-2">
-          <LoveNoteBadge />
-          <CarrotBalanceChip />
+          {data && <LoveNoteBadge />}
+          {data && <CarrotBalanceChip />}
         </div>
       </header>
 

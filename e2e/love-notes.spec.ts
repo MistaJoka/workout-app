@@ -96,3 +96,43 @@ test('writing, unlocking, reading and rereading a Hubby Bunny love note', async 
   await page.goto('/#/progress')
   await expect(page.getByRole('link', { name: /Love notes: 1 opened/ })).toBeVisible()
 })
+
+// A workout that never reached Complete (left open, auto-finished after 12h
+// idle) still gets its chance at a note: Today catches it up, and the 💌
+// badge shows. One planned day makes the goal 1, so that workout meets it
+// and the unlock is guaranteed, not a roll.
+test("a workout that never reached Complete still gets its love-note chance", async ({ page }) => {
+  test.setTimeout(120_000)
+  const tuesday = new Date()
+  tuesday.setDate(tuesday.getDate() + ((2 - tuesday.getDay() + 7) % 7))
+  tuesday.setHours(9, 0, 0, 0)
+  await page.clock.install({ time: tuesday })
+
+  await page.goto('/#/schedule')
+  await page.getByRole('button', { name: /^Thursday/ }).click()
+  await page.getByRole('radio', { name: 'Full-Body A' }).click()
+  await expect(page.getByRole('button', { name: /^Thursday/ })).toContainText('Full-Body A')
+
+  await page.goto('/#/notes')
+  await page.getByRole('button', { name: 'Set up' }).click()
+  await enterPin(page, '4821', 'New PIN')
+  await enterPin(page, '4821', 'Confirm PIN')
+  await page.getByRole('button', { name: 'Save PIN' }).click()
+  await page.getByRole('button', { name: '+ Write a note' }).click()
+  await page.getByLabel('Note text').fill('You showed up. Proud of you.')
+  await page.getByRole('button', { name: 'Add to queue' }).click()
+  await page.getByRole('button', { name: 'Close', exact: true }).click()
+
+  // Start a workout, then walk away from it.
+  await page.goto('/#/checkin/fs.quick-10')
+  await page.getByRole('button', { name: 'Start workout' }).click()
+  await expect(page).toHaveURL(/#\/session\//)
+  await page.goto('/#/')
+  await expect(page.getByTestId('love-note-badge')).toHaveCount(0)
+
+  // 13 hours later it's finished as ended early, and Today catches it up.
+  await page.clock.fastForward(13 * 60 * 60 * 1000)
+  await page.goto('about:blank')
+  await page.goto('/#/')
+  await expect(page.getByTestId('love-note-badge')).toBeVisible()
+})

@@ -2,6 +2,7 @@ import { beforeEach, describe, expect, it } from 'vitest'
 import { db } from '../schema'
 import {
   addLoveNote,
+  catchUpLoveNoteUnlocks,
   evaluateLoveNoteUnlockForSession,
   listLoveNotes,
   markLoveNoteRead,
@@ -168,3 +169,26 @@ describe('evaluateLoveNoteUnlockForSession', () => {
     expect(stored?.unlockedBySessionId).toBe('session-first')
   })
 })
+
+describe('catchUpLoveNoteUnlocks', () => {
+  it("gives a workout that never reached Complete its chance, but never opens a note written after it", async () => {
+    await db.loveNotes.clear()
+    await db.settings.clear()
+    await addLoveNote({ text: 'Written first', emoji: '💌' }, '2026-09-01T00:00:00.000Z')
+    await addLoveNote({ text: 'Written later', emoji: '💌' }, '2026-09-20T00:00:00.000Z')
+    // A goal-meeting workout (guaranteed unlock) that ended between the two notes.
+    const unlocked = await catchUpLoveNoteUnlocks([{ sessionId: 'missed', endedAt: '2026-09-10T00:00:00.000Z', goalMet: true }])
+    expect(unlocked).toBe(1)
+    const notes = await db.loveNotes.toArray()
+    expect(notes.find((n) => n.text === 'Written first')?.unlockedBySessionId).toBe('missed')
+    expect(notes.find((n) => n.text === 'Written later')?.unlockedAt).toBeNull()
+    // Running it again does nothing more.
+    expect(await catchUpLoveNoteUnlocks([{ sessionId: 'missed', endedAt: '2026-09-10T00:00:00.000Z', goalMet: true }])).toBe(0)
+  })
+
+  it('does nothing when no note is locked', async () => {
+    await db.loveNotes.clear()
+    expect(await catchUpLoveNoteUnlocks([{ sessionId: 'x', endedAt: '2026-09-10T00:00:00.000Z', goalMet: true }])).toBe(0)
+  })
+})
+
