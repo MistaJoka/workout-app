@@ -1,5 +1,6 @@
 import { describe, expect, it } from 'vitest'
 import {
+  adoptBackupProfile,
   activeDbName,
   addProfile,
   BASE_DB_NAME,
@@ -148,3 +149,25 @@ describe('setProfileEmblem', () => {
     expect(loadProfiles(store).profiles).toEqual([{ id: 'default', name: 'Me' }])
   })
 })
+
+describe('adoptBackupProfile (restoring after a reinstall)', () => {
+  it("fills in the backup's name and emblem when this device still has the defaults", () => {
+    const store = memoryStore()
+    adoptBackupProfile({ name: 'Rae', emblem: 'lilac-puff' }, store)
+    expect(loadProfiles(store).profiles[0]).toEqual({ id: 'default', name: 'Rae', emblem: 'lilac-puff' })
+  })
+
+  it('never overwrites a name or emblem already set here', () => {
+    const store = memoryStore()
+    adoptBackupProfile({ name: 'Rae', emblem: 'lilac-puff' }, store)
+    adoptBackupProfile({ name: 'Someone else', emblem: 'sky-daisy' }, store)
+    expect(loadProfiles(store).profiles[0]).toEqual({ id: 'default', name: 'Rae', emblem: 'lilac-puff' })
+  })
+
+  it("ignores a backup that only carries the default name", () => {
+    const store = memoryStore()
+    adoptBackupProfile({ name: 'Me' }, store)
+    expect(loadProfiles(store).profiles[0]).toEqual({ id: 'default', name: 'Me' })
+  })
+})
+

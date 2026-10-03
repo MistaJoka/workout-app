@@ -60,3 +60,25 @@ test('the backup nudge appears after a finished workout and goes away once a bac
   await expect(nudge).toBeHidden()
   await expect(page.getByText('Last backup: never')).toBeHidden()
 })
+
+test('restoring a backup after a reinstall brings back the profile name and emblem', async ({ page }) => {
+  // Her backup, as exported from a profile named Rae with an emblem.
+  await page.goto('/#/settings')
+  const downloading = page.waitForEvent('download')
+  await page.getByRole('button', { name: 'Save a backup' }).click()
+  const backup = JSON.parse(await readFile(await (await downloading).path(), 'utf8'))
+  backup.profile = { ...backup.profile, name: 'Rae', emblem: 'lilac-puff' }
+  const file = join(tmpdir(), `rae-backup-${Date.now()}.json`)
+  await writeFile(file, JSON.stringify(backup))
+
+  // This device is fresh (default "Me", no emblem): restoring fills both in.
+  await page.locator('input[type="file"]').setInputFiles(file)
+  // Import reloads the page once it has merged.
+  const reloaded = page.waitForEvent('load')
+  await page.getByRole('button', { name: 'Add to Me' }).click()
+  await reloaded
+  await page.goto('/#/settings')
+  const profiles = await page.evaluate(() => JSON.parse(localStorage.getItem('workout-app:profiles') ?? '{}'))
+  expect(profiles.profiles[0]).toMatchObject({ id: 'default', name: 'Rae', emblem: 'lilac-puff' })
+  await expect(page.getByText('Rae').first()).toBeVisible()
+})

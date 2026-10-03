@@ -176,3 +176,29 @@ export function localDay(date: Date): string {
   const pad = (n: number) => String(n).padStart(2, '0')
   return `${date.getFullYear()}-${pad(date.getMonth() + 1)}-${pad(date.getDate())}`
 }
+
+// Restoring a same-profile backup (e.g. after a reinstall wiped this
+// device's profile list): the profile's name and emblem live here, not in
+// the database, so the backup carries them. Fill in only what this device
+// still has at its defaults; anything already set here wins.
+export function adoptBackupProfile(
+  backup: { name?: string; emblem?: string },
+  store: KeyValueStore | null = browserStore()
+): void {
+  const state = loadProfiles(store)
+  const active = state.profiles.find((p) => p.id === state.activeId) ?? state.profiles[0]
+  const backupName = backup.name?.trim() ?? ''
+  const takeName = backupName !== '' && backupName.toLowerCase() !== 'me' && active.name.trim().toLowerCase() === 'me'
+  const takeEmblem = !!backup.emblem && !active.emblem
+  if (!takeName && !takeEmblem) return
+  saveProfiles(
+    {
+      ...state,
+      profiles: state.profiles.map((p) =>
+        p.id !== active.id ? p : { ...p, ...(takeName ? { name: backupName } : {}), ...(takeEmblem ? { emblem: backup.emblem } : {}) }
+      ),
+    },
+    store
+  )
+}
+

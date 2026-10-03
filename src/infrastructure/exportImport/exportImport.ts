@@ -13,7 +13,7 @@ import type {
   SettingsRecord,
 } from '../db/schema'
 import type { SessionEvent, SessionPlan, SessionResult } from '../../domain/session/types'
-import { activeProfile, type Profile } from '../profiles'
+import { activeProfile, adoptBackupProfile, type Profile } from '../profiles'
 import { exportBundleSchema } from './bundleSchema'
 
 export type ExportBundle = {
@@ -57,11 +57,11 @@ const ALL_TABLES = () => [
 // One read transaction, so a write landing mid-export can't produce a
 // backup whose tables disagree with each other.
 export async function exportAll(): Promise<ExportBundle> {
-  const { id, name } = activeProfile()
+  const { id, name, emblem } = activeProfile()
   return db.transaction('r', ALL_TABLES(), async () => ({
     exportedAt: new Date().toISOString(),
     version: 1,
-    profile: { id, name },
+    profile: { id, name, ...(emblem ? { emblem } : {}) },
     settings: await db.settings.toArray(),
     checkIns: await db.checkIns.toArray(),
     sessionPlans: await db.sessionPlans.toArray(),
@@ -174,6 +174,9 @@ export async function importAll(bundle: ExportBundle): Promise<ImportSummary> {
     // *text* side of a merge keeps the local copy.
     await mergeLoveNotes(bundle.loveNotes ?? [])
   })
+  // The profile's name and emblem live outside the database (profiles.ts);
+  // a same-profile restore brings them back where this device has defaults.
+  if (!other && bundle.profile) adoptBackupProfile(bundle.profile)
   return { state: other ? 'skipped-other-profile' : 'merged' }
 }
 
