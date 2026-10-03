@@ -73,12 +73,15 @@ export type SessionXp = { gained: number; goalMet: boolean }
 
 export function computeXp(history: XpHistory, weeklyGoal: WeekGoal): { total: number; bySession: Map<string, SessionXp> } {
   const results = [...history.results].sort((a, b) => a.endedAt.localeCompare(b.endedAt))
-  const records = projectSetRecords(history.plans, results, history.events)
+  const records = projectSetRecords(history.plans, history.results, history.events)
   const bySession = new Map<string, SessionXp>()
+  // Grouped once: filtering every record per session made this quadratic.
+  const recordsBySession = new Map<string, typeof records>()
+  for (const r of records) recordsBySession.set(r.sessionId, [...(recordsBySession.get(r.sessionId) ?? []), r])
   const weekCounts = new Map<string, number>()
   let total = 0
   for (const result of results) {
-    const sessionRecords = records.filter((r) => r.sessionId === result.sessionId)
+    const sessionRecords = recordsBySession.get(result.sessionId) ?? []
     const met = sessionRecords.filter((r) => r.met).length
     const week = weekKey(new Date(result.endedAt))
     const inWeek = (weekCounts.get(week) ?? 0) + 1

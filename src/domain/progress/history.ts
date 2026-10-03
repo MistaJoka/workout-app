@@ -13,7 +13,28 @@ import { effectiveSetSlots } from '../session/appliedEvents'
 // events — is met), `reps` (performed reps, when the player logged them),
 // and `weightKg` (the load actually lifted; falls back to the plan's
 // prescribed weight for weighted exercises).
+// Every derived reward (XP, carrots, badges, highlights...) projects the
+// same history, often several times per screen. Cached per events array,
+// valid only while the plans and results arrays are the same ones too.
+// Callers treat the returned records as read-only.
+const projectionCache = new WeakMap<
+  readonly SessionEvent[],
+  { plans: readonly SessionPlan[]; results: readonly SessionResult[]; records: SetRecord[] }
+>()
+
 export function projectSetRecords(
+  plans: readonly SessionPlan[],
+  results: readonly SessionResult[],
+  events: readonly SessionEvent[]
+): SetRecord[] {
+  const cached = projectionCache.get(events)
+  if (cached && cached.plans === plans && cached.results === results) return cached.records
+  const records = projectSetRecordsUncached(plans, results, events)
+  projectionCache.set(events, { plans, results, records })
+  return records
+}
+
+function projectSetRecordsUncached(
   plans: readonly SessionPlan[],
   results: readonly SessionResult[],
   events: readonly SessionEvent[]

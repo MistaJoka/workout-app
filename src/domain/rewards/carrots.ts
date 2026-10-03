@@ -67,7 +67,7 @@ export function earnedCarrots(
   extraCarrotSources: readonly CarrotSource[] = []
 ): EarnedCarrots {
   const results = [...history.results].sort((a, b) => a.endedAt.localeCompare(b.endedAt))
-  const records = projectSetRecords(history.plans, results, history.events)
+  const records = projectSetRecords(history.plans, history.results, history.events)
   const plansById = new Map(history.plans.map((p) => [p.id, p]))
   const eventsBySession = new Map<string, SessionEvent[]>()
   for (const event of history.events) {
@@ -76,13 +76,16 @@ export function earnedCarrots(
     eventsBySession.set(event.sessionId, list)
   }
 
+  // Grouped once: filtering every record per session made this quadratic.
+  const recordsBySession = new Map<string, typeof records>()
+  for (const r of records) recordsBySession.set(r.sessionId, [...(recordsBySession.get(r.sessionId) ?? []), r])
   const weekCounts = new Map<string, number>()
   const bySession: SessionCarrots[] = []
   let total = 0
 
   let previousEndedAt: string | null = null
   for (const result of results) {
-    const sessionRecords = records.filter((r) => r.sessionId === result.sessionId)
+    const sessionRecords = recordsBySession.get(result.sessionId) ?? []
     const sources: CarrotSource[] = [
       { id: `${result.sessionId}:workout`, at: result.endedAt, amount: CARROT_RULES.perWorkout, label: 'Workout finished' },
     ]

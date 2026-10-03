@@ -124,7 +124,7 @@ const HOLD_SECONDS = 60
 export function evaluateAchievements(history: AchievementHistory, weeklyGoal: WeekGoal): EvaluatedAchievement[] {
   const planById = new Map(history.plans.map((p) => [p.id, p]))
   const results = [...history.results].sort((a, b) => a.endedAt.localeCompare(b.endedAt))
-  const records = projectSetRecords(history.plans, results, history.events)
+  const records = projectSetRecords(history.plans, history.results, history.events)
   const recordsBySession = new Map<string, typeof records>()
   for (const r of records) recordsBySession.set(r.sessionId, [...(recordsBySession.get(r.sessionId) ?? []), r])
 
@@ -199,7 +199,8 @@ export function evaluateAchievements(history: AchievementHistory, weeklyGoal: We
       if (templates.has(WARM_UP_ID) && mainWorkout) earn('warmed-up', result)
     }
 
-    if (sessionHighlights(records, results, result.sessionId).newBests.length > 0) earn('new-best', result)
+    // A one-time badge, and the costliest check: skip it once earned.
+    if (!earned.has('new-best') && sessionHighlights(records, results, result.sessionId).newBests.length > 0) earn('new-best', result)
   })
 
   const counters: [Record<string, number>, number, string][] = [

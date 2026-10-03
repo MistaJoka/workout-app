@@ -154,6 +154,36 @@ export type BossState = {
 
 type WeekProgress = BossState & { defeatedSessionId: string | null }
 
+type HistoryIndex = {
+  planById: Map<string, BossHistory['plans'][number]>
+  eventsBySession: Map<string, SessionEvent[]>
+  resultsByWeek: Map<string, BossHistory['results'][number][]>
+}
+
+// Built once per history object (cached weakly): bossDefeats walks every
+// week, and rebuilding these per week made it quadratic in history size.
+const indexCache = new WeakMap<BossHistory, HistoryIndex>()
+
+function indexFor(history: BossHistory): HistoryIndex {
+  const cached = indexCache.get(history)
+  if (cached) return cached
+  const planById = new Map(history.plans.map((p) => [p.id, p]))
+  const eventsBySession = new Map<string, SessionEvent[]>()
+  for (const event of history.events) {
+    const list = eventsBySession.get(event.sessionId) ?? []
+    list.push(event)
+    eventsBySession.set(event.sessionId, list)
+  }
+  const resultsByWeek = new Map<string, BossHistory['results'][number][]>()
+  for (const r of [...history.results].sort((a, b) => a.endedAt.localeCompare(b.endedAt))) {
+    const key = localDayKey(mondayStart(new Date(r.endedAt)))
+    resultsByWeek.set(key, [...(resultsByWeek.get(key) ?? []), r])
+  }
+  const index = { planById, eventsBySession, resultsByWeek }
+  indexCache.set(history, index)
+  return index
+}
+
 // Shared by bossState (one week, "now") and bossDefeats (every week in
 // history): tallies every finished session that landed in the Monday-start
 // week containing `weekStart`, in order, against that week's boss HP.
@@ -162,17 +192,8 @@ function weekProgress(history: BossHistory, weeklyGoal: WeekGoal, weekStart: Dat
   const maxHp = Math.max(1, goalForWeek(weeklyGoal, weekStart)) * hpPerGoal
   const weekKey = localDayKey(mondayStart(weekStart))
 
-  const planById = new Map(history.plans.map((p) => [p.id, p]))
-  const eventsBySession = new Map<string, SessionEvent[]>()
-  for (const event of history.events) {
-    const list = eventsBySession.get(event.sessionId) ?? []
-    list.push(event)
-    eventsBySession.set(event.sessionId, list)
-  }
-
-  const weekResults = history.results
-    .filter((r) => localDayKey(mondayStart(new Date(r.endedAt))) === weekKey)
-    .sort((a, b) => a.endedAt.localeCompare(b.endedAt))
+  const { planById, eventsBySession, resultsByWeek } = indexFor(history)
+  const weekResults = resultsByWeek.get(weekKey) ?? []
 
   let cumulative = 0
   let defeatedAt: string | null = null
