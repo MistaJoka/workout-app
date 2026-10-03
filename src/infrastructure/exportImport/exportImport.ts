@@ -132,7 +132,7 @@ export async function importAll(bundle: ExportBundle): Promise<ImportSummary> {
     await addMissing<SessionResult>(db.sessionResults, bundle.sessionResults, (r) => r.sessionId)
     // Redemptions are append-only history (a real event, like a finished
     // workout): added by id regardless of whose profile this backup is.
-    await addMissing<RedemptionRecord>(db.redemptions, bundle.redemptions ?? [], (r) => r.id)
+    await mergeRedemptions(bundle.redemptions ?? [])
 
     const incoming = [...bundle.sessionEvents].sort((a, b) => (a.seq ?? 0) - (b.seq ?? 0))
     const present = new Set(
@@ -199,6 +199,29 @@ async function mergeSettings(rows: SettingsRecord[]): Promise<void> {
       await db.settings.put({ key: row.key, value: { ...(row.value as object), ...(here.value as object) } })
     }
   }
+}
+
+// Coupons are history (title/cost snapshot at redemption, never edited),
+// but delivered and thanked happen later, possibly on another copy: like a
+// love note's unlock, once either side has one it sticks, and an older
+// backup can never undo it.
+async function mergeRedemptions(rows: RedemptionRecord[]): Promise<void> {
+  if (rows.length === 0) return
+  const local = await db.redemptions.bulkGet(rows.map((r) => r.id))
+  const writes: RedemptionRecord[] = []
+  rows.forEach((incoming, i) => {
+    const here = local[i]
+    if (!here) {
+      writes.push(incoming)
+      return
+    }
+    const deliveredAt = here.deliveredAt ?? incoming.deliveredAt ?? null
+    const thankedAt = here.thankedAt ?? incoming.thankedAt ?? null
+    if (deliveredAt !== here.deliveredAt || thankedAt !== (here.thankedAt ?? null)) {
+      writes.push({ ...here, deliveredAt, ...(thankedAt ? { thankedAt } : {}) })
+    }
+  })
+  if (writes.length > 0) await db.redemptions.bulkPut(writes)
 }
 
 // Love notes merge like rewards (newest text wins by updatedAt), but

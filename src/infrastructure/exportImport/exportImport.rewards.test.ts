@@ -2,7 +2,7 @@ import { beforeEach, describe, expect, it } from 'vitest'
 import { db } from '../db/schema'
 import { exportAll, importAll, isValidExportBundle } from './exportImport'
 import { addReward, DELETED_REWARDS_KEY, listRewards, removeReward, updateReward } from '../db/repositories/rewardsRepository'
-import { listRedemptions, markDelivered, redeemReward } from '../db/repositories/redemptionsRepository'
+import { listRedemptions, markDelivered, markThanked, redeemReward } from '../db/repositories/redemptionsRepository'
 
 beforeEach(async () => {
   await db.rewards.clear()
@@ -124,6 +124,27 @@ describe('export/import of her wishlist', () => {
     const book = await getWishBook()
     expect(Object.keys(book).sort()).toEqual([kept.id, local.id].sort())
     expect(book[kept.id].dismissedAt).toBe('2026-10-02T00:00:00.000Z')
+  })
+})
+
+describe('coupon status merges on import', () => {
+  it('delivered and thanked marks from a backup stick on a coupon that already exists here', async () => {
+    const reward = await addReward({ title: 'Foot rub', cost: 30, emoji: '🦶' }, '2026-09-01T00:00:00.000Z')
+    const coupon = await redeemReward(reward, '2026-09-05T00:00:00.000Z', 'coupon-1')
+    const pending = await exportAll() // this device's copy: still pending
+    await markDelivered(coupon.id, '2026-09-06T00:00:00.000Z')
+    await markThanked(coupon.id, '2026-09-07T00:00:00.000Z')
+    const newer = await exportAll()
+
+    // Back to the pending copy, then the newer backup arrives.
+    await db.redemptions.clear()
+    await importAll(pending)
+    await importAll(newer)
+    expect((await listRedemptions())[0]).toMatchObject({ deliveredAt: '2026-09-06T00:00:00.000Z', thankedAt: '2026-09-07T00:00:00.000Z' })
+
+    // And an older, pending backup never un-delivers it.
+    await importAll(pending)
+    expect((await listRedemptions())[0].deliveredAt).toBe('2026-09-06T00:00:00.000Z')
   })
 })
 
