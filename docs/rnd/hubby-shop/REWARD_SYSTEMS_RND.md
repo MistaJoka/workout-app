@@ -1,6 +1,11 @@
 # Hubby Bunny's shop — reward systems R&D (2026-10-03)
 
-Status: research only. Nothing here is product behavior until the owner picks items.
+Status: all ten recommendations built (owner: "go ahead", then "do the rest", 2026-10-03), with the
+proposed defaults: tiers 25 / 60 / 150, welcome back +15 after 7 days, soft pity 40 → 55 → 75%.
+Commits 153593d (economy), 7ef099e (wishlist), 0c28d70 (featured, thanks, unwrap, either partner gives).
+#10 was built as "either partner runs a shop on their own phone" (role word from the giver name),
+paid for by that phone's own workouts. Carrots for non-workout acts (writing notes, delivering) were
+not added.
 Scope: how games build shop/economy engines, what today's best reward systems do,
 and what the science says — mapped onto our shop.
 
