@@ -90,9 +90,14 @@ export type AchievementHistory = {
   events: readonly SessionEvent[]
 }
 
+export type AchievementProgress = { current: number; target: number; unit: string }
+
 export type EvaluatedAchievement = AchievementDef & {
   unlockedAt: string | null
   sessionId: string | null
+  // How far along a locked counting badge is (goal-gradient: a visible,
+  // honest "64 / 100"). Null once earned, and for one-off badges.
+  progress: AchievementProgress | null
 }
 
 const WORKOUT_COUNTS: Record<string, number> = {
@@ -197,9 +202,28 @@ export function evaluateAchievements(history: AchievementHistory, weeklyGoal: We
     if (sessionHighlights(records, results, result.sessionId).newBests.length > 0) earn('new-best', result)
   })
 
+  const counters: [Record<string, number>, number, string][] = [
+    [WORKOUT_COUNTS, results.length, 'workouts'],
+    [GOAL_WEEKS, goalWeeks, 'weeks'],
+    [MOVES, movesSeen.size, 'moves'],
+    [{ 'ten-moves': 10 }, movesSeen.size, 'moves'],
+    [SETS, setsTotal, 'sets'],
+    [FULL_SETS, fullSets, 'workouts'],
+    [Object.fromEntries(Object.entries(HOLD_TOTAL_SECONDS).map(([id, s]) => [id, s / 60])), Math.floor(holdTotal / 60), 'min'],
+  ]
+  const progressFor = (id: string): AchievementProgress | null => {
+    for (const [table, current, unit] of counters) if (id in table) return { current: Math.min(current, table[id]), target: table[id], unit }
+    return null
+  }
+
   return ACHIEVEMENTS.map((def) => {
     const hit = earned.get(def.id)
-    return { ...def, unlockedAt: hit?.unlockedAt ?? null, sessionId: hit?.sessionId ?? null }
+    return {
+      ...def,
+      unlockedAt: hit?.unlockedAt ?? null,
+      sessionId: hit?.sessionId ?? null,
+      progress: hit ? null : progressFor(def.id),
+    }
   })
 }
 

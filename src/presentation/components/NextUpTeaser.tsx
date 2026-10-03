@@ -4,9 +4,10 @@ import { getAllSessionHistory } from '../../infrastructure/db/repositories/sessi
 import { getWeeklySchedule } from '../../infrastructure/db/repositories/scheduleRepository'
 import { computeXp } from '../../domain/progress/xp'
 import { nextGoal } from '../../domain/progress/nextGoal'
+import { evaluateAchievements, visibleAchievements } from '../../domain/progress/achievements'
 
 // One line after the reward moments: whichever steady goal (workout
-// milestone or level, domain/progress/nextGoal.ts) this finished session
+// milestone, level, or the next tier of a badge ladder; domain/progress/nextGoal.ts) this finished session
 // left closest. Read fresh from history every time, like the rest of this
 // screen; renders nothing while loading or if history can't be read — a
 // bonus line, never a blocker.
@@ -20,7 +21,9 @@ export function NextUpTeaser() {
         const goals = await loadWeekGoals({ ...history, schedule })
         if (cancelled) return
         const totalXp = computeXp(history, goals).total
-        setLabel(nextGoal(history.results.length, totalXp)?.label ?? null)
+        // Only each ladder's next tier, so it never points past the next step.
+        const badges = visibleAchievements(evaluateAchievements(history, goals)).filter((a) => !a.unlockedAt)
+        setLabel(nextGoal(history.results.length, totalXp, badges)?.label ?? null)
       })
       .catch(() => {
         if (!cancelled) setLabel(null)

@@ -242,3 +242,25 @@ describe('long-tail ladders: something new to earn well past 50 workouts', () =>
   })
 })
 
+describe('progress toward locked counting badges', () => {
+  const many = (n: number, moves: Move[] = [{ id: 'sq', sets: 5 }]) =>
+    merge(...Array.from({ length: n }, (_, i) => session(`p${i}`, local(2026, 3, 1 + i), moves)))
+
+  it('locked count badges say how far along she is', () => {
+    const byId = new Map(evaluateAchievements(many(12), 2).map((a) => [a.id, a]))
+    expect(byId.get('workouts-25')?.progress).toEqual({ current: 12, target: 25, unit: 'workouts' })
+    expect(byId.get('sets-100')?.progress).toEqual({ current: 60, target: 100, unit: 'sets' })
+  })
+
+  it('earned badges and one-off badges carry no progress', () => {
+    const byId = new Map(evaluateAchievements(many(12), 2).map((a) => [a.id, a]))
+    expect(byId.get('workouts-10')?.progress).toBeNull()
+    expect(byId.get('night-owl')?.progress).toBeNull()
+  })
+
+  it('holds count in whole minutes', () => {
+    const byId = new Map(evaluateAchievements(many(3, [{ id: 'plank', seconds: 90 }]), 2).map((a) => [a.id, a]))
+    expect(byId.get('hold-total-10')?.progress).toEqual({ current: 4, target: 10, unit: 'min' })
+  })
+})
+

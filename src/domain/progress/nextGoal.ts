@@ -1,7 +1,7 @@
 import { nextMilestone } from './stats'
 import { levelFor } from './xp'
 
-export type NextGoalKind = 'milestone' | 'level'
+export type NextGoalKind = 'milestone' | 'level' | 'badge'
 
 export type NextGoal = {
   kind: NextGoalKind
@@ -18,19 +18,21 @@ function ordinal(n: number): string {
 }
 
 // The closer of the two steady long-run goals every finished workout feeds:
-// the next workout-count milestone (nextMilestone, stats.ts) and the next
-// level (levelFor, xp.ts). Achievements aren't included on purpose:
-// evaluateAchievements (achievements.ts) only reports whether one already
-// unlocked, not how close an unearned one is, and recomputing that here
-// would duplicate its private counting rules (moves seen, week counts, …)
-// somewhere they could silently drift from the real unlock logic.
+// the next workout-count milestone (nextMilestone, stats.ts), the next
+// level (levelFor, xp.ts), and any locked counting badge the caller passes
+// in, using the progress evaluateAchievements reports (so no counting rule
+// is duplicated here).
 //
 // "Closer" is the fraction of the goal still left (remaining over the
 // goal's own size) — a level can need well over a hundred XP while a
 // milestone needs two workouts, so only a normalized share is comparable.
 // Every number actually shown stays in its own real, measured unit; nothing
 // is converted or estimated to force the comparison.
-export function nextGoal(finishedWorkouts: number, totalXp: number): NextGoal | null {
+type BadgeLike = { title: string; progress: { current: number; target: number; unit: string } | null }
+
+const SINGULAR: Record<string, string> = { workouts: 'workout', sets: 'set', moves: 'move', weeks: 'week' }
+
+export function nextGoal(finishedWorkouts: number, totalXp: number, badges: readonly BadgeLike[] = []): NextGoal | null {
   const milestone = nextMilestone(finishedWorkouts)
   const level = levelFor(totalXp)
   const levelRemaining = Math.max(0, level.needed - level.into)
@@ -54,6 +56,14 @@ export function nextGoal(finishedWorkouts: number, totalXp: number): NextGoal | 
       ratio: levelRemaining / level.needed,
       label: `${levelRemaining} XP to your next level`,
     })
+  }
+
+  for (const b of badges) {
+    if (!b.progress || b.progress.target <= 0) continue
+    const remaining = b.progress.target - b.progress.current
+    if (remaining <= 0) continue
+    const unit = remaining === 1 ? (SINGULAR[b.progress.unit] ?? b.progress.unit) : b.progress.unit
+    candidates.push({ kind: 'badge', ratio: remaining / b.progress.target, label: `${remaining} more ${unit} to ${b.title}` })
   }
 
   if (candidates.length === 0) return null

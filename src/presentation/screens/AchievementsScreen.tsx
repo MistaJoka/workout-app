@@ -58,7 +58,10 @@ export function AchievementsScreen() {
   // Locked ladder tiers past the next one stay hidden until they're next.
   const ordered = [
     ...earned.sort((a, b) => (b.unlockedAt ?? '').localeCompare(a.unlockedAt ?? '')),
-    ...visibleAchievements(all).filter((a) => !a.unlockedAt),
+    // Closest to done first (counting badges by how far along they are).
+    ...visibleAchievements(all)
+      .filter((a) => !a.unlockedAt)
+      .sort((a, b) => ratio(b) - ratio(a)),
   ]
 
   return (
@@ -75,7 +78,11 @@ export function AchievementsScreen() {
           <li
             key={a.id}
             className={`card relative flex flex-col items-center gap-2 p-3 text-center ${a.unlockedAt ? '' : 'opacity-80'}`}
-            aria-label={a.unlockedAt ? `${a.title}, earned ${shortDate(a.unlockedAt)}` : `${a.title}, not yet: ${a.description}`}
+            aria-label={
+              a.unlockedAt
+                ? `${a.title}, earned ${shortDate(a.unlockedAt)}`
+                : `${a.title}, not yet: ${a.description}${a.progress ? ` ${a.progress.current} of ${a.progress.target} ${a.progress.unit}.` : ''}`
+            }
           >
             {a.unlockedAt && (
               <div className="absolute right-1.5 top-1.5">
@@ -89,11 +96,28 @@ export function AchievementsScreen() {
             <AchievementBadge icon={a.icon} locked={!a.unlockedAt} size={56} />
             <p className={`font-bold leading-tight ${a.unlockedAt ? '' : 'text-ink-muted'}`}>{a.title}</p>
             <p className="text-xs text-ink-muted leading-snug">{a.unlockedAt ? shortDate(a.unlockedAt) : a.description}</p>
+            {a.progress && (
+              <div className="w-full space-y-1" aria-hidden="true" data-testid="badge-progress">
+                <div className="h-1.5 overflow-hidden rounded-full bg-[var(--color-border)]">
+                  <div
+                    className="h-full rounded-full bg-[var(--color-primary)]"
+                    style={{ width: `${Math.round((a.progress.current / a.progress.target) * 100)}%` }}
+                  />
+                </div>
+                <p className="hud-num text-xs font-semibold text-ink-muted">
+                  {a.progress.current} / {a.progress.target} {a.progress.unit}
+                </p>
+              </div>
+            )}
           </li>
         ))}
       </ul>
     </div>
   )
+}
+
+function ratio(a: EvaluatedAchievement): number {
+  return a.progress ? a.progress.current / a.progress.target : 0
 }
 
 function shortDate(iso: string): string {

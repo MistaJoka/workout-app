@@ -26,3 +26,25 @@ describe('nextGoal', () => {
     expect(nextGoal(0, 0)).not.toBeNull()
   })
 })
+
+describe('nextGoal with badges', () => {
+  const badge = (title: string, current: number, target: number, unit: string) => ({ title, progress: { current, target, unit } })
+
+  it('a nearly-earned badge wins when it is the closest goal', () => {
+    // 90 of 100 sets (10% to go) beats 2 of 5 workouts and a fresh level.
+    expect(nextGoal(3, 0, [badge('Hundred sets', 90, 100, 'sets')])).toEqual({
+      kind: 'badge',
+      label: '10 more sets to Hundred sets',
+    })
+  })
+
+  it('singular units for exactly one left', () => {
+    expect(nextGoal(3, 0, [badge('Month of goals', 3, 4, 'weeks')])?.label).toBe('1 more week to Month of goals')
+    expect(nextGoal(3, 0, [badge('Ten-minute hold', 9, 10, 'min')])?.label).toBe('1 more min to Ten-minute hold')
+  })
+
+  it('ignores badges with nothing to show', () => {
+    expect(nextGoal(3, 0, [{ title: 'Night owl', progress: null }])?.kind).toBe('milestone')
+  })
+})
+
