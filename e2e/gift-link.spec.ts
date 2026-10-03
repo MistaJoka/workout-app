@@ -82,6 +82,9 @@ test('gift links: compose on one phone, accept on another, then round-trip a del
   await her.goto(giftUrl)
   await expect(her.getByTestId('gift-from')).toHaveText('Hubby Bunny')
   await expect(her.getByTestId('gift-rewards')).toContainText('Foot rub')
+  // A plain browser tab (not the installed app) says its data is separate,
+  // without blocking Accept for browser-only use.
+  await expect(her.getByTestId('open-in-app')).toContainText('keeps its own data')
   await expect(her.getByTestId('gift-sealed-notes')).toContainText('1 sealed love note')
   await expect(her.getByText('Proud of you, superstar')).toHaveCount(0)
   await her.getByRole('button', { name: 'Accept' }).click()

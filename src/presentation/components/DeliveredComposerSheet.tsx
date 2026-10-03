@@ -1,4 +1,5 @@
 import { useRef, useState } from 'react'
+import { giftLinkLocation } from '../appContext'
 import { useSheetFocus } from './useSheetFocus'
 import { GIFT_LINK_VERSION, buildGiftLinkUrl, deliveredShareMessage, extractCouponCodes, type DeliveredPayload } from '../../domain/rewards/giftLink'
 import { shareLink, type ShareLinkOutcome } from './shareLink'
@@ -30,7 +31,7 @@ export function DeliveredComposerSheet({ giverName, onClose }: { giverName: stri
     }
     setError(null)
     const payload: DeliveredPayload = { v: GIFT_LINK_VERSION, kind: 'delivered', redemptionIds: codes, from: giverName, createdAt: new Date().toISOString() }
-    const url = buildGiftLinkUrl(payload, { origin: window.location.origin, baseUrl: import.meta.env.BASE_URL })
+    const url = buildGiftLinkUrl(payload, giftLinkLocation())
     setResult({ url, message: deliveredShareMessage(payload) })
     setShareOutcome('idle')
   }

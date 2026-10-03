@@ -1,4 +1,5 @@
 import { useRef, useState } from 'react'
+import { giftLinkLocation } from '../appContext'
 import { useSheetFocus } from './useSheetFocus'
 import { EMOJI_CHOICES } from './RewardEditorSheet'
 import { addWish } from '../../infrastructure/db/repositories/wishesRepository'
@@ -13,8 +14,9 @@ import { hasRealName } from '../greeting'
 
 export type WishLite = { id: string; title: string; emoji: string }
 
+// Never the APK's internal localhost (presentation/appContext.ts).
 export function linkLocation() {
-  return { origin: window.location.origin, baseUrl: import.meta.env.BASE_URL }
+  return giftLinkLocation()
 }
 
 export function ShareStatus({ outcome }: { outcome: ShareLinkOutcome | 'idle' }) {

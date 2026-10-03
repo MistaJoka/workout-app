@@ -19,6 +19,7 @@ import { playCelebration } from '../../application/celebrationSounds'
 import { useFeedbackSettings } from '../components/useFeedbackSettings'
 import { Skeleton, SkeletonHeading } from '../components/Skeleton'
 import { hasRealName } from '../greeting'
+import { isInstalledApp } from '../appContext'
 
 // Her side of a gift link (route `/gift?d=...`): decode what Hubby Bunny
 // sent, show a preview that never reveals a locked note's actual text
@@ -166,6 +167,8 @@ export function GiftPreviewScreen() {
           </button>
         </>
       )}
+
+      {(state.kind === 'gift' || state.kind === 'delivered' || state.kind === 'wish') && !isInstalledApp() && <OpenInAppNotice />}
 
       {state.kind === 'thanks' && (
         <>
@@ -344,3 +347,35 @@ function GiftBoxArt() {
     </svg>
   )
 }
+
+// A link tapped in a message opens the browser, whose storage is separate
+// from the home-screen app or the Android app (on iPhone too). Saying so
+// beats quietly adding the gift where the app will never see it. Accept
+// still works here for anyone who only uses the browser.
+function OpenInAppNotice() {
+  const [copied, setCopied] = useState<'idle' | 'copied' | 'failed'>('idle')
+  async function copy() {
+    try {
+      await navigator.clipboard.writeText(window.location.href)
+      setCopied('copied')
+    } catch {
+      setCopied('failed')
+    }
+  }
+  return (
+    <div className="field-notice space-y-2 rounded-panel p-4" role="region" aria-label="Open in the app" data-testid="open-in-app">
+      <p className="text-sm">
+        This opened in the browser, which keeps its own data. Using the app? Copy the link, then paste it in the app's shop.
+      </p>
+      <button type="button" className="btn-secondary min-h-11 w-full" onClick={() => void copy()}>
+        {copied === 'copied' ? 'Copied!' : 'Copy link'}
+      </button>
+      {copied === 'failed' && (
+        <p className="text-sm" role="alert">
+          Couldn't copy. Copy it from the address bar instead.
+        </p>
+      )}
+    </div>
+  )
+}
+

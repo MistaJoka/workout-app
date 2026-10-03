@@ -1,4 +1,5 @@
 import { useEffect, useRef, useState } from 'react'
+import { giftLinkLocation } from '../appContext'
 import { useSheetFocus } from './useSheetFocus'
 import type { LoveNoteRecord, RewardRecord } from '../../infrastructure/db/schema'
 import { addReward, listRewards } from '../../infrastructure/db/repositories/rewardsRepository'
@@ -118,7 +119,7 @@ export function GiftComposerSheet({ giverName, onClose }: { giverName: string; o
         .filter((n) => selectedNoteIds.has(n.id))
         .map((n) => ({ id: n.id, text: n.text, emoji: n.emoji }))
       const payload: GiftPayload = { v: GIFT_LINK_VERSION, kind: 'gift', from: giverName, rewards, notes, createdAt: new Date().toISOString() }
-      const url = buildGiftLinkUrl(payload, { origin: window.location.origin, baseUrl: import.meta.env.BASE_URL })
+      const url = buildGiftLinkUrl(payload, giftLinkLocation())
       setResult({ url, message: giftShareMessage(payload) })
       setShareOutcome('idle')
     } catch {

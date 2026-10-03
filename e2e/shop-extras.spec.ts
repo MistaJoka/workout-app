@@ -92,5 +92,7 @@ test('a fresh coupon unwraps, and a delivered one can be thanked', async ({ page
   await his.goto(share.url!.replace(/^https?:\/\/[^/]+/, ''))
   await expect(his.getByTestId('thanks-card')).toContainText('Best one yet 🥰')
   await expect(his.getByTestId('thanks-card')).toContainText('No-dishes pass')
+  // A thank-you is only a card to look at: no "open in the app" notice.
+  await expect(his.getByTestId('open-in-app')).toHaveCount(0)
   await his.context().close()
 })
