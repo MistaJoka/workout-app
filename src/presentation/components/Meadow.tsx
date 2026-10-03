@@ -206,7 +206,9 @@ export function Meadow({
                 <rect x="6" y="5" width="4" height="3" fill="#a9754f" />
                 <rect x="7" y="6" width="2" height="1" fill="#d9a877" />
               </svg>
-              <p className="text-sm font-semibold text-white drop-shadow-sm">
+              {/* A dark pill keeps white text readable on every day-part's
+                  grass (white on the daytime greens alone is ~2.8:1). */}
+              <p className="rounded-full bg-black/50 px-3 py-1 text-sm font-semibold text-white">
                 Your first workout plants the first flower.
               </p>
             </div>
