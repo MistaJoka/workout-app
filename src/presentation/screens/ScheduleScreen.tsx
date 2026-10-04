@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react'
 import { listAllTemplates } from '../../domain/content/catalog'
 import type { WorkoutTemplate } from '../../domain/content/types'
-import { buildScheduleIcs, type TimeOfDay } from '../../domain/schedule/calendarExport'
+import { buildScheduleIcs } from '../../domain/schedule/calendarExport'
 import {
   EMPTY_SCHEDULE,
   WEEKDAY_LABELS,
@@ -17,20 +17,13 @@ import { mondayKey } from '../../domain/progress/weekGoals'
 import { db } from '../../infrastructure/db/schema'
 import { BackButton } from '../components/BackButton'
 import { RaeNote } from '../components/RaeNote'
+import { REMINDER_TIMES, ReminderCard } from '../components/ReminderCard'
+import { remindersSupported, syncReminders } from '../../infrastructure/reminders'
 import { shareOrDownload } from '../components/shareOrDownload'
 import { Skeleton, SkeletonBlock, SkeletonList } from '../components/Skeleton'
 
 // Monday-first rows; the schedule itself is keyed by JS weekday (0 = Sunday).
 const ROW_ORDER: (0 | 1 | 2 | 3 | 4 | 5 | 6)[] = [1, 2, 3, 4, 5, 6, 0]
-
-// Reminder times offered for the calendar export: a few fixed choices,
-// one tap each, rather than a time picker.
-const REMINDER_TIMES: { label: string; time: TimeOfDay }[] = [
-  { label: '7 AM', time: { hour: 7, minute: 0 } },
-  { label: 'Noon', time: { hour: 12, minute: 0 } },
-  { label: '6 PM', time: { hour: 18, minute: 0 } },
-  { label: '8 PM', time: { hour: 20, minute: 0 } },
-]
 
 export function ScheduleScreen() {
   const [openDay, setOpenDay] = useState<keyof WeeklySchedule | null>(null)
@@ -85,6 +78,7 @@ export function ScheduleScreen() {
     setCalendarNote(null)
     try {
       await saveWeeklySchedule(next)
+      void syncReminders().catch(() => undefined)
     } catch {
       setSchedule(previous)
       setSaveError("Couldn't save on this device. Try again.")
@@ -217,13 +211,19 @@ export function ScheduleScreen() {
         })}
       </ul>
 
-      {/* Reminders: the phone's Calendar does the reminding (no push
-          without a server). Shown once a day holds a workout; until then a
-          hint says where reminders come from. */}
+      {/* Reminders. The Android app schedules its own (ReminderCard); in a
+          browser the phone's Calendar does the reminding (no push without a
+          server). Shown once a day holds a workout; until then a hint says
+          where reminders come from. */}
       {!hasWorkoutDay && (
-        <p className="px-1 text-sm text-ink-muted">Plan a workout day and you can add reminders to your Calendar.</p>
+        <p className="px-1 text-sm text-ink-muted">
+          {remindersSupported()
+            ? 'Plan a workout day and Rae can remind you.'
+            : 'Plan a workout day and you can add reminders to your Calendar.'}
+        </p>
       )}
-      {isScheduleSet(schedule) && hasWorkoutDay && (
+      {hasWorkoutDay && remindersSupported() && <ReminderCard />}
+      {isScheduleSet(schedule) && hasWorkoutDay && !remindersSupported() && (
         <section className="card p-4 space-y-3" aria-labelledby="reminders-heading">
           <h2 id="reminders-heading" className="font-bold">
             Reminders

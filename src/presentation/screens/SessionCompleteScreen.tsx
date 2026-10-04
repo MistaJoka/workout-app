@@ -1,3 +1,4 @@
+import { syncReminders } from '../../infrastructure/reminders'
 import { useEffect, useState, type ReactNode } from 'react'
 import { loadWeekGoals } from '../../infrastructure/db/repositories/weekGoalsRepository'
 import { Link, useParams } from 'react-router-dom'
@@ -68,6 +69,8 @@ export function SessionCompleteScreen() {
 
   useEffect(() => {
     if (!sessionId) return
+    // Today is done: drop today's reminder if it hasn't fired yet.
+    void syncReminders().catch(() => undefined)
     // Best effort: the finish screen itself never depends on these reads.
     getResult(sessionId)
       .then((loaded) => setResult(loaded ?? null))

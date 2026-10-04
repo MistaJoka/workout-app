@@ -1,4 +1,5 @@
 import { notifyUpdateReady } from './updateSignal'
+import { isNativeApp } from '../appContext'
 
 // A newer build installs in the background and then waits (sw.js never
 // calls skipWaiting on its own), so a workout in progress keeps running on
@@ -8,10 +9,15 @@ import { notifyUpdateReady } from './updateSignal'
 let waiting: ServiceWorker | null = null
 let reloadWhenControlled = false
 
+// In the Android app the update already happened: installing a new APK
+// replaced the bundled files, and only the worker's old cache still holds
+// the previous build. So it hands over at once, with no toast (any workout
+// in progress is persisted and resumes after the reload).
 function offer(worker: ServiceWorker | null): void {
   if (!worker) return
   waiting = worker
-  notifyUpdateReady()
+  if (isNativeApp()) applyUpdate()
+  else notifyUpdateReady()
 }
 
 export function applyUpdate(): void {
