@@ -23,7 +23,7 @@ test('raising the weekly goal mid-week takes nothing back, and starts Monday', a
   }
   await page.goto('about:blank')
   await page.goto('/#/')
-  await expect(page.getByText('Goal met, 2 of 2')).toBeVisible()
+  await expect(page.getByRole('link', { name: 'Goal met, 2 of 2. Plan your week.' })).toBeVisible()
   const carrotsBefore = ((await page.getByTestId('carrot-balance-chip').textContent()) ?? '').replace(/\D/g, '')
   expect(Number(carrotsBefore)).toBeGreaterThan(0)
   const bossCard = page.getByRole('link', { name: /^This week: .*, defeated$/ })
@@ -45,7 +45,7 @@ test('raising the weekly goal mid-week takes nothing back, and starts Monday', a
   // Everything earned this week stands.
   await page.goto('about:blank')
   await page.goto('/#/')
-  await expect(page.getByText('Goal met, 2 of 2')).toBeVisible()
+  await expect(page.getByRole('link', { name: 'Goal met, 2 of 2. Plan your week.' })).toBeVisible()
   await expect(page.getByTestId('carrot-balance-chip')).toHaveAttribute('aria-label', new RegExp(`^${carrotsBefore} carrots`))
   await expect(page.getByRole('link', { name: /^This week: .*, defeated$/ })).toBeVisible()
 })

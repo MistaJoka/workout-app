@@ -30,6 +30,6 @@ test('Today offers to plan the week after the first workout, until a day is plan
   await page.goto('/#/schedule')
   await expect(page.getByTestId('goal-starts-monday')).toHaveText("This week's goal stays at 2. Your new goal of 1 starts Monday.")
   await page.goto('/#/')
-  await expect(page.getByText('1 of 2 this week')).toBeVisible()
+  await expect(page.getByRole('link', { name: '1 of 2 this week. Plan your week.' })).toBeVisible()
   await expect(page.getByRole('heading', { name: 'Plan your week' })).toBeHidden()
 })

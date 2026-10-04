@@ -153,7 +153,9 @@ export function WeekBlooms({
               ✓
             </span>
           )}
-          {summary}
+          <span className="hud-num">
+            {done}/{goal}
+          </span>
         </p>
         <span className="text-sm font-semibold text-primary-ink">Plan</span>
       </Link>
@@ -165,7 +167,9 @@ export function WeekBlooms({
           />
         ))}
       </div>
-      <p className={`px-1 pt-1.5 text-sm font-semibold text-primary-ink ${line.className}`} style={line.style}>
+      {/* The pots and the bar above already show it; the sentence is for
+          screen readers. */}
+      <p className={`sr-only ${line.className}`} style={line.style}>
         {goalGradientLine(done, goal)}
       </p>
       <ol className="mt-1 grid grid-cols-7">

@@ -159,6 +159,7 @@ async function loadToday(now: Date): Promise<TodayData> {
       tag: scheduled ? weekday : 'Up next',
       name: primary.name,
       detail: describe(primary),
+      minutes: estimateMinutes(primary),
       thumbs: primary.exercises.flatMap((e) => {
         const exercise = exercises.get(e.exerciseId)
         // Rae doing the move when she has it, the photo otherwise.

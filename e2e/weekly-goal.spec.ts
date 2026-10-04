@@ -14,11 +14,11 @@ test('this week counts toward the goal on Today and Progress, then says it is me
   test.setTimeout(120_000)
 
   await page.goto('/#/')
-  await expect(page.getByText('Goal: 2 this week')).toBeVisible()
+  await expect(page.getByRole('link', { name: 'Goal: 2 this week. Plan your week.' })).toBeVisible()
 
   await doQuick10(page)
   await page.goto('/#/')
-  await expect(page.getByText('1 of 2 this week')).toBeVisible()
+  await expect(page.getByRole('link', { name: '1 of 2 this week. Plan your week.' })).toBeVisible()
   await page.getByRole('link', { name: 'Progress' }).click()
   await expect(page.getByText('this week', { exact: true })).toBeVisible()
   await expect(page.getByText('1 of 2', { exact: true })).toBeVisible()
@@ -26,7 +26,7 @@ test('this week counts toward the goal on Today and Progress, then says it is me
 
   await doQuick10(page)
   await page.goto('/#/')
-  await expect(page.getByText('Goal met, 2 of 2')).toBeVisible()
+  await expect(page.getByRole('link', { name: 'Goal met, 2 of 2. Plan your week.' })).toBeVisible()
   await page.getByRole('link', { name: 'Progress' }).click()
   await expect(page.getByText('goal met', { exact: true })).toBeVisible()
   await expect(page.getByText(/Goal met this week/)).toBeVisible()

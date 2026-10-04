@@ -13,7 +13,9 @@ export type Mission =
       kind: 'ready'
       tag: string
       name: string
+      // The full sentence ("5 exercises, about 15 min"), for screen readers.
       detail: string
+      minutes: number
       thumbs: MissionThumb[]
       to: string
     }
@@ -37,7 +39,10 @@ export function TodayMission({ mission, resumeActions }: { mission: Mission; res
           <div className="flex items-start justify-between gap-2">
             <div className="min-w-0">
               <p className="text-2xl font-extrabold leading-tight">{mission.name}</p>
-              <p className="text-sm text-ink-muted">{mission.detail}</p>
+              <p className="hud-num text-sm font-semibold text-ink-muted">
+                <span aria-hidden>⏱ {mission.minutes} min</span>
+                <span className="sr-only">{mission.detail}</span>
+              </p>
             </div>
             <span className="badge-primary mt-1 flex-none">{mission.tag}</span>
           </div>
@@ -51,7 +56,7 @@ export function TodayMission({ mission, resumeActions }: { mission: Mission; res
                   src={thumb.src}
                   alt=""
                   loading="lazy"
-                  className={`h-11 w-11 rounded-full border-2 border-surface ${
+                  className={`h-12 w-12 rounded-full border-2 border-surface ${
                     thumb.rae ? 'bg-surface object-contain p-0.5 pixelated' : 'object-cover'
                   }`}
                 />
@@ -97,14 +102,14 @@ export function TodayMission({ mission, resumeActions }: { mission: Mission; res
             </span>
             <div className="min-w-0">
               <p className="text-2xl font-extrabold leading-tight">Done for today</p>
-              <p className="text-sm text-ink-muted">
+              <p className="sr-only">
                 {mission.name}, {mission.detail}
               </p>
             </div>
           </div>
           {mission.extra && (
-            <Link to={mission.extra.to} className="btn-secondary w-full">
-              Want more? {mission.extra.name}
+            <Link to={mission.extra.to} className="btn-secondary w-full" aria-label={`Want more? ${mission.extra.name}`}>
+              + {mission.extra.name}
             </Link>
           )}
         </>
@@ -114,11 +119,11 @@ export function TodayMission({ mission, resumeActions }: { mission: Mission; res
         <>
           <div>
             <p className="text-2xl font-extrabold leading-tight">Rest day</p>
-            <p className="text-sm text-ink-muted">Recovery is part of the plan.</p>
+            <p className="sr-only">Recovery is part of the plan.</p>
           </div>
           {mission.extra && (
-            <Link to={mission.extra.to} className="btn-secondary w-full">
-              {mission.extra.name} anyway
+            <Link to={mission.extra.to} className="btn-secondary w-full" aria-label={`${mission.extra.name} anyway`}>
+              {mission.extra.name}
             </Link>
           )}
         </>

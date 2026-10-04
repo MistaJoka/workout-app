@@ -53,10 +53,13 @@ export function MomentumStrip({
   return (
     <div className="flex items-center gap-3 border-t-2 border-[var(--color-border)] px-1 pb-1 pt-2">
       {milestone && (
-        <div className={`min-w-0 flex-1 ${bar.className}`} style={bar.style}>
-          <p className="truncate text-xs font-semibold text-ink-muted">{milestone.label}</p>
+        <div className={`flex min-w-0 flex-1 items-center gap-2 ${bar.className}`} style={bar.style}>
+          {/* The bar carries the label (aria-label); a flag marks the goal. */}
+          <span aria-hidden className="text-sm">
+            🏁
+          </span>
           <div
-            className="mt-1 h-2 overflow-hidden rounded-full bg-[var(--color-border)]"
+            className="h-2 flex-1 overflow-hidden rounded-full bg-[var(--color-border)]"
             role="progressbar"
             aria-label={milestone.label}
             aria-valuemin={0}
