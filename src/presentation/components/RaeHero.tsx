@@ -1,6 +1,9 @@
 import { Link, useLocation } from 'react-router-dom'
 import { useEffect, useRef, useState, type CSSProperties } from 'react'
-import { RaeFigure } from './Rae'
+import { RaeExerciseLoop, RaeFigure } from './Rae'
+import type { RaeLoop } from './raeLoops'
+import { effectiveMotion, usePrefersReducedMotion } from './MovementMedia'
+import { useTheme } from '../theme/ThemeContext'
 import { PixelBloom } from './PixelBloom'
 import type { DayPart } from '../greeting'
 import type { GardenFlower } from '../../domain/progress/garden'
@@ -117,6 +120,7 @@ export function RaeHero({
   says,
   flowers = [],
   level = 1,
+  pose = null,
 }: {
   part: DayPart
   says?: string
@@ -124,7 +128,13 @@ export function RaeHero({
   flowers?: readonly GardenFlower[]
   // Bloom level (xp.ts): what the room has grown to show (roomUnlocks.ts).
   level?: number
+  // On a workout day: Rae doing today's first move (TodayScreen's
+  // firstRaeLoop) instead of standing. The room keeps its size.
+  pose?: { loop: RaeLoop } | null
 }) {
+  const { motion } = useTheme()
+  const osPrefersReduced = usePrefersReducedMotion()
+  const animatePose = effectiveMotion(motion, osPrefersReduced) === 'full'
   const [skyTop, skyBottom] = SKY[part]
   const night = part === 'night'
 
@@ -322,10 +332,22 @@ export function RaeHero({
         </div>
       )}
 
-      <span className="rae-room__figure">
+      <span className={`rae-room__figure ${pose ? 'rae-room__figure--move' : ''}`}>
         <button type="button" className="rae-figure-btn" aria-label="Say hi to Rae" onClick={sayHi}>
           <span key={hopId} className={hopId > 0 ? 'rae-hop' : ''}>
-            <RaeFigure view="front" height={250} />
+            {pose ? (
+              <RaeExerciseLoop
+                id={pose.loop.id}
+                name={pose.loop.name.toLowerCase()}
+                width={pose.loop.width}
+                height={pose.loop.height}
+                stills={[pose.loop.stills[pose.loop.stills.length - 1]]}
+                animate={animatePose}
+                imgClassName="rae-room__move"
+              />
+            ) : (
+              <RaeFigure view="front" height={250} />
+            )}
           </span>
         </button>
         {hopId > 0 && <PetalPuff key={hopId} />}

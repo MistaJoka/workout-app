@@ -1,3 +1,5 @@
+import { firstRaeLoop } from '../todayPose'
+import type { RaeLoop } from '../components/raeLoops'
 import { DRAFT_TEMPLATE_IDS } from '../../domain/content/fixtures/raeDraftTemplates'
 import { loadWeekGoals } from '../../infrastructure/db/repositories/weekGoalsRepository'
 import { asset } from '../assetUrl'
@@ -75,6 +77,8 @@ type TodayData = {
   // The most recently unlocked story chapter, if it hasn't been opened yet
   // (per profile). Fades away the moment it's read, not a persistent inbox.
   newChapter: RaeStoryChapter | null
+  // On a ready day, the loop of the first move Rae demonstrates (firstRaeLoop).
+  pose: RaeLoop | null
 }
 
 async function loadToday(now: Date): Promise<TodayData> {
@@ -216,6 +220,7 @@ async function loadToday(now: Date): Promise<TodayData> {
     gardenFlowers: buildGarden(results, goals).flowers,
     level: levelFor(computeXp({ plans, results, events }, goals).total).level,
     newChapter: latestUnreadChapter(results.length),
+    pose: mission.kind === 'ready' ? firstRaeLoop(primary.exercises.map((e) => e.exerciseId)) : null,
   }
 }
 
@@ -309,7 +314,13 @@ export function TodayScreen() {
       {/* Rae's room with today's one thing to do joined underneath it, so
           the stage reads as her presenting it. */}
       <section className="today-stage" aria-label="Today">
-        <RaeHero part={dayPart(now)} says={data?.raeLine} flowers={data?.gardenFlowers} level={data?.level ?? 1} />
+        <RaeHero
+          part={dayPart(now)}
+          says={data?.raeLine}
+          flowers={data?.gardenFlowers}
+          level={data?.level ?? 1}
+          pose={data?.pose ? { loop: data.pose } : null}
+        />
         {data ? (
           <TodayMission
             mission={data.mission}

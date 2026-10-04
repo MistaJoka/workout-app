@@ -338,6 +338,15 @@ input[type='range'] {
 
 /* Today: Rae's room and today's panel read as one object, the room on
    top and the plan joined under it. */
+.rae-room__figure--move {
+  bottom: 31px;
+}
+.rae-room__move {
+  max-height: 210px;
+  max-width: 220px;
+  width: auto;
+  image-rendering: pixelated;
+}
 .today-stage > .rae-room {
   border-bottom-left-radius: 0;
   border-bottom-right-radius: 0;
