@@ -1,3 +1,6 @@
+import { isNativeApp } from '../appContext'
+import { shareFileNative } from '../../infrastructure/nativeShare'
+
 // Hands a generated file to the user. In an iPhone home-screen app a plain
 // download link is clumsy, so the share sheet (Save to Files, Calendar,
 // AirDrop) is tried first; elsewhere it falls back to a download. Returns
@@ -7,12 +10,16 @@
 // (the redeemed-coupon share includes a short code this way, giftLink.ts's
 // couponShareMessage) -- it's ignored by the download fallback, which has
 // no caption of its own to carry it.
+//
+// The Android app's WebView has neither file sharing nor downloads, so
+// there it goes to Android's own share sheet (infrastructure/nativeShare.ts).
 export async function shareOrDownload(
   content: string | Blob,
   filename: string,
   type: string,
   message?: { title?: string; text?: string }
 ): Promise<boolean> {
+  if (isNativeApp()) return (await shareFileNative(content, filename, message)) === 'shared'
   const file = new File([content], filename, { type })
   if (typeof navigator !== 'undefined' && navigator.canShare?.({ files: [file] }) && navigator.share) {
     try {

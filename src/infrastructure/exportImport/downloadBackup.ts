@@ -1,4 +1,6 @@
 import type { ExportBundle } from './exportImport'
+import { isNativeApp } from '../../presentation/appContext'
+import { shareFileNative } from '../nativeShare'
 
 // Triggers a browser download of a backup bundle. Shared by Settings and
 // the error boundary so both name and shape the file identically. The file
@@ -22,13 +24,17 @@ type ShareCapable = {
 
 // In an iPhone home-screen app a download link is clumsy; the share sheet
 // lets the file go to Files, AirDrop or Messages. Falls back to a download
-// wherever sharing files isn't supported. A dismissed share sheet is
-// 'cancelled', so the caller doesn't record a backup that never happened.
+// wherever sharing files isn't supported. The Android app has neither, so
+// it uses Android's own share sheet (infrastructure/nativeShare.ts). A
+// dismissed share sheet is 'cancelled', so the caller doesn't record a
+// backup that never happened.
 export async function saveBackup(
   bundle: ExportBundle,
   nav: ShareCapable = typeof navigator !== 'undefined' ? (navigator as ShareCapable) : {},
-  download: (bundle: ExportBundle) => void = downloadBackup
+  download: (bundle: ExportBundle) => void = downloadBackup,
+  native: typeof shareFileNative | null = isNativeApp() ? shareFileNative : null
 ): Promise<'shared' | 'downloaded' | 'cancelled'> {
+  if (native) return native(JSON.stringify(bundle, null, 2), backupFileName(bundle), { title: 'Workout backup' })
   const file = new File([JSON.stringify(bundle, null, 2)], backupFileName(bundle), { type: 'application/json' })
   if (nav.share && nav.canShare?.({ files: [file] })) {
     try {

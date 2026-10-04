@@ -5,6 +5,23 @@ import type { ExportBundle } from './exportImport'
 const bundle = { exportedAt: '2026-09-28T10:00:00.000Z', profile: { id: 'x', name: 'Me' } } as ExportBundle
 
 describe('saveBackup', () => {
+  it("in the Android app, hands the file to Android's share sheet and never the browser paths", async () => {
+    const native = vi.fn().mockResolvedValue('shared')
+    const share = vi.fn()
+    const download = vi.fn()
+    expect(await saveBackup(bundle, { canShare: () => true, share }, download, native)).toBe('shared')
+    expect(native).toHaveBeenCalledWith(expect.stringContaining('"exportedAt"'), 'workout-app-backup-me-2026-09-28.json', {
+      title: 'Workout backup',
+    })
+    expect(share).not.toHaveBeenCalled()
+    expect(download).not.toHaveBeenCalled()
+  })
+
+  it("in the Android app, a dismissed share sheet is 'cancelled'", async () => {
+    const native = vi.fn().mockResolvedValue('cancelled')
+    expect(await saveBackup(bundle, {}, vi.fn(), native)).toBe('cancelled')
+  })
+
   it('uses the share sheet when the browser can share files', async () => {
     const share = vi.fn().mockResolvedValue(undefined)
     const download = vi.fn()

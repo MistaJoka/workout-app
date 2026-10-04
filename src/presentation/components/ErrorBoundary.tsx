@@ -1,6 +1,6 @@
 import { Component, type ErrorInfo, type ReactNode } from 'react'
 import { exportAll } from '../../infrastructure/exportImport/exportImport'
-import { downloadBackup } from '../../infrastructure/exportImport/downloadBackup'
+import { saveBackup } from '../../infrastructure/exportImport/downloadBackup'
 import { RaeFace } from './Rae'
 
 type State = { error: Error | null }
@@ -31,7 +31,7 @@ export class ErrorBoundary extends Component<{ children: ReactNode }, State> {
             <button
               className="btn-secondary flex-1"
               onClick={() => {
-                void exportAll().then(downloadBackup).catch(() => {})
+                void exportAll().then((bundle) => saveBackup(bundle)).catch(() => {})
               }}
             >
               Export a backup
