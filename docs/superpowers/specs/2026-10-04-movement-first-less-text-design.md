@@ -56,7 +56,7 @@ The workout player, Complete, Settings, onboarding, the legal pages, the rewards
 ## 3. Progress (target: default view ≤ about 1.5 screens)
 
 - Remove Rae's sentence at the top.
-- **Level bar + three stat tiles stay.** "This week vs last" becomes ▲ marks on the matching tiles (positive-only, as now), with the full text visually hidden.
+- **Level bar + three stat tiles stay.** "This week vs last" loses its heading and fallback sentence. Its highlights (positive-only, as now) become one compact ▲ chip row under the tiles. Some highlights, such as "Longest hold yet", match no tile, so they can't become marks on the tiles.
 - **Collection:** a grid of square picture tiles: garden, badges, story, recap (week/month), shop, love notes. Each shows an icon plus a count.
 - **Activity:** the month calendar stays visible. The 8-week chart, by-exercise bests, body weight and history move under one "More" disclosure, closed by default, keeping today's "Show all" behaviour inside.
 
