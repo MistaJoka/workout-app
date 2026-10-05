@@ -1,7 +1,7 @@
 import { RewardGlyph } from './RewardGlyph'
 import { REWARD_ICONS } from '../../domain/rewards/rewardIcons'
 import { pickEmoji, pickIcon, STARTER_IDEAS, type IconDraft } from '../rewardDraft'
-import { workoutsFor } from '../../domain/rewards/pricing'
+import { rewardTier, weeksFor, workoutsFor } from '../../domain/rewards/pricing'
 import { useRef, useState } from 'react'
 import { useSheetFocus } from './useSheetFocus'
 import type { RewardRecord } from '../../infrastructure/db/schema'
@@ -28,11 +28,13 @@ const PRICE_PRESETS = [
   { label: 'Little', cost: 25 },
   { label: 'Bigger', cost: 60 },
   { label: 'Big', cost: 150 },
+  { label: 'Mega', cost: 1000 },
 ] as const
 
 export function RewardEditorSheet({
   rewards,
   giverName,
+  weeklyGoal = 2,
   busyId,
   error,
   onAdd,
@@ -44,6 +46,8 @@ export function RewardEditorSheet({
 }: {
   rewards: RewardRecord[]
   giverName: string
+  // Her weekly goal: a mega price is also told in weeks at this pace.
+  weeklyGoal?: number
   busyId: string | null
   error: string | null
   onAdd: (input: RewardDraft) => void
@@ -201,6 +205,7 @@ export function RewardEditorSheet({
             </div>
             <p className="text-right text-sm text-ink-muted" data-testid="cost-in-workouts">
               ≈ {workoutsFor(draft.cost)} {workoutsFor(draft.cost) === 1 ? 'workout' : 'workouts'}
+              {rewardTier(draft.cost) === 'mega' && `, about ${weeksFor(draft.cost, weeklyGoal)} weeks at ${weeklyGoal} a week`}
             </p>
             <div className="flex gap-2" role="group" aria-label="Quick prices">
               {PRICE_PRESETS.map((preset) => (

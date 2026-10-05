@@ -1,3 +1,5 @@
+import { getWeeklySchedule } from '../../infrastructure/db/repositories/scheduleRepository'
+import { weeklyGoal } from '../../domain/progress/stats'
 import { RewardGlyph } from '../components/RewardGlyph'
 import { useEffect, useState } from 'react'
 import { Link, useLocation } from 'react-router-dom'
@@ -79,10 +81,12 @@ type Data = {
   savingFor: string | null
   wishes: WishBook
   featured: string | null
+  // Her weekly goal (planned days, or 2): the pace a mega prize is told in.
+  weeklyGoal: number
 }
 
 async function load(): Promise<Data> {
-  const [rewards, redemptions, balance, giverName, pin, pinAttempts, savingFor, wishes, featured] = await Promise.all([
+  const [rewards, redemptions, balance, giverName, pin, pinAttempts, savingFor, wishes, featured, schedule] = await Promise.all([
     listRewards(),
     listRedemptions(),
     loadCarrotBalance(),
@@ -92,6 +96,7 @@ async function load(): Promise<Data> {
     getSetting<string | null>(SAVING_FOR_KEY),
     getWishBook(),
     getSetting<string | null>(FEATURED_KEY),
+    getWeeklySchedule(),
   ])
   return {
     rewards,
@@ -103,6 +108,7 @@ async function load(): Promise<Data> {
     savingFor: savingFor ?? null,
     wishes,
     featured: featured ?? null,
+    weeklyGoal: weeklyGoal(schedule),
   }
 }
 
@@ -614,6 +620,7 @@ export function RewardsScreen() {
 
       {sheet.kind === 'editor' && data && (
         <RewardEditorSheet
+          weeklyGoal={data.weeklyGoal}
           rewards={data.rewards}
           giverName={data.giverName}
           busyId={editorBusyId}
@@ -697,7 +704,7 @@ export function RewardsScreen() {
 }
 
 // A small tag on each tile; the grid itself stays one list, cheapest first.
-const TIER_LABELS: Record<RewardTier, string> = { small: 'Little treat', medium: 'Bigger treat', big: 'Big dream' }
+const TIER_LABELS: Record<RewardTier, string> = { small: 'Little treat', medium: 'Bigger treat', big: 'Big dream', mega: 'Mega prize' }
 
 function RewardTile({
   reward,
