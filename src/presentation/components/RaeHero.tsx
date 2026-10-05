@@ -135,6 +135,9 @@ export function RaeHero({
   const { motion } = useTheme()
   const osPrefersReduced = usePrefersReducedMotion()
   const animatePose = effectiveMotion(motion, osPrefersReduced) === 'full'
+  // If the move's image can't load (precache failed, offline), she stands.
+  const [poseFailed, setPoseFailed] = useState(false)
+  const showPose = pose != null && !poseFailed
   const [skyTop, skyBottom] = SKY[part]
   const night = part === 'night'
 
@@ -332,19 +335,21 @@ export function RaeHero({
         </div>
       )}
 
-      <span className={`rae-room__figure ${pose ? 'rae-room__figure--move' : ''}`}>
+      <span className={`rae-room__figure ${showPose ? 'rae-room__figure--move' : ''}`}>
         <button type="button" className="rae-figure-btn" aria-label="Say hi to Rae" onClick={sayHi}>
           <span key={hopId} className={hopId > 0 ? 'rae-hop' : ''}>
-            {pose ? (
+            {showPose ? (
+              <span onErrorCapture={() => setPoseFailed(true)}>
               <RaeExerciseLoop
-                id={pose.loop.id}
-                name={pose.loop.name.toLowerCase()}
-                width={pose.loop.width}
-                height={pose.loop.height}
-                stills={[pose.loop.stills[pose.loop.stills.length - 1]]}
+                id={pose!.loop.id}
+                name={pose!.loop.name.toLowerCase()}
+                width={pose!.loop.width}
+                height={pose!.loop.height}
+                stills={[pose!.loop.stills[pose!.loop.stills.length - 1]]}
                 animate={animatePose}
                 imgClassName="rae-room__move"
               />
+              </span>
             ) : (
               <RaeFigure view="front" height={250} />
             )}

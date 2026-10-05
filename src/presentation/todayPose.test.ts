@@ -12,4 +12,12 @@ describe('firstRaeLoop', () => {
     expect(firstRaeLoop(['no-such-move', 'another'])).toBeNull()
     expect(firstRaeLoop([])).toBeNull()
   })
+  it('with featuredOnly, skips loops that are not precached for offline', () => {
+    const plain = RAE_LOOPS.find((l) => !('featured' in l && l.featured))
+    const featured = RAE_LOOPS.find((l) => 'featured' in l && l.featured)
+    expect(plain && featured).toBeTruthy()
+    const ids = [plain!.exerciseIds[0], featured!.exerciseIds[0]]
+    expect(firstRaeLoop(ids, { featuredOnly: true })?.id).toBe(featured!.id)
+    expect(firstRaeLoop([plain!.exerciseIds[0]], { featuredOnly: true })).toBeNull()
+  })
 })

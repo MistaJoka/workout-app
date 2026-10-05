@@ -219,7 +219,7 @@ async function loadToday(now: Date): Promise<TodayData> {
     gardenFlowers: buildGarden(results, goals).flowers,
     level: levelFor(computeXp({ plans, results, events }, goals).total).level,
     newChapter: latestUnreadChapter(results.length),
-    pose: mission.kind === 'ready' ? firstRaeLoop(primary.exercises.map((e) => e.exerciseId)) : null,
+    pose: mission.kind === 'ready' ? firstRaeLoop(primary.exercises.map((e) => e.exerciseId), { featuredOnly: true }) : null,
   }
 }
 

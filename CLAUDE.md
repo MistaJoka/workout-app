@@ -71,6 +71,7 @@ Always `git fetch origin` before pushing: the ChatGPT support agent commits dire
 - Exercise/character/media art is authored externally, reviewed, then consumed as static/runtime assets. Curated photos live in `public/exercise-media/`; library photos are fetched from the pinned upstream revision and cached by the service worker. No runtime image-generation API.
 - No runtime LLM coach, camera pose tracking, microphone coach or required wearable integration.
 - Exactly one theme: **Pixel Bloom** (owner decision 2026-09-26 — Savage Core was built, then retired; no theme picker). Styling stays token-driven (`src/presentation/theme/tokens.ts` → CSS vars). A leftover `theme` setting in an older profile is ignored. Components tagged `btn-*`/`field-*` via `@apply` do not carry the base `.btn`/`.field` class, so any selector scoping them must list them (`:is(...)`).
+- Visible text: names, numbers and at most one short Rae line per screen; the full meaning goes in `aria-label`/`sr-only` (movement-first pass, 2026-10-04, owner: "action and movement is the motivation"). Today/Library swipe rows use `components/TodayTiles.tsx`; Progress keeps details behind one closed "More" (`progress-more`, e2e `openProgressMore`). Today's room shows Rae doing the first move only from `featured` (precached) loops, and falls back to standing on an image error.
 - Motion preference: `full`, `reduced`, `off`. A motion setting (app-level or OS `prefers-reduced-motion`) must never remove information.
 
 ## Architecture rules
