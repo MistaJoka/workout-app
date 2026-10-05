@@ -122,7 +122,6 @@ test.describe('This week vs last', () => {
 
     const card = page.getByTestId('week-compare')
     await expect(card).toBeVisible()
-    await expect(card.getByText('This week vs last')).toBeVisible()
     const chips = card.getByTestId('week-compare-chip')
     await expect(chips).toHaveCount(3)
     await expect(chips.nth(0)).toHaveText('Most workouts in a week!')
@@ -145,12 +144,10 @@ test.describe('This week vs last', () => {
     await page.emulateMedia({ reducedMotion: 'reduce' })
     await openProgress(page)
 
-    const card = page.getByTestId('week-compare')
-    await expect(card).toBeVisible()
-    await expect(card.getByTestId('week-compare-chip')).toHaveCount(0)
-    await expect(card.getByTestId('week-compare-fallback')).toHaveText('Rest weeks count too.')
-    // Never a red/down framing of the quieter week.
-    await expect(card.getByText(/-\d/)).toHaveCount(0)
-    await expect(card.getByText(/▼|↓/)).toHaveCount(0)
+    // Numbers-first Progress: a week without a highlight shows nothing at
+    // all here -- no loss, no consolation sentence.
+    await expect(page.getByTestId('progress-level')).toBeVisible()
+    await expect(page.getByTestId('week-compare')).toHaveCount(0)
+    await expect(page.getByText(/▼|↓/)).toHaveCount(0)
   })
 })

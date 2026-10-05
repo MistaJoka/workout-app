@@ -1,5 +1,5 @@
 import { expect, test } from '@playwright/test'
-import { finishWorkout } from './helpers'
+import { finishWorkout, openProgressMore } from './helpers'
 
 test.describe('progress states', () => {
   test('a fresh profile sees zeroed tiles, the week goal and a way to start', async ({ page }) => {
@@ -18,6 +18,7 @@ test.describe('progress states', () => {
     await finishWorkout(page)
 
     await page.goto('/#/progress')
+    await openProgressMore(page)
     await page.getByRole('link', { name: /Bodyweight Squat/ }).click()
     await expect(page.getByRole('img', { name: /^1 session, best \d+ on / })).toBeVisible()
     await expect(page.getByText('Do it again to see a trend.')).toBeVisible()
@@ -26,6 +27,7 @@ test.describe('progress states', () => {
     await page.getByRole('button', { name: 'Start workout' }).click()
     await finishWorkout(page)
     await page.goto('/#/progress')
+    await openProgressMore(page)
     await page.getByRole('link', { name: /Bodyweight Squat/ }).click()
     await expect(page.getByRole('img', { name: /^2 sessions, best \d+ on / })).toBeVisible()
     await expect(page.getByText('every set done')).toBeVisible()

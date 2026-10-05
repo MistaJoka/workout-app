@@ -21,9 +21,9 @@ export function GardenCard({ garden, compact = false }: { garden: Garden; compac
         <div aria-hidden="true" className="flex h-9 items-center justify-center">
           {newest && <PixelBloom size={34} animate={false} species={newest.species} />}
         </div>
-        <p className="font-bold">Your garden</p>
-        <p className="text-xs text-ink-muted">
-          {garden.discovered} of {garden.total} kinds
+        <p className="font-bold">Garden</p>
+        <p className="hud-num text-xs text-ink-muted">
+          {garden.discovered}/{garden.total}
         </p>
       </Link>
     )

@@ -35,3 +35,11 @@ export async function dismissWelcome(page: Page): Promise<void> {
   const gotIt = page.getByRole('button', { name: 'Got it' })
   if (await gotIt.isVisible().catch(() => false)) await gotIt.click()
 }
+
+// Progress keeps its details (history, bests, body weight, 8-week chart)
+// behind one closed "More"; open it before reaching for them.
+export async function openProgressMore(page: Page): Promise<void> {
+  const more = page.getByTestId('progress-more')
+  await more.waitFor()
+  if (!(await more.evaluate((el) => (el as HTMLDetailsElement).open))) await more.getByText('More', { exact: true }).click()
+}

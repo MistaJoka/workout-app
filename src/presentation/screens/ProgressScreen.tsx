@@ -162,20 +162,6 @@ export function ProgressScreen() {
       )}
 
       {snapshot && rows && rows.length > 0 && (
-        <RaeNote expression={snapshot.streak >= 3 ? 'cheer' : 'happy'}>
-          <span className="font-semibold">
-            {totalWorkouts === 1 ? '1 workout' : `${totalWorkouts} workouts`} and {totalSets} sets so far.
-          </span>{' '}
-          {snapshot.streak >= 2
-            ? `${snapshot.streak} weeks in a row. `
-            : snapshot.week.met
-              ? 'Goal met this week. '
-              : ''}
-          Proud of you.
-        </RaeNote>
-      )}
-
-      {snapshot && rows && rows.length > 0 && (
         <>
           {/* This week: level + unlock + a small share, the three headline
               tiles, and how this week compares to last. */}
@@ -201,13 +187,13 @@ export function ProgressScreen() {
             <WeekGoalStat {...snapshot.week} />
           </div>
 
-          <WeekCompareCard compare={snapshot.compare} />
+          <WeekCompareCard compare={snapshot.compare} bare />
 
           {/* Your collection: garden, badges and recaps as a compact tile
               grid instead of four full-width rows. */}
           <section className="space-y-2">
-            <p className="text-sm font-semibold text-ink-muted">Your collection</p>
-            <div className="grid grid-cols-2 gap-3">
+            <p className="sr-only">Your collection</p>
+            <div className="grid grid-cols-3 gap-2">
               <GardenCard garden={snapshot.garden} compact />
               <BadgesTile earned={snapshot.badges.earned} total={snapshot.badges.total} icon={snapshot.badges.icon} />
               <StoryTile unlocked={snapshot.storyChapters} />
@@ -222,12 +208,22 @@ export function ProgressScreen() {
           <section className="space-y-2">
             <p className="text-sm font-semibold text-ink-muted">Activity</p>
             <MonthBlooms workouts={rows} />
+          </section>
+
+        </>
+      )}
+
+      {/* The details: there when she wants them, closed by default so the
+          page leads with numbers and pictures. */}
+      {snapshot && (
+        <details className="space-y-3" data-testid="progress-more">
+          <summary className="btn-secondary w-full list-none [&::-webkit-details-marker]:hidden">More</summary>
+          {rows && rows.length > 0 && (
             <section className="card p-3">
               <p className="text-xs text-ink-muted">Last 8 weeks</p>
               <WeekBars weeks={snapshot.weeks} />
             </section>
-          </section>
-
+          )}
           {exerciseRecords.length > 0 && (
             <section className="space-y-2">
               <p className="text-sm font-semibold text-ink-muted">By exercise</p>
@@ -257,39 +253,38 @@ export function ProgressScreen() {
               />
             </section>
           )}
-        </>
-      )}
+          {/* After the workout wins, not before them: opening Progress should
+              lead with what you've done, not a scale prompt. */}
+          <BodyWeightCard />
 
-      {/* After the workout wins, not before them: opening Progress should
-          lead with what you've done, not a scale prompt. */}
-      <BodyWeightCard />
-
-      {rows && rows.length > 0 && (
-        <section className="space-y-2">
-          <p className="text-sm font-semibold text-ink-muted">History</p>
-          <ul className="space-y-2">
-            {shownHistory.map((row) => (
-              <li key={row.sessionId}>
-                <Link to={`/history/${encodeURIComponent(row.sessionId)}`} className="block card p-3">
-                  <div className="flex items-baseline justify-between gap-2">
-                    <p className="font-semibold">{row.workoutName}</p>
-                    <p className="text-xs text-ink-muted">{formatDate(row.endedAt)}</p>
-                  </div>
-                  <p className="text-sm text-ink-muted">
-                    {row.totalSetsCompleted}/{row.totalSetsPlanned} sets
-                    {row.status === 'COMPLETED_SHORTENED' ? ', ended early' : ''}
-                  </p>
-                </Link>
-              </li>
-            ))}
-          </ul>
-          <ShowAllButton
-            total={rows.length}
-            shown={LIST_PREVIEW_COUNT}
-            expanded={showAllHistory}
-            onClick={() => setShowAllHistory((v) => !v)}
-          />
-        </section>
+          {rows && rows.length > 0 && (
+            <section className="space-y-2">
+              <p className="text-sm font-semibold text-ink-muted">History</p>
+              <ul className="space-y-2">
+                {shownHistory.map((row) => (
+                  <li key={row.sessionId}>
+                    <Link to={`/history/${encodeURIComponent(row.sessionId)}`} className="block card p-3">
+                      <div className="flex items-baseline justify-between gap-2">
+                        <p className="font-semibold">{row.workoutName}</p>
+                        <p className="text-xs text-ink-muted">{formatDate(row.endedAt)}</p>
+                      </div>
+                      <p className="text-sm text-ink-muted">
+                        {row.totalSetsCompleted}/{row.totalSetsPlanned} sets
+                        {row.status === 'COMPLETED_SHORTENED' ? ', ended early' : ''}
+                      </p>
+                    </Link>
+                  </li>
+                ))}
+              </ul>
+              <ShowAllButton
+                total={rows.length}
+                shown={LIST_PREVIEW_COUNT}
+                expanded={showAllHistory}
+                onClick={() => setShowAllHistory((v) => !v)}
+              />
+            </section>
+          )}
+        </details>
       )}
     </div>
   )
@@ -307,9 +302,9 @@ function BadgesTile({ earned, total, icon }: { earned: number; total: number; ic
       aria-label={`Your badges: ${earned} of ${total} earned. Open your badges`}
     >
       <AchievementBadge icon={icon} locked={earned === 0} size={34} />
-      <p className="font-bold">Your badges</p>
-      <p className="text-xs text-ink-muted">
-        {earned} of {total}
+      <p className="font-bold">Badges</p>
+      <p className="hud-num text-xs text-ink-muted">
+        {earned}/{total}
       </p>
     </Link>
   )
@@ -327,9 +322,9 @@ function StoryTile({ unlocked }: { unlocked: number }) {
       aria-label={`Rae's story: ${unlocked} of ${RAE_STORY.length} chapters. Open the story`}
     >
       <RaeFace expression={(newest?.expression ?? 'neutral') as RaeExpression} size={34} motion="none" decorative />
-      <p className="font-bold">Rae's story</p>
-      <p className="text-xs text-ink-muted">
-        {unlocked} of {RAE_STORY.length}
+      <p className="font-bold">Story</p>
+      <p className="hud-num text-xs text-ink-muted">
+        {unlocked}/{RAE_STORY.length}
       </p>
     </Link>
   )
@@ -362,10 +357,8 @@ function RewardsShopTile() {
       <span aria-hidden="true" className="text-[2.125rem] leading-none">
         🥕
       </span>
-      <p className="font-bold">{giverRole(giverName)}'s shop</p>
-      <p className="hud-num text-xs text-ink-muted">
-        {balance ?? 0} {(balance ?? 0) === 1 ? 'carrot' : 'carrots'}
-      </p>
+      <p className="font-bold">Shop</p>
+      <p className="hud-num text-xs text-ink-muted">{balance ?? 0} 🥕</p>
     </Link>
   )
 }
@@ -399,8 +392,8 @@ function LoveNotesTile() {
       <span aria-hidden="true" className="text-[2.125rem] leading-none">
         💌
       </span>
-      <p className="font-bold">Love notes</p>
-      <p className="hud-num text-xs text-ink-muted">{opened} opened</p>
+      <p className="font-bold">Notes</p>
+      <p className="hud-num text-xs text-ink-muted">{opened}</p>
     </Link>
   )
 }

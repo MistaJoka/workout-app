@@ -1,5 +1,5 @@
 import { expect, test, type Page } from '@playwright/test'
-import { finishWorkout } from './helpers'
+import { finishWorkout, openProgressMore } from './helpers'
 
 // Taps a thumb-bar button once the bar is armed (see ThumbBar).
 async function tapArmed(page: Page, name: string): Promise<void> {
@@ -88,7 +88,8 @@ test.describe('sessions', () => {
     await expect(page.getByRole('link', { name: 'Resume workout' })).toBeHidden()
 
     await page.getByRole('link', { name: 'Progress' }).click()
-    await expect(page.getByText('1 workout and 1 sets so far.', { exact: false })).toBeVisible()
+    await expect(page.getByText('workout', { exact: true })).toBeVisible()
+    await openProgressMore(page)
     await page.getByRole('link', { name: /Quick 10/ }).first().click()
     await expect(page.getByText(/ended early/)).toBeVisible()
     await expect(page.getByText(/Mon, Sep 28/)).toBeVisible()

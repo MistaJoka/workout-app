@@ -1,5 +1,5 @@
 import { expect, test } from '@playwright/test'
-import { finishWorkout } from './helpers'
+import { finishWorkout, openProgressMore } from './helpers'
 
 test.describe('routines and history', () => {
   test('add a move to an existing routine, run it, and read the workout back from Progress', async ({ page }) => {
@@ -38,6 +38,7 @@ test.describe('routines and history', () => {
     await finishWorkout(page)
 
     await page.getByRole('link', { name: 'Progress' }).click()
+    await openProgressMore(page)
     await page.getByRole('link', { name: /Leg Day/ }).click()
     await expect(page.getByRole('heading', { name: 'Leg Day' })).toBeVisible()
     await expect(page.getByText('2/2 sets')).toBeVisible()
@@ -48,6 +49,7 @@ test.describe('routines and history', () => {
 
   test('a body-weight entry can be deleted', async ({ page }) => {
     await page.goto('/#/progress')
+    await openProgressMore(page)
     await page.getByRole('button', { name: 'Log body weight' }).click()
     await page.getByRole('button', { name: 'Save today' }).click()
     await expect(page.getByRole('button', { name: 'Log today' })).toBeVisible()

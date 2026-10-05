@@ -29,5 +29,4 @@ test('this week counts toward the goal on Today and Progress, then says it is me
   await expect(page.getByRole('link', { name: 'Goal met, 2 of 2. Plan your week.' })).toBeVisible()
   await page.getByRole('link', { name: 'Progress' }).click()
   await expect(page.getByText('goal met', { exact: true })).toBeVisible()
-  await expect(page.getByText(/Goal met this week/)).toBeVisible()
 })

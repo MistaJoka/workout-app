@@ -1,4 +1,5 @@
 import { expect, test, type Page } from '@playwright/test'
+import { openProgressMore } from './helpers'
 
 // The bottom bar ignores taps for a moment after it changes (ThumbBar).
 async function tapArmed(page: Page, name: string): Promise<void> {
@@ -36,6 +37,7 @@ test('skipped moves stay out of the way, and a hold counts itself down and compl
 
   // History puts the plank's sets on the plank, not on the skipped squat.
   await page.goto('/#/progress')
+  await openProgressMore(page)
   await page.getByRole('link', { name: /Quick 10/ }).click()
   await expect(page.getByText('0/2 sets')).toHaveCount(2)
   await expect(page.getByText('2/2 sets')).toBeVisible()
@@ -59,6 +61,7 @@ test('"No, fell short" logs the reps actually done', async ({ page }) => {
   await expect(page.getByText('Workout complete')).toBeVisible()
 
   await page.goto('/#/progress')
+  await openProgressMore(page)
   await page.getByRole('link', { name: /Full-Body A/ }).click()
   await expect(page.locator('ol > li').filter({ hasText: '8, missed' })).toHaveCount(1)
 })

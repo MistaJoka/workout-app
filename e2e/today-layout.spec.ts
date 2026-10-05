@@ -1,4 +1,5 @@
 import { test, expect } from '@playwright/test'
+import { finishWorkout } from './helpers'
 
 test.use({ viewport: { width: 384, height: 824 } })
 
@@ -51,4 +52,20 @@ test('Library: routines are tiles and each Rae move shows once', async ({ page }
   await expect(moves.first()).toBeVisible()
   const names = await moves.allInnerTexts()
   expect(new Set(names).size).toBe(names.length)
+})
+
+test('Progress leads with numbers and pictures; details wait behind More', async ({ page }) => {
+  test.setTimeout(120_000)
+  await page.goto('/#/checkin/fs.quick-10')
+  await page.getByRole('button', { name: 'Start workout' }).click()
+  await finishWorkout(page)
+  await page.goto('about:blank')
+  await page.goto('/#/progress')
+  const more = page.getByTestId('progress-more')
+  await expect(more).toBeVisible()
+  await expect(page.getByText(/Proud of you/)).toHaveCount(0)
+  await expect(page.getByText('History', { exact: true })).toBeHidden()
+  expect(await page.evaluate(() => document.documentElement.scrollHeight)).toBeLessThanOrEqual(824 * 1.5 + 200)
+  await more.getByText('More', { exact: true }).click()
+  await expect(page.getByText('History', { exact: true })).toBeVisible()
 })

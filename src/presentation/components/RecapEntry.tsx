@@ -159,19 +159,23 @@ export function RecapLink({ compact = false }: { compact?: boolean } = {}) {
       <>
         <Link
           to="/recap"
+          aria-label="Your week in bloom"
           className="card flex min-h-11 flex-col items-center gap-1 p-3 text-center active:bg-field-primary"
         >
           <RecapGlyph />
-          <span className="block font-semibold">Your week in bloom</span>
-          <span className="block text-xs text-ink-muted">Week</span>
+          <span aria-hidden className="block font-bold">
+            Week
+          </span>
         </Link>
         <Link
           to={`/recap?month=${monthKey(monthStartOf(new Date()))}`}
+          aria-label="Monthly recap"
           className="card flex min-h-11 flex-col items-center gap-1 p-3 text-center active:bg-field-primary"
         >
           <RecapGlyph />
-          <span className="block font-semibold">Monthly recap</span>
-          <span className="block text-xs text-ink-muted">Month</span>
+          <span aria-hidden className="block font-bold">
+            Month
+          </span>
         </Link>
       </>
     )

@@ -1,5 +1,5 @@
 import { expect, test } from '@playwright/test'
-import { dismissWelcome, finishWorkout } from './helpers'
+import { dismissWelcome, finishWorkout, openProgressMore } from './helpers'
 
 test.describe('golden path', () => {
   test('first run: welcome, one-tap start, a full workout, and it shows up in Progress', async ({ page }) => {
@@ -41,6 +41,7 @@ test.describe('golden path', () => {
     await page.getByRole('link', { name: 'Progress' }).click()
     await expect(page.getByText('workout', { exact: true })).toBeVisible()
     await expect(page.getByText('10', { exact: true }).first()).toBeVisible()
+    await openProgressMore(page)
     await expect(page.getByText('Full-Body A')).toBeVisible()
   })
 

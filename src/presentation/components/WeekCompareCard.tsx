@@ -8,7 +8,20 @@ import { useCountUp } from './CountUp'
 // positive ones), so every chip gets the same small up glyph; a quiet or
 // unremarkable week shows one calm line instead and never a down arrow
 // (CLAUDE.md ethics: a lower week reads as rest, not loss).
-export function WeekCompareCard({ compare }: { compare: WeekCompare }) {
+// `bare`: just this week's highlight chips (no heading, no fallback
+// sentence), for Progress's numbers-first layout. Renders nothing on a
+// week without a highlight.
+export function WeekCompareCard({ compare, bare = false }: { compare: WeekCompare; bare?: boolean }) {
+  if (bare)
+    return compare.highlights.length > 0 ? (
+      <ul className="flex flex-wrap gap-2" aria-label="This week's highlights" data-testid="week-compare">
+        {compare.highlights.map((h, i) => (
+          <li key={i}>
+            <HighlightChip highlight={h} />
+          </li>
+        ))}
+      </ul>
+    ) : null
   return (
     <section className="card space-y-2 p-3" data-testid="week-compare">
       <p className="font-bold">This week vs last</p>
