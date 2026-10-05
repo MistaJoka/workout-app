@@ -1,3 +1,4 @@
+import { RewardGlyph } from './RewardGlyph'
 import { useEffect, useRef, useState } from 'react'
 import { giftLinkLocation } from '../appContext'
 import { useSheetFocus } from './useSheetFocus'
@@ -114,7 +115,7 @@ export function GiftComposerSheet({ giverName, onClose }: { giverName: string; o
     try {
       const rewards = data.rewards
         .filter((r) => selectedRewardIds.has(r.id))
-        .map((r) => ({ id: r.id, title: r.title, cost: r.cost, emoji: r.emoji }))
+        .map((r) => ({ id: r.id, title: r.title, cost: r.cost, emoji: r.emoji, ...(r.icon ? { icon: r.icon } : {}) }))
       const notes = data.notes
         .filter((n) => selectedNoteIds.has(n.id))
         .map((n) => ({ id: n.id, text: n.text, emoji: n.emoji }))
@@ -173,9 +174,7 @@ export function GiftComposerSheet({ giverName, onClose }: { giverName: string; o
                         checked={selectedRewardIds.has(reward.id)}
                         onChange={() => toggleReward(reward.id)}
                       />
-                      <span aria-hidden="true" className="text-xl">
-                        {reward.emoji}
-                      </span>
+                      <RewardGlyph emoji={reward.emoji} icon={reward.icon} size={28} />
                       <span className="min-w-0 flex-1 truncate font-semibold">{reward.title}</span>
                       <span className="hud-num text-sm text-ink-muted">{reward.cost} 🥕</span>
                     </label>

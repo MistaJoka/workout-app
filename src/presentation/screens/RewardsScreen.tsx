@@ -1,3 +1,4 @@
+import { RewardGlyph } from '../components/RewardGlyph'
 import { useEffect, useState } from 'react'
 import { Link, useLocation } from 'react-router-dom'
 import { BackButton } from '../components/BackButton'
@@ -64,9 +65,9 @@ type Sheet =
   | { kind: 'deliverCompose' }
   | { kind: 'redeemConfirm'; reward: RewardRecord; attemptId: string }
   | { kind: 'makeWish' }
-  | { kind: 'thanks'; redemption: RedemptionRecord; emoji: string }
+  | { kind: 'thanks'; redemption: RedemptionRecord; emoji: string; icon?: string }
   | { kind: 'grantWish'; wish: WishLite }
-  | { kind: 'coupon'; redemption: RedemptionRecord; emoji: string; fresh?: boolean }
+  | { kind: 'coupon'; redemption: RedemptionRecord; emoji: string; icon?: string; fresh?: boolean }
 
 type Data = {
   rewards: RewardRecord[]
@@ -317,7 +318,7 @@ export function RewardsScreen() {
       if (data?.savingFor === reward.id) await setSetting(SAVING_FOR_KEY, null)
       playCelebration('redeem', feedback)
       await refresh()
-      setSheet({ kind: 'coupon', redemption, emoji: reward.emoji, fresh: true })
+      setSheet({ kind: 'coupon', redemption, emoji: reward.emoji, icon: reward.icon, fresh: true })
     } catch {
       setRedeemError("Couldn't redeem that on this device. Try again.")
     } finally {
@@ -395,13 +396,13 @@ export function RewardsScreen() {
 
   function openThanks(redemption: RedemptionRecord) {
     const reward = data?.rewards.find((r) => r.id === redemption.rewardId)
-    setSheet({ kind: 'thanks', redemption, emoji: reward?.emoji ?? '🥕' })
+    setSheet({ kind: 'thanks', redemption, emoji: reward?.emoji ?? '🥕', icon: reward?.icon })
   }
 
   function openCoupon(redemption: RedemptionRecord) {
     const reward = data?.rewards.find((r) => r.id === redemption.rewardId)
     setShareError(null)
-    setSheet({ kind: 'coupon', redemption, emoji: reward?.emoji ?? '🥕' })
+    setSheet({ kind: 'coupon', redemption, emoji: reward?.emoji ?? '🥕', icon: reward?.icon })
   }
 
   // Cheapest first, with his featured pick (if any) leading.
@@ -465,9 +466,7 @@ export function RewardsScreen() {
             <>
               {goalReward && (
                 <section className="card flex items-center gap-3 p-4" data-testid="saving-goal">
-                  <span aria-hidden="true" className="text-3xl">
-                    {goalReward.emoji}
-                  </span>
+                  <RewardGlyph emoji={goalReward.emoji} icon={goalReward.icon} size={40} />
                   <span className="min-w-0 flex-1">
                     <span className="block text-xs font-semibold text-ink-muted">Saving for</span>
                     <span className="block truncate font-bold">{goalReward.title}</span>
@@ -497,9 +496,7 @@ export function RewardsScreen() {
             {wishesPending.length > 0 && <p className="text-sm font-semibold text-ink-muted">Wishes</p>}
             {wishesPending.map((wish) => (
               <div key={wish.id} className="card flex items-center gap-2 p-3">
-                <span aria-hidden="true" className="text-2xl">
-                  {wish.emoji}
-                </span>
+                <RewardGlyph emoji={wish.emoji} icon={wish.icon} size={32} />
                 <span className="min-w-0 flex-1">
                   <span className="block truncate font-semibold">{wish.title}</span>
                   <span className="block text-xs text-ink-muted">Waiting for {data.giverName}</span>
@@ -508,7 +505,7 @@ export function RewardsScreen() {
                   type="button"
                   className="btn-secondary min-h-11 px-3 text-sm"
                   aria-label={`${giverRole(data.giverName)}: price ${wish.title}`}
-                  onClick={() => requestPinFor({ grant: { id: wish.id, title: wish.title, emoji: wish.emoji } })}
+                  onClick={() => requestPinFor({ grant: { id: wish.id, title: wish.title, emoji: wish.emoji, icon: wish.icon } })}
                 >
                   Price it
                 </button>
@@ -640,6 +637,7 @@ export function RewardsScreen() {
         <ThanksSheet
           redemption={sheet.redemption}
           emoji={sheet.emoji}
+          icon={sheet.icon}
           giverName={data.giverName}
           onThanked={() => void refresh()}
           onClose={() => setSheet({ kind: 'none' })}
@@ -667,6 +665,7 @@ export function RewardsScreen() {
         <RedeemConfirmSheet
           title={sheet.reward.title}
           emoji={sheet.reward.emoji}
+          icon={sheet.reward.icon}
           cost={sheet.reward.cost}
           busy={redeemBusy}
           error={redeemError}
@@ -679,6 +678,7 @@ export function RewardsScreen() {
         <CouponSheet
           title={sheet.redemption.title}
           emoji={sheet.emoji}
+          icon={sheet.icon}
           cost={sheet.redemption.cost}
           giverName={data.giverName}
           deliveredAt={sheet.redemption.deliveredAt}
@@ -726,9 +726,7 @@ function RewardTile({
       ) : (
         <p className="text-xs font-semibold uppercase tracking-wide text-ink-muted">{TIER_LABELS[rewardTier(reward.cost)]}</p>
       )}
-      <span aria-hidden="true" className="text-3xl">
-        {reward.emoji}
-      </span>
+      <RewardGlyph emoji={reward.emoji} icon={reward.icon} size={44} />
       <p className="font-bold leading-tight">{reward.title}</p>
       {wished && <p className="text-xs font-semibold text-primary-ink">✨ Your wish</p>}
       <p className="hud-num text-sm text-ink-muted">{reward.cost} 🥕</p>

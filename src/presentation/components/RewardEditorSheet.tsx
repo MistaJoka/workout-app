@@ -1,3 +1,4 @@
+import { RewardGlyph } from './RewardGlyph'
 import { workoutsFor } from '../../domain/rewards/pricing'
 import { useRef, useState } from 'react'
 import { useSheetFocus } from './useSheetFocus'
@@ -214,9 +215,7 @@ export function RewardEditorSheet({
             {rewards.map((reward) => (
               <li key={reward.id} className="card space-y-2 p-3">
                 <div className="flex items-center gap-3">
-                  <span aria-hidden="true" className="text-2xl">
-                    {reward.emoji}
-                  </span>
+                  <RewardGlyph emoji={reward.emoji} icon={reward.icon} size={32} />
                   <span className="min-w-0 flex-1">
                     <span className="block truncate font-semibold">
                       {reward.title}

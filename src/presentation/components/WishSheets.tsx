@@ -1,3 +1,4 @@
+import { RewardGlyph } from './RewardGlyph'
 import { useRef, useState } from 'react'
 import { giftLinkLocation } from '../appContext'
 import { useSheetFocus } from './useSheetFocus'
@@ -12,7 +13,7 @@ import { hasRealName } from '../greeting'
 
 // Her wishlist (domain/rewards/wishes.ts): she proposes, he prices.
 
-export type WishLite = { id: string; title: string; emoji: string }
+export type WishLite = { id: string; title: string; emoji: string; icon?: string }
 
 // Never the APK's internal localhost (presentation/appContext.ts).
 export function linkLocation() {
@@ -66,7 +67,7 @@ export function MakeWishSheet({ giverName, onDone, onClose }: { giverName: strin
     setError(null)
     try {
       const wish = await addWish({ title, emoji })
-      setMade({ id: wish.id, title: wish.title, emoji: wish.emoji })
+      setMade({ id: wish.id, title: wish.title, emoji: wish.emoji, icon: wish.icon })
       onDone()
     } catch {
       setError("Couldn't save on this device. Try again.")
@@ -129,9 +130,7 @@ export function MakeWishSheet({ giverName, onDone, onClose }: { giverName: strin
       ) : (
         <>
           <div className="card space-y-1 p-4 text-center" data-testid="wish-made">
-            <p aria-hidden="true" className="text-4xl">
-              {made.emoji}
-            </p>
+            <RewardGlyph emoji={made.emoji} icon={made.icon} size={56} variant="tile" className="mx-auto" />
             <p className="font-bold">{made.title}</p>
             <p className="text-sm text-ink-muted">Wished! Waiting for {giverName}.</p>
           </div>
@@ -206,9 +205,7 @@ export function GrantWishSheet({
   return (
     <Sheet label={`Price the wish: ${wish.title}`} onClose={onClose}>
       <div className="card space-y-1 p-4 text-center">
-        <p aria-hidden="true" className="text-4xl">
-          {wish.emoji}
-        </p>
+        <RewardGlyph emoji={wish.emoji} icon={wish.icon} size={56} variant="tile" className="mx-auto" />
         <p className="font-bold">{wish.title}</p>
         <p className="text-sm text-ink-muted">{granted ? 'In the shop! ✨' : 'A wish'}</p>
       </div>

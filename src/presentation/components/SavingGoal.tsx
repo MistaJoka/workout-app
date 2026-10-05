@@ -1,3 +1,4 @@
+import { RewardGlyph } from './RewardGlyph'
 import { useEffect, useState } from 'react'
 import { Link } from 'react-router-dom'
 import type { RewardRecord } from '../../infrastructure/db/schema'
@@ -70,16 +71,14 @@ export function SavingGoalTodayCard({ tile = false }: { tile?: boolean } = {}) {
         to="/rewards"
         name={`Saving for ${state.reward.title}: ${p.have} of ${p.cost} carrots`}
         short={state.reward.title}
-        art={<span className="text-3xl">{state.reward.emoji}</span>}
+        art={<RewardGlyph emoji={state.reward.emoji} icon={state.reward.icon} size={44} />}
         value={`${p.have}/${p.cost}🥕`}
       />
     )
   }
   return (
     <Link to="/rewards" className="field-info flex min-h-11 items-center gap-3 px-4 py-3" data-testid="saving-goal-today">
-      <span aria-hidden="true" className="text-3xl">
-        {state.reward.emoji}
-      </span>
+      <RewardGlyph emoji={state.reward.emoji} icon={state.reward.icon} size={40} />
       <span className="min-w-0 flex-1">
         <span className="block text-xs font-semibold text-ink-muted">Saving for</span>
         <span className="block truncate font-bold">{state.reward.title}</span>

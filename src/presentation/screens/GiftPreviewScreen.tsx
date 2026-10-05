@@ -1,3 +1,4 @@
+import { RewardGlyph } from '../components/RewardGlyph'
 import { useEffect, useState } from 'react'
 import { useNavigate, useSearchParams } from 'react-router-dom'
 import { BackButton } from '../components/BackButton'
@@ -175,9 +176,7 @@ export function GiftPreviewScreen() {
           <div className="card space-y-2 p-4 text-center" data-testid="thanks-card">
             <p className="text-sm text-ink-muted">A thank-you from</p>
             <p className="text-lg font-bold">{state.payload.from}</p>
-            <p aria-hidden="true" className="text-5xl">
-              {state.payload.emoji}
-            </p>
+            <RewardGlyph emoji={state.payload.emoji} icon={state.payload.icon} size={72} variant="tile" className="mx-auto" />
             <p className="font-semibold">{state.payload.title}</p>
             <p className="text-xl font-bold text-primary-ink">{state.payload.message}</p>
           </div>
@@ -195,9 +194,7 @@ export function GiftPreviewScreen() {
             <ul className="space-y-2 text-left">
               {state.payload.wishes.map((wish) => (
                 <li key={wish.id} className="flex items-center gap-2 rounded-control bg-field-primary px-3 py-2">
-                  <span aria-hidden="true" className="text-2xl">
-                    {wish.emoji}
-                  </span>
+                  <RewardGlyph emoji={wish.emoji} icon={wish.icon} size={32} />
                   <span className="min-w-0 flex-1 font-semibold">{wish.title}</span>
                   {state.grantedIds.has(wish.id) ? (
                     <span className="text-sm font-semibold text-primary-ink">In the shop ✓</span>
@@ -267,9 +264,7 @@ function GiftPreviewCard({
         <ul className="space-y-2 text-left" data-testid="gift-rewards">
           {payload.rewards.map((r) => (
             <li key={r.id} className="flex items-center gap-3 rounded-control bg-field-primary p-2">
-              <span aria-hidden="true" className="text-xl">
-                {r.emoji}
-              </span>
+              <RewardGlyph emoji={r.emoji} icon={r.icon} size={28} />
               <span className="min-w-0 flex-1 truncate font-semibold">{r.title}</span>
               <span className="hud-num text-sm">{r.cost} 🥕</span>
             </li>

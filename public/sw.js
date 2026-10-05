@@ -60,11 +60,15 @@ const RAE_URLS = [
   `${BASE}rae/full-3q.png`,
   `${BASE}rae/loops.json`,
 ]
+// The shop's pixel reward icons (src/domain/rewards/rewardIcons.ts, kept in
+// step by swPrecacheLists.test.ts): sticker and tile for each.
+const REWARD_ICON_IDS = ['nap-time', 'sleep-in', 'no-dishes', 'laundry-done', 'no-chores', 'tv-remote', 'movie-night', 'game-night', 'love-letter', 'reading-time', 'foot-rub', 'bubble-bath', 'spa-day', 'flowers', 'coffee-date', 'breakfast-in-bed', 'dinner-date', 'blanket-fort', 'picnic', 'sunset-drive', 'surprise-gift', 'takeout', 'pizza', 'sushi', 'ramen', 'tacos', 'burger', 'burrito', 'burrito-bowl', 'nachos', 'quesadilla', 'donut', 'sundae', 'boba']
+const REWARD_ICON_URLS = REWARD_ICON_IDS.flatMap((id) => [`${BASE}rewards/${id}.webp`, `${BASE}rewards/${id}-tile.webp`])
 // The shell must install whole (a half-installed build can't run offline);
 // media is best-effort, so one flaky image fetch never costs the app its
 // offline copy. Anything that missed is cached the first time it's shown.
 const SHELL_URLS = [BASE, `${BASE}manifest.json`, `${BASE}rae/loops.json`, ...BUILD_ASSETS.map((f) => `${BASE}${f}`)]
-const BEST_EFFORT_URLS = [...MEDIA_URLS, ...RAE_URLS.filter((u) => u !== `${BASE}rae/loops.json`)]
+const BEST_EFFORT_URLS = [...MEDIA_URLS, ...REWARD_ICON_URLS, ...RAE_URLS.filter((u) => u !== `${BASE}rae/loops.json`)]
 
 // `cache: 'reload'` skips the browser's HTTP cache, which can otherwise hand
 // the new worker an old build's index.html.

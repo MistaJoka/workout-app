@@ -1,3 +1,4 @@
+import { RewardGlyph } from './RewardGlyph'
 import { useRef, useState, type ReactNode } from 'react'
 import { useSheetFocus } from './useSheetFocus'
 import { giverRole, isValidPin } from '../../domain/rewards/pin'
@@ -190,6 +191,7 @@ export function PinEntrySheet({
 export function RedeemConfirmSheet({
   title,
   emoji,
+  icon,
   cost,
   busy,
   error,
@@ -198,6 +200,7 @@ export function RedeemConfirmSheet({
 }: {
   title: string
   emoji: string
+  icon?: string
   cost: number
   busy: boolean
   error: string | null
@@ -206,6 +209,7 @@ export function RedeemConfirmSheet({
 }) {
   return (
     <SheetShell label={`Redeem ${title}`} busy={busy} onCancel={onCancel}>
+      {icon && <RewardGlyph emoji={emoji} icon={icon} size={64} className="mx-auto" />}
       <p className="text-lg font-bold">
         Redeem {emoji} {title}?
       </p>
@@ -230,6 +234,7 @@ export function RedeemConfirmSheet({
 export function CouponSheet({
   title,
   emoji,
+  icon,
   cost,
   giverName,
   deliveredAt,
@@ -242,6 +247,7 @@ export function CouponSheet({
 }: {
   title: string
   emoji: string
+  icon?: string
   cost: number
   giverName: string
   // Just redeemed: the coupon arrives gift-wrapped and opens once.
@@ -272,9 +278,7 @@ export function CouponSheet({
             without an explicit stacking order would paint over this
             in-flow text -- see presentation/components/CarrotCelebration.tsx). */}
         <div className="relative z-10 flex flex-col items-center gap-1">
-          <span aria-hidden="true" className="text-5xl">
-            {emoji}
-          </span>
+          <RewardGlyph emoji={emoji} icon={icon} size={72} variant="tile" />
           <p className="text-xl font-extrabold">{title}</p>
           <p className="hud-num text-lg font-bold">{cost} 🥕</p>
           <p className="text-sm text-ink-muted">Redeemable with {giverName}</p>

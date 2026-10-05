@@ -1,3 +1,4 @@
+import { RewardGlyph } from './RewardGlyph'
 import { useState } from 'react'
 import type { RedemptionRecord } from '../../infrastructure/db/schema'
 import { markThanked } from '../../infrastructure/db/repositories/redemptionsRepository'
@@ -11,12 +12,14 @@ import { linkLocation, senderName, Sheet, ShareStatus } from './WishSheets'
 export function ThanksSheet({
   redemption,
   emoji,
+  icon,
   giverName,
   onThanked,
   onClose,
 }: {
   redemption: RedemptionRecord
   emoji: string
+  icon?: string
   giverName: string
   onThanked: () => void
   onClose: () => void
@@ -31,6 +34,7 @@ export function ThanksSheet({
       from: senderName(),
       title: redemption.title,
       emoji,
+      ...(icon ? { icon } : {}),
       message,
       createdAt: new Date().toISOString(),
     }
@@ -45,9 +49,7 @@ export function ThanksSheet({
   return (
     <Sheet label={`Say thanks for ${redemption.title}`} onClose={onClose}>
       <div className="card space-y-1 p-4 text-center">
-        <p aria-hidden="true" className="text-4xl">
-          {emoji}
-        </p>
+        <RewardGlyph emoji={emoji} icon={icon} size={56} variant="tile" className="mx-auto" />
         <p className="font-bold">{redemption.title}</p>
         <p className="text-sm text-ink-muted">Say thanks to {giverName}</p>
       </div>

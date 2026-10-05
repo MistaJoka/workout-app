@@ -2,6 +2,7 @@ import { existsSync, readFileSync } from 'node:fs'
 import path from 'node:path'
 import { describe, expect, it } from 'vitest'
 import { foundationStrengthStarterExercises } from '../../domain/content/fixtures/foundationStrengthStarter'
+import { REWARD_ICONS } from '../../domain/rewards/rewardIcons'
 
 // public/sw.js hand-keeps the lists of media it precaches. A drifted list
 // either precaches a file that doesn't exist or leaves a curated move's
@@ -46,5 +47,10 @@ describe('service worker precache lists', () => {
         expect(existsSync(path.join(root, 'public/rae', `${loop.id}-${still}.png`)), `${loop.id}-${still}.png`).toBe(true)
       }
     }
+  })
+
+  it('REWARD_ICON_IDS matches the reward icon catalog, so the shop works offline', () => {
+    expect([...stringArray('REWARD_ICON_IDS')].sort()).toEqual(REWARD_ICONS.map((i) => i.id).sort())
+    expect(sw).toMatch(/BEST_EFFORT_URLS = \[[^\]]*REWARD_ICON_URLS/)
   })
 })
