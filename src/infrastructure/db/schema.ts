@@ -25,6 +25,9 @@ export type RewardRecord = {
   title: string
   cost: number
   emoji: string
+  // Pixel icon id (domain/rewards/rewardIcons.ts), when picked; `emoji`
+  // stays as its plain-text stand-in. Additive, unindexed.
+  icon?: string
   // Inactive rewards stay in the shop's history (a past redemption still
   // names them) but no longer show up to redeem.
   active: boolean

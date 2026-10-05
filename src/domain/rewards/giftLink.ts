@@ -24,6 +24,9 @@ const giftRewardSchema = z.object({
   title: z.string().min(1),
   cost: z.number().nonnegative(),
   emoji: z.string().min(1),
+  // Pixel icon id, optional: links from older apps have none, and an id
+  // this app doesn't know falls back to the emoji when drawn.
+  icon: z.string().min(1).optional(),
 })
 
 const giftNoteSchema = z.object({
@@ -60,7 +63,7 @@ const wishPayloadSchema = z.object({
   kind: z.literal('wish'),
   from: z.string().min(1),
   wishes: z
-    .array(z.object({ id: z.string().min(1), title: z.string().min(1), emoji: z.string().min(1) }))
+    .array(z.object({ id: z.string().min(1), title: z.string().min(1), emoji: z.string().min(1), icon: z.string().min(1).optional() }))
     .min(1),
   createdAt: z.string().min(1),
 })
@@ -73,6 +76,7 @@ const thanksPayloadSchema = z.object({
   from: z.string().min(1),
   title: z.string().min(1),
   emoji: z.string().min(1),
+  icon: z.string().min(1).optional(),
   message: z.string().min(1).max(140),
   createdAt: z.string().min(1),
 })

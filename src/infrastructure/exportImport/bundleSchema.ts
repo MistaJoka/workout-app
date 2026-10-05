@@ -131,6 +131,7 @@ const reward = z
     title: z.string(),
     cost: count,
     emoji: z.string().min(1),
+    icon: z.string().min(1).optional(),
     active: z.boolean(),
     createdAt: isoLike,
     updatedAt: isoLike,

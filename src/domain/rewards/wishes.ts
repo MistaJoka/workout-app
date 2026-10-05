@@ -10,6 +10,9 @@ export type Wish = {
   id: string
   title: string
   emoji: string
+  // Pixel icon id (domain/rewards/rewardIcons.ts), when picked; `emoji`
+  // stays as its plain-text stand-in. Additive, unindexed.
+  icon?: string
   createdAt: string
   // Removed by her, or "not now" from him. Kept (not deleted) so a backup
   // merge can't bring it back.

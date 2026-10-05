@@ -21,7 +21,7 @@ export async function listActiveRewards(): Promise<RewardRecord[]> {
 }
 
 export async function addReward(
-  input: { title: string; cost: number; emoji: string },
+  input: { title: string; cost: number; emoji: string; icon?: string },
   at: string = new Date().toISOString()
 ): Promise<RewardRecord> {
   const reward: RewardRecord = {
@@ -29,6 +29,7 @@ export async function addReward(
     title: input.title.trim(),
     cost: Math.max(0, Math.round(input.cost)),
     emoji: input.emoji,
+    ...(input.icon ? { icon: input.icon } : {}),
     active: true,
     createdAt: at,
     updatedAt: at,
@@ -39,7 +40,7 @@ export async function addReward(
 
 export async function updateReward(
   id: string,
-  patch: Partial<Pick<RewardRecord, 'title' | 'cost' | 'emoji' | 'active'>>,
+  patch: Partial<Pick<RewardRecord, 'title' | 'cost' | 'emoji' | 'icon' | 'active'>>,
   at: string = new Date().toISOString()
 ): Promise<RewardRecord | undefined> {
   const existing = await db.rewards.get(id)
@@ -70,7 +71,7 @@ export async function removeReward(id: string, at: string = new Date().toISOStri
 // same gift link is then a no-op (the id already exists), instead of a
 // duplicate tile in the shop.
 export async function upsertRewardFromGift(
-  reward: { id: string; title: string; cost: number; emoji: string },
+  reward: { id: string; title: string; cost: number; emoji: string; icon?: string },
   at: string = new Date().toISOString()
 ): Promise<RewardRecord> {
   const existing = await db.rewards.get(reward.id)
@@ -80,6 +81,7 @@ export async function upsertRewardFromGift(
     title: reward.title.trim(),
     cost: Math.max(0, Math.round(reward.cost)),
     emoji: reward.emoji,
+    ...(reward.icon ? { icon: reward.icon } : {}),
     active: true,
     createdAt: at,
     updatedAt: at,

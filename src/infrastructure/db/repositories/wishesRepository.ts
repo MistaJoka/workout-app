@@ -11,8 +11,8 @@ export async function getWishBook(): Promise<WishBook> {
   return ((await db.settings.get(WISHES_KEY))?.value ?? {}) as WishBook
 }
 
-export async function addWish(input: { title: string; emoji: string }, at: string = new Date().toISOString()): Promise<Wish> {
-  const wish: Wish = { id: newId(), title: input.title.trim(), emoji: input.emoji, createdAt: at }
+export async function addWish(input: { title: string; emoji: string; icon?: string }, at: string = new Date().toISOString()): Promise<Wish> {
+  const wish: Wish = { id: newId(), title: input.title.trim(), emoji: input.emoji, ...(input.icon ? { icon: input.icon } : {}), createdAt: at }
   await db.transaction('rw', db.settings, async () => {
     const book = await getWishBook()
     await db.settings.put({ key: WISHES_KEY, value: { ...book, [wish.id]: wish } })
