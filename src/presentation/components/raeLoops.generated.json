@@ -973,13 +973,13 @@
   {
     "id": "ex-kneeling-side-leg-lift",
     "name": "Kneeling Side Leg Lift",
-    "width": 202,
+    "width": 262,
     "height": 264,
     "stills": [
       0,
       1
     ],
-    "v": "ce6eb22185",
+    "v": "168fc26476",
     "exerciseIds": [
       "rae.kneeling-side-leg-lift"
     ],

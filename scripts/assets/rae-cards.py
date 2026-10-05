@@ -103,7 +103,7 @@ def panel_cuts(profile: np.ndarray) -> tuple[list[int], float]:
     return cuts, float(sum(profile[c] for c in cuts)) / (2 * profile.max())
 
 
-def figures(cut: Image.Image, label_cuts: list[int] | None = None) -> Image.Image:
+def figures(cut: Image.Image, label_cuts: list[int] | None = None, fixed_cuts: list[float] | None = None) -> Image.Image:
     """Rae three times, laid out left to right, bottoms aligned: the strip
     shape the builder expects. The card's panels sit side by side (standing
     moves) or stacked (floor moves); whichever way has the cleaner gaps is
@@ -116,7 +116,12 @@ def figures(cut: Image.Image, label_cuts: list[int] | None = None) -> Image.Imag
     down_cuts, down = panel_cuts(alpha.sum(1))
     side_by_side = across <= down
     cuts = across_cuts if side_by_side else down_cuts
-    if label_cuts and not side_by_side and down > 0.05:
+    if fixed_cuts:
+        # A card where one pose truly crosses into the next panel (a raised
+        # foot) names its own cut points, as fractions across the band.
+        side_by_side = True
+        cuts = [int(alpha.shape[1] * f) for f in fixed_cuts]
+    elif label_cuts and not side_by_side and down > 0.05:
         # Stacked card whose heads reach up into the panel above, so even the
         # emptiest line runs through a body: cut just above the card's own
         # numbered labels instead.
@@ -179,7 +184,7 @@ def main() -> None:
         cut = remove(band, session=session)
         cut.putalpha(cut.getchannel('A').point(lambda v: 255 if v >= 128 else 0))
         try:
-            cut = figures(cut, label_cuts)
+            cut = figures(cut, label_cuts, card.get('cuts'))
         except ValueError as error:
             sys.exit(f"{card['slug']}: {error}")
         strip_path = LIB / f'{loop}-card-strip-v1.png'

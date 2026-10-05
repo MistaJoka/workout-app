@@ -292,7 +292,18 @@
         "Glutes",
         "Balance"
       ],
-      "moveId": "rae.kneeling-side-leg-lift"
+      "moveId": "rae.kneeling-side-leg-lift",
+      "cuts": [
+        0.31,
+        0.745
+      ],
+      "note": "The raised foot in panel 2 overlaps panel 3's figure, so no cut separates them: the panels are cut just past the foot and the loop plays Start and Lift (Lower is the same pose as Start).",
+      "order": "0,1",
+      "hold": "0:3,1:3",
+      "stills": [
+        0,
+        1
+      ]
     },
     {
       "slug": "lateral-lunge",
