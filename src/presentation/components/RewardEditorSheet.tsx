@@ -1,7 +1,7 @@
 import { RewardGlyph } from './RewardGlyph'
 import { REWARD_ICONS } from '../../domain/rewards/rewardIcons'
 import { pickEmoji, pickIcon, STARTER_IDEAS, type IconDraft } from '../rewardDraft'
-import { rewardTier, weeksFor, workoutsFor } from '../../domain/rewards/pricing'
+import { rewardTier, weeklyForecast, workoutsFor } from '../../domain/rewards/pricing'
 import { useRef, useState } from 'react'
 import { useSheetFocus } from './useSheetFocus'
 import type { RewardRecord } from '../../infrastructure/db/schema'
@@ -205,7 +205,9 @@ export function RewardEditorSheet({
             </div>
             <p className="text-right text-sm text-ink-muted" data-testid="cost-in-workouts">
               ≈ {workoutsFor(draft.cost)} {workoutsFor(draft.cost) === 1 ? 'workout' : 'workouts'}
-              {rewardTier(draft.cost) === 'mega' && `, about ${weeksFor(draft.cost, weeklyGoal)} weeks at ${weeklyGoal} a week`}
+              {/* The same forecast her Schedule shows (workouts plus the weekly-goal
+                  bonus), so the two never disagree. */}
+              {rewardTier(draft.cost) === 'mega' && `, about ${weeklyForecast(weeklyGoal, draft.cost).weeks} weeks at ${weeklyGoal} a week`}
             </p>
             <div className="flex gap-2" role="group" aria-label="Quick prices">
               {PRICE_PRESETS.map((preset) => (

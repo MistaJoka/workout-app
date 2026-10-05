@@ -5,6 +5,7 @@ import { rewardTier } from '../../domain/rewards/pricing'
 import { loadCarrotBalance } from './CarrotCelebration'
 import { RewardGlyph } from './RewardGlyph'
 import { RoadProgress } from './RoadProgress'
+import { goalGainView } from './goalGainView'
 import { SAVING_FOR_KEY, savingGoalReward } from './SavingGoal'
 import type { RewardRecord } from '../../infrastructure/db/schema'
 import { useTheme } from '../theme/ThemeContext'
@@ -50,6 +51,14 @@ export function GoalGain({ gain }: { gain: number }) {
 
   if (!goal || shown == null) return null
   const { reward, before, after } = goal
+  if (goalGainView(before, after, reward.cost).kind === 'ready') {
+    return (
+      <p className="flex items-center gap-2 text-sm font-bold" data-testid="goal-gain">
+        <RewardGlyph emoji={reward.emoji} icon={reward.icon} size={28} />
+        <span className="min-w-0 flex-1 truncate">{reward.title} · ready!</span>
+      </p>
+    )
+  }
   const label = `Saving for ${reward.title}: ${after} of ${reward.cost} carrots, up from ${before}`
   return (
     <div className="space-y-1" data-testid="goal-gain">

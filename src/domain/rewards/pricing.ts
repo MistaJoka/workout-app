@@ -49,12 +49,6 @@ export function savingProgress(balance: number, cost: number): SavingProgress {
   }
 }
 
-// A price told in weeks at her own pace (her weekly goal): "about 14
-// weeks at 3 a week" for a mega prize.
-export function weeksFor(cost: number, perWeek: number): number {
-  return Math.ceil(workoutsFor(cost) / Math.max(1, perWeek))
-}
-
 // What a planned week is worth toward a goal: each workout plus the
 // weekly-goal bonus. A week with nothing planned counts the default goal.
 // `ready` instead of "~0 weeks" once the goal is already within reach.

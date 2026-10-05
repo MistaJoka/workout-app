@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest'
-import { CARROTS_PER_WORKOUT, rewardTier, savingProgress, weeklyForecast, weeksFor, workoutsFor, workoutsToGoAfter } from './pricing'
+import { CARROTS_PER_WORKOUT, rewardTier, savingProgress, weeklyForecast, workoutsFor, workoutsToGoAfter } from './pricing'
 
 describe('workoutsFor: a price told in workouts', () => {
   it('rounds to the nearest workout, never below one', () => {
@@ -41,10 +41,6 @@ describe('mega prizes', () => {
     expect(rewardTier(1000)).toBe('mega')
   })
 
-  it('tells a price in weeks at her own weekly pace', () => {
-    expect(weeksFor(1000, 3)).toBe(14)
-    expect(weeksFor(1000, 0)).toBe(40)
-  })
 })
 
 describe('weeklyForecast: what a planned week is worth toward a goal', () => {

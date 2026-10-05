@@ -35,7 +35,7 @@ test('a mega goal shows as a road; a small one keeps its bar', async ({ page }) 
   // The editor tells a mega price in weeks too.
   await page.getByRole('button', { name: '+ Add a reward' }).click()
   await page.getByRole('button', { name: 'Mega 1000' }).click()
-  await expect(page.getByTestId('cost-in-workouts')).toHaveText('≈ 40 workouts, about 20 weeks at 2 a week')
+  await expect(page.getByTestId('cost-in-workouts')).toHaveText('≈ 40 workouts, about 15 weeks at 2 a week')
   await page.getByRole('button', { name: 'Cancel' }).click()
 
   await addIdea(page, 'Road trip')
