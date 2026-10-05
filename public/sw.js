@@ -136,6 +136,8 @@ async function pruneMedia() {
     for (const loop of await loopsResponse.json()) {
       current.set(`${BASE}rae/${loop.id}.webp`, loop.v)
       for (const still of loop.stills) current.set(`${BASE}rae/${loop.id}-${still}.png`, loop.v)
+      // The owner's exercise card ("How to" picture), when the loop has one.
+      if (loop.card) current.set(`${BASE}${loop.card}`, loop.v)
     }
   }
   const photos = []

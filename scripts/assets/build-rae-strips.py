@@ -35,6 +35,8 @@ for strip in [] if INDEX_ONLY else json.loads((SRC / 'strips.json').read_text())
         '--order', strip['order'], '--hold', strip['hold'], '--fps', str(strip['fps']),
         # Library-scale strips publish only the loop and its review stills.
         *(['--stills', ','.join(map(str, strip['stills'])), '--lossy'] if strip.get('lean') else []),
+        # Cut out of an exercise card (rae-cards.py): RGBA, no magenta key.
+        *(['--alpha'] if strip.get('alpha') else []),
     ], check=True)
 
 
@@ -66,6 +68,9 @@ for strip in json.loads((SRC / 'strips.json').read_text()):
         'featured': strip.get('featured', not strip.get('lean', False)),
         # Meet Rae groups featured moves by where they came from.
         'group': GROUPS.get(strip.get('batch', ''), 'Library'),
+        # The owner's whole exercise card, when the loop came from one
+        # (rae-cards.py): the exercise's "How to" picture.
+        **({'card': strip['card']} if strip.get('card') else {}),
     })
 text = json.dumps(loops, indent=2) + '\n'
 (ROOT / 'public/rae/loops.json').write_text(text)

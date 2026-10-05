@@ -11,6 +11,7 @@
 // Rae's loops (assets/pixel-bloom/character/rae/source/exercise/strips.json)
 // are the media.
 import type { Exercise } from '../types'
+import { raeCardMoves } from './raeCardMoves'
 
 const PROVENANCE = {
   author: 'owner-requested; steps drafted by Claude Code from the Rae strip art',
@@ -121,7 +122,10 @@ export const raeMoves: Exercise[] = [
 // resolvable (a routine may already use them) but are not listed.
 const RETIRED = new Set(['rae.chair-sit-to-stand-hands-clasped', 'rae.chair-sit-to-stand-hands-on-thighs'])
 
-export const raeMoveById: ReadonlyMap<string, Exercise> = new Map(raeMoves.map((e) => [e.id, e]))
+// The owner's exercise cards add their own moves (raeCardMoves.ts).
+const allRaeMoves: Exercise[] = [...raeMoves, ...raeCardMoves]
+
+export const raeMoveById: ReadonlyMap<string, Exercise> = new Map(allRaeMoves.map((e) => [e.id, e]))
 
 // What the Library lists and the routine builder offers.
-export const listedRaeMoves: Exercise[] = raeMoves.filter((e) => !RETIRED.has(e.id))
+export const listedRaeMoves: Exercise[] = allRaeMoves.filter((e) => !RETIRED.has(e.id))

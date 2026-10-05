@@ -1,3 +1,4 @@
+import { raeCardMoves } from './fixtures/raeCardMoves'
 import { describe, expect, it } from 'vitest'
 import { raeMoves } from './fixtures/raeMoves'
 import { validateContentPack } from './schema'
@@ -23,7 +24,9 @@ describe('Rae moves', () => {
     expect((await getExercises([id])).get(id)?.name).toBe('Chair Squat Tap')
     const library = await loadLibrary()
     const listed = library.filter((e) => e.id.startsWith('rae.')).map((e) => e.id)
-    expect(listed).toHaveLength(13)
+    // 13 drawn-strip moves plus one per new move on the owner's cards.
+    expect(listed).toHaveLength(13 + raeCardMoves.length)
+    expect(raeCardMoves).toHaveLength(26)
     expect(listed).toContain('rae.seated-march')
     expect(listed).not.toContain('rae.chair-sit-to-stand-hands-clasped')
     expect(listed).not.toContain('rae.chair-sit-to-stand-hands-on-thighs')

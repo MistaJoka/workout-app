@@ -28,7 +28,7 @@ test.describe('library: Rae first', () => {
   test('search results also lead with Rae', async ({ page }) => {
     await page.goto('/#/library')
     await page.getByPlaceholder('Search exercises').fill('squat')
-    await expect(page.getByText('6 exercises')).toBeVisible()
+    await expect(page.getByText('8 exercises')).toBeVisible()
     await expect(page.locator('ul > li a').first().locator('img.pixelated')).toHaveCount(1)
   })
 })

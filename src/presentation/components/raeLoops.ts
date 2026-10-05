@@ -44,3 +44,12 @@ export function raeStillFor(exerciseId: string | undefined): { src: string; alt:
   const frame = loop.stills[loop.stills.length - 1]
   return { src: raeStillUrl(loop.id, frame), alt: `Rae, ${loop.name.toLowerCase()}` }
 }
+
+// The owner's whole exercise card for a move, when its loop came from one
+// (scripts/assets/rae-cards.py): shown as the move's "How to" picture.
+// Versioned with the loop, so the service worker keeps it (sw.js prune).
+export function raeCardFor(exerciseId: string | undefined): { src: string; alt: string } | null {
+  const loop = raeLoopForExercise(exerciseId)
+  if (!loop || !('card' in loop) || !loop.card) return null
+  return { src: versioned(asset(loop.card), loop.id), alt: `${loop.name} how-to card` }
+}

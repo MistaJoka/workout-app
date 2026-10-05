@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest'
-import { RAE_LOOPS, raeLoopForExercise, raeLoopUrl, raeStillFor, raeStillUrl } from './raeLoops'
+import { RAE_LOOPS, raeLoopForExercise, raeLoopUrl, raeStillFor, raeStillUrl, raeCardFor } from './raeLoops'
 
 describe('raeLoopForExercise', () => {
   it('finds the loop for each of the 9 curated exercises', () => {
@@ -68,5 +68,17 @@ describe('versioned loop URLs', () => {
 
   it('falls back to a bare URL for an id it does not know', () => {
     expect(raeLoopUrl('ex-nope')).toBe('/rae/ex-nope.webp')
+  })
+})
+
+describe('raeCardFor', () => {
+  it("gives a card move's how-to card, versioned like its loop", () => {
+    const card = raeCardFor('rae.clamshell')
+    expect(card?.src).toMatch(/rae\/cards\/clamshell\.webp\?v=\w+$/)
+    expect(card?.alt).toBe('Clamshell how-to card')
+  })
+  it('is null for a move without a card', () => {
+    expect(raeCardFor('fs.bodyweight-squat')).toBeNull()
+    expect(raeCardFor(undefined)).toBeNull()
   })
 })

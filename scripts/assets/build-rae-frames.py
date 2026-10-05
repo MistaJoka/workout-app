@@ -73,12 +73,18 @@ def main() -> None:
     ap.add_argument('--fps', type=int, default=8)
     ap.add_argument('--stills', default='', help='only write these key frames as PNGs (default: all, plus a sprite sheet)')
     ap.add_argument('--lossy', action='store_true', help='lossy webp loop (library scale: ~3x smaller)')
+    ap.add_argument('--alpha', action='store_true',
+                    help='strip is RGBA, cut out of an exercise card by rae-cards.py: use its transparency instead of the magenta key, and keep enclosed gaps (between arm and body) open')
     ap.add_argument('--anchor', choices=['foot', 'center', 'grid'], default='foot',
                     help="grid: frames sit in N equal slots across the strip and keep the position they were drawn at (floor moves, props)")
     args = ap.parse_args()
 
-    rgb = np.asarray(Image.open(args.strip).convert('RGB'))
-    fg = key_magenta(rgb)
+    if args.alpha:
+        rgba = np.asarray(Image.open(args.strip).convert('RGBA'))
+        rgb, fg = rgba[..., :3], rgba[..., 3] >= 128
+    else:
+        rgb = np.asarray(Image.open(args.strip).convert('RGB'))
+        fg = key_magenta(rgb)
     if args.anchor == 'grid':
         build(grid_frames(rgb, fg, args.frames), args)
         return
@@ -92,7 +98,10 @@ def main() -> None:
         ys, xs = np.where(band)
         y0, y1 = ys.min(), ys.max() + 1
         m = band[y0:y1]
-        m = nd.binary_fill_holes(m)
+        # A magenta key can punch holes in Rae's pink top, so they are
+        # filled; a card cut-out's enclosed gaps are real background.
+        if not args.alpha:
+            m = nd.binary_fill_holes(m)
         rgba = np.dstack([rgb[y0:y1, x0:x1], m * 255]).astype(np.uint8)
         frames.append(despill(rgba))
 

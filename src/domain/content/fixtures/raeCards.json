@@ -1,0 +1,669 @@
+{
+  "about": "Owner-made Rae exercise cards (ChatGPT, downloaded 2026-10-04 19:32-20:05). Owner: \"These latest images are of the highest quality ... replace the old stuff.\" scripts/assets/rae-cards.py cuts Rae out of each card into a loop and publishes the card; cues/targets are transcribed from the card itself.",
+  "cards": [
+    {
+      "slug": "bent-knee-fallout",
+      "loopId": "bent-knee-fallout",
+      "name": "Bent-Knee Fallout",
+      "exerciseIds": [
+        "rae.bent-knee-fallout"
+      ],
+      "newMove": true,
+      "replaces": false,
+      "cues": [
+        "Feet flat",
+        "Move one knee at a time",
+        "Open only as comfortable",
+        "Return with control"
+      ],
+      "targets": [
+        "Hips",
+        "Core",
+        "Mobility"
+      ],
+      "moveId": "rae.bent-knee-fallout"
+    },
+    {
+      "slug": "bodyweight-good-morning",
+      "loopId": "bodyweight-good-morning",
+      "name": "Bodyweight Good Morning",
+      "exerciseIds": [
+        "rae.bodyweight-good-morning"
+      ],
+      "newMove": true,
+      "replaces": false,
+      "cues": [
+        "Soft knees",
+        "Push hips back",
+        "Keep chest open",
+        "Return to standing"
+      ],
+      "targets": [
+        "Hamstrings",
+        "Glutes",
+        "Back Line"
+      ],
+      "moveId": "rae.bodyweight-good-morning"
+    },
+    {
+      "slug": "bridge-hold",
+      "loopId": "bridge-hold",
+      "name": "Bridge Hold",
+      "exerciseIds": [
+        "rae.bridge-hold"
+      ],
+      "newMove": true,
+      "replaces": false,
+      "cues": [
+        "Feet flat",
+        "Lift your hips gently",
+        "Keep knees aligned",
+        "Hold with control"
+      ],
+      "targets": [
+        "Glutes",
+        "Hamstrings",
+        "Core"
+      ],
+      "moveId": "rae.bridge-hold"
+    },
+    {
+      "slug": "butterfly-stretch",
+      "loopId": "butterfly-stretch",
+      "name": "Butterfly Stretch",
+      "exerciseIds": [
+        "rae.butterfly-stretch"
+      ],
+      "newMove": true,
+      "replaces": false,
+      "cues": [
+        "Soles of the feet together",
+        "Sit tall first",
+        "Lean forward gently",
+        "Breathe and relax"
+      ],
+      "targets": [
+        "Inner Thighs",
+        "Hips",
+        "Stretch"
+      ],
+      "order": "1,2",
+      "hold": "1:3,2:3",
+      "stills": [
+        1,
+        2
+      ],
+      "note": "Panel 1's ears overlap the card's badge row, so they can't be cut out whole; the loop plays Sit tall and Lean.",
+      "moveId": "rae.butterfly-stretch"
+    },
+    {
+      "slug": "clamshell",
+      "loopId": "clamshell",
+      "name": "Clamshell",
+      "exerciseIds": [
+        "rae.clamshell"
+      ],
+      "newMove": true,
+      "replaces": false,
+      "cues": [
+        "Knees bent",
+        "Feet stay together",
+        "Open from the hip",
+        "Close with control"
+      ],
+      "targets": [
+        "Glutes",
+        "Outer Hips",
+        "Core"
+      ],
+      "moveId": "rae.clamshell"
+    },
+    {
+      "slug": "donkey-kick",
+      "loopId": "donkey-kick",
+      "name": "Donkey Kick",
+      "exerciseIds": [
+        "rae.donkey-kick"
+      ],
+      "newMove": true,
+      "replaces": false,
+      "cues": [
+        "Hands under shoulders",
+        "Knees under hips",
+        "Lift the bent leg",
+        "Keep your core steady"
+      ],
+      "targets": [
+        "Glutes",
+        "Hamstrings",
+        "Core"
+      ],
+      "moveId": "rae.donkey-kick"
+    },
+    {
+      "slug": "figure-4-stretch",
+      "loopId": "figure-4-stretch",
+      "name": "Figure-4 Stretch",
+      "exerciseIds": [
+        "rae.figure-4-stretch"
+      ],
+      "newMove": true,
+      "replaces": false,
+      "cues": [
+        "Cross ankle over thigh",
+        "Keep shoulders relaxed",
+        "Draw in gently",
+        "Breathe during the hold"
+      ],
+      "targets": [
+        "Glutes",
+        "Hips",
+        "Stretch"
+      ],
+      "moveId": "rae.figure-4-stretch"
+    },
+    {
+      "slug": "fire-hydrant",
+      "loopId": "fire-hydrant",
+      "name": "Fire Hydrant",
+      "exerciseIds": [
+        "rae.fire-hydrant"
+      ],
+      "newMove": true,
+      "replaces": false,
+      "cues": [
+        "Hands under shoulders",
+        "Knees under hips",
+        "Lift the knee to the side",
+        "Stay steady through your core"
+      ],
+      "targets": [
+        "Glutes",
+        "Outer Hips",
+        "Core"
+      ],
+      "moveId": "rae.fire-hydrant"
+    },
+    {
+      "slug": "glute-bridge-march",
+      "loopId": "glute-bridge-march",
+      "name": "Glute Bridge March",
+      "exerciseIds": [
+        "rae.glute-bridge-march"
+      ],
+      "newMove": true,
+      "replaces": false,
+      "cues": [
+        "Lift hips first",
+        "Keep your pelvis steady",
+        "March one leg at a time",
+        "Move with control"
+      ],
+      "targets": [
+        "Glutes",
+        "Core",
+        "Stability"
+      ],
+      "moveId": "rae.glute-bridge-march"
+    },
+    {
+      "slug": "heel-taps",
+      "loopId": "heel-taps",
+      "name": "Heel Taps",
+      "exerciseIds": [
+        "rae.heel-taps"
+      ],
+      "newMove": true,
+      "replaces": false,
+      "cues": [
+        "Keep your core steady",
+        "Move one leg at a time",
+        "Tap the heel lightly",
+        "Return with control"
+      ],
+      "targets": [
+        "Core",
+        "Coordination",
+        "Stability"
+      ],
+      "moveId": "rae.heel-taps"
+    },
+    {
+      "slug": "hip-circles",
+      "loopId": "hip-circles-standing",
+      "name": "Hip Circles",
+      "exerciseIds": [
+        "rae.hip-circles"
+      ],
+      "newMove": true,
+      "replaces": false,
+      "cues": [
+        "Stand tall",
+        "Hands on hips",
+        "Make small circles",
+        "Move comfortably"
+      ],
+      "targets": [
+        "Hips",
+        "Core",
+        "Mobility"
+      ],
+      "moveId": "rae.hip-circles"
+    },
+    {
+      "slug": "knee-push-up",
+      "loopId": "knee-push-up",
+      "name": "Knee Push-Up",
+      "exerciseIds": [
+        "rae.knee-push-up"
+      ],
+      "newMove": true,
+      "replaces": false,
+      "cues": [
+        "Hands under shoulders",
+        "Knees on the mat",
+        "Lower with control",
+        "Press back up"
+      ],
+      "targets": [
+        "Chest",
+        "Shoulders",
+        "Arms"
+      ],
+      "moveId": "rae.knee-push-up"
+    },
+    {
+      "slug": "kneeling-side-leg-lift",
+      "loopId": "kneeling-side-leg-lift",
+      "name": "Kneeling Side Leg Lift",
+      "exerciseIds": [
+        "rae.kneeling-side-leg-lift"
+      ],
+      "newMove": true,
+      "replaces": false,
+      "cues": [
+        "Stay tall through your torso",
+        "Lift the leg to the side",
+        "Keep the standing knee grounded",
+        "Lower with control"
+      ],
+      "targets": [
+        "Outer Hips",
+        "Glutes",
+        "Balance"
+      ],
+      "moveId": "rae.kneeling-side-leg-lift"
+    },
+    {
+      "slug": "lateral-lunge",
+      "loopId": "lateral-lunge",
+      "name": "Lateral Lunge",
+      "exerciseIds": [
+        "rae.lateral-lunge"
+      ],
+      "newMove": true,
+      "replaces": false,
+      "cues": [
+        "Step out to the side",
+        "Sit back gently",
+        "Keep the other leg long",
+        "Return with control"
+      ],
+      "targets": [
+        "Legs",
+        "Glutes",
+        "Inner Thighs"
+      ],
+      "moveId": "rae.lateral-lunge"
+    },
+    {
+      "slug": "low-impact-jack",
+      "loopId": "low-impact-jack",
+      "name": "Low-Impact Jack",
+      "exerciseIds": [
+        "rae.low-impact-jack"
+      ],
+      "newMove": true,
+      "replaces": false,
+      "cues": [
+        "Step out, don't jump",
+        "Arms move comfortably",
+        "Keep a steady rhythm",
+        "Step back in with control"
+      ],
+      "targets": [
+        "Cardio",
+        "Coordination",
+        "Full Body"
+      ],
+      "moveId": "rae.low-impact-jack"
+    },
+    {
+      "slug": "pelvic-tilt",
+      "loopId": "pelvic-tilt",
+      "name": "Pelvic Tilt",
+      "exerciseIds": [
+        "rae.pelvic-tilt"
+      ],
+      "newMove": true,
+      "replaces": false,
+      "cues": [
+        "Feet flat",
+        "Gently flatten your lower back",
+        "Exhale as you tilt",
+        "Return to neutral"
+      ],
+      "targets": [
+        "Core",
+        "Pelvis",
+        "Back Comfort"
+      ],
+      "moveId": "rae.pelvic-tilt"
+    },
+    {
+      "slug": "reverse-crunch",
+      "loopId": "reverse-crunch",
+      "name": "Reverse Crunch",
+      "exerciseIds": [
+        "lib.Reverse_Crunch"
+      ],
+      "newMove": false,
+      "replaces": false,
+      "cues": [
+        "Knees start over hips",
+        "Lift with your core",
+        "Small controlled motion",
+        "Lower slowly"
+      ],
+      "targets": [
+        "Lower Core",
+        "Abs",
+        "Control"
+      ]
+    },
+    {
+      "slug": "reverse-lunge",
+      "loopId": "reverse-lunge",
+      "name": "Reverse Lunge",
+      "exerciseIds": [
+        "rae.reverse-lunge"
+      ],
+      "newMove": false,
+      "replaces": true,
+      "cues": [
+        "Step back gently",
+        "Keep chest lifted",
+        "Bend both knees comfortably",
+        "Return with control"
+      ],
+      "targets": [
+        "Legs",
+        "Glutes",
+        "Balance"
+      ]
+    },
+    {
+      "slug": "seated-forward-reach",
+      "loopId": "seated-forward-reach-floor",
+      "name": "Seated Forward Reach",
+      "exerciseIds": [
+        "rae.seated-forward-reach-floor"
+      ],
+      "newMove": true,
+      "replaces": false,
+      "cues": [
+        "Legs extend comfortably",
+        "Sit tall first",
+        "Reach forward gently",
+        "Breathe and relax"
+      ],
+      "targets": [
+        "Hamstrings",
+        "Back Line",
+        "Stretch"
+      ],
+      "moveId": "rae.seated-forward-reach-floor",
+      "note": "Not the chair move rae.seated-forward-reach (Chair day): this card is the floor version, so it is its own move."
+    },
+    {
+      "slug": "seated-hamstring-stretch",
+      "loopId": "seated-hamstring-stretch",
+      "name": "Seated Hamstring Stretch",
+      "exerciseIds": [
+        "lib.Seated_Floor_Hamstring_Stretch"
+      ],
+      "newMove": false,
+      "replaces": false,
+      "cues": [
+        "One leg long",
+        "Sit tall first",
+        "Reach gently toward the foot",
+        "Breathe during the stretch"
+      ],
+      "targets": [
+        "Hamstrings",
+        "Calves",
+        "Stretch"
+      ]
+    },
+    {
+      "slug": "side-lying-leg-raise",
+      "loopId": "side-lying-leg-raise",
+      "name": "Side-Lying Leg Raise",
+      "exerciseIds": [
+        "rae.side-lying-leg-raise"
+      ],
+      "newMove": true,
+      "replaces": false,
+      "cues": [
+        "Keep hips stacked",
+        "Lift the top leg slowly",
+        "Toes face forward",
+        "Lower with control"
+      ],
+      "targets": [
+        "Outer Hips",
+        "Glutes",
+        "Core"
+      ],
+      "moveId": "rae.side-lying-leg-raise"
+    },
+    {
+      "slug": "single-knee-hug",
+      "loopId": "single-knee-hug",
+      "name": "Single Knee Hug",
+      "exerciseIds": [
+        "lib.One_Knee_To_Chest"
+      ],
+      "newMove": false,
+      "replaces": false,
+      "cues": [
+        "Shoulders stay relaxed",
+        "Draw the knee in gently",
+        "Breathe slowly",
+        "Release with control"
+      ],
+      "targets": [
+        "Hips",
+        "Low Back",
+        "Stretch"
+      ]
+    },
+    {
+      "slug": "squat-to-calf-raise",
+      "loopId": "squat-to-calf-raise",
+      "name": "Squat to Calf Raise",
+      "exerciseIds": [
+        "rae.squat-to-calf-raise"
+      ],
+      "newMove": true,
+      "replaces": false,
+      "cues": [
+        "Sit back gently",
+        "Stand up tall",
+        "Lift your heels",
+        "Lower with control"
+      ],
+      "targets": [
+        "Legs",
+        "Glutes",
+        "Calves"
+      ],
+      "moveId": "rae.squat-to-calf-raise"
+    },
+    {
+      "slug": "standing-calf-raise",
+      "loopId": "standing-calf-raise",
+      "name": "Standing Calf Raise",
+      "exerciseIds": [
+        "rae.standing-calf-raise"
+      ],
+      "newMove": true,
+      "replaces": false,
+      "cues": [
+        "Stand tall",
+        "Lift your heels",
+        "Pause briefly at the top",
+        "Lower slowly"
+      ],
+      "targets": [
+        "Calves",
+        "Ankles",
+        "Balance"
+      ],
+      "moveId": "rae.standing-calf-raise"
+    },
+    {
+      "slug": "standing-kickback",
+      "loopId": "standing-kickback",
+      "name": "Standing Kickback",
+      "exerciseIds": [
+        "rae.standing-kickback"
+      ],
+      "newMove": true,
+      "replaces": false,
+      "cues": [
+        "Stand tall",
+        "Kick back gently",
+        "Keep your core steady",
+        "Return with control"
+      ],
+      "targets": [
+        "Glutes",
+        "Hamstrings",
+        "Balance"
+      ],
+      "moveId": "rae.standing-kickback"
+    },
+    {
+      "slug": "standing-punches",
+      "loopId": "standing-punches",
+      "name": "Standing Punches",
+      "exerciseIds": [
+        "rae.standing-punches"
+      ],
+      "newMove": true,
+      "replaces": false,
+      "cues": [
+        "Stand tall",
+        "Punch straight ahead",
+        "Keep shoulders relaxed",
+        "Alternate sides"
+      ],
+      "targets": [
+        "Cardio",
+        "Shoulders",
+        "Coordination"
+      ],
+      "moveId": "rae.standing-punches"
+    },
+    {
+      "slug": "sumo-squat",
+      "loopId": "sumo-squat",
+      "name": "Sumo Squat",
+      "exerciseIds": [
+        "rae.sumo-squat"
+      ],
+      "newMove": true,
+      "replaces": false,
+      "cues": [
+        "Feet wide",
+        "Toes slightly out",
+        "Lower comfortably",
+        "Stand back up with control"
+      ],
+      "targets": [
+        "Legs",
+        "Glutes",
+        "Inner Thighs"
+      ],
+      "moveId": "rae.sumo-squat"
+    },
+    {
+      "slug": "supine-march",
+      "loopId": "supine-march",
+      "name": "Supine March",
+      "exerciseIds": [
+        "rae.supine-march"
+      ],
+      "newMove": true,
+      "replaces": false,
+      "cues": [
+        "Feet start flat",
+        "Lift one foot at a time",
+        "Keep your core steady",
+        "Move slowly"
+      ],
+      "targets": [
+        "Core",
+        "Hips",
+        "Control"
+      ],
+      "moveId": "rae.supine-march"
+    },
+    {
+      "slug": "tabletop-march",
+      "loopId": "tabletop-march",
+      "name": "Tabletop March",
+      "exerciseIds": [
+        "rae.tabletop-march"
+      ],
+      "newMove": true,
+      "replaces": false,
+      "cues": [
+        "Knees start over hips",
+        "Move slowly",
+        "Keep your back comfortable",
+        "Alternate sides"
+      ],
+      "targets": [
+        "Core",
+        "Hips",
+        "Control"
+      ],
+      "moveId": "rae.tabletop-march"
+    },
+    {
+      "slug": "thread-the-needle",
+      "loopId": "thread-the-needle",
+      "name": "Thread the Needle",
+      "exerciseIds": [
+        "rae.thread-the-needle"
+      ],
+      "newMove": true,
+      "replaces": false,
+      "cues": [
+        "Start on hands and knees",
+        "Slide one arm under",
+        "Rotate gently",
+        "Breathe into the stretch"
+      ],
+      "targets": [
+        "Upper Back",
+        "Shoulders",
+        "Mobility"
+      ],
+      "moveId": "rae.thread-the-needle"
+    }
+  ]
+}

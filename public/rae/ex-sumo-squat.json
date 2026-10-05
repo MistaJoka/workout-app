@@ -1,0 +1,21 @@
+{
+  "id": "ex-sumo-squat",
+  "source": "sumo-squat-card-strip-v1.png",
+  "frameWidth": 143,
+  "frameHeight": 264,
+  "frames": 3,
+  "timeline": [
+    {
+      "frame": 0,
+      "ms": 501
+    },
+    {
+      "frame": 1,
+      "ms": 501
+    },
+    {
+      "frame": 2,
+      "ms": 334
+    }
+  ]
+}

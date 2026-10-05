@@ -1,0 +1,21 @@
+{
+  "id": "ex-reverse-crunch",
+  "source": "reverse-crunch-card-strip-v1.png",
+  "frameWidth": 360,
+  "frameHeight": 128,
+  "frames": 3,
+  "timeline": [
+    {
+      "frame": 0,
+      "ms": 501
+    },
+    {
+      "frame": 1,
+      "ms": 501
+    },
+    {
+      "frame": 2,
+      "ms": 334
+    }
+  ]
+}

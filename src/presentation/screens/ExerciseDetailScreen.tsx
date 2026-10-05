@@ -8,6 +8,7 @@ import {
   listCustomTemplates,
 } from '../../infrastructure/db/repositories/customTemplateRepository'
 import { MovementMedia } from '../components/MovementMedia'
+import { raeCardFor } from '../components/raeLoops'
 import { ExerciseYou } from '../components/ExerciseYou'
 import { BackButton } from '../components/BackButton'
 import { Skeleton, SkeletonBlock, SkeletonHeading, SkeletonList } from '../components/Skeleton'
@@ -77,6 +78,7 @@ export function ExerciseDetailScreen() {
 
   const meta = exerciseMeta(exercise)
 
+  const howTo = raeCardFor(exercise.id)
   return (
     <div className="p-4 space-y-4 pb-24">
       <BackButton />
@@ -107,6 +109,17 @@ export function ExerciseDetailScreen() {
       <button className="btn-primary btn-lg w-full" onClick={openSheet}>
         Add to a routine
       </button>
+
+      {/* The owner's own card for this move, when it has one: Rae in three
+          steps with its cues, as a picture to study (rae-cards.py). */}
+      {howTo && (
+        <section className="space-y-2" aria-label="How to">
+          <p className="px-1 text-sm font-semibold text-ink-muted" aria-hidden>
+            How to
+          </p>
+          <img src={howTo.src} alt={howTo.alt} width={720} height={960} loading="lazy" className="h-auto w-full rounded-panel" />
+        </section>
+      )}
 
       {routines && (
         <div className="fixed inset-0 z-40 flex items-end bg-black/40" onClick={busy ? undefined : () => setRoutines(null)}>

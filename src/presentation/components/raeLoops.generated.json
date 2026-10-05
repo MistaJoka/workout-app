@@ -528,18 +528,19 @@
   {
     "id": "ex-reverse-lunge",
     "name": "Reverse Lunge",
-    "width": 246,
+    "width": 160,
     "height": 264,
     "stills": [
       0,
-      2
+      1
     ],
-    "v": "523df647c0",
+    "v": "71db8ebaa5",
     "exerciseIds": [
       "rae.reverse-lunge"
     ],
     "featured": true,
-    "group": "Chair and low-impact"
+    "group": "Library",
+    "card": "rae/cards/reverse-lunge.webp"
   },
   {
     "id": "ex-seated-march",
@@ -764,5 +765,498 @@
     ],
     "featured": false,
     "group": "Library"
+  },
+  {
+    "id": "ex-bent-knee-fallout",
+    "name": "Bent-Knee Fallout",
+    "width": 360,
+    "height": 104,
+    "stills": [
+      0,
+      1
+    ],
+    "v": "f9ffe50973",
+    "exerciseIds": [
+      "rae.bent-knee-fallout"
+    ],
+    "featured": false,
+    "group": "Library",
+    "card": "rae/cards/bent-knee-fallout.webp"
+  },
+  {
+    "id": "ex-bodyweight-good-morning",
+    "name": "Bodyweight Good Morning",
+    "width": 164,
+    "height": 264,
+    "stills": [
+      0,
+      1
+    ],
+    "v": "9df909985b",
+    "exerciseIds": [
+      "rae.bodyweight-good-morning"
+    ],
+    "featured": false,
+    "group": "Library",
+    "card": "rae/cards/bodyweight-good-morning.webp"
+  },
+  {
+    "id": "ex-bridge-hold",
+    "name": "Bridge Hold",
+    "width": 360,
+    "height": 107,
+    "stills": [
+      0,
+      1
+    ],
+    "v": "3c12674ffc",
+    "exerciseIds": [
+      "rae.bridge-hold"
+    ],
+    "featured": false,
+    "group": "Library",
+    "card": "rae/cards/bridge-hold.webp"
+  },
+  {
+    "id": "ex-butterfly-stretch",
+    "name": "Butterfly Stretch",
+    "width": 312,
+    "height": 264,
+    "stills": [
+      1,
+      2
+    ],
+    "v": "6ccf4c68bd",
+    "exerciseIds": [
+      "rae.butterfly-stretch"
+    ],
+    "featured": false,
+    "group": "Library",
+    "card": "rae/cards/butterfly-stretch.webp"
+  },
+  {
+    "id": "ex-clamshell",
+    "name": "Clamshell",
+    "width": 360,
+    "height": 128,
+    "stills": [
+      0,
+      1
+    ],
+    "v": "33bd22cf19",
+    "exerciseIds": [
+      "rae.clamshell"
+    ],
+    "featured": false,
+    "group": "Library",
+    "card": "rae/cards/clamshell.webp"
+  },
+  {
+    "id": "ex-donkey-kick",
+    "name": "Donkey Kick",
+    "width": 360,
+    "height": 168,
+    "stills": [
+      0,
+      1
+    ],
+    "v": "2e2398307a",
+    "exerciseIds": [
+      "rae.donkey-kick"
+    ],
+    "featured": false,
+    "group": "Library",
+    "card": "rae/cards/donkey-kick.webp"
+  },
+  {
+    "id": "ex-figure-4-stretch",
+    "name": "Figure-4 Stretch",
+    "width": 360,
+    "height": 126,
+    "stills": [
+      0,
+      1
+    ],
+    "v": "781f773880",
+    "exerciseIds": [
+      "rae.figure-4-stretch"
+    ],
+    "featured": false,
+    "group": "Library",
+    "card": "rae/cards/figure-4-stretch.webp"
+  },
+  {
+    "id": "ex-fire-hydrant",
+    "name": "Fire Hydrant",
+    "width": 360,
+    "height": 178,
+    "stills": [
+      0,
+      1
+    ],
+    "v": "016b2393a8",
+    "exerciseIds": [
+      "rae.fire-hydrant"
+    ],
+    "featured": false,
+    "group": "Library",
+    "card": "rae/cards/fire-hydrant.webp"
+  },
+  {
+    "id": "ex-glute-bridge-march",
+    "name": "Glute Bridge March",
+    "width": 360,
+    "height": 132,
+    "stills": [
+      0,
+      1
+    ],
+    "v": "4adb54bdf4",
+    "exerciseIds": [
+      "rae.glute-bridge-march"
+    ],
+    "featured": false,
+    "group": "Library",
+    "card": "rae/cards/glute-bridge-march.webp"
+  },
+  {
+    "id": "ex-heel-taps",
+    "name": "Heel Taps",
+    "width": 360,
+    "height": 127,
+    "stills": [
+      0,
+      1
+    ],
+    "v": "6e2ebe8566",
+    "exerciseIds": [
+      "rae.heel-taps"
+    ],
+    "featured": false,
+    "group": "Library",
+    "card": "rae/cards/heel-taps.webp"
+  },
+  {
+    "id": "ex-hip-circles-standing",
+    "name": "Hip Circles",
+    "width": 112,
+    "height": 264,
+    "stills": [
+      0,
+      1
+    ],
+    "v": "6e92566d25",
+    "exerciseIds": [
+      "rae.hip-circles"
+    ],
+    "featured": false,
+    "group": "Library",
+    "card": "rae/cards/hip-circles-standing.webp"
+  },
+  {
+    "id": "ex-knee-push-up",
+    "name": "Knee Push-Up",
+    "width": 360,
+    "height": 162,
+    "stills": [
+      0,
+      1
+    ],
+    "v": "fe81eed97d",
+    "exerciseIds": [
+      "rae.knee-push-up"
+    ],
+    "featured": false,
+    "group": "Library",
+    "card": "rae/cards/knee-push-up.webp"
+  },
+  {
+    "id": "ex-kneeling-side-leg-lift",
+    "name": "Kneeling Side Leg Lift",
+    "width": 202,
+    "height": 264,
+    "stills": [
+      0,
+      1
+    ],
+    "v": "ce6eb22185",
+    "exerciseIds": [
+      "rae.kneeling-side-leg-lift"
+    ],
+    "featured": false,
+    "group": "Library",
+    "card": "rae/cards/kneeling-side-leg-lift.webp"
+  },
+  {
+    "id": "ex-lateral-lunge",
+    "name": "Lateral Lunge",
+    "width": 252,
+    "height": 264,
+    "stills": [
+      0,
+      1
+    ],
+    "v": "9967440cd0",
+    "exerciseIds": [
+      "rae.lateral-lunge"
+    ],
+    "featured": false,
+    "group": "Library",
+    "card": "rae/cards/lateral-lunge.webp"
+  },
+  {
+    "id": "ex-low-impact-jack",
+    "name": "Low-Impact Jack",
+    "width": 249,
+    "height": 264,
+    "stills": [
+      0,
+      1
+    ],
+    "v": "9af415511b",
+    "exerciseIds": [
+      "rae.low-impact-jack"
+    ],
+    "featured": false,
+    "group": "Library",
+    "card": "rae/cards/low-impact-jack.webp"
+  },
+  {
+    "id": "ex-pelvic-tilt",
+    "name": "Pelvic Tilt",
+    "width": 360,
+    "height": 105,
+    "stills": [
+      0,
+      1
+    ],
+    "v": "0173e611bb",
+    "exerciseIds": [
+      "rae.pelvic-tilt"
+    ],
+    "featured": false,
+    "group": "Library",
+    "card": "rae/cards/pelvic-tilt.webp"
+  },
+  {
+    "id": "ex-reverse-crunch",
+    "name": "Reverse Crunch",
+    "width": 360,
+    "height": 128,
+    "stills": [
+      0,
+      1
+    ],
+    "v": "6dbdcdbac8",
+    "exerciseIds": [
+      "lib.Reverse_Crunch"
+    ],
+    "featured": false,
+    "group": "Library",
+    "card": "rae/cards/reverse-crunch.webp"
+  },
+  {
+    "id": "ex-seated-hamstring-stretch",
+    "name": "Seated Hamstring Stretch",
+    "width": 360,
+    "height": 143,
+    "stills": [
+      0,
+      1
+    ],
+    "v": "562f51ef34",
+    "exerciseIds": [
+      "lib.Seated_Floor_Hamstring_Stretch"
+    ],
+    "featured": false,
+    "group": "Library",
+    "card": "rae/cards/seated-hamstring-stretch.webp"
+  },
+  {
+    "id": "ex-side-lying-leg-raise",
+    "name": "Side-Lying Leg Raise",
+    "width": 360,
+    "height": 108,
+    "stills": [
+      0,
+      1
+    ],
+    "v": "2d4b0ba617",
+    "exerciseIds": [
+      "rae.side-lying-leg-raise"
+    ],
+    "featured": false,
+    "group": "Library",
+    "card": "rae/cards/side-lying-leg-raise.webp"
+  },
+  {
+    "id": "ex-single-knee-hug",
+    "name": "Single Knee Hug",
+    "width": 360,
+    "height": 98,
+    "stills": [
+      0,
+      1
+    ],
+    "v": "ecb2f49173",
+    "exerciseIds": [
+      "lib.One_Knee_To_Chest"
+    ],
+    "featured": false,
+    "group": "Library",
+    "card": "rae/cards/single-knee-hug.webp"
+  },
+  {
+    "id": "ex-squat-to-calf-raise",
+    "name": "Squat to Calf Raise",
+    "width": 128,
+    "height": 264,
+    "stills": [
+      0,
+      1
+    ],
+    "v": "512c5b2596",
+    "exerciseIds": [
+      "rae.squat-to-calf-raise"
+    ],
+    "featured": false,
+    "group": "Library",
+    "card": "rae/cards/squat-to-calf-raise.webp"
+  },
+  {
+    "id": "ex-standing-calf-raise",
+    "name": "Standing Calf Raise",
+    "width": 100,
+    "height": 264,
+    "stills": [
+      0,
+      1
+    ],
+    "v": "94d3573cdc",
+    "exerciseIds": [
+      "rae.standing-calf-raise"
+    ],
+    "featured": false,
+    "group": "Library",
+    "card": "rae/cards/standing-calf-raise.webp"
+  },
+  {
+    "id": "ex-standing-kickback",
+    "name": "Standing Kickback",
+    "width": 179,
+    "height": 264,
+    "stills": [
+      0,
+      1
+    ],
+    "v": "edafba3e76",
+    "exerciseIds": [
+      "rae.standing-kickback"
+    ],
+    "featured": false,
+    "group": "Library",
+    "card": "rae/cards/standing-kickback.webp"
+  },
+  {
+    "id": "ex-standing-punches",
+    "name": "Standing Punches",
+    "width": 123,
+    "height": 264,
+    "stills": [
+      0,
+      1
+    ],
+    "v": "5082e7fce8",
+    "exerciseIds": [
+      "rae.standing-punches"
+    ],
+    "featured": false,
+    "group": "Library",
+    "card": "rae/cards/standing-punches.webp"
+  },
+  {
+    "id": "ex-sumo-squat",
+    "name": "Sumo Squat",
+    "width": 143,
+    "height": 264,
+    "stills": [
+      0,
+      1
+    ],
+    "v": "86c87a483a",
+    "exerciseIds": [
+      "rae.sumo-squat"
+    ],
+    "featured": false,
+    "group": "Library",
+    "card": "rae/cards/sumo-squat.webp"
+  },
+  {
+    "id": "ex-supine-march",
+    "name": "Supine March",
+    "width": 360,
+    "height": 93,
+    "stills": [
+      0,
+      1
+    ],
+    "v": "8f075f99bf",
+    "exerciseIds": [
+      "rae.supine-march"
+    ],
+    "featured": false,
+    "group": "Library",
+    "card": "rae/cards/supine-march.webp"
+  },
+  {
+    "id": "ex-tabletop-march",
+    "name": "Tabletop March",
+    "width": 360,
+    "height": 118,
+    "stills": [
+      0,
+      1
+    ],
+    "v": "f279c8fb08",
+    "exerciseIds": [
+      "rae.tabletop-march"
+    ],
+    "featured": false,
+    "group": "Library",
+    "card": "rae/cards/tabletop-march.webp"
+  },
+  {
+    "id": "ex-thread-the-needle",
+    "name": "Thread the Needle",
+    "width": 360,
+    "height": 108,
+    "stills": [
+      0,
+      1
+    ],
+    "v": "6d5b516c63",
+    "exerciseIds": [
+      "rae.thread-the-needle"
+    ],
+    "featured": false,
+    "group": "Library",
+    "card": "rae/cards/thread-the-needle.webp"
+  },
+  {
+    "id": "ex-seated-forward-reach-floor",
+    "name": "Seated Forward Reach",
+    "width": 360,
+    "height": 246,
+    "stills": [
+      0,
+      1
+    ],
+    "v": "5af317cba1",
+    "exerciseIds": [
+      "rae.seated-forward-reach-floor"
+    ],
+    "featured": false,
+    "group": "Library",
+    "card": "rae/cards/seated-forward-reach-floor.webp"
   }
 ]

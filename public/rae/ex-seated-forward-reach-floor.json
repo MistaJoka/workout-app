@@ -1,0 +1,21 @@
+{
+  "id": "ex-seated-forward-reach-floor",
+  "source": "seated-forward-reach-floor-card-strip-v1.png",
+  "frameWidth": 360,
+  "frameHeight": 246,
+  "frames": 3,
+  "timeline": [
+    {
+      "frame": 0,
+      "ms": 501
+    },
+    {
+      "frame": 1,
+      "ms": 501
+    },
+    {
+      "frame": 2,
+      "ms": 334
+    }
+  ]
+}

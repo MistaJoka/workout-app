@@ -104,8 +104,9 @@ test.describe('library and routines', () => {
     // No equipment for now (owner, 2026-09-28): the library shows only moves
     // that need nothing, so there is no equipment filter. Bodyweight Squat,
     // Rae's Mini Squat and Chair Squat Tap, Freehand Jump Squat, and the two
-    // upstream squats that list no equipment (Sit Squats, Split Squats).
-    await expect(page.getByText('6 exercises')).toBeVisible()
+    // upstream squats that list no equipment (Sit Squats, Split Squats),
+    // plus the owner's card moves Sumo Squat and Squat to Calf Raise.
+    await expect(page.getByText('8 exercises')).toBeVisible()
     await page.getByRole('button', { name: /^Filters/ }).click()
     await expect(page.getByText('Equipment', { exact: true })).toBeHidden()
     await page.getByRole('button', { name: 'Done' }).click()

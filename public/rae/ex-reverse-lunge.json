@@ -1,29 +1,21 @@
 {
   "id": "ex-reverse-lunge",
-  "source": "reverse-lunge-strip-v1.png",
-  "frameWidth": 246,
+  "source": "reverse-lunge-card-strip-v1.png",
+  "frameWidth": 160,
   "frameHeight": 264,
-  "frames": 5,
+  "frames": 3,
   "timeline": [
     {
       "frame": 0,
-      "ms": 375
+      "ms": 501
     },
     {
       "frame": 1,
-      "ms": 125
+      "ms": 501
     },
     {
       "frame": 2,
-      "ms": 375
-    },
-    {
-      "frame": 3,
-      "ms": 125
-    },
-    {
-      "frame": 4,
-      "ms": 125
+      "ms": 334
     }
   ]
 }

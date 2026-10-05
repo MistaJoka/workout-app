@@ -666,24 +666,26 @@
   {
     "id": "reverse-lunge",
     "name": "Reverse Lunge",
-    "source": "library/reverse-lunge-strip-v1.png",
-    "sha256": "cf867e64753df924f561e285bde47e2341f33549858da2089df01bd344fb6218",
-    "downloadedAs": "rae-low-impact-batch-15.zip:06-reverse-lunge.png (separator lines and neighbour slivers removed)",
-    "batch": "low-impact-15",
-    "frames": 5,
-    "anchor": "grid",
-    "order": "0,1,2,3,4",
-    "hold": "0:3,2:3",
-    "fps": 8,
+    "source": "library/reverse-lunge-card-strip-v1.png",
+    "sha256": "6af4d93651f77d5eda3d20faed253346a63fbfcec3fc44b68c8764a9d9c685e0",
+    "downloadedAs": "owner card reverse-lunge.png (sha256 3a5c1b072d0d)",
+    "batch": "cards-2026-10-04",
+    "frames": 3,
+    "anchor": "foot",
+    "order": "0,1,2",
+    "hold": "0:3,1:3,2:2",
+    "fps": 6,
     "stills": [
       0,
-      2
+      1
     ],
     "exerciseIds": [
       "rae.reverse-lunge"
     ],
+    "alpha": true,
+    "card": "rae/cards/reverse-lunge.webp",
     "featured": true,
-    "redraw": "Off-model (afro puff, headband ears, arm tattoos) and low-res (~190px source). Owner: use for now, redraw in the bible style."
+    "replaces": "library/reverse-lunge-card-strip-v1.png"
   },
   {
     "id": "seated-march",
@@ -986,5 +988,700 @@
     "lean": true,
     "notes": "Frames 3-4 (index 2-3) face screen-right, the other way, so the loop plays frames 1-2 only.",
     "redraw": "Frames 3-4 drawn facing the other way; loop plays frames 1-2."
+  },
+  {
+    "id": "bent-knee-fallout",
+    "name": "Bent-Knee Fallout",
+    "source": "library/bent-knee-fallout-card-strip-v1.png",
+    "sha256": "592ddee9968331a40a9d4b5b34af2b1fe222fa17eb3a2ff2e1ca7cfff42e7dfd",
+    "downloadedAs": "owner card bent-knee-fallout.png (sha256 7a3a954e905c)",
+    "batch": "cards-2026-10-04",
+    "frames": 3,
+    "anchor": "foot",
+    "order": "0,1,2",
+    "hold": "0:3,1:3,2:2",
+    "fps": 6,
+    "stills": [
+      0,
+      1
+    ],
+    "exerciseIds": [
+      "rae.bent-knee-fallout"
+    ],
+    "alpha": true,
+    "card": "rae/cards/bent-knee-fallout.webp",
+    "lean": true,
+    "replaces": "library/bent-knee-fallout-card-strip-v1.png"
+  },
+  {
+    "id": "bodyweight-good-morning",
+    "name": "Bodyweight Good Morning",
+    "source": "library/bodyweight-good-morning-card-strip-v1.png",
+    "sha256": "dbfd2e1b2c0b433ead2b24897c0448d0927857f7a602295f271289ab2cb272bd",
+    "downloadedAs": "owner card bodyweight-good-morning.png (sha256 ab14b7392a07)",
+    "batch": "cards-2026-10-04",
+    "frames": 3,
+    "anchor": "foot",
+    "order": "0,1,2",
+    "hold": "0:3,1:3,2:2",
+    "fps": 6,
+    "stills": [
+      0,
+      1
+    ],
+    "exerciseIds": [
+      "rae.bodyweight-good-morning"
+    ],
+    "alpha": true,
+    "card": "rae/cards/bodyweight-good-morning.webp",
+    "lean": true,
+    "replaces": "library/bodyweight-good-morning-card-strip-v1.png"
+  },
+  {
+    "id": "bridge-hold",
+    "name": "Bridge Hold",
+    "source": "library/bridge-hold-card-strip-v1.png",
+    "sha256": "305fdcbd7354370d8c037de6c0c32cc1d1b54eb5b9f143ffe134871907c2f832",
+    "downloadedAs": "owner card bridge-hold.png (sha256 b338f55e7938)",
+    "batch": "cards-2026-10-04",
+    "frames": 3,
+    "anchor": "foot",
+    "order": "0,1,2",
+    "hold": "0:3,1:3,2:2",
+    "fps": 6,
+    "stills": [
+      0,
+      1
+    ],
+    "exerciseIds": [
+      "rae.bridge-hold"
+    ],
+    "alpha": true,
+    "card": "rae/cards/bridge-hold.webp",
+    "lean": true,
+    "replaces": "library/bridge-hold-card-strip-v1.png"
+  },
+  {
+    "id": "butterfly-stretch",
+    "name": "Butterfly Stretch",
+    "source": "library/butterfly-stretch-card-strip-v1.png",
+    "sha256": "db53f079b880d07e4bebd0a6f86ace355384216e564171210c7aaf360268bf66",
+    "downloadedAs": "owner card butterfly-stretch.png (sha256 8f6803285c2d)",
+    "batch": "cards-2026-10-04",
+    "frames": 3,
+    "anchor": "foot",
+    "order": "1,2",
+    "hold": "1:3,2:3",
+    "fps": 6,
+    "stills": [
+      1,
+      2
+    ],
+    "exerciseIds": [
+      "rae.butterfly-stretch"
+    ],
+    "alpha": true,
+    "card": "rae/cards/butterfly-stretch.webp",
+    "lean": true,
+    "replaces": "library/butterfly-stretch-card-strip-v1.png"
+  },
+  {
+    "id": "clamshell",
+    "name": "Clamshell",
+    "source": "library/clamshell-card-strip-v1.png",
+    "sha256": "3fc74756d07e077b9265612ccb6db84ba80be1ec70bbcd1f290a5ade87696e9d",
+    "downloadedAs": "owner card clamshell.png (sha256 20e64d779645)",
+    "batch": "cards-2026-10-04",
+    "frames": 3,
+    "anchor": "foot",
+    "order": "0,1,2",
+    "hold": "0:3,1:3,2:2",
+    "fps": 6,
+    "stills": [
+      0,
+      1
+    ],
+    "exerciseIds": [
+      "rae.clamshell"
+    ],
+    "alpha": true,
+    "card": "rae/cards/clamshell.webp",
+    "lean": true,
+    "replaces": "library/clamshell-card-strip-v1.png"
+  },
+  {
+    "id": "donkey-kick",
+    "name": "Donkey Kick",
+    "source": "library/donkey-kick-card-strip-v1.png",
+    "sha256": "f5e986b731736ee88ba19e685e9b639367b901183810cafcf541a0f78054271c",
+    "downloadedAs": "owner card donkey-kick.png (sha256 f82208dd395d)",
+    "batch": "cards-2026-10-04",
+    "frames": 3,
+    "anchor": "foot",
+    "order": "0,1,2",
+    "hold": "0:3,1:3,2:2",
+    "fps": 6,
+    "stills": [
+      0,
+      1
+    ],
+    "exerciseIds": [
+      "rae.donkey-kick"
+    ],
+    "alpha": true,
+    "card": "rae/cards/donkey-kick.webp",
+    "lean": true,
+    "replaces": "library/donkey-kick-card-strip-v1.png"
+  },
+  {
+    "id": "figure-4-stretch",
+    "name": "Figure-4 Stretch",
+    "source": "library/figure-4-stretch-card-strip-v1.png",
+    "sha256": "f8dd70a6c76bb1048142dc0e38d9db51ee7275774a7a29b3526f00c5d9327382",
+    "downloadedAs": "owner card figure-4-stretch.png (sha256 13429439adcd)",
+    "batch": "cards-2026-10-04",
+    "frames": 3,
+    "anchor": "foot",
+    "order": "0,1,2",
+    "hold": "0:3,1:3,2:2",
+    "fps": 6,
+    "stills": [
+      0,
+      1
+    ],
+    "exerciseIds": [
+      "rae.figure-4-stretch"
+    ],
+    "alpha": true,
+    "card": "rae/cards/figure-4-stretch.webp",
+    "lean": true,
+    "replaces": "library/figure-4-stretch-card-strip-v1.png"
+  },
+  {
+    "id": "fire-hydrant",
+    "name": "Fire Hydrant",
+    "source": "library/fire-hydrant-card-strip-v1.png",
+    "sha256": "0ee58e9e3c0e41ba2e18882ab9619fa5d5c08aa78e9336861ad4e4bb3d92c485",
+    "downloadedAs": "owner card fire-hydrant.png (sha256 7e6fcb59afeb)",
+    "batch": "cards-2026-10-04",
+    "frames": 3,
+    "anchor": "foot",
+    "order": "0,1,2",
+    "hold": "0:3,1:3,2:2",
+    "fps": 6,
+    "stills": [
+      0,
+      1
+    ],
+    "exerciseIds": [
+      "rae.fire-hydrant"
+    ],
+    "alpha": true,
+    "card": "rae/cards/fire-hydrant.webp",
+    "lean": true,
+    "replaces": "library/fire-hydrant-card-strip-v1.png"
+  },
+  {
+    "id": "glute-bridge-march",
+    "name": "Glute Bridge March",
+    "source": "library/glute-bridge-march-card-strip-v1.png",
+    "sha256": "2e14a42ea85fa0ccefe55511608367d8c3080fd4ae15dd83ad6501cfdf7acd0c",
+    "downloadedAs": "owner card glute-bridge-march.png (sha256 5c9094ac55bb)",
+    "batch": "cards-2026-10-04",
+    "frames": 3,
+    "anchor": "foot",
+    "order": "0,1,2",
+    "hold": "0:3,1:3,2:2",
+    "fps": 6,
+    "stills": [
+      0,
+      1
+    ],
+    "exerciseIds": [
+      "rae.glute-bridge-march"
+    ],
+    "alpha": true,
+    "card": "rae/cards/glute-bridge-march.webp",
+    "lean": true,
+    "replaces": "library/glute-bridge-march-card-strip-v1.png"
+  },
+  {
+    "id": "heel-taps",
+    "name": "Heel Taps",
+    "source": "library/heel-taps-card-strip-v1.png",
+    "sha256": "669f7ccac7050ad34df7de77f31785f0364502177fd89ae667bb78b011d85291",
+    "downloadedAs": "owner card heel-taps.png (sha256 0b0a3c64fdc4)",
+    "batch": "cards-2026-10-04",
+    "frames": 3,
+    "anchor": "foot",
+    "order": "0,1,2",
+    "hold": "0:3,1:3,2:2",
+    "fps": 6,
+    "stills": [
+      0,
+      1
+    ],
+    "exerciseIds": [
+      "rae.heel-taps"
+    ],
+    "alpha": true,
+    "card": "rae/cards/heel-taps.webp",
+    "lean": true,
+    "replaces": "library/heel-taps-card-strip-v1.png"
+  },
+  {
+    "id": "hip-circles-standing",
+    "name": "Hip Circles",
+    "source": "library/hip-circles-standing-card-strip-v1.png",
+    "sha256": "958f9dc4aab5fc2867f3596324ef8f6fc67749382ec287c6906e15318f7e6e51",
+    "downloadedAs": "owner card hip-circles.png (sha256 8c56b565eed6)",
+    "batch": "cards-2026-10-04",
+    "frames": 3,
+    "anchor": "foot",
+    "order": "0,1,2",
+    "hold": "0:3,1:3,2:2",
+    "fps": 6,
+    "stills": [
+      0,
+      1
+    ],
+    "exerciseIds": [
+      "rae.hip-circles"
+    ],
+    "alpha": true,
+    "card": "rae/cards/hip-circles-standing.webp",
+    "lean": true,
+    "replaces": "library/hip-circles-standing-card-strip-v1.png"
+  },
+  {
+    "id": "knee-push-up",
+    "name": "Knee Push-Up",
+    "source": "library/knee-push-up-card-strip-v1.png",
+    "sha256": "02b1ece29c6b02e96f2158a9016fa79215718a8405a7a54dbc39d92ba1dd0dc9",
+    "downloadedAs": "owner card knee-push-up.png (sha256 645c0d0251df)",
+    "batch": "cards-2026-10-04",
+    "frames": 3,
+    "anchor": "foot",
+    "order": "0,1,2",
+    "hold": "0:3,1:3,2:2",
+    "fps": 6,
+    "stills": [
+      0,
+      1
+    ],
+    "exerciseIds": [
+      "rae.knee-push-up"
+    ],
+    "alpha": true,
+    "card": "rae/cards/knee-push-up.webp",
+    "lean": true,
+    "replaces": "library/knee-push-up-card-strip-v1.png"
+  },
+  {
+    "id": "kneeling-side-leg-lift",
+    "name": "Kneeling Side Leg Lift",
+    "source": "library/kneeling-side-leg-lift-card-strip-v1.png",
+    "sha256": "303367527f8967867cf758eb66f725990bf49d6eeb851335307fa68898a0316d",
+    "downloadedAs": "owner card kneeling-side-leg-lift.png (sha256 9d468c82ed44)",
+    "batch": "cards-2026-10-04",
+    "frames": 3,
+    "anchor": "foot",
+    "order": "0,1,2",
+    "hold": "0:3,1:3,2:2",
+    "fps": 6,
+    "stills": [
+      0,
+      1
+    ],
+    "exerciseIds": [
+      "rae.kneeling-side-leg-lift"
+    ],
+    "alpha": true,
+    "card": "rae/cards/kneeling-side-leg-lift.webp",
+    "lean": true,
+    "replaces": "library/kneeling-side-leg-lift-card-strip-v1.png"
+  },
+  {
+    "id": "lateral-lunge",
+    "name": "Lateral Lunge",
+    "source": "library/lateral-lunge-card-strip-v1.png",
+    "sha256": "310cd98b5d4f097645bd69ba428d2ad5bec858eefec1bc226422f038ab38315b",
+    "downloadedAs": "owner card lateral-lunge.png (sha256 69f4d0049320)",
+    "batch": "cards-2026-10-04",
+    "frames": 3,
+    "anchor": "foot",
+    "order": "0,1,2",
+    "hold": "0:3,1:3,2:2",
+    "fps": 6,
+    "stills": [
+      0,
+      1
+    ],
+    "exerciseIds": [
+      "rae.lateral-lunge"
+    ],
+    "alpha": true,
+    "card": "rae/cards/lateral-lunge.webp",
+    "lean": true,
+    "replaces": "library/lateral-lunge-card-strip-v1.png"
+  },
+  {
+    "id": "low-impact-jack",
+    "name": "Low-Impact Jack",
+    "source": "library/low-impact-jack-card-strip-v1.png",
+    "sha256": "871a25a88fce008040cf1cfaf9087fb3d8c6c14aa75f450a630b934376ce4753",
+    "downloadedAs": "owner card low-impact-jack.png (sha256 604fd142eeb8)",
+    "batch": "cards-2026-10-04",
+    "frames": 3,
+    "anchor": "foot",
+    "order": "0,1,2",
+    "hold": "0:3,1:3,2:2",
+    "fps": 6,
+    "stills": [
+      0,
+      1
+    ],
+    "exerciseIds": [
+      "rae.low-impact-jack"
+    ],
+    "alpha": true,
+    "card": "rae/cards/low-impact-jack.webp",
+    "lean": true,
+    "replaces": "library/low-impact-jack-card-strip-v1.png"
+  },
+  {
+    "id": "pelvic-tilt",
+    "name": "Pelvic Tilt",
+    "source": "library/pelvic-tilt-card-strip-v1.png",
+    "sha256": "c596e0cb87f7b26645e87a30f44c4f6ba92838a7b5846a3c6bdcead888e95ea9",
+    "downloadedAs": "owner card pelvic-tilt.png (sha256 728232fb5e5d)",
+    "batch": "cards-2026-10-04",
+    "frames": 3,
+    "anchor": "foot",
+    "order": "0,1,2",
+    "hold": "0:3,1:3,2:2",
+    "fps": 6,
+    "stills": [
+      0,
+      1
+    ],
+    "exerciseIds": [
+      "rae.pelvic-tilt"
+    ],
+    "alpha": true,
+    "card": "rae/cards/pelvic-tilt.webp",
+    "lean": true,
+    "replaces": "library/pelvic-tilt-card-strip-v1.png"
+  },
+  {
+    "id": "reverse-crunch",
+    "name": "Reverse Crunch",
+    "source": "library/reverse-crunch-card-strip-v1.png",
+    "sha256": "1b55d5aec1f659487c5b03229890f27550632b36991c31072d4b4b025efdd8a5",
+    "downloadedAs": "owner card reverse-crunch.png (sha256 ea92656e7a38)",
+    "batch": "cards-2026-10-04",
+    "frames": 3,
+    "anchor": "foot",
+    "order": "0,1,2",
+    "hold": "0:3,1:3,2:2",
+    "fps": 6,
+    "stills": [
+      0,
+      1
+    ],
+    "exerciseIds": [
+      "lib.Reverse_Crunch"
+    ],
+    "alpha": true,
+    "card": "rae/cards/reverse-crunch.webp",
+    "lean": true,
+    "replaces": "library/reverse-crunch-card-strip-v1.png"
+  },
+  {
+    "id": "seated-hamstring-stretch",
+    "name": "Seated Hamstring Stretch",
+    "source": "library/seated-hamstring-stretch-card-strip-v1.png",
+    "sha256": "60c56a8bb38bfa40f7642fef4f949c70a75dc4347f2da0e0676693979061f4ab",
+    "downloadedAs": "owner card seated-hamstring-stretch.png (sha256 0b2d11bd59fa)",
+    "batch": "cards-2026-10-04",
+    "frames": 3,
+    "anchor": "foot",
+    "order": "0,1,2",
+    "hold": "0:3,1:3,2:2",
+    "fps": 6,
+    "stills": [
+      0,
+      1
+    ],
+    "exerciseIds": [
+      "lib.Seated_Floor_Hamstring_Stretch"
+    ],
+    "alpha": true,
+    "card": "rae/cards/seated-hamstring-stretch.webp",
+    "lean": true,
+    "replaces": "library/seated-hamstring-stretch-card-strip-v1.png"
+  },
+  {
+    "id": "side-lying-leg-raise",
+    "name": "Side-Lying Leg Raise",
+    "source": "library/side-lying-leg-raise-card-strip-v1.png",
+    "sha256": "4f3de47e8d28224ac123285ed2ce23fbefe7e2942cce360efe83cffb8eea9861",
+    "downloadedAs": "owner card side-lying-leg-raise.png (sha256 337d22fd27fd)",
+    "batch": "cards-2026-10-04",
+    "frames": 3,
+    "anchor": "foot",
+    "order": "0,1,2",
+    "hold": "0:3,1:3,2:2",
+    "fps": 6,
+    "stills": [
+      0,
+      1
+    ],
+    "exerciseIds": [
+      "rae.side-lying-leg-raise"
+    ],
+    "alpha": true,
+    "card": "rae/cards/side-lying-leg-raise.webp",
+    "lean": true,
+    "replaces": "library/side-lying-leg-raise-card-strip-v1.png"
+  },
+  {
+    "id": "single-knee-hug",
+    "name": "Single Knee Hug",
+    "source": "library/single-knee-hug-card-strip-v1.png",
+    "sha256": "a60c287a986fecf45a91756aea1cf6f33b8c685005da1033fab472b09b40c2a0",
+    "downloadedAs": "owner card single-knee-hug.png (sha256 b974480288f2)",
+    "batch": "cards-2026-10-04",
+    "frames": 3,
+    "anchor": "foot",
+    "order": "0,1,2",
+    "hold": "0:3,1:3,2:2",
+    "fps": 6,
+    "stills": [
+      0,
+      1
+    ],
+    "exerciseIds": [
+      "lib.One_Knee_To_Chest"
+    ],
+    "alpha": true,
+    "card": "rae/cards/single-knee-hug.webp",
+    "lean": true,
+    "replaces": "library/single-knee-hug-card-strip-v1.png"
+  },
+  {
+    "id": "squat-to-calf-raise",
+    "name": "Squat to Calf Raise",
+    "source": "library/squat-to-calf-raise-card-strip-v1.png",
+    "sha256": "4769b3a712818a9188502dcd378630575b6c6fd6e5dc0976aa250cd0087b247e",
+    "downloadedAs": "owner card squat-to-calf-raise.png (sha256 4028966c68fe)",
+    "batch": "cards-2026-10-04",
+    "frames": 3,
+    "anchor": "foot",
+    "order": "0,1,2",
+    "hold": "0:3,1:3,2:2",
+    "fps": 6,
+    "stills": [
+      0,
+      1
+    ],
+    "exerciseIds": [
+      "rae.squat-to-calf-raise"
+    ],
+    "alpha": true,
+    "card": "rae/cards/squat-to-calf-raise.webp",
+    "lean": true,
+    "replaces": "library/squat-to-calf-raise-card-strip-v1.png"
+  },
+  {
+    "id": "standing-calf-raise",
+    "name": "Standing Calf Raise",
+    "source": "library/standing-calf-raise-card-strip-v1.png",
+    "sha256": "1b6f01c8e9c342f7f927f3251b16eeb5d20c38f2edcb0c23ead1ca79061f79be",
+    "downloadedAs": "owner card standing-calf-raise.png (sha256 cde6c03de9a9)",
+    "batch": "cards-2026-10-04",
+    "frames": 3,
+    "anchor": "foot",
+    "order": "0,1,2",
+    "hold": "0:3,1:3,2:2",
+    "fps": 6,
+    "stills": [
+      0,
+      1
+    ],
+    "exerciseIds": [
+      "rae.standing-calf-raise"
+    ],
+    "alpha": true,
+    "card": "rae/cards/standing-calf-raise.webp",
+    "lean": true,
+    "replaces": "library/standing-calf-raise-card-strip-v1.png"
+  },
+  {
+    "id": "standing-kickback",
+    "name": "Standing Kickback",
+    "source": "library/standing-kickback-card-strip-v1.png",
+    "sha256": "4819b8fa83963b1425e693586dec12428ca75bbfe61acea23f0259eda86550a9",
+    "downloadedAs": "owner card standing-kickback.png (sha256 c5705396dc26)",
+    "batch": "cards-2026-10-04",
+    "frames": 3,
+    "anchor": "foot",
+    "order": "0,1,2",
+    "hold": "0:3,1:3,2:2",
+    "fps": 6,
+    "stills": [
+      0,
+      1
+    ],
+    "exerciseIds": [
+      "rae.standing-kickback"
+    ],
+    "alpha": true,
+    "card": "rae/cards/standing-kickback.webp",
+    "lean": true,
+    "replaces": "library/standing-kickback-card-strip-v1.png"
+  },
+  {
+    "id": "standing-punches",
+    "name": "Standing Punches",
+    "source": "library/standing-punches-card-strip-v1.png",
+    "sha256": "88a8e2be2f452cdbaafb85146b7977ec6706f6afee0808521654580bbd524119",
+    "downloadedAs": "owner card standing-punches.png (sha256 c14a369da349)",
+    "batch": "cards-2026-10-04",
+    "frames": 3,
+    "anchor": "foot",
+    "order": "0,1,2",
+    "hold": "0:3,1:3,2:2",
+    "fps": 6,
+    "stills": [
+      0,
+      1
+    ],
+    "exerciseIds": [
+      "rae.standing-punches"
+    ],
+    "alpha": true,
+    "card": "rae/cards/standing-punches.webp",
+    "lean": true,
+    "replaces": "library/standing-punches-card-strip-v1.png"
+  },
+  {
+    "id": "sumo-squat",
+    "name": "Sumo Squat",
+    "source": "library/sumo-squat-card-strip-v1.png",
+    "sha256": "5c1dbaaeaebe16d087f256b4c9b06950b9c1bd6ef7a7b19465800c06aefa7049",
+    "downloadedAs": "owner card sumo-squat.png (sha256 365486c6f0db)",
+    "batch": "cards-2026-10-04",
+    "frames": 3,
+    "anchor": "foot",
+    "order": "0,1,2",
+    "hold": "0:3,1:3,2:2",
+    "fps": 6,
+    "stills": [
+      0,
+      1
+    ],
+    "exerciseIds": [
+      "rae.sumo-squat"
+    ],
+    "alpha": true,
+    "card": "rae/cards/sumo-squat.webp",
+    "lean": true,
+    "replaces": "library/sumo-squat-card-strip-v1.png"
+  },
+  {
+    "id": "supine-march",
+    "name": "Supine March",
+    "source": "library/supine-march-card-strip-v1.png",
+    "sha256": "547120a648513ee509959e73a01e8285f22a2bb5b8669bdac92bedd6a7984361",
+    "downloadedAs": "owner card supine-march.png (sha256 99163bfd73f8)",
+    "batch": "cards-2026-10-04",
+    "frames": 3,
+    "anchor": "foot",
+    "order": "0,1,2",
+    "hold": "0:3,1:3,2:2",
+    "fps": 6,
+    "stills": [
+      0,
+      1
+    ],
+    "exerciseIds": [
+      "rae.supine-march"
+    ],
+    "alpha": true,
+    "card": "rae/cards/supine-march.webp",
+    "lean": true,
+    "replaces": "library/supine-march-card-strip-v1.png"
+  },
+  {
+    "id": "tabletop-march",
+    "name": "Tabletop March",
+    "source": "library/tabletop-march-card-strip-v1.png",
+    "sha256": "6cebba0bbbb85bc4fb863e3d3b33922efb82aec52d492c487d6304837373cd67",
+    "downloadedAs": "owner card tabletop-march.png (sha256 5d075ce176e6)",
+    "batch": "cards-2026-10-04",
+    "frames": 3,
+    "anchor": "foot",
+    "order": "0,1,2",
+    "hold": "0:3,1:3,2:2",
+    "fps": 6,
+    "stills": [
+      0,
+      1
+    ],
+    "exerciseIds": [
+      "rae.tabletop-march"
+    ],
+    "alpha": true,
+    "card": "rae/cards/tabletop-march.webp",
+    "lean": true,
+    "replaces": "library/tabletop-march-card-strip-v1.png"
+  },
+  {
+    "id": "thread-the-needle",
+    "name": "Thread the Needle",
+    "source": "library/thread-the-needle-card-strip-v1.png",
+    "sha256": "0fdc3f1ee332e25b00a326e598f38f7f729abaf15cfe20caca21380464e118e6",
+    "downloadedAs": "owner card thread-the-needle.png (sha256 c3b060aef833)",
+    "batch": "cards-2026-10-04",
+    "frames": 3,
+    "anchor": "foot",
+    "order": "0,1,2",
+    "hold": "0:3,1:3,2:2",
+    "fps": 6,
+    "stills": [
+      0,
+      1
+    ],
+    "exerciseIds": [
+      "rae.thread-the-needle"
+    ],
+    "alpha": true,
+    "card": "rae/cards/thread-the-needle.webp",
+    "lean": true,
+    "replaces": "library/thread-the-needle-card-strip-v1.png"
+  },
+  {
+    "id": "seated-forward-reach-floor",
+    "name": "Seated Forward Reach",
+    "source": "library/seated-forward-reach-floor-card-strip-v1.png",
+    "sha256": "3924043b5838532a604b84979c3e2b1f06b99efa67e2374cf53f230a4613d14a",
+    "downloadedAs": "owner card seated-forward-reach.png (sha256 120fa500960e)",
+    "batch": "cards-2026-10-04",
+    "frames": 3,
+    "anchor": "foot",
+    "order": "0,1,2",
+    "hold": "0:3,1:3,2:2",
+    "fps": 6,
+    "stills": [
+      0,
+      1
+    ],
+    "exerciseIds": [
+      "rae.seated-forward-reach-floor"
+    ],
+    "alpha": true,
+    "card": "rae/cards/seated-forward-reach-floor.webp",
+    "lean": true
   }
 ]

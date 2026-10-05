@@ -1,0 +1,21 @@
+{
+  "id": "ex-seated-hamstring-stretch",
+  "source": "seated-hamstring-stretch-card-strip-v1.png",
+  "frameWidth": 360,
+  "frameHeight": 143,
+  "frames": 3,
+  "timeline": [
+    {
+      "frame": 0,
+      "ms": 501
+    },
+    {
+      "frame": 1,
+      "ms": 501
+    },
+    {
+      "frame": 2,
+      "ms": 334
+    }
+  ]
+}

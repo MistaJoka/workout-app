@@ -1,0 +1,21 @@
+{
+  "id": "ex-bodyweight-good-morning",
+  "source": "bodyweight-good-morning-card-strip-v1.png",
+  "frameWidth": 164,
+  "frameHeight": 264,
+  "frames": 3,
+  "timeline": [
+    {
+      "frame": 0,
+      "ms": 501
+    },
+    {
+      "frame": 1,
+      "ms": 501
+    },
+    {
+      "frame": 2,
+      "ms": 334
+    }
+  ]
+}
