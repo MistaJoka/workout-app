@@ -33,7 +33,7 @@ import { GiftComposerSheet } from '../components/GiftComposerSheet'
 import { DeliveredComposerSheet } from '../components/DeliveredComposerSheet'
 import { OpenGiftLink } from '../components/OpenGiftLink'
 import { SAVING_FOR_KEY, SavingGoalBar, savingGoalReward } from '../components/SavingGoal'
-import { rewardTier, type RewardTier } from '../../domain/rewards/pricing'
+import { rewardTier, type RewardTier, workoutsToGoAfter } from '../../domain/rewards/pricing'
 import { newId } from '../../shared/id'
 import { GrantWishSheet, MakeWishSheet, type WishLite } from '../components/WishSheets'
 import { ThanksSheet } from '../components/ThanksSheet'
@@ -418,6 +418,14 @@ export function RewardsScreen() {
     (a, b) => Number(b.id === data?.featured) - Number(a.id === data?.featured) || a.cost - b.cost
   )
   const goalReward = data ? savingGoalReward(data.rewards, data.savingFor) : null
+
+  // The neutral "{goal}: N workouts to go after this." on a redeem confirm,
+  // only when she's saving for a different reward that this spend moves.
+  function goalNoteFor(reward: RewardRecord): string | undefined {
+    if (!data || !goalReward || goalReward.id === reward.id) return undefined
+    const n = workoutsToGoAfter(goalReward, data.balance, reward.cost)
+    return n ? `${goalReward.title}: ${n} ${n === 1 ? 'workout' : 'workouts'} to go after this.` : undefined
+  }
   const rewardIds = new Set(data?.rewards.map((r) => r.id) ?? [])
   const wishesPending = pendingWishes(data?.wishes, rewardIds)
   const wishesGranted = grantedWishIds(data?.wishes, rewardIds)
@@ -676,6 +684,7 @@ export function RewardsScreen() {
           emoji={sheet.reward.emoji}
           icon={sheet.reward.icon}
           cost={sheet.reward.cost}
+          goalNote={goalNoteFor(sheet.reward)}
           busy={redeemBusy}
           error={redeemError}
           onConfirm={() => void handleRedeem(sheet.reward, sheet.attemptId)}

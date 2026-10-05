@@ -52,3 +52,27 @@ test('a mega goal shows as a road; a small one keeps its bar', async ({ page }) 
   await expect(page.getByTestId('saving-goal')).toContainText('Nap time')
   await expect(page.getByTestId('road-progress')).toHaveCount(0)
 })
+
+test('redeeming a smaller treat says, neutrally, how far the goal is', async ({ page }) => {
+  test.setTimeout(240_000)
+  await quick10(page)
+  await quick10(page)
+  await openShopAsHubby(page)
+  await addIdea(page, 'Road trip')
+  await addByIcon(page, 'Nap time')
+  await page.getByRole('button', { name: 'Close', exact: true }).click()
+  await page.getByRole('button', { name: 'Save for this' }).last().click()
+  await expect(page.getByTestId('saving-goal')).toContainText('Road trip')
+
+  // Redeeming Nap time while saving for the Road trip.
+  await page.getByRole('button', { name: 'Redeem' }).first().click()
+  const dialog = page.getByRole('dialog', { name: 'Redeem Nap time' })
+  await expect(dialog.getByText(/^Road trip: \d+ workouts to go after this\.$/)).toBeVisible()
+  await dialog.getByRole('button', { name: /Cancel|Not now|Close/ }).first().click()
+
+  // Not saving for anything: redeeming says nothing about "to go".
+  await page.getByRole('button', { name: 'Saving ⭐' }).click()
+  await expect(page.getByTestId('saving-goal')).toHaveCount(0)
+  await page.getByRole('button', { name: 'Redeem' }).first().click()
+  await expect(page.getByRole('dialog', { name: 'Redeem Nap time' }).getByText(/to go after this/)).toHaveCount(0)
+})

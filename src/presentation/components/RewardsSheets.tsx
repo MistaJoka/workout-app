@@ -193,6 +193,7 @@ export function RedeemConfirmSheet({
   emoji,
   icon,
   cost,
+  goalNote,
   busy,
   error,
   onConfirm,
@@ -202,6 +203,9 @@ export function RedeemConfirmSheet({
   emoji: string
   icon?: string
   cost: number
+  // When she's saving for something else: where that goal stands after
+  // this, said plainly ("Road trip: 27 workouts to go after this.").
+  goalNote?: string
   busy: boolean
   error: string | null
   onConfirm: () => void
@@ -214,6 +218,7 @@ export function RedeemConfirmSheet({
         Redeem {emoji} {title}?
       </p>
       <p className="text-sm text-ink-muted">{cost} 🥕 will be spent. This makes a coupon to send.</p>
+      {goalNote && <p className="text-sm text-ink-muted">{goalNote}</p>}
       {error && (
         <p className="text-sm text-accent" role="alert">
           {error}
