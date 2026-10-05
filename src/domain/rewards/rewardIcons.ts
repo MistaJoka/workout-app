@@ -2,12 +2,19 @@
 // kind of reward. Each has the reward's default name, the emoji that
 // stands in for it in plain text (share messages, older app versions) and
 // a suggested price in carrots. `idea` marks the one-tap starter ideas.
-// Values are the owner-approved table in
-// docs/superpowers/specs/2026-10-04-reward-icons-design.md. Pictures live
-// in public/rewards/<id>.webp (sticker) and <id>-tile.webp (rounded tile),
-// made by scripts/assets/reward-icons.py. Pure.
+// `artReady: false` reserves a stable icon id before its WebP pair exists;
+// the UI falls back to the emoji until the art is added.
+// Pictures live in public/rewards/<id>.webp (sticker) and
+// <id>-tile.webp (rounded tile), made by scripts/assets/reward-icons.py. Pure.
 
-export type RewardIcon = { id: string; name: string; emoji: string; cost: number; idea: boolean }
+export type RewardIcon = {
+  id: string
+  name: string
+  emoji: string
+  cost: number
+  idea: boolean
+  artReady?: boolean
+}
 
 export const REWARD_ICONS: readonly RewardIcon[] = [
   { id: 'nap-time', name: 'Nap time', emoji: '😴', cost: 20, idea: true },
@@ -32,16 +39,15 @@ export const REWARD_ICONS: readonly RewardIcon[] = [
   { id: 'sunset-drive', name: 'Sunset drive', emoji: '🌅', cost: 100, idea: true },
   { id: 'surprise-gift', name: 'Surprise gift', emoji: '🎁', cost: 80, idea: true },
 
-  // Personal Hubby Bunny rewards: deliberately specific to this app's
-  // relationship loop rather than generic shop filler. These are stable IDs
-  // so artwork, saved wishes, gift links and future analytics can all refer
-  // to the same reward without depending on the display name.
-  { id: 'hubby-butter-noodles', name: "Hubby's butter noodles", emoji: '🍜', cost: 40, idea: true },
-  { id: 'hubby-salmon-rice', name: "Hubby's baked salmon & rice", emoji: '🐟', cost: 60, idea: true },
-  { id: 'chipotle-night', name: 'Chipotle night', emoji: '🌯', cost: 50, idea: true },
-  { id: 'hubby-cooks-your-pick', name: 'You pick, Hubby cooks', emoji: '🧑‍🍳', cost: 60, idea: true },
-  { id: 'hubby-favor', name: 'Hubby favor', emoji: '💗', cost: 35, idea: true },
-  { id: 'mandatory-movie-night', name: 'Mandatory movie night', emoji: '🎬', cost: 35, idea: true },
+  // Personal Hubby Bunny rewards: stable ids first, bespoke pixel art next.
+  // Until each sticker/tile pair lands, RewardGlyph deliberately shows the
+  // fallback emoji instead of requesting a missing asset.
+  { id: 'hubby-butter-noodles', name: "Hubby's butter noodles", emoji: '🍜', cost: 40, idea: true, artReady: false },
+  { id: 'hubby-salmon-rice', name: "Hubby's baked salmon & rice", emoji: '🐟', cost: 60, idea: true, artReady: false },
+  { id: 'chipotle-night', name: 'Chipotle night', emoji: '🌯', cost: 50, idea: true, artReady: false },
+  { id: 'hubby-cooks-your-pick', name: 'You pick, Hubby cooks', emoji: '🧑‍🍳', cost: 60, idea: true, artReady: false },
+  { id: 'hubby-favor', name: 'Hubby favor', emoji: '💗', cost: 35, idea: true, artReady: false },
+  { id: 'mandatory-movie-night', name: 'Mandatory movie night', emoji: '🎬', cost: 35, idea: true, artReady: false },
 
   { id: 'takeout', name: 'Takeout night', emoji: '🥡', cost: 50, idea: false },
   { id: 'pizza', name: 'Pizza night', emoji: '🍕', cost: 40, idea: false },
