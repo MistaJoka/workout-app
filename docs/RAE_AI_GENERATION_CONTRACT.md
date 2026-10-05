@@ -4,7 +4,8 @@
 **Character:** `rae`  
 **Version:** `v1.0`  
 **Canonical semantic lock:** `assets/pixel-bloom/db/rae-character-lock.v1.json`  
-**Canonical character bible:** `docs/RAE_CHARACTER_BIBLE_V1.md`
+**Canonical character bible:** `docs/RAE_CHARACTER_BIBLE_V1.md`  
+**Hardening reference (supplementary, same v1.0 identity, not a new canon version):** `docs/RAE_CANON_SPEC_v1.md` and `assets/pixel-bloom/character/rae/reference/rae-hardened-reference-v1.png` (2026-10-01). Verified pixel-identical to the canonical raster above where it reproduces the bible; useful as a paste-in reference when a batch drifts, and as a more exhaustive per-feature rejection checklist than §3 below.
 
 This document is the operating contract for ChatGPT, Claude Code, image models, animation tools, and future agents that create or modify Rae assets.
 

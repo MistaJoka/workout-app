@@ -2,7 +2,10 @@
 
 PREAMBLE is the canonical preamble from docs/RAE_AI_GENERATION_CONTRACT.md §2;
 every Rae prompt must open with it. AVOID condenses the contract's §3
-forbidden mutations that drawn strips have actually hit. Hair follows the
+forbidden mutations that drawn strips have actually hit, plus (2026-10-01)
+the plausible-for-a-strip failure modes named explicitly in
+docs/RAE_CANON_SPEC_v1.md §§3.3-3.8/4 that hadn't shown up yet but are easy
+for a model to drift into across repeated frames. Hair follows the
 lock (identity.hair): black 4C, a voluminous natural updo/puff with tight
 coils and selected tendrils. Nothing here may add a detail the lock or bible
 doesn't state (the old prompts' "white socks" came from nowhere).
@@ -24,7 +27,11 @@ PREAMBLE = (
 )
 
 AVOID = (
-    'Never: human ears, a headband or clip-on ears, straight/wavy/silky hair, a second tattoo, '
-    'a tattoo on the shoulder, outer arm or right side, a white or pink tail, chunky jewelry, '
-    'photoreal skin, a child/teen look, or any identity change between frames.'
+    'Never: human ears, a headband or clip-on ears, cat or fox ears, a missing or extra bunny ear, '
+    'straight/wavy/silky hair, a second tattoo, a tattoo on the shoulder, outer arm, right side, neck, '
+    'face or back, a white or pink tail, a cat/fox tail, more than one tail, an oversized tail, '
+    'removed or restyled glasses (square, rimless, silver/black or sunglasses), a different necklace '
+    'letter, a missing pendant or a silver chain, chunky jewelry, an added jacket/shorts/skirt/gloves '
+    'or socks, a removed Pixel Bloom logo, photoreal skin, a child/teen look, or any identity change '
+    'between frames.'
 )
