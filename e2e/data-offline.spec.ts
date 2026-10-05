@@ -61,6 +61,13 @@ test.describe('offline', () => {
     await page.reload()
     await expect(page.getByRole('link', { name: 'Start workout' })).toBeVisible()
 
+    // The shop's pixel reward icons were precached too.
+    const icon = await page.evaluate(async () => {
+      const res = await fetch('rewards/pizza.webp')
+      return { ok: res.ok, type: res.headers.get('content-type') }
+    })
+    expect(icon.ok).toBe(true)
+
     // The library chunk was never requested online; the install precached it.
     await page.getByRole('link', { name: 'Library' }).click()
     await expect(page.getByText(/\d+ exercises/).first()).toBeVisible()
