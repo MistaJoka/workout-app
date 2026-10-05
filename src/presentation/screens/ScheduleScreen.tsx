@@ -1,3 +1,8 @@
+import { listRewards } from '../../infrastructure/db/repositories/rewardsRepository'
+import { getSetting } from '../../infrastructure/db/repositories/settingsRepository'
+import { SAVING_FOR_KEY, savingGoalReward } from '../components/SavingGoal'
+import { loadCarrotBalance } from '../components/CarrotCelebration'
+import { weeklyForecast } from '../../domain/rewards/pricing'
 import { useEffect, useState } from 'react'
 import { listAllTemplates } from '../../domain/content/catalog'
 import type { WorkoutTemplate } from '../../domain/content/types'
@@ -37,6 +42,9 @@ export function ScheduleScreen() {
   // The goal this week already started with (it holds until Monday, so a
   // change here can't re-score anything earned: domain/progress/weekGoals.ts).
   const [thisWeekGoal, setThisWeekGoal] = useState<number | null>(null)
+  // The reward she's saving for and how many carrots it still needs: the
+  // week's worth toward it shows under the days.
+  const [savingGoal, setSavingGoal] = useState<{ title: string; remaining: number } | null>(null)
 
   useEffect(() => {
     let cancelled = false
@@ -59,6 +67,15 @@ export function ScheduleScreen() {
         const startedThisWeek = results.some((r) => mondayKey(new Date(r.endedAt)) === mondayKey(now))
         const goals = startedThisWeek ? await loadWeekGoals({ results, schedule: pruned }).catch(() => null) : null
         if (!cancelled && goals) setThisWeekGoal(goals(now))
+        const [rewards, savingFor, balance] = await Promise.all([
+          listRewards().catch(() => []),
+          getSetting<string | null>(SAVING_FOR_KEY).catch(() => null),
+          loadCarrotBalance().catch(() => null),
+        ])
+        const goalReward = savingGoalReward(rewards, savingFor)
+        if (!cancelled && goalReward && balance != null) {
+          setSavingGoal({ title: goalReward.title, remaining: Math.max(0, goalReward.cost - balance) })
+        }
       })
       .catch(() => {
         if (!cancelled) setLoadFailed(true)
@@ -128,6 +145,7 @@ export function ScheduleScreen() {
   }
 
   const hasWorkoutDay = ROW_ORDER.some((d) => schedule[d] != null && schedule[d] !== 'rest')
+  const workoutDays = ROW_ORDER.filter((d) => schedule[d] != null && schedule[d] !== 'rest').length
   const nextGoal = weeklyGoal(schedule)
   const goalChangesMonday = thisWeekGoal != null && nextGoal !== thisWeekGoal
   const todayKey = new Date().getDay() as keyof WeeklySchedule
@@ -211,6 +229,8 @@ export function ScheduleScreen() {
         })}
       </ul>
 
+      {savingGoal && hasWorkoutDay && <GoalForecast title={savingGoal.title} remaining={savingGoal.remaining} days={workoutDays} />}
+
       {/* Reminders. The Android app schedules its own (ReminderCard); in a
           browser the phone's Calendar does the reminding (no push without a
           server). Shown once a day holds a workout; until then a hint says
@@ -275,5 +295,18 @@ function PlanChip({ plan, label }: { plan: DayPlan | null; label: string }) {
     <span className="min-w-0 max-w-[55%] truncate rounded-full bg-field-primary px-3 py-1 text-sm font-semibold text-primary-ink">
       {label}
     </span>
+  )
+}
+
+// What the planned week is worth toward the reward she's saving for:
+// "3 days a week ≈ +95 🥕 a week · Road trip in ~11 weeks".
+function GoalForecast({ title, remaining, days }: { title: string; remaining: number; days: number }) {
+  const f = weeklyForecast(days, remaining)
+  return (
+    <p className="hud-num px-1 text-sm font-semibold text-primary-ink" data-testid="goal-forecast">
+      {f.ready
+        ? `${title} is ready to redeem`
+        : `${days} ${days === 1 ? 'day' : 'days'} a week ≈ +${f.perWeek} 🥕 a week · ${title} in ~${f.weeks} ${f.weeks === 1 ? 'week' : 'weeks'}`}
+    </p>
   )
 }

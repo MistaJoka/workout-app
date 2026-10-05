@@ -103,3 +103,28 @@ test('a workout visibly feeds the goal: carrots tick up, then flow in on Complet
   await finishWorkout(page)
   await expect(page.getByTestId('goal-gain')).toContainText(/Road trip\s*0 → \d+ \/ 1000/)
 })
+
+test('Today and Schedule show what a workout or a week is worth toward the goal', async ({ page }) => {
+  await openShopAsHubby(page)
+  await addIdea(page, 'Road trip')
+  await page.getByRole('button', { name: 'Close', exact: true }).click()
+  await page.getByRole('button', { name: 'Save for this' }).click()
+
+  await page.goto('/#/')
+  await expect(page.locator('.today-mission').getByText('+≈25 🥕 toward Road trip')).toBeVisible()
+
+  await page.goto('/#/schedule')
+  for (const day of ['Monday', 'Wednesday', 'Friday']) {
+    await page.getByRole('button', { name: new RegExp(`^${day}`) }).click()
+    await page.getByRole('radio', { name: 'Full-Body A' }).click()
+  }
+  await expect(page.getByText(/^3 days a week ≈ \+95 🥕 a week · Road trip in ~11 weeks$/)).toBeVisible()
+
+  // Not saving for anything: both lines go away.
+  await page.goto('/#/rewards')
+  await page.getByRole('button', { name: 'Saving ⭐' }).click()
+  await page.goto('/#/')
+  await expect(page.getByText(/toward Road trip/)).toHaveCount(0)
+  await page.goto('/#/schedule')
+  await expect(page.getByText(/days a week ≈/)).toHaveCount(0)
+})

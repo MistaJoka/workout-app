@@ -1,3 +1,6 @@
+import { listRewards } from '../../infrastructure/db/repositories/rewardsRepository'
+import { getSetting } from '../../infrastructure/db/repositories/settingsRepository'
+import { SAVING_FOR_KEY, savingGoalReward } from '../components/SavingGoal'
 import { firstRaeLoop } from '../todayPose'
 import type { RaeLoop } from '../components/raeLoops'
 import { DRAFT_TEMPLATE_IDS } from '../../domain/content/fixtures/raeDraftTemplates'
@@ -83,13 +86,16 @@ async function loadToday(now: Date): Promise<TodayData> {
   // First, so a workout abandoned long ago is finished (at its last action)
   // before history is read: it counts, and never blocks today.
   const resumable = await settleOpenSessions(now)
-  const [results, schedule, custom, plans, events] = await Promise.all([
+  const [results, schedule, custom, plans, events, rewards, savingFor] = await Promise.all([
     db.sessionResults.toArray(),
     getWeeklySchedule(),
     listCustomTemplates(),
     db.sessionPlans.toArray(),
     db.sessionEvents.toArray(),
+    listRewards().catch(() => []),
+    getSetting<string | null>(SAVING_FOR_KEY).catch(() => null),
   ])
+  const savingGoal = savingGoalReward(rewards, savingFor)
 
   const goals = await loadWeekGoals({ plans, results, schedule })
 
@@ -158,6 +164,7 @@ async function loadToday(now: Date): Promise<TodayData> {
       name: primary.name,
       detail: describe(primary),
       minutes: estimateMinutes(primary),
+      ...(savingGoal ? { goal: { title: savingGoal.title } } : {}),
       thumbs: primary.exercises.flatMap((e) => {
         const exercise = exercises.get(e.exerciseId)
         // Rae doing the move when she has it, the photo otherwise.

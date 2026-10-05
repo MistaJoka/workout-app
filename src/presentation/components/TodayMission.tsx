@@ -1,3 +1,4 @@
+import { CARROTS_PER_WORKOUT } from '../../domain/rewards/pricing'
 import type { ReactNode } from 'react'
 import { Link } from 'react-router-dom'
 
@@ -17,6 +18,9 @@ export type Mission =
       detail: string
       minutes: number
       thumbs: MissionThumb[]
+      // The reward she's saving for, when one is pinned: Start shows what
+      // this workout is worth toward it.
+      goal?: { title: string }
       to: string
     }
   | { kind: 'resume'; name: string; current: string; done: number; total: number; to: string }
@@ -66,6 +70,16 @@ export function TodayMission({ mission, resumeActions }: { mission: Mission; res
           <Link to={mission.to} className="btn-primary btn-lg w-full">
             Start workout
           </Link>
+          {mission.goal && (
+            <p className="hud-num text-center text-sm font-semibold text-primary-ink">
+              <span aria-hidden="true">
+                +≈{CARROTS_PER_WORKOUT} 🥕 toward {mission.goal.title}
+              </span>
+              <span className="sr-only">
+                About {CARROTS_PER_WORKOUT} carrots toward {mission.goal.title}
+              </span>
+            </p>
+          )}
         </>
       )}
 
