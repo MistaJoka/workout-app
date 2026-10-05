@@ -1,4 +1,6 @@
 import { RewardGlyph } from './RewardGlyph'
+import { REWARD_ICONS } from '../../domain/rewards/rewardIcons'
+import { pickEmoji, pickIcon, STARTER_IDEAS, type IconDraft } from '../rewardDraft'
 import { workoutsFor } from '../../domain/rewards/pricing'
 import { useRef, useState } from 'react'
 import { useSheetFocus } from './useSheetFocus'
@@ -6,23 +8,20 @@ import type { RewardRecord } from '../../infrastructure/db/schema'
 
 // Hubby Bunny's editor, PIN-gated by the caller (RewardsScreen only renders
 // this once the PIN has been verified for this visit). Add/edit/remove the
-// shop's catalog; a small fixed emoji set and a cost stepper keep the form
-// one-finger-friendly; cute starter suggestions are offered only while the
-// shop is empty, one tap to add -- never pre-created.
+// shop's catalog. One tap on a pixel icon (domain/rewards/rewardIcons.ts)
+// picks the picture and fills in its name and price; a small emoji row
+// covers anything no icon fits. Cute starter ideas are offered only while
+// the shop is empty, one tap to add -- never pre-created.
 
 export const EMOJI_CHOICES = ['🥕', '🍓', '🍿', '🎬', '🛁', '💆', '🧹', '🍕', '☕', '🎮', '🌸', '💝']
 
-export type RewardDraft = { title: string; cost: number; emoji: string }
+export type RewardDraft = { title: string; cost: number; emoji: string; icon?: string }
 
-const STARTER_SUGGESTIONS: RewardDraft[] = [
-  // Priced in workouts (~25 carrots each, domain/rewards/pricing.ts): a mix
-  // of little treats, a bigger one and a big dream to save for.
-  { title: 'No-dishes pass', emoji: '🧹', cost: 20 },
-  { title: 'Movie night pick', emoji: '🎬', cost: 25 },
-  { title: 'Foot rub', emoji: '💆', cost: 30 },
-  { title: 'Breakfast in bed', emoji: '🍳', cost: 60 },
-  { title: 'Dinner date', emoji: '🍽️', cost: 150 },
-]
+const UNTOUCHED = { title: false, cost: false }
+
+function toReward({ title, cost, emoji, icon }: IconDraft): RewardDraft {
+  return { title, cost, emoji, ...(icon ? { icon } : {}) }
+}
 
 // One tap to a sensible price per tier (domain/rewards/pricing.ts limits).
 const PRICE_PRESETS = [
@@ -48,7 +47,7 @@ export function RewardEditorSheet({
   busyId: string | null
   error: string | null
   onAdd: (input: RewardDraft) => void
-  onUpdate: (id: string, patch: Partial<Pick<RewardRecord, 'title' | 'cost' | 'emoji' | 'active'>>) => void
+  onUpdate: (id: string, patch: Partial<Pick<RewardRecord, 'title' | 'cost' | 'emoji' | 'icon' | 'active'>>) => void
   onRemove: (id: string) => void
   // One reward he spotlights at the top of the shop. No countdown, no
   // "leaving soon": every reward stays buyable either way.
@@ -60,16 +59,18 @@ export function RewardEditorSheet({
   useSheetFocus(sheetRef, onClose)
   const [editingId, setEditingId] = useState<string | null>(null)
   const [adding, setAdding] = useState(false)
-  const [draft, setDraft] = useState<RewardDraft>({ title: '', cost: 25, emoji: EMOJI_CHOICES[0] })
+  const [draft, setDraft] = useState<IconDraft>({ title: '', cost: 25, emoji: EMOJI_CHOICES[0], touched: UNTOUCHED })
 
-  function startAdd(preset?: Partial<RewardDraft>) {
-    setDraft({ title: '', cost: 25, emoji: EMOJI_CHOICES[0], ...preset })
+  function startAdd() {
+    setDraft({ title: '', cost: 25, emoji: EMOJI_CHOICES[0], touched: UNTOUCHED })
     setAdding(true)
     setEditingId(null)
   }
 
   function startEdit(reward: RewardRecord) {
-    setDraft({ title: reward.title, cost: reward.cost, emoji: reward.emoji })
+    // An existing reward's name and price count as chosen: picking an icon
+    // for it changes only its picture.
+    setDraft({ title: reward.title, cost: reward.cost, emoji: reward.emoji, ...(reward.icon ? { icon: reward.icon } : {}), touched: { title: true, cost: true } })
     setEditingId(reward.id)
     setAdding(false)
   }
@@ -81,8 +82,8 @@ export function RewardEditorSheet({
 
   function saveDraft() {
     if (!draft.title.trim()) return
-    if (editingId) onUpdate(editingId, draft)
-    else onAdd(draft)
+    if (editingId) onUpdate(editingId, { ...toReward(draft), icon: draft.icon })
+    else onAdd(toReward(draft))
     cancelForm()
   }
 
@@ -112,12 +113,15 @@ export function RewardEditorSheet({
           <div className="space-y-2">
             <p className="text-sm font-semibold text-ink-muted">Cute starter ideas, one tap to add:</p>
             <div className="flex flex-wrap gap-2">
-              {STARTER_SUGGESTIONS.map((s) => (
-                <button key={s.title} type="button" className="chip" onClick={() => onAdd(s)}>
-                  <span aria-hidden="true" className="mr-1">
-                    {s.emoji}
-                  </span>
-                  {s.title}
+              {STARTER_IDEAS.map((idea) => (
+                <button
+                  key={idea.id}
+                  type="button"
+                  className="chip gap-1.5"
+                  onClick={() => onAdd({ title: idea.name, cost: idea.cost, emoji: idea.emoji, icon: idea.id })}
+                >
+                  <RewardGlyph emoji={idea.emoji} icon={idea.id} size={24} />
+                  {idea.name}
                 </button>
               ))}
             </div>
@@ -132,24 +136,41 @@ export function RewardEditorSheet({
                 type="text"
                 className="input"
                 value={draft.title}
-                onChange={(e) => setDraft((d) => ({ ...d, title: e.target.value }))}
+                onChange={(e) => setDraft((d) => ({ ...d, title: e.target.value, touched: { ...d.touched, title: true } }))}
                 autoFocus
                 aria-label="Reward title"
               />
             </label>
             <div className="space-y-1">
-              <span className="text-sm font-semibold">Emoji</span>
+              <span className="text-sm font-semibold">Picture</span>
+              <div className="grid grid-cols-5 gap-1.5" role="group" aria-label="Reward icons">
+                {REWARD_ICONS.map((icon) => (
+                  <button
+                    key={icon.id}
+                    type="button"
+                    aria-pressed={draft.icon === icon.id}
+                    aria-label={icon.name}
+                    className={`flex aspect-square items-center justify-center rounded-control border-2 ${
+                      draft.icon === icon.id ? 'border-primary bg-field-primary' : 'border-edge bg-surface'
+                    }`}
+                    onClick={() => setDraft((d) => pickIcon(d, icon))}
+                  >
+                    <RewardGlyph emoji={icon.emoji} icon={icon.id} size={44} />
+                  </button>
+                ))}
+              </div>
+              <span className="block pt-1 text-xs font-semibold text-ink-muted">Other</span>
               <div className="flex flex-wrap gap-2">
                 {EMOJI_CHOICES.map((emoji) => (
                   <button
                     key={emoji}
                     type="button"
-                    aria-pressed={draft.emoji === emoji}
+                    aria-pressed={!draft.icon && draft.emoji === emoji}
                     aria-label={`Emoji ${emoji}`}
                     className={`flex h-11 w-11 items-center justify-center rounded-control border-2 text-xl ${
-                      draft.emoji === emoji ? 'border-primary bg-field-primary' : 'border-edge bg-surface'
+                      !draft.icon && draft.emoji === emoji ? 'border-primary bg-field-primary' : 'border-edge bg-surface'
                     }`}
-                    onClick={() => setDraft((d) => ({ ...d, emoji }))}
+                    onClick={() => setDraft((d) => pickEmoji(d, emoji))}
                   >
                     {emoji}
                   </button>
@@ -163,7 +184,7 @@ export function RewardEditorSheet({
                   type="button"
                   className="btn-secondary min-h-11 min-w-11 p-0"
                   aria-label="Fewer carrots"
-                  onClick={() => setDraft((d) => ({ ...d, cost: Math.max(5, d.cost - 5) }))}
+                  onClick={() => setDraft((d) => ({ ...d, cost: Math.max(5, d.cost - 5), touched: { ...d.touched, cost: true } }))}
                 >
                   −
                 </button>
@@ -172,7 +193,7 @@ export function RewardEditorSheet({
                   type="button"
                   className="btn-secondary min-h-11 min-w-11 p-0"
                   aria-label="More carrots"
-                  onClick={() => setDraft((d) => ({ ...d, cost: d.cost + 5 }))}
+                  onClick={() => setDraft((d) => ({ ...d, cost: d.cost + 5, touched: { ...d.touched, cost: true } }))}
                 >
                   +
                 </button>
@@ -188,7 +209,7 @@ export function RewardEditorSheet({
                   type="button"
                   className={`${draft.cost === preset.cost ? 'btn-primary' : 'btn-secondary'} min-h-11 flex-1 px-2 text-sm`}
                   aria-pressed={draft.cost === preset.cost}
-                  onClick={() => setDraft((d) => ({ ...d, cost: preset.cost }))}
+                  onClick={() => setDraft((d) => ({ ...d, cost: preset.cost, touched: { ...d.touched, cost: true } }))}
                 >
                   {preset.label} {preset.cost}
                 </button>

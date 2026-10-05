@@ -3,6 +3,7 @@ import { useRef, useState } from 'react'
 import { giftLinkLocation } from '../appContext'
 import { useSheetFocus } from './useSheetFocus'
 import { EMOJI_CHOICES } from './RewardEditorSheet'
+import { REWARD_ICONS } from '../../domain/rewards/rewardIcons'
 import { addWish } from '../../infrastructure/db/repositories/wishesRepository'
 import { upsertRewardFromGift } from '../../infrastructure/db/repositories/rewardsRepository'
 import { GIFT_LINK_VERSION, buildGiftLinkUrl, giftShareMessage, wishShareMessage } from '../../domain/rewards/giftLink'
@@ -56,6 +57,9 @@ export function senderName(): string {
 export function MakeWishSheet({ giverName, onDone, onClose }: { giverName: string; onDone: () => void; onClose: () => void }) {
   const [title, setTitle] = useState('')
   const [emoji, setEmoji] = useState(EMOJI_CHOICES[4])
+  // A pixel icon she taps (domain/rewards/rewardIcons.ts); it fills an
+  // empty wish's words, and the emoji row clears it.
+  const [icon, setIcon] = useState<string | undefined>(undefined)
   const [busy, setBusy] = useState(false)
   const [error, setError] = useState<string | null>(null)
   const [made, setMade] = useState<WishLite | null>(null)
@@ -66,7 +70,7 @@ export function MakeWishSheet({ giverName, onDone, onClose }: { giverName: strin
     setBusy(true)
     setError(null)
     try {
-      const wish = await addWish({ title, emoji })
+      const wish = await addWish({ title, emoji, ...(icon ? { icon } : {}) })
       setMade({ id: wish.id, title: wish.title, emoji: wish.emoji, icon: wish.icon })
       onDone()
     } catch {
@@ -101,15 +105,38 @@ export function MakeWishSheet({ giverName, onDone, onClose }: { giverName: strin
             placeholder="Spa day, pizza night…"
             maxLength={60}
           />
+          <div className="grid grid-cols-5 gap-1.5" role="group" aria-label="Wish icons">
+            {REWARD_ICONS.map((choice) => (
+              <button
+                key={choice.id}
+                type="button"
+                aria-label={choice.name}
+                aria-pressed={icon === choice.id}
+                className={`flex aspect-square items-center justify-center rounded-control border-2 ${
+                  icon === choice.id ? 'border-primary bg-field-primary' : 'border-edge bg-surface'
+                }`}
+                onClick={() => {
+                  setIcon(choice.id)
+                  setEmoji(choice.emoji)
+                  if (!title.trim()) setTitle(choice.name)
+                }}
+              >
+                <RewardGlyph emoji={choice.emoji} icon={choice.id} size={44} />
+              </button>
+            ))}
+          </div>
           <div className="flex flex-wrap gap-2" role="group" aria-label="Wish emoji">
             {EMOJI_CHOICES.map((e) => (
               <button
                 key={e}
                 type="button"
-                className={`${emoji === e ? 'btn-primary' : 'btn-secondary'} min-h-11 min-w-11 p-0 text-xl`}
+                className={`${!icon && emoji === e ? 'btn-primary' : 'btn-secondary'} min-h-11 min-w-11 p-0 text-xl`}
                 aria-label={`Emoji ${e}`}
-                aria-pressed={emoji === e}
-                onClick={() => setEmoji(e)}
+                aria-pressed={!icon && emoji === e}
+                onClick={() => {
+                  setEmoji(e)
+                  setIcon(undefined)
+                }}
               >
                 {e}
               </button>
