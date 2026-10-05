@@ -38,6 +38,9 @@ export const REWARD_ICONS: readonly RewardIcon[] = [
   { id: 'picnic', name: 'Picnic date', emoji: '🥪', cost: 100, idea: true },
   { id: 'sunset-drive', name: 'Sunset drive', emoji: '🌅', cost: 100, idea: true },
   { id: 'surprise-gift', name: 'Surprise gift', emoji: '🎁', cost: 80, idea: true },
+  // The mega prize (docs/superpowers/specs/2026-10-05-shop-as-motivator-design.md):
+  // about 2.5 months at 3 workouts a week. Its own art comes with the next batch.
+  { id: 'road-trip', name: 'Road trip', emoji: '🚐', cost: 1000, idea: true, artReady: false },
 
   // Personal Hubby Bunny rewards: stable ids first, bespoke pixel art next.
   // Until each sticker/tile pair lands, RewardGlyph deliberately shows the

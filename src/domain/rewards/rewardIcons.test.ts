@@ -3,15 +3,16 @@ import { describe, expect, it } from 'vitest'
 import { REWARD_ICONS, rewardIconById } from './rewardIcons'
 
 describe('reward icon catalog', () => {
-  it('has 40 unique reward ids, each priced', () => {
-    expect(REWARD_ICONS).toHaveLength(40)
-    expect(new Set(REWARD_ICONS.map((i) => i.id)).size).toBe(40)
+  it('has 41 unique reward ids, each priced', () => {
+    // 34 drawn icons, 6 personal Hubby Bunny rewards, the Road trip.
+    expect(REWARD_ICONS).toHaveLength(41)
+    expect(new Set(REWARD_ICONS.map((i) => i.id)).size).toBe(41)
     for (const icon of REWARD_ICONS) expect(icon.cost, icon.id).toBeGreaterThan(0)
   })
 
-  it('marks 25 starter ideas, keeping the original five and the personal Hubby Bunny tier', () => {
+  it('marks 26 starter ideas, keeping the original five and the personal Hubby Bunny tier', () => {
     const ideas = REWARD_ICONS.filter((i) => i.idea)
-    expect(ideas).toHaveLength(25)
+    expect(ideas).toHaveLength(26)
     const byName = new Map(ideas.map((i) => [i.name, i.cost]))
     expect(byName.get('No-dishes pass')).toBe(20)
     expect(byName.get('Movie night pick')).toBe(25)
@@ -38,5 +39,9 @@ describe('reward icon catalog', () => {
       expect(existsSync(`public/rewards/${icon.id}.webp`), `${icon.id} sticker`).toBe(true)
       expect(existsSync(`public/rewards/${icon.id}-tile.webp`), `${icon.id} tile`).toBe(true)
     }
+  })
+
+  it('offers a Road trip as the mega prize, art still to come', () => {
+    expect(rewardIconById('road-trip')).toMatchObject({ name: 'Road trip', emoji: '🚐', cost: 1000, idea: true, artReady: false })
   })
 })
