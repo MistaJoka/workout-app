@@ -17,3 +17,6 @@ release/
 android/keystore.properties
 *.jks
 *.keystore
+
+# Reward icon originals (scripts/assets/reward-icons.py)
+assets/pixel-bloom/rewards/source/
