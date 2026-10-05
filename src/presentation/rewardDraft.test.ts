@@ -23,7 +23,8 @@ describe('picking a reward icon', () => {
   })
 
   it('offers the catalog starter ideas, the five originals included', () => {
-    expect(STARTER_IDEAS).toHaveLength(19)
+    // 19 approved ideas plus the 6 personal Hubby Bunny rewards.
+    expect(STARTER_IDEAS).toHaveLength(25)
     expect(STARTER_IDEAS.map((i) => i.name)).toEqual(expect.arrayContaining(['No-dishes pass', 'Movie night pick', 'Foot rub', 'Breakfast in bed', 'Dinner date']))
   })
 })

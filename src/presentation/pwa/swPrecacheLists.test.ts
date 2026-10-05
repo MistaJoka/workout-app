@@ -50,7 +50,10 @@ describe('service worker precache lists', () => {
   })
 
   it('REWARD_ICON_IDS matches the reward icon catalog, so the shop works offline', () => {
-    expect([...stringArray('REWARD_ICON_IDS')].sort()).toEqual(REWARD_ICONS.map((i) => i.id).sort())
+    // Only icons whose pictures exist: ids reserved for art still being made
+    // (artReady: false) draw their emoji and must not be precached (404s).
+    const ready = REWARD_ICONS.filter((i) => i.artReady !== false).map((i) => i.id)
+    expect([...stringArray('REWARD_ICON_IDS')].sort()).toEqual(ready.sort())
     expect(sw).toMatch(/BEST_EFFORT_URLS = \[[^\]]*REWARD_ICON_URLS/)
   })
 })
