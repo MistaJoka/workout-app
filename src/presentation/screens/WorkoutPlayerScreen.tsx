@@ -1,3 +1,4 @@
+import { liveSetCarrots } from '../../domain/rewards/carrots'
 import { useCallback, useEffect, useRef, useState } from 'react'
 import { newId } from '../../shared/id'
 import { Link, useLocation, useNavigate, useParams } from 'react-router-dom'
@@ -468,6 +469,7 @@ export function WorkoutPlayerScreen() {
         onSkip={() => handleAction('REST_SKIPPED')}
         onPause={() => handleAction('PAUSED')}
         onUndo={state.lastSet ? () => handleAction('SET_UNDONE') : undefined}
+        liveCarrots={liveSetCarrots(plan, events)}
       />
     )
   }
@@ -489,6 +491,7 @@ export function WorkoutPlayerScreen() {
   // weighted move) would mean against the user's own prior best for this
   // move, if there is one.
   const liveBestTarget = liveBestTargetFor(exercise, setWeightKg)
+  const liveCarrots = liveSetCarrots(plan, events)
   const liveBestPreviewValue = liveBestTarget
     ? liveBestPreview(priorBest, liveBestTarget)
     : { priorBest: null, beatsBestIfDone: false, gap: null }
@@ -564,6 +567,10 @@ export function WorkoutPlayerScreen() {
               ▾
             </span>
           </button>
+          {/* Carrots this workout's sets have earned so far, ticking up with
+              each one: the shop, fed in real time. Finish bonuses arrive on
+              Complete. */}
+          <LiveCarrots count={liveCarrots} />
           <div className="-mr-3 flex">
             <button className="btn-ghost min-h-11" disabled={busy} onClick={() => handleAction('PAUSED')}>
               Pause
@@ -948,6 +955,26 @@ function RepQuestion({ children, busy, onUndo }: { children: React.ReactNode; bu
   )
 }
 
+// Carrots this workout's sets have earned so far, ticking up with each one:
+// the shop, fed in real time. Shown on the set screen and the rest screen
+// (the moment right after a set). Finish bonuses arrive on Complete.
+function LiveCarrots({ count }: { count: number }) {
+  if (count <= 0) return null
+  return (
+    <span
+      key={count}
+      className="live-carrots chip hud-num flex-none gap-1 bg-field-notice px-2 py-0.5 text-sm font-bold"
+      // A labelled counter, like WeekCompareCard's chips: an aria-label on
+      // a role-less span isn't allowed (axe aria-prohibited-attr).
+      role="img"
+      aria-label={`${count} ${count === 1 ? 'carrot' : 'carrots'} earned so far`}
+      data-testid="live-carrots"
+    >
+      <span aria-hidden="true">🥕 {count}</span>
+    </span>
+  )
+}
+
 function RestingView({
   upNext,
   upNextContent,
@@ -963,6 +990,7 @@ function RestingView({
   onSkip,
   onPause,
   onUndo,
+  liveCarrots,
 }: {
   // During rest the session already points at the coming set.
   upNext: SessionPlanExercise | undefined
@@ -980,6 +1008,8 @@ function RestingView({
   onExtend: () => void
   onSkip: () => void
   onPause: () => void
+  // Carrots this workout's sets have earned so far (LiveCarrots).
+  liveCarrots: number
   // Takes back the set that started this rest; absent when there's nothing
   // to undo (e.g. the rest came back from a session with no set to revert).
   onUndo?: () => void
@@ -1006,6 +1036,7 @@ function RestingView({
           decorative
           testId="rae-rest-face"
         />
+        <LiveCarrots count={liveCarrots} />
         <button className="btn-ghost min-h-11 -mr-3" disabled={busy} onClick={onPause}>
           Pause
         </button>

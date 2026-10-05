@@ -1,3 +1,4 @@
+import { GoalGain } from '../components/GoalGain'
 import { syncReminders } from '../../infrastructure/reminders'
 import { useEffect, useState, type ReactNode } from 'react'
 import { loadWeekGoals } from '../../infrastructure/db/repositories/weekGoalsRepository'
@@ -200,6 +201,11 @@ export function SessionCompleteScreen() {
               <XpGainChip gain={xp} alongside={carrots ? <CarrotGainChip gain={carrots} inline /> : undefined} />
               {xp.goalMet && <GoalMetBanner />}
               {xp.goalMet && goalBloomSpecies && <GoalBloomReveal species={goalBloomSpecies} />}
+            </RewardItem>
+          )}
+          {carrots && (
+            <RewardItem delay={135}>
+              <GoalGain gain={carrots.total} />
             </RewardItem>
           )}
           <RewardItem delay={180}>

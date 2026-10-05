@@ -76,3 +76,30 @@ test('redeeming a smaller treat says, neutrally, how far the goal is', async ({ 
   await page.getByRole('button', { name: 'Redeem' }).first().click()
   await expect(page.getByRole('dialog', { name: 'Redeem Nap time' }).getByText(/to go after this/)).toHaveCount(0)
 })
+
+test('a workout visibly feeds the goal: carrots tick up, then flow in on Complete', async ({ page }) => {
+  test.setTimeout(180_000)
+  await openShopAsHubby(page)
+  await addIdea(page, 'Road trip')
+  await page.getByRole('button', { name: 'Close', exact: true }).click()
+  await page.getByRole('button', { name: 'Save for this' }).click()
+
+  await page.goto('/#/checkin/fs.quick-10')
+  await page.getByRole('button', { name: 'Start workout' }).click()
+  await expect(page.getByTestId('live-carrots')).toHaveCount(0)
+  // One set, tapped the way the shared helper does (the opening countdown
+  // and the thumb bar's arm window can swallow an early tap).
+  const chip = page.getByTestId('live-carrots')
+  for (let i = 0; i < 60 && !(await chip.isVisible().catch(() => false)); i++) {
+    const armed = await page.locator('[data-armed="true"]').isVisible().catch(() => false)
+    const yes = page.getByRole('button', { name: 'Yes', exact: true })
+    const complete = page.getByRole('button', { name: 'Complete Set', exact: true })
+    if (armed && (await yes.isVisible().catch(() => false))) await yes.click({ force: true, timeout: 2000 }).catch(() => {})
+    else if (armed && (await complete.isVisible().catch(() => false))) await complete.click({ force: true, timeout: 2000 }).catch(() => {})
+    else await page.waitForTimeout(200)
+  }
+  await expect(chip).toHaveAccessibleName('1 carrot earned so far')
+
+  await finishWorkout(page)
+  await expect(page.getByTestId('goal-gain')).toContainText(/Road trip\s*0 → \d+ \/ 1000/)
+})

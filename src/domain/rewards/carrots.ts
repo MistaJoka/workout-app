@@ -2,6 +2,7 @@ import type { SessionEvent, SessionPlan, SessionResult } from '../session/types'
 import { goalForWeek, mondayKey as weekKey, type WeekGoal } from '../progress/weekGoals'
 import { projectSetRecords } from '../progress/history'
 import { flowStatus } from '../session/flow'
+import { effectiveSetSlots } from '../session/appliedEvents'
 
 // Carrots: Hubby Bunny's reward-shop currency. Like Bloom XP (xp.ts),
 // EARNED carrots are derived from history every time rather than stored, so
@@ -146,4 +147,11 @@ export function earnedCarrots(
 // session in this history.
 export function carrotsForSession(history: CarrotsHistory, weeklyGoal: WeekGoal, sessionId: string): SessionCarrots | null {
   return earnedCarrots(history, weeklyGoal).bySession.find((s) => s.sessionId === sessionId) ?? null
+}
+
+// A workout in progress: the carrots its sets have earned so far (one per
+// effective set, the same slots the finished session's count uses, so an
+// undone set takes its carrot back). Finish bonuses arrive on Complete.
+export function liveSetCarrots(plan: SessionPlan, events: readonly SessionEvent[]): number {
+  return effectiveSetSlots(plan, events).length * CARROT_RULES.perSet
 }
