@@ -39,7 +39,7 @@ import { dismissWish, getWishBook } from '../../infrastructure/db/repositories/w
 import { grantedWishIds, pendingWishes, type WishBook } from '../../domain/rewards/wishes'
 import { renderCardToBlob, ShareIcon } from '../components/ShareCardButton'
 import { shareOrDownload } from '../components/shareOrDownload'
-import { buildCouponCardModel, couponCardFilename, drawCouponCard } from '../rewardsCard'
+import { buildCouponCardModel, couponCardFilename, drawCouponCard, loadCouponArt } from '../rewardsCard'
 import { couponShareMessage, shortRedemptionCode } from '../../domain/rewards/giftLink'
 import { activeProfile } from '../../infrastructure/profiles'
 import { hasRealName } from '../greeting'
@@ -326,7 +326,7 @@ export function RewardsScreen() {
     }
   }
 
-  async function handleShareCoupon(redemption: RedemptionRecord, emoji: string) {
+  async function handleShareCoupon(redemption: RedemptionRecord, emoji: string, icon?: string) {
     if (!data) return
     setShareBusy(true)
     setShareError(null)
@@ -335,12 +335,14 @@ export function RewardsScreen() {
       const model = buildCouponCardModel({
         title: redemption.title,
         emoji,
+        ...(icon ? { icon } : {}),
         cost: redemption.cost,
         redeemedAt: redemption.redeemedAt,
         giverName: data.giverName,
         ...(hasRealName(profileName) ? { name: profileName.trim() } : {}),
       })
-      const blob = await renderCardToBlob((ctx) => drawCouponCard(ctx, model))
+      const art = await loadCouponArt(model)
+      const blob = await renderCardToBlob((ctx) => drawCouponCard(ctx, model, art))
       // The share message's own text carries a short coupon code (never
       // just the image) -- it's the thing Hubby Bunny pastes into his own
       // phone's "Mark delivered" composer (gift links round trip).
@@ -684,7 +686,7 @@ export function RewardsScreen() {
           deliveredAt={sheet.redemption.deliveredAt}
           shareBusy={shareBusy}
           shareError={shareError}
-          onShare={() => void handleShareCoupon(sheet.redemption, sheet.emoji)}
+          onShare={() => void handleShareCoupon(sheet.redemption, sheet.emoji, sheet.icon)}
           onMarkDelivered={() => requestMarkDelivered(sheet.redemption.id)}
           onClose={() => setSheet({ kind: 'none' })}
           unwrap={sheet.fresh}

@@ -1,4 +1,5 @@
 import { CARD_HEIGHT, CARD_WIDTH } from './shareCard'
+import { glyphSource } from './components/RewardGlyph'
 
 // A cute pixel coupon card for a redeemed reward from Hubby Bunny's shop:
 // "Send to {giverName}" (ShareCardButton's pattern, components/RedeemSheets.tsx)
@@ -10,16 +11,22 @@ import { CARD_HEIGHT, CARD_WIDTH } from './shareCard'
 export type CouponCardInput = {
   title: string
   emoji: string
+  icon?: string
   cost: number
   redeemedAt: string
   giverName: string
   name?: string // first name, only when the user set a real one
 }
 
+// The coupon's big stamp: the reward's pixel tile when it has one this app
+// knows, its emoji otherwise.
+export type CouponArt = { kind: 'image'; src: string } | { kind: 'emoji'; text: string }
+
 export type CouponCardModel = {
   header: string
   title: string
   emoji: string
+  art: CouponArt
   costLabel: string
   date: string
   giverLine: string
@@ -30,6 +37,10 @@ export function buildCouponCardModel(input: CouponCardInput): CouponCardModel {
     header: input.name ? `${input.name}'s coupon` : 'Redeemed!',
     title: input.title,
     emoji: input.emoji,
+    art: (() => {
+      const src = glyphSource(input.icon, 'tile')
+      return src ? { kind: 'image' as const, src } : { kind: 'emoji' as const, text: input.emoji }
+    })(),
     costLabel: `${input.cost} 🥕`,
     date: new Date(input.redeemedAt).toLocaleDateString(undefined, { weekday: 'long', month: 'long', day: 'numeric' }),
     giverLine: `Redeemable with ${input.giverName}`,
@@ -67,7 +78,22 @@ function fitText(ctx: CanvasRenderingContext2D, text: string, weight: number, si
   }
 }
 
-export function drawCouponCard(ctx: CanvasRenderingContext2D, model: CouponCardModel): void {
+// Loads the coupon's tile picture before drawing (drawing is synchronous).
+// Null when there's no picture or it can't load: the card then draws the
+// emoji, so a coupon always renders.
+export async function loadCouponArt(model: CouponCardModel): Promise<CanvasImageSource | null> {
+  if (model.art.kind !== 'image') return null
+  try {
+    const img = new Image()
+    img.src = model.art.src
+    await img.decode()
+    return img
+  } catch {
+    return null
+  }
+}
+
+export function drawCouponCard(ctx: CanvasRenderingContext2D, model: CouponCardModel, art: CanvasImageSource | null = null): void {
   const W = CARD_WIDTH
   ctx.clearRect(0, 0, W, CARD_HEIGHT)
   ctx.fillStyle = COLORS.background
@@ -82,8 +108,16 @@ export function drawCouponCard(ctx: CanvasRenderingContext2D, model: CouponCardM
   ctx.font = `800 52px ${FONT}`
   ctx.fillText(model.header, W / 2, 150)
 
-  ctx.font = `400 300px ${EMOJI_FONT}`
-  ctx.fillText(model.emoji, W / 2, 500)
+  if (art) {
+    // Pixel art stays crisp: no smoothing when scaling the tile up.
+    const smoothing = ctx.imageSmoothingEnabled
+    ctx.imageSmoothingEnabled = false
+    ctx.drawImage(art, W / 2 - 170, 190, 340, 340)
+    ctx.imageSmoothingEnabled = smoothing
+  } else {
+    ctx.font = `400 300px ${EMOJI_FONT}`
+    ctx.fillText(model.emoji, W / 2, 500)
+  }
 
   ctx.fillStyle = COLORS.text
   fitText(ctx, model.title, 800, 84, W - 160)
