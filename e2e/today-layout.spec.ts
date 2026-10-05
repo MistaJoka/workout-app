@@ -42,3 +42,13 @@ test('no sideways page scroll at 360px', async ({ page }) => {
   await expect(page.getByRole('link', { name: 'Start workout' })).toBeVisible()
   expect(await page.evaluate(() => document.documentElement.scrollWidth)).toBeLessThanOrEqual(360)
 })
+
+test('Library: routines are tiles and each Rae move shows once', async ({ page }) => {
+  await page.goto('/#/library')
+  await expect(page.getByRole('list', { name: 'Routines' }).getByRole('link', { name: /^Full-Body A, / })).toBeVisible()
+  await expect(page.getByRole('list', { name: 'Routines' }).getByRole('link', { name: 'New routine' })).toBeVisible()
+  const moves = page.getByRole('region', { name: 'Moves Rae shows you' }).getByRole('link')
+  await expect(moves.first()).toBeVisible()
+  const names = await moves.allInnerTexts()
+  expect(new Set(names).size).toBe(names.length)
+})

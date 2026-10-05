@@ -1,3 +1,6 @@
+import { TileRow, TodayTile } from '../components/TodayTiles'
+import { uniqueByLoop } from '../libraryRows'
+import { estimateMinutes } from '../../domain/content/workoutEstimate'
 import { countLabel } from '../format'
 import { useDeferredValue, useEffect, useMemo, useState } from 'react'
 import { Link } from 'react-router-dom'
@@ -10,10 +13,9 @@ import type { WorkoutTemplate } from '../../domain/content/types'
 import { FilterSheet } from '../components/FilterSheet'
 import { ExerciseThumb } from '../components/ExerciseThumb'
 import { RaeNote } from '../components/RaeNote'
-import { RAE_LOOPS, raeLoopForExercise } from '../components/raeLoops'
+import { RAE_LOOPS, raeLoopForExercise, raeStillFor } from '../components/raeLoops'
 import { DRAFT_TEMPLATE_IDS } from '../../domain/content/fixtures/raeDraftTemplates'
 import { Skeleton, SkeletonList } from '../components/Skeleton'
-import { DraftTag } from '../components/DraftTag'
 
 const PAGE = 40
 const LEVELS = ['beginner', 'intermediate', 'expert'] as const
@@ -66,7 +68,9 @@ export function LibraryScreen() {
     // grows toward the whole library; those moves show Rae in the list
     // below instead of all crowding this row.
     const featured = RAE_LOOPS.filter((loop) => 'featured' in loop && loop.featured)
-    getExercises(featured.flatMap((loop) => loop.exerciseIds)).then((found) => setRaeMoves([...found.values()]))
+    getExercises(featured.flatMap((loop) => loop.exerciseIds)).then((found) =>
+      setRaeMoves(uniqueByLoop([...found.values()], (id) => raeLoopForExercise(id)?.id))
+    )
   }, [])
 
   function toggle<K extends keyof LibraryFilters>(key: K, value: LibraryFilters[K]) {
@@ -81,30 +85,46 @@ export function LibraryScreen() {
       {!filtering && (
         <section className="space-y-2">
           <p className="text-sm font-semibold text-ink-muted">Routines</p>
-          {[...foundationStrengthStarterTemplates, ...custom].map((template) => (
-            <Link
-              key={template.id}
-              to={`/routines/${template.id}`}
-              className="flex items-center justify-between card px-4 py-3"
-            >
-              <span className="font-semibold">
-                {template.name}
-                {DRAFT_TEMPLATE_IDS.has(template.id) && <DraftTag />}
-              </span>
-              <span className="text-sm text-ink-muted">{countLabel(template.exercises.length, 'exercise')}</span>
-            </Link>
-          ))}
-          {/* Sits with the routines it adds to, not in the header corner:
-              the top right is the hardest reach, and this is rarely used. */}
-          <Link to="/routines/new" className="btn-secondary w-full">
-            + New routine
-          </Link>
+          {/* Each routine is its moves, shown as Rae, not a count; "+ New"
+              sits at the end of the row it adds to. */}
+          <TileRow label="Routines">
+            {[...foundationStrengthStarterTemplates, ...custom].map((template) => {
+              const draft = DRAFT_TEMPLATE_IDS.has(template.id)
+              const stills = template.exercises
+                .map((e) => raeStillFor(e.exerciseId))
+                .filter((still): still is { src: string; alt: string } => still !== null)
+                .slice(0, 3)
+              return (
+                <TodayTile
+                  key={template.id}
+                  to={`/routines/${template.id}`}
+                  name={`${template.name}, ${countLabel(template.exercises.length, 'exercise')}${draft ? ', draft' : ''}`}
+                  short={template.name}
+                  art={
+                    stills.length > 0 ? (
+                      <span className="flex -space-x-5">
+                        {stills.map((still) => (
+                          <img key={still.src} src={still.src} alt="" className="h-12 w-9 object-contain pixelated" />
+                        ))}
+                      </span>
+                    ) : (
+                      <span className="text-3xl">🌸</span>
+                    )
+                  }
+                  value={draft ? 'Draft' : `⏱${estimateMinutes(template)}`}
+                />
+              )
+            })}
+            <TodayTile to="/routines/new" name="New routine" short="New" art={<span className="text-3xl">+</span>} />
+          </TileRow>
         </section>
       )}
 
       {!filtering && raeMoves.length > 0 && (
-        <section className="space-y-2">
-          <p className="text-sm font-semibold text-ink-muted">Moves Rae shows you</p>
+        <section className="space-y-2" aria-label="Moves Rae shows you">
+          <p className="text-sm font-semibold text-ink-muted" aria-hidden>
+            Moves Rae shows you
+          </p>
           <div className="-mx-4 flex gap-2 overflow-x-auto px-4 pb-1">
             {raeMoves.map((exercise) => (
               <Link

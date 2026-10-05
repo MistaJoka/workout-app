@@ -127,12 +127,15 @@ export function equipmentLabel(e: Exercise): string {
 
 // Short labels for list rows and the detail header: muscle group, what you
 // need, and the level only when it isn't beginner (almost everything is).
-export function exerciseMeta(e: Exercise): string[] {
+// "No equipment" is left out while the library only shows no-equipment
+// moves (it would sit on every row); anything a move does need still shows.
+export function exerciseMeta(e: Exercise, { showNoEquipment = !NO_EQUIPMENT_ONLY }: { showNoEquipment?: boolean } = {}): string[] {
   const muscle = e.taxonomy.primaryMuscles?.[0]
   const level = e.taxonomy.level
+  const equipment = equipmentLabel(e)
   return [
     ...(muscle ? [muscleGroupLabel(muscle)] : []),
-    equipmentLabel(e),
+    ...(equipment !== 'No equipment' || showNoEquipment ? [equipment] : []),
     ...(level && level !== 'beginner' ? [capitalize(level)] : []),
   ]
 }

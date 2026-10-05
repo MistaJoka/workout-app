@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest'
-import { EQUIPMENT_FILTER_OPTIONS, equipmentLabel, equipmentOf, exerciseMeta, filterExercises, isShownNow, orderForBrowsing, searchHaystack } from './library'
+import { EQUIPMENT_FILTER_OPTIONS, NO_EQUIPMENT_ONLY, equipmentLabel, equipmentOf, exerciseMeta, filterExercises, isShownNow, orderForBrowsing, searchHaystack } from './library'
 import type { Exercise } from './types'
 
 function exercise(overrides: Partial<Exercise> & { id: string; name: string }): Exercise {
@@ -100,7 +100,15 @@ describe('isShownNow (no equipment for now, owner 2026-09-28)', () => {
 
 describe('friendly exercise labels', () => {
   it('names the muscle group, not the raw muscle', () => {
-    expect(exerciseMeta(exercise({ id: 'lib.A', name: 'A', taxonomy: { category: 'strength', equipment: ['bodyweight'], primaryMuscles: ['quadriceps'], level: 'beginner' } }))).toEqual(['Legs', 'No equipment'])
+    expect(exerciseMeta(exercise({ id: 'lib.A', name: 'A', taxonomy: { category: 'strength', equipment: ['bodyweight'], primaryMuscles: ['quadriceps'], level: 'beginner' } }), { showNoEquipment: true })).toEqual(['Legs', 'No equipment'])
+  })
+
+  it('leaves out "No equipment" while the library only shows no-equipment moves', () => {
+    const move = exercise({ id: 'lib.N', name: 'N', taxonomy: { category: 'strength', equipment: ['bodyweight'], primaryMuscles: ['abdominals'], level: 'beginner' } })
+    expect(exerciseMeta(move)).toEqual(NO_EQUIPMENT_ONLY ? ['Core'] : ['Core', 'No equipment'])
+    // A move that does need something still says what.
+    const chair = exercise({ id: 'rae.seated-march', name: 'Seated March', taxonomy: { category: 'strength', equipment: ['other'], primaryMuscles: [] } })
+    expect(exerciseMeta(chair)).toEqual(['Chair'])
   })
 
   it('calls an empty equipment list "No equipment" and Rae\'s "other" moves "Chair"', () => {
@@ -110,12 +118,12 @@ describe('friendly exercise labels', () => {
   })
 
   it('shows the level only when it is not beginner, capitalized', () => {
-    expect(exerciseMeta(exercise({ id: 'lib.D', name: 'D', taxonomy: { category: 'strength', equipment: ['bodyweight'], primaryMuscles: ['abdominals'], level: 'intermediate' } }))).toEqual(['Core', 'No equipment', 'Intermediate'])
+    expect(exerciseMeta(exercise({ id: 'lib.D', name: 'D', taxonomy: { category: 'strength', equipment: ['bodyweight'], primaryMuscles: ['abdominals'], level: 'intermediate' } }), { showNoEquipment: true })).toEqual(['Core', 'No equipment', 'Intermediate'])
   })
 
   it('skips a missing muscle and capitalizes an unmapped one', () => {
-    expect(exerciseMeta(exercise({ id: 'lib.E', name: 'E', taxonomy: { category: 'strength', equipment: ['bodyweight'], primaryMuscles: [] } }))).toEqual(['No equipment'])
-    expect(exerciseMeta(exercise({ id: 'lib.F', name: 'F', taxonomy: { category: 'strength', equipment: ['bodyweight'], primaryMuscles: ['wrists'] } }))).toEqual(['Wrists', 'No equipment'])
+    expect(exerciseMeta(exercise({ id: 'lib.E', name: 'E', taxonomy: { category: 'strength', equipment: ['bodyweight'], primaryMuscles: [] } }), { showNoEquipment: true })).toEqual(['No equipment'])
+    expect(exerciseMeta(exercise({ id: 'lib.F', name: 'F', taxonomy: { category: 'strength', equipment: ['bodyweight'], primaryMuscles: ['wrists'] } }), { showNoEquipment: true })).toEqual(['Wrists', 'No equipment'])
   })
 })
 
