@@ -70,7 +70,11 @@ test('same phone: she wishes, he prices it behind the PIN', async ({ page }) => 
 test('two phones: a wish link to him, a gift link back', async ({ page, browser, baseURL }) => {
   await stubShareSheet(page)
   await page.goto('/#/rewards')
-  await makeWish(page, 'Pizza night')
+  // She picks the wish by its pixel icon, which names it too.
+  await page.getByRole('button', { name: 'Make a wish ✨' }).click()
+  await page.getByRole('group', { name: 'Wish icons' }).getByRole('button', { name: 'Pizza night' }).click()
+  await page.getByRole('button', { name: 'Make a wish', exact: true }).click()
+  await expect(page.getByTestId('wish-made')).toContainText('Pizza night')
   await page.getByRole('button', { name: /^Send to Hubby Bunny/ }).click()
   const wishShare = await lastShare(page, 1)
   expect(wishShare.text).toContain('Pizza night')
@@ -82,6 +86,8 @@ test('two phones: a wish link to him, a gift link back', async ({ page, browser,
   await stubShareSheet(his)
   await his.goto(wishShare.url!.replace(/^https?:\/\/[^/]+/, ''))
   await expect(his.getByTestId('wish-preview')).toContainText('Pizza night')
+  // The icon travels with the wish.
+  await expect(his.getByTestId('wish-preview').locator('img[src*="rewards/pizza"]')).toBeVisible()
   await his.getByRole('button', { name: 'Price it' }).click()
   await setUpShopPin(his)
   await his.getByRole('button', { name: 'Little 25' }).click()
@@ -98,4 +104,6 @@ test('two phones: a wish link to him, a gift link back', async ({ page, browser,
   await expect(page).toHaveURL(/#\/rewards/)
   await expect(page.getByText('✨ Your wish')).toBeVisible()
   await expect(page.getByTestId('wishlist')).not.toContainText('Pizza night')
+  // The granted reward in her shop keeps the icon she picked.
+  await expect(page.locator('img[src*="rewards/pizza.webp"]').first()).toBeVisible()
 })

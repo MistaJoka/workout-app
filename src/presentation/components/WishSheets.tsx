@@ -60,6 +60,9 @@ export function MakeWishSheet({ giverName, onDone, onClose }: { giverName: strin
   // A pixel icon she taps (domain/rewards/rewardIcons.ts); it fills an
   // empty wish's words, and the emoji row clears it.
   const [icon, setIcon] = useState<string | undefined>(undefined)
+  // A name she typed stays when she changes icons; one an icon filled in
+  // follows the next icon she taps.
+  const [titleTyped, setTitleTyped] = useState(false)
   const [busy, setBusy] = useState(false)
   const [error, setError] = useState<string | null>(null)
   const [made, setMade] = useState<WishLite | null>(null)
@@ -100,7 +103,10 @@ export function MakeWishSheet({ giverName, onDone, onClose }: { giverName: strin
           <input
             className="input w-full"
             value={title}
-            onChange={(e) => setTitle(e.target.value)}
+            onChange={(e) => {
+              setTitle(e.target.value)
+              setTitleTyped(true)
+            }}
             aria-label="Wish"
             placeholder="Spa day, pizza night…"
             maxLength={60}
@@ -118,7 +124,7 @@ export function MakeWishSheet({ giverName, onDone, onClose }: { giverName: strin
                 onClick={() => {
                   setIcon(choice.id)
                   setEmoji(choice.emoji)
-                  if (!title.trim()) setTitle(choice.name)
+                  if (!titleTyped || !title.trim()) setTitle(choice.name)
                 }}
               >
                 <RewardGlyph emoji={choice.emoji} icon={choice.id} size={44} />

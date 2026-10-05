@@ -58,3 +58,16 @@ test('her wish made with an icon keeps it', async ({ page }) => {
   await page.getByRole('button', { name: 'Make a wish', exact: true }).click()
   await loaded(page, '[data-testid="wish-made"] img[src*="rewards/boba"]')
 })
+
+test('changing her mind between icons changes the wish name too', async ({ page }) => {
+  await page.goto('/#/rewards')
+  await page.getByRole('button', { name: /Make a wish/ }).first().click()
+  const icons = page.getByRole('group', { name: 'Wish icons' })
+  await icons.getByRole('button', { name: 'Pizza night' }).click()
+  await icons.getByRole('button', { name: 'Sushi night' }).click()
+  await expect(page.getByLabel('Wish', { exact: true })).toHaveValue('Sushi night')
+  // A name she typed herself stays.
+  await page.getByLabel('Wish', { exact: true }).fill('Sushi with Mom')
+  await icons.getByRole('button', { name: 'Ramen night' }).click()
+  await expect(page.getByLabel('Wish', { exact: true })).toHaveValue('Sushi with Mom')
+})
