@@ -5,6 +5,7 @@ import { listRewards } from '../../infrastructure/db/repositories/rewardsReposit
 import { getSetting } from '../../infrastructure/db/repositories/settingsRepository'
 import { savingProgress } from '../../domain/rewards/pricing'
 import { loadCarrotBalance } from './CarrotCelebration'
+import { TodayTile } from './TodayTiles'
 
 // "Saving for…": she pins one shop reward and watches her carrots fill a bar
 // toward it (goal-gradient). Her whole balance counts, so the progress is
@@ -42,7 +43,8 @@ export function SavingGoalBar({ reward, balance }: { reward: RewardRecord; balan
 }
 
 // Today's compact card: only shows while she's saving for something.
-export function SavingGoalTodayCard() {
+// `tile` renders it as one of Today's square swipe tiles instead.
+export function SavingGoalTodayCard({ tile = false }: { tile?: boolean } = {}) {
   const [state, setState] = useState<{ reward: RewardRecord; balance: number } | null>(null)
 
   useEffect(() => {
@@ -61,6 +63,18 @@ export function SavingGoalTodayCard() {
   }, [])
 
   if (!state) return null
+  if (tile) {
+    const p = savingProgress(state.balance, state.reward.cost)
+    return (
+      <TodayTile
+        to="/rewards"
+        name={`Saving for ${state.reward.title}: ${p.have} of ${p.cost} carrots`}
+        short={state.reward.title}
+        art={<span className="text-3xl">{state.reward.emoji}</span>}
+        value={`${p.have}/${p.cost}🥕`}
+      />
+    )
+  }
   return (
     <Link to="/rewards" className="field-info flex min-h-11 items-center gap-3 px-4 py-3" data-testid="saving-goal-today">
       <span aria-hidden="true" className="text-3xl">

@@ -5,6 +5,7 @@ import { monthKey, monthRecapOffer, monthStartOf, recapOffer, weekKey, weekStart
 import { db } from '../../infrastructure/db/schema'
 import { readRecapSeen, readRecapSeenMonth } from '../recapSeen'
 import { PixelBloom } from './PixelBloom'
+import { TodayTile } from './TodayTiles'
 
 type WeekOffer = { kind: 'week'; weekStart: string; workouts: number; species: GardenSpecies | null }
 type MonthOffer = { kind: 'month'; monthKey: string; label: string; workouts: number; species: GardenSpecies | null }
@@ -21,7 +22,8 @@ function monthLabelOf(key: string): string {
 // priority over the week card. Otherwise: Sunday tells the week now ending,
 // Monday to Saturday the week just past (if it had a workout), each week
 // until its recap has been opened. Renders nothing otherwise.
-export function RecapEntry() {
+// `tile` renders it as one of Today's square swipe tiles instead.
+export function RecapEntry({ tile = false }: { tile?: boolean } = {}) {
   const [offer, setOffer] = useState<Offer | null>(null)
 
   useEffect(() => {
@@ -85,6 +87,16 @@ export function RecapEntry() {
         : `${offer.workouts} ${offer.workouts === 1 ? 'workout' : 'workouts'}, ${offer.workouts} ${
             offer.workouts === 1 ? 'flower' : 'flowers'
           } grown`
+    if (tile)
+      return (
+        <TodayTile
+          to={`/recap?month=${offer.monthKey}`}
+          name={`${offer.label} in bloom. ${summary}`}
+          short={offer.label}
+          art={<PixelBloom species={offer.species ?? undefined} bloomed={offer.species != null} size={36} animate={false} />}
+          value={`${offer.workouts}🌸`}
+        />
+      )
     return (
       <Link
         to={`/recap?month=${offer.monthKey}`}
@@ -109,6 +121,16 @@ export function RecapEntry() {
       : `${offer.workouts} ${offer.workouts === 1 ? 'workout' : 'workouts'}, ${offer.workouts} ${
           offer.workouts === 1 ? 'flower' : 'flowers'
         } grown`
+  if (tile)
+    return (
+      <TodayTile
+        to={`/recap?week=${offer.weekStart}`}
+        name={`Your week in bloom. ${summary}`}
+        short="Your week"
+        art={<PixelBloom species={offer.species ?? undefined} bloomed={offer.species != null} size={36} animate={false} />}
+        value={`${offer.workouts}🌸`}
+      />
+    )
   return (
     <Link
       to={`/recap?week=${offer.weekStart}`}

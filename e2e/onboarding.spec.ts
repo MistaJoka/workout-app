@@ -84,12 +84,22 @@ test('Skip finishes the tour without saving a name, and it never shows again', a
 
 test('a profile that already dismissed the old Welcome card is grandfathered in, even forced', async ({ page }) => {
   await page.goto('/')
-  await expect(page.getByText('Welcome')).toBeVisible()
-  await dismissWelcome(page)
-  await expect(page.getByText('Welcome')).toBeHidden()
-  // The dismissal is an async settings write (setSetting); give it a beat
-  // to land before navigating away, or the reload below could race it.
-  await page.waitForTimeout(300)
+  await expect(page.getByRole('heading', { level: 1 })).toBeVisible()
+  // The old Welcome card is gone from Today, but profiles that dismissed it
+  // still carry the setting; write it the way that card did.
+  await page.evaluate(
+    () =>
+      new Promise<void>((resolve, reject) => {
+        const open = indexedDB.open('workout-app-v06')
+        open.onerror = () => reject(open.error)
+        open.onsuccess = () => {
+          const tx = open.result.transaction('settings', 'readwrite')
+          tx.objectStore('settings').put({ key: 'welcomeDismissed', value: true })
+          tx.oncomplete = () => resolve()
+          tx.onerror = () => reject(tx.error)
+        }
+      })
+  )
   await page.goto('about:blank')
   await page.goto('/?onboarding=1')
   await expect(dialog(page)).toBeHidden()

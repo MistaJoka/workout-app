@@ -5,9 +5,6 @@ test.describe('golden path', () => {
   test('first run: welcome, one-tap start, a full workout, and it shows up in Progress', async ({ page }) => {
     test.setTimeout(180_000) // ten sets with rests to skip
     await page.goto('/')
-    await expect(page.getByText('Welcome')).toBeVisible()
-    await page.getByRole('button', { name: 'Got it' }).click()
-    await expect(page.getByText('Welcome')).toBeHidden()
 
     // Today leads with one workout under Rae; the start screen shows what
     // you're about to do and asks nothing: one tap starts.
@@ -128,7 +125,7 @@ test.describe('library and routines', () => {
     await expect(page.getByText('4 × 10 reps')).toBeVisible()
 
     await page.goto('/#/')
-    await expect(page.getByText(/Your routine,/)).toBeVisible()
+    await expect(page.getByRole('link', { name: /your routine,/ })).toBeVisible()
     await expect(page.getByRole('link', { name: /Leg Day/ })).toBeVisible()
   })
 
@@ -197,8 +194,6 @@ test.describe('setup for two people', () => {
 
   test('profiles keep two people separate on one device', async ({ page }) => {
     await page.goto('/')
-    await page.getByRole('button', { name: 'Got it' }).click()
-    await expect(page.getByText('Welcome')).toBeHidden()
 
     // Who's working out lives at the top of Settings.
     await page.getByRole('link', { name: 'Settings' }).click()
@@ -207,10 +202,10 @@ test.describe('setup for two people', () => {
     await page.getByPlaceholder('Their name').fill('Kay')
     await page.getByRole('button', { name: 'Add', exact: true }).click()
 
-    // New person: fresh data, so the welcome card is back.
+    // New person: Today greets her by her own name.
     await expect(page.getByRole('button', { name: /Profile: Kay/ })).toBeVisible()
     await page.getByRole('link', { name: 'Today' }).click()
-    await expect(page.getByText('Welcome')).toBeVisible()
+    await expect(page.getByRole('heading', { level: 1 })).toHaveText(/, Kay$/)
 
     await page.getByRole('link', { name: 'Settings' }).click()
     await page.getByRole('button', { name: /Profile: Kay/ }).click()
@@ -218,7 +213,7 @@ test.describe('setup for two people', () => {
     await page.getByRole('dialog').getByRole('button', { name: /\bMe\b/ }).click()
     await expect(page.getByRole('button', { name: /Profile: Me/ })).toBeVisible()
     await page.getByRole('link', { name: 'Today' }).click()
-    await expect(page.getByText('Welcome')).toBeHidden()
+    await expect(page.getByRole('heading', { level: 1 })).not.toHaveText(/Kay/)
   })
 })
 

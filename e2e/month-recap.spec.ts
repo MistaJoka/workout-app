@@ -92,7 +92,7 @@ test.describe('monthly recap', () => {
     // Sep 23 session) would also qualify for the weekly offer.
     const monthEntry = page.getByRole('link', { name: /September in bloom/ })
     await expect(monthEntry).toBeVisible()
-    await expect(monthEntry).toHaveText(/5 workouts, 5 flowers grown/)
+    await expect(monthEntry).toHaveAccessibleName(/5 workouts, 5 flowers grown/)
     await expect(page.getByRole('link', { name: /Your week in bloom/ })).toHaveCount(0)
 
     await monthEntry.click()

@@ -3,10 +3,8 @@ import type { RaeLoop } from '../components/raeLoops'
 import { DRAFT_TEMPLATE_IDS } from '../../domain/content/fixtures/raeDraftTemplates'
 import { loadWeekGoals } from '../../infrastructure/db/repositories/weekGoalsRepository'
 import { asset } from '../assetUrl'
-import { DraftTag } from '../components/DraftTag'
 import { countLabel } from '../format'
 import { useEffect, useState } from 'react'
-import { Link } from 'react-router-dom'
 import { ROTATION, foundationStrengthStarterTemplates } from '../../domain/content/fixtures/foundationStrengthStarter'
 import { getExercises, getTemplate } from '../../domain/content/catalog'
 import { getPlan } from '../../infrastructure/db/repositories/sessionRepository'
@@ -18,7 +16,7 @@ import { db } from '../../infrastructure/db/schema'
 import type { Exercise, WorkoutTemplate } from '../../domain/content/types'
 import { WEEKDAY_LABELS, resolveToday, type Weekday } from '../../domain/schedule/weeklySchedule'
 import { buildWeek, setsDone, todayMode, workoutsToday, type WeekDay } from '../../domain/schedule/todayView'
-import { WelcomeCard } from '../components/WelcomeCard'
+import { TileRow, TodayTile } from '../components/TodayTiles'
 import { RaeHero } from '../components/RaeHero'
 import { TodayMission, type Mission } from '../components/TodayMission'
 import { WeekBlooms, type WeekNames } from '../components/WeekBlooms'
@@ -267,7 +265,7 @@ function useNow(): [Date, () => void] {
 }
 
 export function TodayScreen() {
-  const [profile, setProfile] = useState(() => activeProfile())
+  const [profile] = useState(() => activeProfile())
   const [now, refreshNow] = useNow()
   const [data, setData] = useState<TodayData | null>(null)
   const [failed, setFailed] = useState(false)
@@ -294,7 +292,7 @@ export function TodayScreen() {
     <div className="p-4 space-y-4">
       <header className="flex items-start justify-between gap-2 px-1">
         <div>
-          <p className="text-sm font-semibold text-ink-muted">{longDate(now)}</p>
+          <p className="sr-only">{longDate(now)}</p>
           <h1 className="flex items-center gap-1.5 text-[1.625rem] font-extrabold leading-tight">
             <span>{greeting(now, profile.name)}</span>
             {emblemSpecies && hasRealName(profile.name) && (
@@ -341,8 +339,6 @@ export function TodayScreen() {
         )}
       </section>
 
-      <WelcomeCard finished={data ? data.hasFinished : null} onNamed={() => setProfile(activeProfile())} />
-
       {data && (
         <WeekBlooms
           week={data.week}
@@ -353,58 +349,51 @@ export function TodayScreen() {
         />
       )}
 
-      {data?.newChapter && (
-        <Link
-          to={`/story/${data.newChapter.n}`}
-          className="field-info flex min-h-11 items-center gap-3 px-4 py-3"
-          aria-label={`New chapter: ${data.newChapter.title}. Open Rae's story`}
-        >
-          <RaeFace expression={data.newChapter.expression as RaeExpression} size={36} motion="none" decorative />
-          <span className="min-w-0 flex-1">
-            <span className="block font-bold">New chapter: {data.newChapter.title}</span>
-            <span className="block text-sm text-ink-muted">Rae's garden story</span>
-          </span>
-          <span aria-hidden="true" className="text-xl text-ink-muted">
-            ›
-          </span>
-        </Link>
+      {/* Everything else today is a picture to swipe, not a card to read:
+          each extra shows only when it's relevant, and the row hides when
+          none are. */}
+      {data && (
+        <TileRow label="Today's extras">
+          {data.newChapter && (
+            <TodayTile
+              to={`/story/${data.newChapter.n}`}
+              name={`New chapter: ${data.newChapter.title}. Open Rae's story`}
+              short="New chapter"
+              art={<RaeFace expression={data.newChapter.expression as RaeExpression} size={40} motion="none" decorative />}
+            />
+          )}
+          <RecapEntry tile />
+          <BossCard now={now} tile />
+          <SavingGoalTodayCard tile />
+          {data.offerPlanWeek && <PlanWeekCard tile />}
+        </TileRow>
       )}
 
-      {data && <RecapEntry />}
-
-      {data && <BossCard now={now} />}
-
-      {data && <SavingGoalTodayCard />}
-
-      {data?.offerPlanWeek && <PlanWeekCard />}
-
       {data && data.others.length > 0 && (
-        <section className="space-y-2">
-          <h2 className="px-1 text-sm font-semibold text-ink-muted">
-            {data.mission.kind === 'ready' ? 'Or pick another' : 'Workouts'}
-          </h2>
-          <ul className="card divide-y-2 divide-[var(--color-border)] overflow-hidden">
-            {data.others.map(({ template, custom }) => (
-              <li key={template.id}>
-                <Link to={`/checkin/${template.id}`} className="flex items-center gap-3 px-4 py-3 active:bg-field-primary">
-                  <span className="min-w-0 flex-1">
-                    <span className="block truncate font-bold">
-                      {template.name}
-                      {DRAFT_TEMPLATE_IDS.has(template.id) && <DraftTag />}
-                    </span>
-                    <span className="block text-sm text-ink-muted">
-                      {custom ? 'Your routine, ' : ''}
-                      {describe(template)}
-                    </span>
-                  </span>
-                  <span className="text-xl text-ink-muted" aria-hidden>
-                    ›
-                  </span>
-                </Link>
-              </li>
-            ))}
-          </ul>
-        </section>
+        <TileRow label={data.mission.kind === 'ready' ? 'Or pick another' : 'Workouts'}>
+          {data.others.map(({ template, custom }) => {
+            const loop = firstRaeLoop(template.exercises.map((e) => e.exerciseId))
+            const still = loop ? raeStillFor(loop.exerciseIds[0]) : null
+            const draft = DRAFT_TEMPLATE_IDS.has(template.id)
+            return (
+              <TodayTile
+                key={template.id}
+                to={`/checkin/${template.id}`}
+                name={`${template.name}, ${custom ? 'your routine, ' : ''}${describe(template)}${draft ? ', draft' : ''}`}
+                short={template.name}
+                art={
+                  still ? (
+                    <img src={still.src} alt="" className="h-12 w-12 object-contain pixelated" />
+                  ) : (
+                    <span className="text-3xl">🌸</span>
+                  )
+                }
+                value={draft ? 'Draft' : `⏱${estimateMinutes(template)}`}
+              />
+            )
+          })}
+          <TodayTile to="/library" name="More workouts" short="More" art={<span className="text-3xl">→</span>} />
+        </TileRow>
       )}
     </div>
   )

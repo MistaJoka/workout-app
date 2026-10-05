@@ -1,10 +1,14 @@
 import { Link } from 'react-router-dom'
+import { TodayTile } from './TodayTiles'
 
 // Offered on Today until any day is planned (shouldOfferPlanWeek): the
 // weekly goal and Calendar reminders both follow the plan. It sits right
 // under WeekBlooms, whose seven pots already show the week, so it is just a
 // line and a button; Rae stars in the room above, so no second Rae here.
-export function PlanWeekCard() {
+// `tile` renders it as one of Today's square swipe tiles instead.
+export function PlanWeekCard({ tile = false }: { tile?: boolean } = {}) {
+  if (tile)
+    return <TodayTile to="/schedule" name="Plan your week" short="Plan week" art={<span className="text-3xl">🗓</span>} />
   return (
     <section aria-labelledby="plan-week-title" className="field-calm space-y-3 p-4">
       <div>

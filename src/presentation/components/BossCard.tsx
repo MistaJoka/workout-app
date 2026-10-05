@@ -8,8 +8,10 @@ import { Link } from 'react-router-dom'
 import { BossSprite } from './BossArt'
 import { loadBossState } from './bossData'
 import type { BossState } from '../../domain/game/bosses'
+import { TodayTile } from './TodayTiles'
 
-export function BossCard({ now }: { now: Date }) {
+// `tile` renders it as one of Today's square swipe tiles instead.
+export function BossCard({ now, tile = false }: { now: Date; tile?: boolean }) {
   const [state, setState] = useState<BossState | null>(null)
 
   useEffect(() => {
@@ -29,12 +31,23 @@ export function BossCard({ now }: { now: Date }) {
   if (!state) return null
   const defeated = state.defeatedAt !== null
   const pct = state.maxHp > 0 ? Math.max(0, Math.min(100, Math.round((state.hp / state.maxHp) * 100))) : 0
+  const name = `This week: ${state.boss.name}, ${defeated ? 'defeated' : `${state.hp} of ${state.maxHp} HP`}`
+  if (tile)
+    return (
+      <TodayTile
+        to="/boss"
+        name={name}
+        short={state.boss.name}
+        art={<BossSprite boss={state.boss} state={defeated ? 'defeated' : 'idle'} size={40} />}
+        value={defeated ? '✓' : `${pct}% HP`}
+      />
+    )
 
   return (
     <Link
       to="/boss"
       className="field-info flex min-h-11 items-center gap-3 px-4 py-3"
-      aria-label={`This week: ${state.boss.name}, ${defeated ? 'defeated' : `${state.hp} of ${state.maxHp} HP`}`}
+      aria-label={name}
     >
       <BossSprite boss={state.boss} state={defeated ? 'defeated' : 'idle'} size={40} />
       <span className="min-w-0 flex-1">

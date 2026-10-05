@@ -36,8 +36,8 @@ test('tiers, prices in workouts, and saving for a big reward', async ({ page }) 
   await expect(page.getByRole('button', { name: 'Saving ⭐' })).toHaveAttribute('aria-pressed', 'true')
 
   await page.goto('/#/')
-  await expect(page.getByTestId('saving-goal-today')).toContainText('Spa day')
-  await page.getByTestId('saving-goal-today').click()
+  await expect(page.getByRole('link', { name: /^Saving for Spa day/ })).toBeVisible()
+  await page.getByRole('link', { name: /^Saving for Spa day/ }).click()
   await expect(page).toHaveURL(/#\/rewards/)
 
   // Tap again to stop saving for it; the goal card goes away.

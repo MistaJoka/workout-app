@@ -654,3 +654,8 @@ input[type='range'] {
   }
 }
 
+
+/* Today's swipe rows hide while none of their tiles render. */
+.today-row:not(:has(> *)) {
+  display: none;
+}

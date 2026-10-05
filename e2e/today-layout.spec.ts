@@ -25,3 +25,20 @@ test('the mission and week cards show numbers, not sentences', async ({ page }) 
   const week = await seenText(page, '.week-blooms')
   expect(week).not.toMatch(/to hit your week|to your \d+(st|nd|rd|th) workout/)
 })
+
+test('the ready Today fits one phone screen', async ({ page }) => {
+  await page.goto('/')
+  const start = page.getByRole('link', { name: 'Start workout' })
+  await expect(start).toBeVisible()
+  const box = await start.boundingBox()
+  expect(box!.y + box!.height).toBeLessThanOrEqual(824 - 72) // above the tab bar
+  // The other workouts are a swipe row of tiles, not a text list.
+  await expect(page.getByRole('list', { name: 'Or pick another' }).getByRole('link', { name: /^Full-Body B, / })).toBeVisible()
+})
+
+test('no sideways page scroll at 360px', async ({ page }) => {
+  await page.setViewportSize({ width: 360, height: 740 })
+  await page.goto('/')
+  await expect(page.getByRole('link', { name: 'Start workout' })).toBeVisible()
+  expect(await page.evaluate(() => document.documentElement.scrollWidth)).toBeLessThanOrEqual(360)
+})
