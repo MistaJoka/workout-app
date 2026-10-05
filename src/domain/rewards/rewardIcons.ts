@@ -31,6 +31,18 @@ export const REWARD_ICONS: readonly RewardIcon[] = [
   { id: 'picnic', name: 'Picnic date', emoji: '🥪', cost: 100, idea: true },
   { id: 'sunset-drive', name: 'Sunset drive', emoji: '🌅', cost: 100, idea: true },
   { id: 'surprise-gift', name: 'Surprise gift', emoji: '🎁', cost: 80, idea: true },
+
+  // Personal Hubby Bunny rewards: deliberately specific to this app's
+  // relationship loop rather than generic shop filler. These are stable IDs
+  // so artwork, saved wishes, gift links and future analytics can all refer
+  // to the same reward without depending on the display name.
+  { id: 'hubby-butter-noodles', name: "Hubby's butter noodles", emoji: '🍜', cost: 40, idea: true },
+  { id: 'hubby-salmon-rice', name: "Hubby's baked salmon & rice", emoji: '🐟', cost: 60, idea: true },
+  { id: 'chipotle-night', name: 'Chipotle night', emoji: '🌯', cost: 50, idea: true },
+  { id: 'hubby-cooks-your-pick', name: 'You pick, Hubby cooks', emoji: '🧑‍🍳', cost: 60, idea: true },
+  { id: 'hubby-favor', name: 'Hubby favor', emoji: '💗', cost: 35, idea: true },
+  { id: 'mandatory-movie-night', name: 'Mandatory movie night', emoji: '🎬', cost: 35, idea: true },
+
   { id: 'takeout', name: 'Takeout night', emoji: '🥡', cost: 50, idea: false },
   { id: 'pizza', name: 'Pizza night', emoji: '🍕', cost: 40, idea: false },
   { id: 'sushi', name: 'Sushi night', emoji: '🍣', cost: 60, idea: false },
