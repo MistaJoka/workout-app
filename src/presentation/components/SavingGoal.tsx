@@ -4,7 +4,8 @@ import { Link } from 'react-router-dom'
 import type { RewardRecord } from '../../infrastructure/db/schema'
 import { listRewards } from '../../infrastructure/db/repositories/rewardsRepository'
 import { getSetting } from '../../infrastructure/db/repositories/settingsRepository'
-import { savingProgress } from '../../domain/rewards/pricing'
+import { rewardTier, savingProgress } from '../../domain/rewards/pricing'
+import { RoadProgress } from './RoadProgress'
 import { loadCarrotBalance } from './CarrotCelebration'
 import { TodayTile } from './TodayTiles'
 
@@ -20,8 +21,12 @@ export function savingGoalReward(rewards: readonly RewardRecord[], savingForId: 
 
 export function SavingGoalBar({ reward, balance }: { reward: RewardRecord; balance: number }) {
   const p = savingProgress(balance, reward.cost)
+  const label = `Saving for ${reward.title}: ${p.have} of ${p.cost} carrots`
   return (
     <span className="block">
+      {rewardTier(reward.cost) === 'mega' ? (
+        <RoadProgress have={p.have} cost={p.cost} label={label} />
+      ) : (
       <span
         role="progressbar"
         aria-label={`Saving for ${reward.title}: ${p.have} of ${p.cost} carrots`}
@@ -35,6 +40,7 @@ export function SavingGoalBar({ reward, balance }: { reward: RewardRecord; balan
           style={{ width: `${p.pct}%`, background: 'linear-gradient(90deg, var(--color-primary), var(--color-accent))' }}
         />
       </span>
+      )}
       <span className="hud-num block text-xs text-ink-muted">
         {p.have}/{p.cost} 🥕
         {p.ready ? ' · ready!' : ` · about ${p.workoutsLeft} ${p.workoutsLeft === 1 ? 'workout' : 'workouts'} to go`}
