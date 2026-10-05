@@ -17,14 +17,17 @@ import { effectiveMotion, usePrefersReducedMotion } from './MovementMedia'
 // carrots are derived from history every time (domain/rewards/carrots.ts),
 // never stored, so nothing here can drift from what actually happened.
 
-export async function loadCarrotBalance(): Promise<number> {
-  const [{ plans, results, events }, schedule, spent] = await Promise.all([
-    getAllSessionHistory(),
-    getWeeklySchedule(),
-    totalSpent(),
-  ])
+// Every carrot earned so far (workouts, bonuses, defeated bosses). Only
+// ever grows, which is what lets redeemReward check it against spending
+// inside its own transaction.
+export async function loadEarnedCarrots(): Promise<number> {
+  const [{ plans, results, events }, schedule] = await Promise.all([getAllSessionHistory(), getWeeklySchedule()])
   const goal = await loadWeekGoals({ plans, results, schedule })
-  const earned = earnedCarrots({ plans, results, events }, goal, bossSources({ plans, results, events }, goal)).total
+  return earnedCarrots({ plans, results, events }, goal, bossSources({ plans, results, events }, goal)).total
+}
+
+export async function loadCarrotBalance(): Promise<number> {
+  const [earned, spent] = await Promise.all([loadEarnedCarrots(), totalSpent()])
   return earned - spent
 }
 

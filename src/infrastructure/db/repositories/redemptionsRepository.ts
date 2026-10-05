@@ -10,10 +10,27 @@ import { matchRedemptionsByCode } from '../../../domain/rewards/giftLink'
 // `id` is the idempotency key: the confirm sheet mints one per opening, so
 // a double tap or a retry of the same confirm lands on the same row instead
 // of spending twice (the first write wins; later ones return it).
+// Thrown when the balance (earned minus everything already spent, read
+// inside the redeem's own transaction) can't cover the reward.
+export class NotEnoughCarrotsError extends Error {
+  constructor() {
+    super('Not enough carrots')
+    this.name = 'NotEnoughCarrotsError'
+  }
+}
+
+// `earned`: carrots earned so far (derived from history by the caller).
+// Earned only ever grows, so a value read just before is safe; what's
+// spent is re-read inside the same write transaction, and IndexedDB runs
+// write transactions on one table one at a time, so two redeems at once
+// (two tabs, a stale screen) can never both spend the same carrots.
+// Without `earned` the balance isn't checked (callers that already
+// settled the price, e.g. tests and imports).
 export async function redeemReward(
   reward: Pick<RewardRecord, 'id' | 'title' | 'cost'>,
   at: string = new Date().toISOString(),
-  id: string = newId()
+  id: string = newId(),
+  { earned }: { earned?: number } = {}
 ): Promise<RedemptionRecord> {
   const redemption: RedemptionRecord = {
     id,
@@ -26,6 +43,13 @@ export async function redeemReward(
   return db.transaction('rw', db.redemptions, async () => {
     const existing = await db.redemptions.get(id)
     if (existing) return existing
+    if (earned != null) {
+      let spent = 0
+      await db.redemptions.each((r) => {
+        spent += r.cost
+      })
+      if (earned - spent < reward.cost) throw new NotEnoughCarrotsError()
+    }
     await db.redemptions.add(redemption)
     return redemption
   })

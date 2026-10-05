@@ -6,7 +6,7 @@ import { RaeNote } from '../components/RaeNote'
 import type { RedemptionRecord, RewardRecord } from '../../infrastructure/db/schema'
 import { listRewards } from '../../infrastructure/db/repositories/rewardsRepository'
 import { addReward, updateReward, removeReward } from '../../infrastructure/db/repositories/rewardsRepository'
-import { listRedemptions, markDelivered, redeemReward } from '../../infrastructure/db/repositories/redemptionsRepository'
+import { listRedemptions, markDelivered, NotEnoughCarrotsError, redeemReward } from '../../infrastructure/db/repositories/redemptionsRepository'
 import { getSetting, setSetting } from '../../infrastructure/db/repositories/settingsRepository'
 import {
   DEFAULT_GIVER_NAME,
@@ -24,7 +24,7 @@ import {
   type PinRecord,
 } from '../../domain/rewards/pin'
 import { generateSalt, hasSubtleCrypto, sha256Hex } from '../../infrastructure/pinCrypto'
-import { loadCarrotBalance } from '../components/CarrotCelebration'
+import { loadCarrotBalance, loadEarnedCarrots } from '../components/CarrotCelebration'
 import { PinEntrySheet, PinSetupSheet, RedeemConfirmSheet, CouponSheet } from '../components/RewardsSheets'
 import { RewardEditorSheet, type RewardDraft } from '../components/RewardEditorSheet'
 import { GiftComposerSheet } from '../components/GiftComposerSheet'
@@ -302,25 +302,25 @@ export function RewardsScreen() {
   }
 
   // `attemptId` comes from the confirm sheet (one per opening): a double tap
-  // or retry lands on the same redemption. The balance is re-read fresh, so
-  // a stale screen (say, a second tab that already spent it) can't overspend.
+  // or retry lands on the same redemption. The balance is checked inside the
+  // redeem's own transaction (redeemReward), so a stale screen or a second
+  // tab that already spent it can't overspend.
   async function handleRedeem(reward: RewardRecord, attemptId: string) {
     setRedeemBusy(true)
     setRedeemError(null)
     try {
-      const alreadyRedeemed = data?.redemptions.some((r) => r.id === attemptId)
-      if (!alreadyRedeemed && (await loadCarrotBalance()) < reward.cost) {
-        await refresh()
-        setRedeemError('Not enough carrots for this one yet.')
-        return
-      }
-      const redemption = await redeemReward(reward, undefined, attemptId)
+      const redemption = await redeemReward(reward, undefined, attemptId, { earned: await loadEarnedCarrots() })
       if (data?.savingFor === reward.id) await setSetting(SAVING_FOR_KEY, null)
       playCelebration('redeem', feedback)
       await refresh()
       setSheet({ kind: 'coupon', redemption, emoji: reward.emoji, icon: reward.icon, fresh: true })
-    } catch {
-      setRedeemError("Couldn't redeem that on this device. Try again.")
+    } catch (error) {
+      if (error instanceof NotEnoughCarrotsError) {
+        await refresh()
+        setRedeemError('Not enough carrots for this one yet.')
+      } else {
+        setRedeemError("Couldn't redeem that on this device. Try again.")
+      }
     } finally {
       setRedeemBusy(false)
     }

@@ -1,6 +1,6 @@
 import { beforeEach, describe, expect, it } from 'vitest'
 import { db } from '../schema'
-import { listRedemptions, markDelivered, markDeliveredByCode, markThanked, redeemReward, totalSpent } from './redemptionsRepository'
+import { listRedemptions, markDelivered, markDeliveredByCode, markThanked, NotEnoughCarrotsError, redeemReward, totalSpent } from './redemptionsRepository'
 import { shortRedemptionCode } from '../../../domain/rewards/giftLink'
 
 beforeEach(async () => {
@@ -104,3 +104,27 @@ describe('markThanked', () => {
   })
 })
 
+
+describe('redeeming never spends carrots she does not have', () => {
+  it('two redeems at once against 50 earned carrots: one 40-carrot coupon, not two', async () => {
+    await db.redemptions.clear()
+    const reward = { id: 'r-pizza', title: 'Pizza night', cost: 40 }
+    const results = await Promise.allSettled([
+      redeemReward(reward, '2026-10-05T10:00:00.000Z', 'attempt-a', { earned: 50 }),
+      redeemReward(reward, '2026-10-05T10:00:00.000Z', 'attempt-b', { earned: 50 }),
+    ])
+    expect(results.filter((r) => r.status === 'fulfilled')).toHaveLength(1)
+    const rejected = results.find((r) => r.status === 'rejected') as PromiseRejectedResult
+    expect(rejected.reason).toBeInstanceOf(NotEnoughCarrotsError)
+    expect(await db.redemptions.count()).toBe(1)
+  })
+
+  it('a retry of the same attempt still returns its coupon, even with the balance now spent', async () => {
+    await db.redemptions.clear()
+    const reward = { id: 'r-pizza', title: 'Pizza night', cost: 40 }
+    const first = await redeemReward(reward, '2026-10-05T10:00:00.000Z', 'attempt-a', { earned: 50 })
+    const again = await redeemReward(reward, '2026-10-05T10:00:00.000Z', 'attempt-a', { earned: 50 })
+    expect(again.id).toBe(first.id)
+    expect(await db.redemptions.count()).toBe(1)
+  })
+})
