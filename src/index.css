@@ -690,3 +690,9 @@ input[type='range'] {
   }
 }
 
+
+/* Progress collection: a lone last tile spans its row instead of sitting
+   stranded in the first column. */
+.collection-grid > :last-child:nth-child(3n + 1) {
+  grid-column: 1 / -1;
+}

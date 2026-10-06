@@ -162,7 +162,7 @@ export function RecapLink({ compact = false }: { compact?: boolean } = {}) {
           aria-label="Your week in bloom"
           className="card flex min-h-11 flex-col items-center gap-1 p-3 text-center active:bg-field-primary"
         >
-          <RecapGlyph />
+          <WeekGlyph />
           <span aria-hidden className="block font-bold">
             Week
           </span>
@@ -172,7 +172,7 @@ export function RecapLink({ compact = false }: { compact?: boolean } = {}) {
           aria-label="Monthly recap"
           className="card flex min-h-11 flex-col items-center gap-1 p-3 text-center active:bg-field-primary"
         >
-          <RecapGlyph />
+          <MonthGlyph />
           <span aria-hidden className="block font-bold">
             Month
           </span>
@@ -208,13 +208,50 @@ export function RecapLink({ compact = false }: { compact?: boolean } = {}) {
 // A tiny book-like glyph for the compact recap tiles — just enough visual
 // weight to tell the two tiles apart from plain text links, on the same
 // pixel palette as the rest of Progress.
-function RecapGlyph() {
+// Week: three flowers in bloom, like the week's pots. Month: a little
+// calendar page with a few days flowered.
+const PETAL = '#ff8fb8'
+const STEM = '#5bbf8a'
+const SOIL = '#8a5a44'
+const HEART = '#ffd966'
+
+function WeekGlyph() {
   return (
-    <svg aria-hidden="true" viewBox="0 0 16 16" width="28" height="28" shapeRendering="crispEdges">
-      <rect x="2" y="3" width="12" height="10" rx="1" fill="var(--color-accent)" />
-      <rect x="2" y="3" width="12" height="2" fill="var(--color-primary)" />
-      <rect x="4" y="7" width="8" height="1" fill="var(--color-on-accent)" opacity="0.6" />
-      <rect x="4" y="9" width="6" height="1" fill="var(--color-on-accent)" opacity="0.6" />
+    <svg aria-hidden="true" viewBox="0 0 16 16" width="40" height="40" shapeRendering="crispEdges">
+      {[3, 8, 13].map((x, i) => {
+        const top = i === 1 ? 3 : 5
+        return (
+          <g key={x}>
+            <rect x={x} y={top + 3} width={1} height={12 - top} fill={STEM} />
+            <rect x={x - 1} y={top} width={3} height={3} fill={PETAL} />
+            <rect x={x} y={top + 1} width={1} height={1} fill={HEART} />
+          </g>
+        )
+      })}
+      <rect x={0} y={14} width={16} height={2} fill={SOIL} />
+    </svg>
+  )
+}
+
+function MonthGlyph() {
+  const flowered = new Set([1, 6, 8, 13])
+  return (
+    <svg aria-hidden="true" viewBox="0 0 16 16" width="40" height="40" shapeRendering="crispEdges">
+      <rect x={1} y={2} width={14} height={13} fill="var(--color-accent)" />
+      <rect x={1} y={2} width={14} height={3} fill="var(--color-primary)" />
+      <rect x={4} y={1} width={1} height={2} fill="var(--color-text)" />
+      <rect x={11} y={1} width={1} height={2} fill="var(--color-text)" />
+      {Array.from({ length: 15 }, (_, i) => (
+        <rect
+          key={i}
+          x={2 + (i % 5) * 2.6}
+          y={6 + Math.floor(i / 5) * 3}
+          width={2}
+          height={2}
+          fill={flowered.has(i) ? PETAL : 'var(--color-on-accent)'}
+          opacity={flowered.has(i) ? 1 : 0.55}
+        />
+      ))}
     </svg>
   )
 }

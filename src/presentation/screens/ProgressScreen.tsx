@@ -194,7 +194,7 @@ export function ProgressScreen() {
               grid instead of four full-width rows. */}
           <section className="space-y-2">
             <p className="sr-only">Your collection</p>
-            <div className="grid grid-cols-3 gap-2">
+            <div className="collection-grid grid grid-cols-3 gap-2" data-testid="collection-grid">
               <GardenCard garden={snapshot.garden} compact />
               <BadgesTile earned={snapshot.badges.earned} total={snapshot.badges.total} icon={snapshot.badges.icon} />
               <StoryTile unlocked={snapshot.storyChapters} />
