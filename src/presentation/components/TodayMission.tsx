@@ -20,7 +20,7 @@ export type Mission =
       thumbs: MissionThumb[]
       // The reward she's saving for, when one is pinned: Start shows what
       // this workout is worth toward it.
-      goal?: { title: string }
+      goal?: { title: string; ready: boolean }
       to: string
     }
   | { kind: 'resume'; name: string; current: string; done: number; total: number; to: string }
@@ -70,7 +70,10 @@ export function TodayMission({ mission, resumeActions }: { mission: Mission; res
           <Link to={mission.to} className="btn-primary btn-lg w-full">
             Start workout
           </Link>
-          {mission.goal && (
+          {mission.goal?.ready && (
+            <p className="text-center text-sm font-semibold text-primary-ink">{mission.goal.title} is ready 🎁</p>
+          )}
+          {mission.goal && !mission.goal.ready && (
             <p className="hud-num text-center text-sm font-semibold text-primary-ink">
               <span aria-hidden="true">
                 +≈{CARROTS_PER_WORKOUT} 🥕 toward {mission.goal.title}

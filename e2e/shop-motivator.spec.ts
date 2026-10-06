@@ -136,3 +136,24 @@ test('Today and Schedule show what a workout or a week is worth toward the goal'
   await page.goto('/#/schedule')
   await expect(page.getByText(/days a week ≈/)).toHaveCount(0)
 })
+
+test('once the pinned goal is affordable, Today says it is ready', async ({ page }) => {
+  test.setTimeout(120_000)
+  const day = new Date()
+  day.setHours(10, 0, 0, 0)
+  await page.clock.install({ time: day })
+  await openShopAsHubby(page)
+  await addIdea(page, 'Nap time')
+  await page.getByRole('button', { name: 'Close', exact: true }).click()
+  await page.getByRole('button', { name: 'Save for this' }).click()
+  await expect(page.getByTestId('saving-goal')).toContainText('Nap time')
+  await quick10(page)
+
+  // The next day Today is ready again, and the goal is already affordable.
+  await page.clock.setSystemTime(new Date(day.getTime() + 24 * 3600 * 1000))
+  await page.goto('about:blank')
+  await page.goto('/#/')
+  const mission = page.locator('.today-mission')
+  await expect(mission.getByText('Nap time is ready 🎁')).toBeVisible()
+  await expect(mission.getByText(/toward Nap time/)).toHaveCount(0)
+})

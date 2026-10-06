@@ -42,7 +42,7 @@ import { PixelBloom } from '../components/PixelBloom'
 import { RaeFace, type RaeExpression } from '../components/Rae'
 import { unlockedChapters, type RaeStoryChapter } from '../../domain/content/raeStory'
 import { isChapterSeen } from '../storySeen'
-import { CarrotBalanceChip } from '../components/CarrotCelebration'
+import { CarrotBalanceChip, loadCarrotBalance } from '../components/CarrotCelebration'
 import { LoveNoteBadge } from '../components/LoveNoteCelebration'
 
 const QUICK_ID = 'fs.quick-10'
@@ -96,6 +96,9 @@ async function loadToday(now: Date): Promise<TodayData> {
     getSetting<string | null>(SAVING_FOR_KEY).catch(() => null),
   ])
   const savingGoal = savingGoalReward(rewards, savingFor)
+  // Only read when she's saving for something; a failed read keeps the
+  // plain "toward" line.
+  const balance = savingGoal ? await loadCarrotBalance().catch(() => 0) : 0
 
   const goals = await loadWeekGoals({ plans, results, schedule })
 
@@ -164,7 +167,7 @@ async function loadToday(now: Date): Promise<TodayData> {
       name: primary.name,
       detail: describe(primary),
       minutes: estimateMinutes(primary),
-      ...(savingGoal ? { goal: { title: savingGoal.title } } : {}),
+      ...(savingGoal ? { goal: { title: savingGoal.title, ready: balance >= savingGoal.cost } } : {}),
       thumbs: primary.exercises.flatMap((e) => {
         const exercise = exercises.get(e.exerciseId)
         // Rae doing the move when she has it, the photo otherwise.
