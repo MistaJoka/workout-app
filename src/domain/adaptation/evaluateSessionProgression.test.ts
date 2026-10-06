@@ -148,4 +148,17 @@ describe('evaluateSessionProgression', () => {
     expect(result.reasonCode).toBe('REGRESSED')
     expect(result.nextLoad).toBe(40) // floored at the authored load
   })
+
+  it('a short workout is no evidence: no candidate, streak untouched', () => {
+    const oneSet = { ...squat, sets: 1, reps: 14, authoredReps: 10 }
+    const shortPlan = { ...plan([oneSet]), length: 'short' as const }
+    const progression = new Map([['fs.bodyweight-squat', { currentPrescribedReps: 14, consecutiveFailureStreak: 1 }]])
+    const met = evaluateSessionProgression(shortPlan, [setCompleted('fs.bodyweight-squat', true, 1)], progression)
+    expect(met[0]).toMatchObject({ reasonCode: 'RETAINED', preservePending: true, nextFailureStreak: 1, nextPrescribedReps: 14 })
+    const failed = evaluateSessionProgression(shortPlan, [setCompleted('fs.bodyweight-squat', false, 1)], progression)
+    expect(failed[0]).toMatchObject({ reasonCode: 'RETAINED', nextFailureStreak: 1 })
+    // The same set in a usual one-set plan does count, so the flag is what matters.
+    const usual = evaluateSessionProgression(plan([oneSet]), [setCompleted('fs.bodyweight-squat', true, 1)], progression)
+    expect(usual[0].reasonCode).toBe('PROGRESSION_CANDIDATE')
+  })
 })

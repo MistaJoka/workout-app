@@ -45,6 +45,22 @@ export function evaluateSessionProgression(
     const currentPrescribedReps = state.currentPrescribedReps ?? exercise.reps
     const weighted = exercise.weightKg != null
 
+    // A Short workout (one set each, the Start screen's dial) is no evidence
+    // either way, like a workout ended early.
+    if (plan.length === 'short') {
+      results.push({
+        exerciseId: exercise.exerciseId,
+        reasonCode: 'RETAINED',
+        detail: 'A short workout, so nothing changes.',
+        nextPrescribedReps: currentPrescribedReps,
+        nextLoad: weighted ? state.currentWeightKg ?? exercise.weightKg ?? 0 : 0,
+        nextFailureStreak: state.consecutiveFailureStreak,
+        weighted,
+        preservePending: true,
+      })
+      continue
+    }
+
     // A session ended early (or a set skipped) is not evidence either way:
     // every planned working set must be logged before anything changes.
     // Caught by ChatGPT's Promotion 001 corpus (cases P001-05/06).

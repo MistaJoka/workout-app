@@ -1,3 +1,4 @@
+import type { WorkoutLength } from './lengthDial'
 export type ReasonCode =
   | 'RETAINED'
   | 'REMOVED_OPTIONAL'
@@ -6,6 +7,8 @@ export type ReasonCode =
   | 'REGRESSED'
   | 'PROGRESSION_CANDIDATE'
   | 'SESSION_COMPRESSED'
+  | 'LENGTH_SHORT'
+  | 'LENGTH_LONG'
 
 export type AdaptationDecision = {
   exerciseId: string
@@ -54,6 +57,9 @@ export type SessionPlan = {
   // from before 2026-10-03). The first workout of a week fixes that week's
   // goal for every derived reward (domain/progress/weekGoals.ts).
   weeklyGoal?: number
+  // The Start screen's length dial (domain/session/lengthDial.ts), already
+  // baked into `exercises`. Absent means usual (and on every older plan).
+  length?: WorkoutLength
 }
 
 export type SessionEventType =

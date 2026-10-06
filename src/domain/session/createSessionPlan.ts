@@ -3,6 +3,7 @@ import { adaptTemplate, PLACEHOLDER_RULE_VERSION } from '../adaptation/engine'
 import type { AdaptationRule, CheckInInput } from '../adaptation/types'
 import { computeReproducibilityHash } from './reproducibilityHash'
 import type { SessionPlan, SessionPlanExercise } from './types'
+import { lengthDecisions, scaleTemplate, type WorkoutLength } from './lengthDial'
 
 export type CreateSessionPlanParams = {
   id: string
@@ -23,6 +24,8 @@ export type CreateSessionPlanParams = {
   // The weekly goal in effect at start, snapshotted onto the plan so a later
   // schedule change can't re-score this week (domain/progress/weekGoals.ts).
   weeklyGoal?: number
+  // Short / Usual / Long from the Start screen; scales sets only.
+  length?: WorkoutLength
 }
 
 // A routine can outlive an exercise (the library was cut to home-friendly
@@ -44,10 +47,12 @@ export function createSessionPlanFromTemplate(params: CreateSessionPlanParams): 
     repsOverridesByExerciseId,
     weightOverridesByExerciseId,
     weeklyGoal,
+    length = 'usual',
   } = params
-  const adaptations = adaptTemplate(template, checkIn, rules)
+  const scaled = scaleTemplate(template, length)
+  const adaptations = [...adaptTemplate(scaled, checkIn, rules), ...lengthDecisions(template, length)]
   const exerciseById = new Map(exerciseRecords.map((e) => [e.id, e]))
-  const exercises: SessionPlanExercise[] = template.exercises.map((templateExercise) => {
+  const exercises: SessionPlanExercise[] = scaled.exercises.map((templateExercise) => {
     const authoredReps = templateExercise.prescription.reps
     const override = repsOverridesByExerciseId?.get(templateExercise.exerciseId)
     const reps = authoredReps != null && override != null ? override : authoredReps
@@ -78,6 +83,7 @@ export function createSessionPlanFromTemplate(params: CreateSessionPlanParams): 
     exercises,
     adaptations,
     ...(weeklyGoal != null ? { weeklyGoal } : {}),
+    ...(length !== 'usual' ? { length } : {}),
   }
 
   return { ...base, reproducibilityHash: computeReproducibilityHash(base) }

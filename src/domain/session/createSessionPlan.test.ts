@@ -227,4 +227,18 @@ describe('createSessionPlanFromTemplate without a check-in', () => {
     expect(notAsked.adaptations).toEqual(asked.adaptations)
     expect(notAsked.ruleVersion).toBe('placeholder.retain-all')
   })
+
+  it('bakes the chosen length into the plan', () => {
+    const plan = createSessionPlanFromTemplate({ id: 'p', createdAt: '2026-10-06T00:00:00.000Z', template, exercises, length: 'short' })
+    expect(plan.length).toBe('short')
+    expect(plan.exercises.map((e) => e.sets)).toEqual([1, 1])
+    expect(plan.adaptations.filter((a) => a.reasonCode === 'LENGTH_SHORT')).toHaveLength(2)
+  })
+
+  it('a usual plan carries no length field, so older hashes are unchanged', () => {
+    const plain = createSessionPlanFromTemplate({ id: 'p', createdAt: '2026-10-06T00:00:00.000Z', template, exercises })
+    const usual = createSessionPlanFromTemplate({ id: 'p', createdAt: '2026-10-06T00:00:00.000Z', template, exercises, length: 'usual' })
+    expect('length' in usual).toBe(false)
+    expect(usual.reproducibilityHash).toBe(plain.reproducibilityHash)
+  })
 })

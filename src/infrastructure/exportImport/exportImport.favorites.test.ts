@@ -57,3 +57,27 @@ describe('export/import of hearted moves', () => {
     expect(parseExportBundle({ exportedAt: '2026-09-01T00:00:00.000Z', version: 1, settings: [], checkIns: [], sessionPlans: [], sessionEvents: [], sessionResults: [], familiarity: [], progression: [], favorites: [{ exerciseId: '', hearted: 'yes' }] }).ok).toBe(false)
   })
 })
+
+describe('export/import of a plan with a length', () => {
+  it('keeps the Start screen length on the plan through a backup', async () => {
+    await db.sessionPlans.clear()
+    const plan = {
+      id: 'short-1',
+      templateId: 'fs.full-body-a',
+      templateVersion: 1,
+      packId: 'p',
+      ruleVersion: 'v',
+      createdAt: '2026-10-06T00:00:00.000Z',
+      exercises: [{ exerciseId: 'fs.plank', exerciseVersion: 1, name: 'Plank', sets: 1, timeSeconds: 20, restSeconds: 45, order: 0 }],
+      adaptations: [{ exerciseId: 'fs.plank', reasonCode: 'LENGTH_SHORT', detail: 'Short workout: one set of each move.' }],
+      reproducibilityHash: 'h',
+      length: 'short' as const,
+    }
+    await db.sessionPlans.put(plan)
+    const parsed = parseExportBundle(JSON.parse(JSON.stringify(await exportAll())))
+    expect(parsed.ok).toBe(true)
+    await db.sessionPlans.clear()
+    if (parsed.ok) await importAll(parsed.bundle)
+    expect((await db.sessionPlans.get('short-1'))?.length).toBe('short')
+  })
+})
