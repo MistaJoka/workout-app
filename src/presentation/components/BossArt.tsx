@@ -5,8 +5,9 @@
 // distinct while sharing one cute, non-scary body language. One shared
 // sprite wrapper drives idle bob (full motion only -- it carries no
 // information, so it's fine to drop), a one-shot hurt shake+flash, and the
-// defeated "poof of petals" pose; reduced/off motion keep the flash and the
-// poof's end state (CLAUDE.md: motion must never remove information).
+// defeated pose (the boss, eyes closed in a happy "^ ^", with petals);
+// reduced/off motion keep the flash and the petals' end state (CLAUDE.md:
+// motion must never remove information).
 
 import type { Boss } from '../../domain/game/bosses'
 
@@ -176,6 +177,17 @@ function eyeRects(def: BossArtDef): Rect[] {
   return eyes
 }
 
+// Defeated: the same eyes closed in a happy "^ ^" -- she won, and the boss
+// is smiling about it (celebrate, never shame).
+function happyEyeRects(def: BossArtDef): Rect[] {
+  const { eyeRow, eyeSpread } = def
+  return [8 - eyeSpread - 1, 8 + eyeSpread].flatMap((c) => [
+    { x: c - 1, y: eyeRow + 1, w: 1, h: 1, fill: INK },
+    { x: c, y: eyeRow, w: 1, h: 1, fill: INK },
+    { x: c + 1, y: eyeRow + 1, w: 1, h: 1, fill: INK },
+  ])
+}
+
 function decorationRects(def: BossArtDef, palette: Palette): Rect[] {
   return (def.decorations ?? []).map((d) => ({ x: d.x, y: d.y, w: d.w, h: d.h, fill: d.color === 'fang' ? FANG : palette[d.color] }))
 }
@@ -194,7 +206,7 @@ const SPRITE_STYLE = `
 @media (prefers-reduced-motion: reduce) { .boss-sprite__flash { animation: boss-hurt-flash-reduced 0.4s ease-out; } }
 @keyframes boss-hurt-flash { 0% { opacity: 0.7; } 100% { opacity: 0; } }
 @keyframes boss-hurt-flash-reduced { 0% { opacity: 0.4; } 100% { opacity: 0; } }
-.boss-sprite__poof-petal { opacity: 0; animation: boss-poof 0.6s cubic-bezier(0.2, 0.9, 0.3, 1.2) both; }
+.boss-sprite__poof-petal { opacity: 0; transform-box: fill-box; transform-origin: center; animation: boss-poof 0.6s cubic-bezier(0.2, 0.9, 0.3, 1.2) both; }
 [data-motion='reduced'] .boss-sprite__poof-petal, [data-motion='off'] .boss-sprite__poof-petal { animation: none; opacity: 1; }
 @media (prefers-reduced-motion: reduce) { .boss-sprite__poof-petal { animation: none; opacity: 1; } }
 @keyframes boss-poof { from { opacity: 0; transform: scale(0.4); } to { opacity: 1; transform: scale(1); } }
@@ -216,21 +228,18 @@ export function BossSprite({
   size?: number
   decorative?: boolean
 }) {
-  if (state === 'defeated') {
-    return <BossPoof size={size} decorative={decorative} label={`${boss.name}, defeated`} />
-  }
   const palette = PALETTES[boss.id] ?? PALETTES['squat-slime']
   const art = ARTS[boss.id] ?? ARTS['squat-slime']
   return (
     <svg
-      className={state === 'hurt' ? 'boss-sprite__hurt' : 'boss-sprite__idle'}
+      className={state === 'hurt' ? 'boss-sprite__hurt' : state === 'idle' ? 'boss-sprite__idle' : undefined}
       viewBox="0 0 16 14"
       width={size}
       height={(size * 14) / 16}
       shapeRendering="crispEdges"
       role={decorative ? undefined : 'img'}
       aria-hidden={decorative ? true : undefined}
-      aria-label={decorative ? undefined : boss.name}
+      aria-label={decorative ? undefined : state === 'defeated' ? `${boss.name}, defeated` : boss.name}
     >
       <style>{SPRITE_STYLE}</style>
       {bodyRects(art, palette).map((r, i) => (
@@ -239,10 +248,18 @@ export function BossSprite({
       {decorationRects(art, palette).map((r, i) => (
         <rect key={`d${i}`} x={r.x} y={r.y} width={r.w} height={r.h} fill={r.fill} />
       ))}
-      {eyeRects(art).map((r, i) => (
+      {(state === 'defeated' ? happyEyeRects(art) : eyeRects(art)).map((r, i) => (
         <rect key={`e${i}`} x={r.x} y={r.y} width={r.w} height={r.h} fill={r.fill} />
       ))}
       {state === 'hurt' && <rect className="boss-sprite__flash" x={0} y={0} width={16} height={14} />}
+      {state === 'defeated' && (
+        <>
+          <Petal x={0} y={2} delay={0.05} />
+          <Petal x={13} y={1} delay={0.12} />
+          <Petal x={1} y={10} delay={0.18} />
+          <Petal x={13} y={9} delay={0.24} />
+        </>
+      )}
     </svg>
   )
 }
@@ -253,32 +270,5 @@ function Petal({ x, y, delay }: { x: number; y: number; delay: number }) {
       <rect x={x} y={y} width={2} height={2} fill={PETAL} />
       <rect x={x + 1} y={y - 1} width={1} height={1} fill={PETAL_DARK} />
     </g>
-  )
-}
-
-// The defeated pose: a soft poof instead of the boss, with a few pixel
-// petals drifting out -- cute, never a "beaten" face (CLAUDE.md: celebrate,
-// never shame).
-function BossPoof({ size, decorative, label }: { size: number; decorative: boolean; label: string }) {
-  return (
-    <svg
-      viewBox="0 0 16 14"
-      width={size}
-      height={(size * 14) / 16}
-      shapeRendering="crispEdges"
-      role={decorative ? undefined : 'img'}
-      aria-hidden={decorative ? true : undefined}
-      aria-label={decorative ? undefined : label}
-    >
-      <style>{SPRITE_STYLE}</style>
-      <g className="boss-sprite__poof-petal">
-        <rect x={5} y={6} width={6} height={4} fill="#ffffff" opacity={0.6} />
-      </g>
-      <Petal x={2} y={3} delay={0.05} />
-      <Petal x={11} y={2} delay={0.12} />
-      <Petal x={1} y={8} delay={0.18} />
-      <Petal x={12} y={8} delay={0.24} />
-      <Petal x={7} y={0} delay={0.3} />
-    </svg>
   )
 }

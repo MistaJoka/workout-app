@@ -53,7 +53,11 @@ test('this week\'s boss takes a hit from a finished workout, and shows on Today 
     expect(label).toMatch(new RegExp(`^${boss.name}'s HP: \\d+ of ${maxHp}$`))
     expect(label).not.toBe(`${boss.name}'s HP: ${maxHp} of ${maxHp}`)
   }
-  await expect(page.getByText(/\d+ hits?/)).toBeVisible()
+  // Each day shows one number, the damage it dealt; the hit and crit counts
+  // (every met set is a crit, so they nearly always match) are spoken only.
+  const today = page.getByTestId('boss-day').first()
+  await expect(today.getByTestId('boss-day-damage')).toHaveText(/^\d+$/)
+  await expect(today.locator('.sr-only')).toContainText(/\d+ hits?/)
 
   // Today's card agrees with /boss (defeated, or the same lower HP).
   await page.goto('/#/')

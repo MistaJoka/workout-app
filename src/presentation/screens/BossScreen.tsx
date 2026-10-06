@@ -113,11 +113,17 @@ export function BossScreen() {
         ) : (
           <ul className="space-y-1">
             {state.damageLog.map((entry) => (
-              <li key={entry.date} className="flex items-center justify-between text-sm">
+              <li key={entry.date} className="flex items-center justify-between text-sm" data-testid="boss-day">
                 <span>{weekdayLabel(entry.date)}</span>
-                <span className="text-ink-muted">
-                  {entry.hits} {entry.hits === 1 ? 'hit' : 'hits'}
-                  {entry.crits > 0 ? `, ${entry.crits} ${entry.crits === 1 ? 'crit' : 'crits'}` : ''}
+                <span className="flex items-baseline gap-1">
+                  <span aria-hidden="true">⚔️</span>
+                  <span className="hud-num font-bold" data-testid="boss-day-damage">
+                    {entry.damage}
+                  </span>
+                  <span className="sr-only">
+                    damage, {entry.hits} {entry.hits === 1 ? 'hit' : 'hits'}
+                    {entry.crits > 0 ? `, ${entry.crits} ${entry.crits === 1 ? 'crit' : 'crits'}` : ''}
+                  </span>
                 </span>
               </li>
             ))}
