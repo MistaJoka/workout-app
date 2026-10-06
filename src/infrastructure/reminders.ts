@@ -66,14 +66,14 @@ async function syncNow(now: Date): Promise<void> {
   if (!settings.enabled) return
   if ((await reminderPermission()) !== 'granted') return
 
-  const [schedule, { curated, custom }, results] = await Promise.all([
+  const [schedule, { curated, custom, herMix }, results] = await Promise.all([
     getWeeklySchedule(),
     listAllTemplates(),
     db.sessionResults.toArray(),
   ])
   const plan = planReminders({
     schedule,
-    names: new Map([...curated, ...custom].map((t) => [t.id, t.name])),
+    names: new Map([...curated, ...custom, ...(herMix ? [herMix] : [])].map((t) => [t.id, t.name])),
     time: settings.time,
     now,
     doneToday: workoutsToday(results, now).length > 0,

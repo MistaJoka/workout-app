@@ -6,13 +6,30 @@ import {
 } from './fixtures/foundationStrengthStarter'
 import { listedRaeMoves, raeMoveById } from './fixtures/raeMoves'
 import { getCustomTemplate, listCustomTemplates } from '../../infrastructure/db/repositories/customTemplateRepository'
+import { listHearts } from '../../infrastructure/db/repositories/favoritesRepository'
+import { buildHerMix, HER_MIX_ID } from './herMix'
+
+// Her mix is built from hearts on every read (domain/content/herMix.ts):
+// it exists only while at least three shown moves are hearted.
+export async function getHerMix(): Promise<WorkoutTemplate | null> {
+  const hearts = await listHearts()
+  if (hearts.length === 0) return null
+  const found = await getExercises(hearts.map((h) => h.exerciseId))
+  return buildHerMix(hearts, (id) => found.get(id))
+}
 
 export async function getTemplate(id: string): Promise<WorkoutTemplate | undefined> {
+  if (id === HER_MIX_ID) return (await getHerMix()) ?? undefined
   return curatedTemplateById.get(id) ?? (await getCustomTemplate(id))
 }
 
-export async function listAllTemplates(): Promise<{ curated: WorkoutTemplate[]; custom: WorkoutTemplate[] }> {
-  return { curated: foundationStrengthStarterTemplates, custom: await listCustomTemplates() }
+export async function listAllTemplates(): Promise<{
+  curated: WorkoutTemplate[]
+  custom: WorkoutTemplate[]
+  herMix: WorkoutTemplate | null
+}> {
+  const [custom, herMix] = await Promise.all([listCustomTemplates(), getHerMix()])
+  return { curated: foundationStrengthStarterTemplates, custom, herMix }
 }
 
 // Bundled exercises resolve synchronously: the starter pack plus Rae's own

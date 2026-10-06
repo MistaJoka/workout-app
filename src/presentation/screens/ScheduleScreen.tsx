@@ -50,9 +50,11 @@ export function ScheduleScreen() {
     let cancelled = false
     setLoadFailed(false)
     Promise.all([getWeeklySchedule(), listAllTemplates()])
-      .then(async ([stored, { curated, custom }]) => {
+      .then(async ([stored, { curated, custom, herMix }]) => {
         if (cancelled) return
-        const all = [...curated, ...custom]
+        // Her mix can be planned like any routine; once she has fewer than
+        // three hearts it's gone, and its days are pruned like a deleted one.
+        const all = [...curated, ...custom, ...(herMix ? [herMix] : [])]
         const loaded = stored ?? { ...EMPTY_SCHEDULE }
         // A routine deleted elsewhere leaves its id behind; clear it so the
         // day reads "Not planned" and Today stops pointing at it.
