@@ -2,6 +2,7 @@ import { beforeEach, describe, expect, it } from 'vitest'
 import { db } from '../db/schema'
 import { exportAll, importAll, parseExportBundle } from './exportImport'
 import { isHearted, setHeart } from '../db/repositories/favoritesRepository'
+import type { SessionPlan } from '../../domain/session/types'
 
 beforeEach(async () => {
   await db.favorites.clear()
@@ -61,7 +62,7 @@ describe('export/import of hearted moves', () => {
 describe('export/import of a plan with a length', () => {
   it('keeps the Start screen length on the plan through a backup', async () => {
     await db.sessionPlans.clear()
-    const plan = {
+    const plan: SessionPlan = {
       id: 'short-1',
       templateId: 'fs.full-body-a',
       templateVersion: 1,
@@ -71,7 +72,7 @@ describe('export/import of a plan with a length', () => {
       exercises: [{ exerciseId: 'fs.plank', exerciseVersion: 1, name: 'Plank', sets: 1, timeSeconds: 20, restSeconds: 45, order: 0 }],
       adaptations: [{ exerciseId: 'fs.plank', reasonCode: 'LENGTH_SHORT', detail: 'Short workout: one set of each move.' }],
       reproducibilityHash: 'h',
-      length: 'short' as const,
+      length: 'short',
     }
     await db.sessionPlans.put(plan)
     const parsed = parseExportBundle(JSON.parse(JSON.stringify(await exportAll())))
