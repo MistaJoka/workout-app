@@ -615,10 +615,14 @@ export function WorkoutPlayerScreen() {
         )}
       </div>
 
+      {/* The target and the move, as one stage: stacked on a phone, side by
+          side on a short screen (the Flip's folded cover screen), where Rae
+          would otherwise end up behind the Complete Set bar (index.css). */}
+      <div className="player-stage space-y-4">
       {/* The target, readable from the floor: a big number, what it counts,
           and one dot per set. The caption says the same thing as text. A
           running hold swaps the number for its countdown ring. */}
-      <div className="space-y-1">
+      <div className="player-target space-y-1">
         <h2 className="text-2xl font-bold leading-tight">{exercise.name}</h2>
         {holding && state.holdStartedAt ? (
           <HoldCountdown
@@ -633,7 +637,7 @@ export function WorkoutPlayerScreen() {
             }}
           />
         ) : (
-          <div className="flex items-end justify-between gap-4">
+          <div className="flex flex-wrap items-end justify-between gap-x-4 gap-y-1">
             <p className="flex items-baseline gap-2">
               {target && (
                 <>
@@ -655,7 +659,7 @@ export function WorkoutPlayerScreen() {
             </div>
           </div>
         )}
-        {lastTime && !holding && <p className="text-sm text-ink-muted">{lastTime}</p>}
+        {lastTime && !holding && <p className="player-last-time text-sm text-ink-muted">{lastTime}</p>}
       </div>
 
       {exerciseContent && (
@@ -666,6 +670,7 @@ export function WorkoutPlayerScreen() {
           finish={exerciseContent.mediaManifest.finish}
         />
       )}
+      </div>
 
       {exerciseContent && (exerciseContent.setup || exerciseContent.executionPhases.length > 0) && (
         <StepsList
