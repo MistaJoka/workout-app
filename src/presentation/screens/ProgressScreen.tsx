@@ -18,6 +18,7 @@ import { BodyWeightCard } from '../components/BodyWeightCard'
 import { buildHistoryRows, type HistoryRow } from './progressHistoryRows'
 import { RaeNote } from '../components/RaeNote'
 import { MonthBlooms } from '../components/MonthBlooms'
+import { goalTally, weekSummary } from '../components/WeekBlooms'
 import { GardenCard } from '../components/GardenCard'
 import { buildGarden, type Garden } from '../../domain/progress/garden'
 import { Skeleton, SkeletonBlock, SkeletonList, SkeletonTiles } from '../components/Skeleton'
@@ -451,13 +452,13 @@ function WeekGoalStat({ done, goal, met }: { done: number; goal: number; met: bo
           transform="rotate(-90 20 20)"
         />
       </svg>
-      <p className="hud-num text-sm font-bold">
-        {done} of {goal}
+      <p className="hud-num text-sm font-bold" aria-hidden>
+        {goalTally(done, goal, ' of ')}
       </p>
-      <p className="text-xs text-ink-muted">{met ? 'goal met' : 'this week'}</p>
-      <p className="sr-only">
-        {done} of {goal} workouts this week{met ? ', goal met' : ''}
+      <p className="text-xs text-ink-muted" aria-hidden>
+        {met ? 'goal met' : 'this week'}
       </p>
+      <p className="sr-only">{weekSummary(done, goal)}</p>
     </div>
   )
 }

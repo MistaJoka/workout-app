@@ -102,9 +102,16 @@ export function dayLabel(day: WeekDay, names: WeekNames): string {
 // The header reads progress toward the week's goal (weeklyGoal), never a
 // bare count: "1 of 2 this week", then a gentle "Goal met" once reached.
 export function weekSummary(done: number, goal: number): string {
+  if (done > goal) return `Goal met, ${goal} of ${goal}, plus ${done - goal} extra`
   if (done >= goal) return `Goal met, ${done} of ${goal}`
   if (done === 0) return `Goal: ${goal} this week`
   return `${done} of ${goal} this week`
+}
+
+// The short visible tally. Past the goal it stays full and counts the
+// extra ("2/2 +1"), since "3/2" reads like a typo, not a win.
+export function goalTally(done: number, goal: number, sep = '/'): string {
+  return done > goal ? `${goal}${sep}${goal} +${done - goal}` : `${done}${sep}${goal}`
 }
 
 function hrefFor(target: WeekDayTarget): string | null {
@@ -153,9 +160,7 @@ export function WeekBlooms({
               ✓
             </span>
           )}
-          <span className="hud-num">
-            {done}/{goal}
-          </span>
+          <span className="hud-num">{goalTally(done, goal)}</span>
         </p>
         <span className="text-sm font-semibold text-primary-ink">Plan</span>
       </Link>

@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest'
-import { dayLabel, weekSummary } from './WeekBlooms'
+import { dayLabel, goalTally, weekSummary } from './WeekBlooms'
 import type { WeekDay } from '../../domain/schedule/todayView'
 import { speciesFor } from '../../domain/progress/garden'
 
@@ -63,6 +63,19 @@ describe('weekSummary', () => {
 
   it('says the goal is met, and keeps counting past it', () => {
     expect(weekSummary(2, 2)).toBe('Goal met, 2 of 2')
-    expect(weekSummary(3, 2)).toBe('Goal met, 3 of 2')
+    expect(weekSummary(3, 2)).toBe('Goal met, 2 of 2, plus 1 extra')
+  })
+})
+
+describe('goalTally', () => {
+  it('reads done/goal up to the goal', () => {
+    expect(goalTally(0, 2)).toBe('0/2')
+    expect(goalTally(2, 2)).toBe('2/2')
+  })
+
+  it('never reads "3/2": past the goal it is a full tally plus the extra', () => {
+    expect(goalTally(3, 2)).toBe('2/2 +1')
+    expect(goalTally(5, 3)).toBe('3/3 +2')
+    expect(goalTally(3, 2, ' of ')).toBe('2 of 2 +1')
   })
 })
