@@ -665,6 +665,45 @@ input[type='range'] {
 [data-motion='full'] .live-carrots { animation: live-carrots-pop 0.3s ease-out; }
 @media (prefers-reduced-motion: reduce) { [data-motion='full'] .live-carrots { animation: none; } }
 
+/* Tap-anywhere stage (components/TapStage.tsx). The layer never takes a
+   tap itself. The hint is a static ring (information survives reduced/off
+   motion); full motion makes it breathe. The ripple is pure feedback, so it
+   only plays in full motion. */
+.tap-stage[data-tappable='true'] { cursor: pointer; -webkit-tap-highlight-color: transparent; }
+.tap-stage-layer {
+  position: absolute;
+  inset: -0.5rem;
+  overflow: hidden;
+  border-radius: var(--radius-panel, 1rem);
+  pointer-events: none;
+}
+.tap-stage-hint {
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  border: 2px dashed color-mix(in srgb, var(--color-primary) 45%, transparent);
+}
+@keyframes tap-stage-hint { 0%, 100% { opacity: 0.35; } 50% { opacity: 1; } }
+[data-motion='full'] .tap-stage-hint { animation: tap-stage-hint 1.8s ease-in-out infinite; }
+.tap-stage-ripple { display: none; }
+@keyframes tap-stage-ripple {
+  from { transform: translate(-50%, -50%) scale(0); opacity: 0.45; }
+  to { transform: translate(-50%, -50%) scale(1); opacity: 0; }
+}
+[data-motion='full'] .tap-stage-ripple {
+  display: block;
+  position: absolute;
+  width: 22rem;
+  height: 22rem;
+  border-radius: 9999px;
+  background: var(--color-primary);
+  animation: tap-stage-ripple 0.55s ease-out forwards;
+}
+@media (prefers-reduced-motion: reduce) {
+  [data-motion='full'] .tap-stage-hint { animation: none; }
+  [data-motion='full'] .tap-stage-ripple { display: none; }
+}
+
 /* Short screens (the Flip 7's folded cover screen is ~361x399): the
    player's target and Rae's move sit side by side, and the move is sized to
    the space above the Complete Set bar, so she never has to scroll to see

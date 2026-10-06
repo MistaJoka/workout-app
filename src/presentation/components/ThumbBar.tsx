@@ -12,6 +12,18 @@ export const THUMB_BAR_ARM_MS = 700
 // keyboard and screen-reader activation are unaffected.
 // `aboveTabBar` lifts it over the 64px tab bar on screens inside the shell
 // (and drops the safe-area padding, which the tab bar already takes).
+// True once `armKey` has held still for THUMB_BAR_ARM_MS (and after mount).
+// Anything else that stands in for a bar button (the player's tap-anywhere
+// stage) arms on the same key, so a double tap can't land there either.
+export function useArmed(armKey: string): boolean {
+  const [armedKey, setArmedKey] = useState<string | null>(null)
+  useEffect(() => {
+    const timer = setTimeout(() => setArmedKey(armKey), THUMB_BAR_ARM_MS)
+    return () => clearTimeout(timer)
+  }, [armKey])
+  return armedKey === armKey
+}
+
 export function ThumbBar({
   armKey,
   children,
@@ -23,12 +35,7 @@ export function ThumbBar({
   className?: string
   aboveTabBar?: boolean
 }) {
-  const [armedKey, setArmedKey] = useState<string | null>(null)
-  useEffect(() => {
-    const timer = setTimeout(() => setArmedKey(armKey), THUMB_BAR_ARM_MS)
-    return () => clearTimeout(timer)
-  }, [armKey])
-  const armed = armedKey === armKey
+  const armed = useArmed(armKey)
   return (
     <div
       data-armed={armed}

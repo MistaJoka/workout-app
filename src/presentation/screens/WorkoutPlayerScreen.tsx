@@ -16,6 +16,7 @@ import { raeLoopForExercise } from '../components/raeLoops'
 import { CELEBRATE_MS, raeMood } from '../raeMood'
 import { useTheme } from '../theme/ThemeContext'
 import { ThumbBar } from '../components/ThumbBar'
+import { TapStage } from '../components/TapStage'
 import { RepPicks } from '../components/RepPicks'
 import { ConfirmSheet } from '../components/ConfirmSheet'
 import { ExerciseThumb } from '../components/ExerciseThumb'
@@ -506,6 +507,9 @@ export function WorkoutPlayerScreen() {
     seed: `${state.currentExerciseIndex}:${state.currentSetNumber}`,
   })
 
+  // The bar and the tap-anywhere stage re-arm together (ThumbBar.useArmed).
+  const barArmKey = `${state.currentExerciseIndex}:${state.currentSetNumber}:${awaitingRepCheck}:${shortReps !== null}:${repsOther}:${holding}`
+
   const skipSheet = confirmingSkip ? (
     <ConfirmSheet
       title={`Skip ${exercise.name}?`}
@@ -618,6 +622,17 @@ export function WorkoutPlayerScreen() {
       {/* The target and the move, as one stage: stacked on a phone, side by
           side on a short screen (the Flip's folded cover screen), where Rae
           would otherwise end up behind the Complete Set bar (index.css). */}
+      <TapStage
+        armKey={barArmKey}
+        awaitingRepCheck={awaitingRepCheck}
+        askingReps={shortReps !== null}
+        timed={timed}
+        holding={holding}
+        busy={busy}
+        onTap={(action) =>
+          action === 'start-hold' ? handleStartHold() : handleCompleteSetClick(exercise.exerciseId, exercise.reps != null)
+        }
+      >
       <div className="player-stage space-y-4">
       {/* The target, readable from the floor: a big number, what it counts,
           and one dot per set. The caption says the same thing as text. A
@@ -671,6 +686,7 @@ export function WorkoutPlayerScreen() {
         />
       )}
       </div>
+      </TapStage>
 
       {exerciseContent && (exerciseContent.setup || exerciseContent.executionPhases.length > 0) && (
         <StepsList
@@ -730,7 +746,7 @@ export function WorkoutPlayerScreen() {
           fixed bottom bar so it's always in thumb reach regardless of how
           much media/instruction content is above it. */}
       <ThumbBar
-        armKey={`${state.currentExerciseIndex}:${state.currentSetNumber}:${awaitingRepCheck}:${shortReps !== null}:${repsOther}:${holding}`}
+        armKey={barArmKey}
         className="space-y-2"
       >
         {shortReps !== null && !repsOther ? (
