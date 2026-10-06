@@ -9,6 +9,8 @@ import { addLoveNote, listLoveNotes } from '../../infrastructure/db/repositories
 import { GIFT_LINK_VERSION, buildGiftLinkUrl, giftShareMessage, type GiftPayload } from '../../domain/rewards/giftLink'
 import { shareLink, type ShareLinkOutcome } from './shareLink'
 import { Skeleton, SkeletonList } from './Skeleton'
+import { EMOJI_CHOICES, RewardPicturePicker } from './RewardPicturePicker'
+import type { IconDraft } from '../rewardDraft'
 
 // Hubby Bunny's "Send to her" composer: PIN-gated by the caller
 // (RewardsScreen only renders this once the shop's PIN has been verified
@@ -18,8 +20,9 @@ import { Skeleton, SkeletonList } from './Skeleton'
 // the same either way, since "new" here just means addReward/addLoveNote
 // the same way the editor sheets do, then auto-selected.
 
-const REWARD_EMOJI_CHOICES = ['🥕', '🍓', '🍿', '🎬', '🛁', '💆', '🧹', '🍕', '☕', '🎮', '🌸', '💝']
 const NOTE_EMOJI_CHOICES = ['💌', '💕', '💖', '🌸', '🎀', '☀️', '🫂', '😘', '🥰', '💐']
+
+const NEW_REWARD: IconDraft = { title: '', cost: 20, emoji: EMOJI_CHOICES[0], touched: { title: false, cost: false } }
 
 type Data = { rewards: RewardRecord[]; notes: LoveNoteRecord[] }
 
@@ -37,9 +40,7 @@ export function GiftComposerSheet({ giverName, onClose }: { giverName: string; o
   const [selectedRewardIds, setSelectedRewardIds] = useState<Set<string>>(new Set())
   const [selectedNoteIds, setSelectedNoteIds] = useState<Set<string>>(new Set())
   const [addingReward, setAddingReward] = useState(false)
-  const [newRewardTitle, setNewRewardTitle] = useState('')
-  const [newRewardEmoji, setNewRewardEmoji] = useState(REWARD_EMOJI_CHOICES[0])
-  const [newRewardCost, setNewRewardCost] = useState(20)
+  const [newReward, setNewReward] = useState<IconDraft>(NEW_REWARD)
   const [addingNote, setAddingNote] = useState(false)
   const [newNoteText, setNewNoteText] = useState('')
   const [newNoteEmoji, setNewNoteEmoji] = useState(NOTE_EMOJI_CHOICES[0])
@@ -81,14 +82,14 @@ export function GiftComposerSheet({ giverName, onClose }: { giverName: string; o
   }
 
   async function handleAddReward() {
-    if (!newRewardTitle.trim()) return
+    if (!newReward.title.trim()) return
     setError(null)
     try {
-      const reward = await addReward({ title: newRewardTitle, cost: newRewardCost, emoji: newRewardEmoji })
+      const { title, cost, emoji, icon } = newReward
+      const reward = await addReward({ title, cost, emoji, ...(icon ? { icon } : {}) })
       setData((prev) => (prev ? { ...prev, rewards: [...prev.rewards, reward] } : prev))
       setSelectedRewardIds((prev) => new Set(prev).add(reward.id))
-      setNewRewardTitle('')
-      setNewRewardCost(20)
+      setNewReward(NEW_REWARD)
       setAddingReward(false)
     } catch {
       setError("Couldn't save on this device. Try again.")
@@ -189,26 +190,14 @@ export function GiftComposerSheet({ giverName, onClose }: { giverName: string; o
                     className="input"
                     placeholder="Reward title"
                     aria-label="New reward title"
-                    value={newRewardTitle}
-                    onChange={(e) => setNewRewardTitle(e.target.value)}
+                    value={newReward.title}
+                    onChange={(e) => {
+                      const title = e.target.value
+                      setNewReward((d) => ({ ...d, title, touched: { ...d.touched, title: true } }))
+                    }}
                     autoFocus
                   />
-                  <div className="flex flex-wrap gap-2">
-                    {REWARD_EMOJI_CHOICES.map((emoji) => (
-                      <button
-                        key={emoji}
-                        type="button"
-                        aria-pressed={newRewardEmoji === emoji}
-                        aria-label={`Emoji ${emoji}`}
-                        className={`flex h-9 w-9 items-center justify-center rounded-control border-2 text-lg ${
-                          newRewardEmoji === emoji ? 'border-primary bg-field-primary' : 'border-edge bg-surface'
-                        }`}
-                        onClick={() => setNewRewardEmoji(emoji)}
-                      >
-                        {emoji}
-                      </button>
-                    ))}
-                  </div>
+                  <RewardPicturePicker draft={newReward} onChange={setNewReward} />
                   <div className="flex items-center justify-between gap-2">
                     <span className="text-sm font-semibold">Cost</span>
                     <div className="flex items-center gap-2">
@@ -216,23 +205,23 @@ export function GiftComposerSheet({ giverName, onClose }: { giverName: string; o
                         type="button"
                         className="btn-secondary min-h-9 min-w-9 p-0"
                         aria-label="Fewer carrots"
-                        onClick={() => setNewRewardCost((c) => Math.max(5, c - 5))}
+                        onClick={() => setNewReward((d) => ({ ...d, cost: Math.max(5, d.cost - 5), touched: { ...d.touched, cost: true } }))}
                       >
                         −
                       </button>
-                      <span className="hud-num w-16 text-center">{carrots(newRewardCost)} 🥕</span>
+                      <span className="hud-num w-16 text-center">{carrots(newReward.cost)} 🥕</span>
                       <button
                         type="button"
                         className="btn-secondary min-h-9 min-w-9 p-0"
                         aria-label="More carrots"
-                        onClick={() => setNewRewardCost((c) => c + 5)}
+                        onClick={() => setNewReward((d) => ({ ...d, cost: d.cost + 5, touched: { ...d.touched, cost: true } }))}
                       >
                         +
                       </button>
                     </div>
                   </div>
                   <div className="flex gap-2">
-                    <button type="button" className="btn-primary flex-1" disabled={!newRewardTitle.trim()} onClick={() => void handleAddReward()}>
+                    <button type="button" className="btn-primary flex-1" disabled={!newReward.title.trim()} onClick={() => void handleAddReward()}>
                       Add
                     </button>
                     <button type="button" className="btn-ghost flex-1" onClick={() => setAddingReward(false)}>

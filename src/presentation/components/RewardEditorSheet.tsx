@@ -1,7 +1,7 @@
 import { RewardGlyph } from './RewardGlyph'
 import { carrots } from '../units'
-import { REWARD_ICONS } from '../../domain/rewards/rewardIcons'
-import { pickEmoji, pickIcon, STARTER_IDEAS, type IconDraft } from '../rewardDraft'
+import { EMOJI_CHOICES, RewardPicturePicker } from './RewardPicturePicker'
+import { STARTER_IDEAS, type IconDraft } from '../rewardDraft'
 import { rewardTier, weeklyForecast, workoutsFor } from '../../domain/rewards/pricing'
 import { useRef, useState } from 'react'
 import { useSheetFocus } from './useSheetFocus'
@@ -14,7 +14,6 @@ import type { RewardRecord } from '../../infrastructure/db/schema'
 // covers anything no icon fits. Cute starter ideas are offered only while
 // the shop is empty, one tap to add -- never pre-created.
 
-export const EMOJI_CHOICES = ['🥕', '🍓', '🍿', '🎬', '🛁', '💆', '🧹', '🍕', '☕', '🎮', '🌸', '💝']
 
 export type RewardDraft = { title: string; cost: number; emoji: string; icon?: string }
 
@@ -146,42 +145,7 @@ export function RewardEditorSheet({
                 aria-label="Reward title"
               />
             </label>
-            <div className="space-y-1">
-              <span className="text-sm font-semibold">Picture</span>
-              <div className="grid grid-cols-5 gap-1.5" role="group" aria-label="Reward icons">
-                {REWARD_ICONS.map((icon) => (
-                  <button
-                    key={icon.id}
-                    type="button"
-                    aria-pressed={draft.icon === icon.id}
-                    aria-label={icon.name}
-                    className={`flex aspect-square items-center justify-center rounded-control border-2 ${
-                      draft.icon === icon.id ? 'border-primary bg-field-primary' : 'border-edge bg-surface'
-                    }`}
-                    onClick={() => setDraft((d) => pickIcon(d, icon))}
-                  >
-                    <RewardGlyph emoji={icon.emoji} icon={icon.id} size={44} />
-                  </button>
-                ))}
-              </div>
-              <span className="block pt-1 text-xs font-semibold text-ink-muted">Other</span>
-              <div className="flex flex-wrap gap-2">
-                {EMOJI_CHOICES.map((emoji) => (
-                  <button
-                    key={emoji}
-                    type="button"
-                    aria-pressed={!draft.icon && draft.emoji === emoji}
-                    aria-label={`Emoji ${emoji}`}
-                    className={`flex h-11 w-11 items-center justify-center rounded-control border-2 text-xl ${
-                      !draft.icon && draft.emoji === emoji ? 'border-primary bg-field-primary' : 'border-edge bg-surface'
-                    }`}
-                    onClick={() => setDraft((d) => pickEmoji(d, emoji))}
-                  >
-                    {emoji}
-                  </button>
-                ))}
-              </div>
-            </div>
+            <RewardPicturePicker draft={draft} onChange={setDraft} />
             <div className="flex items-center justify-between gap-2">
               <span className="text-sm font-semibold">Cost</span>
               <div className="flex items-center gap-2">

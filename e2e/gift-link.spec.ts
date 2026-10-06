@@ -69,6 +69,11 @@ test('gift links: compose on one phone, accept on another, then round-trip a del
   await expect(page.getByText('Pick rewards and notes to send as a link')).toBeVisible()
   await page.getByRole('button', { name: '+ New reward' }).click()
   await page.getByLabel('New reward title').fill('Foot rub')
+  // The same pixel pictures as the shop editor, not a bare emoji row.
+  await page.getByRole('group', { name: 'Reward icons' }).getByRole('button', { name: 'Foot rub', exact: true }).click()
+  // The icon fills in its price (30); one Quick 10 later must afford it.
+  await page.getByRole('button', { name: 'Fewer carrots' }).click()
+  await page.getByRole('button', { name: 'Fewer carrots' }).click()
   await page.getByRole('button', { name: 'Add', exact: true }).click()
   await page.getByRole('button', { name: '+ New note' }).click()
   await page.getByLabel('New note text').fill('Proud of you, superstar')
@@ -82,6 +87,7 @@ test('gift links: compose on one phone, accept on another, then round-trip a del
   await her.goto(giftUrl)
   await expect(her.getByTestId('gift-from')).toHaveText('Hubby Bunny')
   await expect(her.getByTestId('gift-rewards')).toContainText('Foot rub')
+  await expect(her.getByTestId('gift-rewards').locator('img[src*="foot-rub"]')).toHaveCount(1)
   // A plain browser tab (not the installed app) says its data is separate,
   // without blocking Accept for browser-only use.
   await expect(her.getByTestId('open-in-app')).toContainText('keeps its own data')
