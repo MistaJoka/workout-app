@@ -14,6 +14,8 @@ import { getWeeklySchedule } from '../../infrastructure/db/repositories/schedule
 import { weeklyGoal } from '../../domain/progress/stats'
 import { BackButton } from '../components/BackButton'
 import { ThumbBar } from '../components/ThumbBar'
+import { LengthDial } from '../components/LengthDial'
+import { scaleTemplate, type WorkoutLength } from '../../domain/session/lengthDial'
 import { Skeleton, SkeletonBlock, SkeletonHeading, SkeletonList } from '../components/Skeleton'
 import { ExerciseThumb } from '../components/ExerciseThumb'
 import { MovementMedia } from '../components/MovementMedia'
@@ -34,7 +36,7 @@ type Loaded = {
 // rules retain every exercise), so energy/comfort/minutes changed nothing
 // and cost three taps (owner, 2026-09-28: "one-tap Start"). The plan says
 // which rules made it via ruleVersion's default.
-function buildPlan(loaded: Loaded): SessionPlan {
+function buildPlan(loaded: Loaded, length: WorkoutLength): SessionPlan {
   return createSessionPlanFromTemplate({
     id: newId(),
     createdAt: new Date().toISOString(),
@@ -43,6 +45,7 @@ function buildPlan(loaded: Loaded): SessionPlan {
     repsOverridesByExerciseId: loaded.repsOverridesByExerciseId,
     weightOverridesByExerciseId: loaded.weightOverridesByExerciseId,
     weeklyGoal: loaded.weeklyGoal,
+    length,
   })
 }
 
@@ -82,6 +85,8 @@ export function CheckInScreen() {
   const [attempt, setAttempt] = useState(0)
   const [starting, setStarting] = useState(false)
   const [error, setError] = useState<string | null>(null)
+  // Short / Usual / Long (lengthDial.ts): starts on Usual on every visit.
+  const [length, setLength] = useState<WorkoutLength>('usual')
 
   useEffect(() => {
     if (!templateId) return
@@ -101,7 +106,7 @@ export function CheckInScreen() {
 
   // The list shows exactly what Start will run: same inputs, and the plan
   // built at Start differs only in its fresh id and timestamp.
-  const preview = useMemo(() => (loaded ? buildPlan(loaded) : null), [loaded])
+  const preview = useMemo(() => (loaded ? buildPlan(loaded, length) : null), [loaded, length])
 
   if (loadFailed) {
     return (
@@ -135,7 +140,12 @@ export function CheckInScreen() {
   }
 
   const totalSets = preview.exercises.reduce((sum, e) => sum + e.sets, 0)
-  const minutes = estimateMinutes(loaded.template)
+  const minutesFor: Record<WorkoutLength, number> = {
+    short: estimateMinutes(scaleTemplate(loaded.template, 'short')),
+    usual: estimateMinutes(loaded.template),
+    long: estimateMinutes(scaleTemplate(loaded.template, 'long')),
+  }
+  const minutes = minutesFor[length]
   const first = preview.exercises[0]
   const firstContent = first ? loaded.exercises.find((e) => e.id === first.exerciseId) : undefined
   const { warmUp } = bookendsFor(loaded.template.id, (id) => templateById.get(id))
@@ -150,7 +160,7 @@ export function CheckInScreen() {
     setError(null)
     // A fresh id/timestamp at the moment of starting: this is the
     // immutable SessionPlan snapshot.
-    const plan = buildPlan(loaded)
+    const plan = buildPlan(loaded, length)
     try {
       await startSession(plan)
       // The hype overlay (WorkoutPlayerScreen) only runs right after a tap
@@ -172,6 +182,8 @@ export function CheckInScreen() {
           {preview.exercises.length} moves, {totalSets} sets, about {minutes} min
         </p>
       </div>
+
+      <LengthDial value={length} minutes={minutesFor} onChange={setLength} />
 
       {warmUp && (
         <Link
