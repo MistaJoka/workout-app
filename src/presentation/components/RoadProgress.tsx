@@ -1,10 +1,12 @@
 import { useTheme } from '../theme/ThemeContext'
+import { RaeFace } from './Rae'
 import { effectiveMotion, usePrefersReducedMotion } from './MovementMedia'
 
 // A mega prize's progress as a little road trip: five flags at each 20%,
-// filled once passed, and the van at her progress. The same numbers as the
+// filled once passed, and Rae at her progress (never a van: Road trip's
+// own glyph already is one). The same numbers as the
 // plain bar (and the same progressbar for screen readers); just a picture
-// of how far along the months-long goal she is. The van glides only under
+// of how far along the months-long goal she is. Rae glides only under
 // full motion.
 export function RoadProgress({ have, cost, label }: { have: number; cost: number; label: string }) {
   const { motion } = useTheme()
@@ -39,10 +41,11 @@ export function RoadProgress({ have, cost, label }: { have: number; cost: number
       ))}
       <span
         aria-hidden
-        className="absolute top-0 block text-lg leading-none"
-        style={{ left: `calc(${pct}% - 12px)`, transition: animate ? 'left 0.8s ease-out' : 'none' }}
+        data-testid="road-traveler"
+        className="absolute top-0 block"
+        style={{ left: `calc((100% - 18px) * ${pct / 100})`, transition: animate ? 'left 0.8s ease-out' : 'none' }}
       >
-        🚐
+        <RaeFace expression="happy" size={18} motion="none" decorative />
       </span>
     </span>
   )

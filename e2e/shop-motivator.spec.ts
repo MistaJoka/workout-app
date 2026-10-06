@@ -46,6 +46,14 @@ test('a mega goal shows as a road; a small one keeps its bar', async ({ page }) 
   await page.getByRole('button', { name: 'Save for this' }).last().click()
   await expect(page.getByRole('progressbar', { name: /^Saving for Road trip: 0 of 1000 carrots/ }).first()).toBeVisible()
   await expect(page.getByTestId('saving-goal').getByTestId('road-progress')).toBeVisible()
+  // Rae travels the road (Road trip's own glyph is already the van), and at
+  // 0 carrots she sits on the road, not hanging off its left end.
+  const road = page.getByTestId('saving-goal').getByTestId('road-progress')
+  await expect(road).not.toContainText('🚐')
+  const roadBox = (await road.boundingBox())!
+  const rae = (await road.getByTestId('road-traveler').boundingBox())!
+  expect(rae.x).toBeGreaterThanOrEqual(roadBox.x)
+  expect(rae.x + rae.width).toBeLessThanOrEqual(roadBox.x + roadBox.width)
   // A small goal keeps the plain bar.
   await page.goto('/#/rewards')
   await page.getByRole('button', { name: 'Save for this' }).first().click()
