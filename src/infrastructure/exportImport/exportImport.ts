@@ -7,6 +7,7 @@ import type {
   CustomTemplateRecord,
   FamiliarityRecord,
   LoveNoteRecord,
+  FavoriteRecord,
   ProgressionRecord,
   RedemptionRecord,
   RewardRecord,
@@ -37,6 +38,8 @@ export type ExportBundle = {
   redemptions?: RedemptionRecord[]
   // Added with DB v5 (Hubby Bunny's surprise love notes); optional for the same reason.
   loveNotes?: LoveNoteRecord[]
+  // Added with DB v6 (hearts); optional for the same reason.
+  favorites?: FavoriteRecord[]
 }
 
 const ALL_TABLES = () => [
@@ -52,6 +55,7 @@ const ALL_TABLES = () => [
   db.rewards,
   db.redemptions,
   db.loveNotes,
+  db.favorites,
 ]
 
 // One read transaction, so a write landing mid-export can't produce a
@@ -74,6 +78,7 @@ export async function exportAll(): Promise<ExportBundle> {
     rewards: await db.rewards.toArray(),
     redemptions: await db.redemptions.toArray(),
     loveNotes: await db.loveNotes.toArray(),
+    favorites: await db.favorites.toArray(),
   }))
 }
 
@@ -159,6 +164,9 @@ export async function importAll(bundle: ExportBundle): Promise<ImportSummary> {
       (r) => r.updatedAt
     )
     await putNewer<BodyWeightRecord>(db.bodyWeight, bundle.bodyWeight ?? [], (r) => r.day, (r) => r.recordedAt)
+    // Hearts carry their own tombstone (hearted: false), so newest-wins is
+    // enough: an older backup can't revive a heart taken back here.
+    await putNewer<FavoriteRecord>(db.favorites, bundle.favorites ?? [], (r) => r.exerciseId, (r) => r.updatedAt)
     // Hubby Bunny's shop catalog is current, mutable state like routines:
     // whichever copy was edited most recently wins, and a reward deleted
     // here stays deleted even if the incoming copy is newer.

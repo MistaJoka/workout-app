@@ -162,6 +162,8 @@ const loveNote = z
   })
   .passthrough()
 
+const favorite = z.object({ exerciseId: z.string().min(1), hearted: z.boolean(), updatedAt: isoLike }).passthrough()
+
 export const exportBundleSchema = z
   .object({
     exportedAt: isoLike,
@@ -179,5 +181,6 @@ export const exportBundleSchema = z
     rewards: z.array(reward).optional(),
     redemptions: z.array(redemption).optional(),
     loveNotes: z.array(loveNote).optional(),
+    favorites: z.array(favorite).optional(),
   })
   .passthrough()

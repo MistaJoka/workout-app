@@ -15,6 +15,9 @@ export type CheckInRecord = {
   comfort: number
   availableMinutes: number
 }
+// Hearted moves (v6). Un-hearting keeps the row (hearted: false) so a backup
+// import can't revive it; merges are newest-wins by updatedAt.
+export type FavoriteRecord = { exerciseId: string; hearted: boolean; updatedAt: string }
 export type FamiliarityRecord = { exerciseId: string; exposureCount: number; lastSeenAt: string | null }
 // Hubby Bunny's reward shop (v4). Carrots earned are never stored (derived
 // from history, src/domain/rewards/carrots.ts); these two tables are the
@@ -94,6 +97,7 @@ export class WorkoutDb extends Dexie {
   rewards!: EntityTable<RewardRecord, 'id'>
   redemptions!: EntityTable<RedemptionRecord, 'id'>
   loveNotes!: EntityTable<LoveNoteRecord, 'id'>
+  favorites!: EntityTable<FavoriteRecord, 'exerciseId'>
 
   // One database per profile (see src/infrastructure/profiles.ts); the
   // name is resolved once, at module load, for the active profile.
@@ -124,6 +128,10 @@ export class WorkoutDb extends Dexie {
     // v5: Hubby Bunny's surprise love notes. Additive only.
     this.version(5).stores({
       loveNotes: 'id, createdAt, updatedAt, unlockedAt',
+    })
+    // v6: hearted moves (Her mix). Additive only.
+    this.version(6).stores({
+      favorites: 'exerciseId, updatedAt',
     })
   }
 }
