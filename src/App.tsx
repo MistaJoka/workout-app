@@ -36,6 +36,7 @@ const SessionDetailScreen = lazy(() =>
   import('./presentation/screens/SessionDetailScreen').then((m) => ({ default: m.SessionDetailScreen }))
 )
 const AboutScreen = lazy(() => import('./presentation/screens/AboutScreen').then((m) => ({ default: m.AboutScreen })))
+const SurpriseScreen = lazy(() => import('./presentation/screens/SurpriseScreen').then((m) => ({ default: m.SurpriseScreen })))
 const MeetRaeScreen = lazy(() => import('./presentation/screens/MeetRaeScreen').then((m) => ({ default: m.MeetRaeScreen })))
 const PrivacyScreen = lazy(() => import('./presentation/screens/PrivacyScreen').then((m) => ({ default: m.PrivacyScreen })))
 const TermsScreen = lazy(() => import('./presentation/screens/TermsScreen').then((m) => ({ default: m.TermsScreen })))
@@ -86,6 +87,7 @@ export default function App() {
             <Route path="/licenses" element={<LicensesScreen />} />
             <Route path="/rae" element={<MeetRaeScreen />} />
             <Route path="/garden" element={<GardenScreen />} />
+            <Route path="/surprise" element={<SurpriseScreen />} />
             <Route path="/achievements" element={<AchievementsScreen />} />
             <Route path="/boss" element={<BossScreen />} />
             <Route path="/story" element={<StoryScreen />} />

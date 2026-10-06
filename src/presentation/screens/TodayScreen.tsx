@@ -387,6 +387,7 @@ export function TodayScreen() {
 
       {data && data.others.length > 0 && (
         <TileRow label={data.mission.kind === 'ready' ? 'Or pick another' : 'Workouts'}>
+          <TodayTile to="/surprise" name="Surprise me: pick a workout for me" short="Surprise me" art={<span className="text-3xl">🎲</span>} />
           {data.others.map(({ template, custom, herMix }) => {
             const loop = firstRaeLoop(template.exercises.map((e) => e.exerciseId))
             const still = loop ? raeStillFor(loop.exerciseIds[0]) : null
