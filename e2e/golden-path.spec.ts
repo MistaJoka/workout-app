@@ -12,7 +12,11 @@ test.describe('golden path', () => {
     await page.getByRole('link', { name: 'Start workout' }).click()
     await expect(page.getByRole('list', { name: 'Your workout' })).toContainText('Bodyweight Squat')
     await expect(page.getByText(/\d+ moves, \d+ sets/)).toBeVisible()
-    await expect(page.getByRole('radio')).toHaveCount(0)
+    // The only choice on Start is the length dial, already on Usual, so
+    // one tap still starts: no check-in questions.
+    await expect(page.getByRole('radio')).toHaveCount(3)
+    await expect(page.getByRole('radiogroup', { name: 'Workout length' }).getByRole('radio')).toHaveCount(3)
+    await expect(page.getByRole('radio', { name: /^Usual/ })).toBeChecked()
     await page.getByRole('button', { name: 'Start workout' }).click()
 
     // The player shows the movement and its steps, not just a name.
