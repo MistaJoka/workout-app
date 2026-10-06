@@ -75,6 +75,8 @@ test('redeeming a smaller treat says, neutrally, how far the goal is', async ({ 
   // Redeeming Nap time while saving for the Road trip.
   await page.getByRole('button', { name: 'Redeem' }).first().click()
   const dialog = page.getByRole('dialog', { name: 'Redeem Nap time' })
+  // One picture, then the name: no emoji repeated in the heading.
+  await expect(dialog.getByText('Redeem Nap time?', { exact: true })).toBeVisible()
   await expect(dialog.getByText(/^Road trip: \d+ workouts to go after this\.$/)).toBeVisible()
   await dialog.getByRole('button', { name: /Cancel|Not now|Close/ }).first().click()
 

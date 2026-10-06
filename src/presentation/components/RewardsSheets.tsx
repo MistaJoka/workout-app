@@ -214,10 +214,9 @@ export function RedeemConfirmSheet({
 }) {
   return (
     <SheetShell label={`Redeem ${title}`} busy={busy} onCancel={onCancel}>
-      {icon && <RewardGlyph emoji={emoji} icon={icon} size={64} className="mx-auto" />}
-      <p className="text-lg font-bold">
-        Redeem {emoji} {title}?
-      </p>
+      {/* One picture (the emoji when there's no art yet), then the name. */}
+      <RewardGlyph emoji={emoji} icon={icon} size={64} className="mx-auto" />
+      <p className="text-lg font-bold">Redeem {title}?</p>
       <p className="text-sm text-ink-muted">{carrots(cost)} 🥕 will be spent. This makes a coupon to send.</p>
       {goalNote && <p className="text-sm text-ink-muted">{goalNote}</p>}
       {error && (
