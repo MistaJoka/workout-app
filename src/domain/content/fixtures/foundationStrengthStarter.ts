@@ -234,7 +234,7 @@ export const exerciseById: ReadonlyMap<string, Exercise> = new Map(
   foundationStrengthStarterExercises.map((e) => [e.id, e])
 )
 
-const PACK_ID = 'foundation-strength-starter'
+export const PACK_ID = 'foundation-strength-starter'
 
 function ex(exerciseId: string, order: number, prescription: WorkoutTemplate['exercises'][number]['prescription']) {
   return { exerciseId, exerciseVersion: 1, prescription, order, optional: false }
