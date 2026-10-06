@@ -1,4 +1,5 @@
 import { useEffect, useState } from 'react'
+import { carrots } from '../units'
 import { listRewards } from '../../infrastructure/db/repositories/rewardsRepository'
 import { getSetting } from '../../infrastructure/db/repositories/settingsRepository'
 import { rewardTier } from '../../domain/rewards/pricing'
@@ -66,7 +67,7 @@ export function GoalGain({ gain }: { gain: number }) {
         <RewardGlyph emoji={reward.emoji} icon={reward.icon} size={28} />
         <span className="min-w-0 flex-1 truncate">{reward.title}</span>
         <span className="hud-num flex-none" aria-hidden="true">
-          {before} → {after} / {reward.cost}
+          {carrots(before)} → {carrots(after)} / {carrots(reward.cost)}
         </span>
       </p>
       {rewardTier(reward.cost) === 'mega' ? (

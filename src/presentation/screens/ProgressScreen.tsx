@@ -12,7 +12,7 @@ import { getWeeklySchedule } from '../../infrastructure/db/repositories/schedule
 import { ROTATION } from '../../domain/content/fixtures/foundationStrengthStarter'
 import { resolveToday } from '../../domain/schedule/weeklySchedule'
 import type { PersonalRecord, WeekTotal } from '../../domain/progress/types'
-import { formatWeight } from '../units'
+import { formatWeight, carrots } from '../units'
 import { useWeightUnit } from '../components/useWeightUnit'
 import { BodyWeightCard } from '../components/BodyWeightCard'
 import { buildHistoryRows, type HistoryRow } from './progressHistoryRows'
@@ -359,7 +359,7 @@ function RewardsShopTile() {
         🥕
       </span>
       <p className="font-bold">Shop</p>
-      <p className="hud-num text-xs text-ink-muted">{balance ?? 0} 🥕</p>
+      <p className="hud-num text-xs text-ink-muted">{carrots(balance ?? 0)} 🥕</p>
     </Link>
   )
 }

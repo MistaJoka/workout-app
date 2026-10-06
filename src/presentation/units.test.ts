@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest'
-import { defaultWeightUnitForLocale, formatWeight, kgToUnit, roundToStep, unitToKg } from './units'
+import { carrots, defaultWeightUnitForLocale, formatWeight, kgToUnit, roundToStep, unitToKg } from './units'
 
 describe('units', () => {
   it('round-trips kg through lb within rounding', () => {
@@ -27,5 +27,13 @@ describe('defaultWeightUnitForLocale', () => {
     expect(defaultWeightUnitForLocale('en-GB')).toBe('kg')
     expect(defaultWeightUnitForLocale('fr-FR')).toBe('kg')
     expect(defaultWeightUnitForLocale(undefined)).toBe('kg')
+  })
+})
+
+describe('carrots', () => {
+  it('groups thousands so a mega prize reads 1,000, not 1000', () => {
+    expect(carrots(25)).toBe('25')
+    expect(carrots(1000)).toBe('1,000')
+    expect(carrots(12500)).toBe('12,500')
   })
 })

@@ -34,7 +34,7 @@ test('a mega goal shows as a road; a small one keeps its bar', async ({ page }) 
   await openShopAsHubby(page)
   // The editor tells a mega price in weeks too.
   await page.getByRole('button', { name: '+ Add a reward' }).click()
-  await page.getByRole('button', { name: 'Mega 1000' }).click()
+  await page.getByRole('button', { name: 'Mega 1,000' }).click()
   await expect(page.getByTestId('cost-in-workouts')).toHaveText('≈ 40 workouts, about 15 weeks at 2 a week')
   await page.getByRole('button', { name: 'Cancel' }).click()
 
@@ -109,7 +109,7 @@ test('a workout visibly feeds the goal: carrots tick up, then flow in on Complet
   await expect(chip).toHaveAccessibleName('1 carrot earned so far')
 
   await finishWorkout(page)
-  await expect(page.getByTestId('goal-gain')).toContainText(/Road trip\s*0 → \d+ \/ 1000/)
+  await expect(page.getByTestId('goal-gain')).toContainText(/Road trip\s*0 → \d+ \/ 1,000/)
 })
 
 test('Today and Schedule show what a workout or a week is worth toward the goal', async ({ page }) => {

@@ -1,4 +1,5 @@
 import { RewardGlyph } from './RewardGlyph'
+import { carrots } from '../units'
 import { useRef, useState, type ReactNode } from 'react'
 import { useSheetFocus } from './useSheetFocus'
 import { giverRole, isValidPin } from '../../domain/rewards/pin'
@@ -217,7 +218,7 @@ export function RedeemConfirmSheet({
       <p className="text-lg font-bold">
         Redeem {emoji} {title}?
       </p>
-      <p className="text-sm text-ink-muted">{cost} 🥕 will be spent. This makes a coupon to send.</p>
+      <p className="text-sm text-ink-muted">{carrots(cost)} 🥕 will be spent. This makes a coupon to send.</p>
       {goalNote && <p className="text-sm text-ink-muted">{goalNote}</p>}
       {error && (
         <p className="text-sm text-accent" role="alert">
@@ -225,7 +226,7 @@ export function RedeemConfirmSheet({
         </p>
       )}
       <button type="button" className="btn-primary btn-lg w-full" disabled={busy} onClick={onConfirm}>
-        {busy ? 'Redeeming…' : `Redeem for ${cost} 🥕`}
+        {busy ? 'Redeeming…' : `Redeem for ${carrots(cost)} 🥕`}
       </button>
       <button type="button" className="btn-ghost w-full" disabled={busy} onClick={onCancel}>
         Cancel
@@ -285,7 +286,7 @@ export function CouponSheet({
         <div className="relative z-10 flex flex-col items-center gap-1">
           <RewardGlyph emoji={emoji} icon={icon} size={72} variant="tile" />
           <p className="text-xl font-extrabold">{title}</p>
-          <p className="hud-num text-lg font-bold">{cost} 🥕</p>
+          <p className="hud-num text-lg font-bold">{carrots(cost)} 🥕</p>
           <p className="text-sm text-ink-muted">Redeemable with {giverName}</p>
           {deliveredAt && <p className="text-sm font-semibold text-primary-ink">Delivered!</p>}
         </div>

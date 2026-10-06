@@ -1,4 +1,5 @@
 import { getWeeklySchedule } from '../../infrastructure/db/repositories/scheduleRepository'
+import { carrots } from '../units'
 import { weeklyGoal } from '../../domain/progress/stats'
 import { RewardGlyph } from '../components/RewardGlyph'
 import { useEffect, useState } from 'react'
@@ -466,7 +467,7 @@ export function RewardsScreen() {
           <section className="card flex items-center justify-between gap-2 p-4" data-testid="rewards-balance">
             <span>
               <span className="block text-sm text-ink-muted">Your carrots</span>
-              <span className="hud-num text-3xl font-bold">{data.balance} 🥕</span>
+              <span className="hud-num text-3xl font-bold">{carrots(data.balance)} 🥕</span>
             </span>
             <button type="button" className="btn-secondary min-h-11 px-4" onClick={openManage}>
               {data.pin ? 'Manage shop' : 'Set up shop'}
@@ -747,7 +748,7 @@ function RewardTile({
       <RewardGlyph emoji={reward.emoji} icon={reward.icon} size={44} />
       <p className="font-bold leading-tight">{reward.title}</p>
       {wished && <p className="text-xs font-semibold text-primary-ink">✨ Your wish</p>}
-      <p className="hud-num text-sm text-ink-muted">{reward.cost} 🥕</p>
+      <p className="hud-num text-sm text-ink-muted">{carrots(reward.cost)} 🥕</p>
       {affordable ? (
         <button type="button" className="btn-primary min-h-11 w-full" onClick={onRedeem}>
           Redeem
@@ -760,7 +761,7 @@ function RewardTile({
               style={{ width: `${pct}%`, background: 'linear-gradient(90deg, var(--color-primary), var(--color-accent))' }}
             />
           </div>
-          <p className="text-xs text-ink-muted">{reward.cost - balance} more 🥕</p>
+          <p className="text-xs text-ink-muted">{carrots(reward.cost - balance)} more 🥕</p>
           <button
             type="button"
             className={`${saving ? 'btn-primary' : 'btn-secondary'} min-h-11 w-full text-sm`}
@@ -791,7 +792,7 @@ function RedemptionRow({
       <button type="button" className="min-w-0 flex-1 text-left" onClick={onOpen}>
         <span className="block truncate font-semibold">{redemption.title}</span>
         <span className="block text-sm text-ink-muted">
-          {redemption.cost} 🥕, {formatDate(redemption.redeemedAt)}
+          {carrots(redemption.cost)} 🥕, {formatDate(redemption.redeemedAt)}
         </span>
       </button>
       {redemption.deliveredAt ? (

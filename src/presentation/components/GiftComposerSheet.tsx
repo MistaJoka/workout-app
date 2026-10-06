@@ -1,4 +1,5 @@
 import { RewardGlyph } from './RewardGlyph'
+import { carrots } from '../units'
 import { useEffect, useRef, useState } from 'react'
 import { giftLinkLocation } from '../appContext'
 import { useSheetFocus } from './useSheetFocus'
@@ -176,7 +177,7 @@ export function GiftComposerSheet({ giverName, onClose }: { giverName: string; o
                       />
                       <RewardGlyph emoji={reward.emoji} icon={reward.icon} size={28} />
                       <span className="min-w-0 flex-1 truncate font-semibold">{reward.title}</span>
-                      <span className="hud-num text-sm text-ink-muted">{reward.cost} 🥕</span>
+                      <span className="hud-num text-sm text-ink-muted">{carrots(reward.cost)} 🥕</span>
                     </label>
                   </li>
                 ))}
@@ -219,7 +220,7 @@ export function GiftComposerSheet({ giverName, onClose }: { giverName: string; o
                       >
                         −
                       </button>
-                      <span className="hud-num w-16 text-center">{newRewardCost} 🥕</span>
+                      <span className="hud-num w-16 text-center">{carrots(newRewardCost)} 🥕</span>
                       <button
                         type="button"
                         className="btn-secondary min-h-9 min-w-9 p-0"

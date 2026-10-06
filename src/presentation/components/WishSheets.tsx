@@ -1,4 +1,5 @@
 import { RewardGlyph } from './RewardGlyph'
+import { carrots } from '../units'
 import { useRef, useState } from 'react'
 import { giftLinkLocation } from '../appContext'
 import { useSheetFocus } from './useSheetFocus'
@@ -255,7 +256,7 @@ export function GrantWishSheet({
               >
                 −
               </button>
-              <span className="hud-num w-20 text-center text-lg font-bold">{cost} 🥕</span>
+              <span className="hud-num w-20 text-center text-lg font-bold">{carrots(cost)} 🥕</span>
               <button type="button" className="btn-secondary min-h-11 min-w-11 p-0" aria-label="More carrots" onClick={() => setCost((c) => c + 5)}>
                 +
               </button>

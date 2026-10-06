@@ -1,4 +1,5 @@
 import { RewardGlyph } from '../components/RewardGlyph'
+import { carrots } from '../units'
 import { useEffect, useState } from 'react'
 import { useNavigate, useSearchParams } from 'react-router-dom'
 import { BackButton } from '../components/BackButton'
@@ -266,7 +267,7 @@ function GiftPreviewCard({
             <li key={r.id} className="flex items-center gap-3 rounded-control bg-field-primary p-2">
               <RewardGlyph emoji={r.emoji} icon={r.icon} size={28} />
               <span className="min-w-0 flex-1 truncate font-semibold">{r.title}</span>
-              <span className="hud-num text-sm">{r.cost} 🥕</span>
+              <span className="hud-num text-sm">{carrots(r.cost)} 🥕</span>
             </li>
           ))}
         </ul>

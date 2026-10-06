@@ -1,4 +1,5 @@
 import { RewardGlyph } from './RewardGlyph'
+import { carrots } from '../units'
 import { useEffect, useState } from 'react'
 import { Link } from 'react-router-dom'
 import type { RewardRecord } from '../../infrastructure/db/schema'
@@ -42,7 +43,7 @@ export function SavingGoalBar({ reward, balance }: { reward: RewardRecord; balan
       </span>
       )}
       <span className="hud-num block text-xs text-ink-muted">
-        {p.have}/{p.cost} 🥕
+        {carrots(p.have)}/{carrots(p.cost)} 🥕
         {p.ready ? ' · ready!' : ` · about ${p.workoutsLeft} ${p.workoutsLeft === 1 ? 'workout' : 'workouts'} to go`}
       </span>
     </span>
@@ -78,7 +79,7 @@ export function SavingGoalTodayCard({ tile = false }: { tile?: boolean } = {}) {
         name={`Saving for ${state.reward.title}: ${p.have} of ${p.cost} carrots`}
         short={state.reward.title}
         art={<RewardGlyph emoji={state.reward.emoji} icon={state.reward.icon} size={44} />}
-        value={`${p.have}/${p.cost}🥕`}
+        value={`${carrots(p.have)}/${carrots(p.cost)}🥕`}
       />
     )
   }

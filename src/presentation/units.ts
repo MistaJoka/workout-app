@@ -35,3 +35,9 @@ export function formatWeight(kg: number, unit: WeightUnit): string {
 export function defaultWeightUnitForLocale(locale: string | undefined): WeightUnit {
   return locale === 'en-US' ? 'lb' : 'kg'
 }
+
+// Carrot amounts on screen: "1,000", not "1000". Fixed to en-US so the
+// shop reads the same on every phone.
+export function carrots(n: number): string {
+  return n.toLocaleString('en-US')
+}

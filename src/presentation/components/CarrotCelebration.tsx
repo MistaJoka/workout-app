@@ -1,4 +1,5 @@
 import { useEffect, useState } from 'react'
+import { carrots } from '../units'
 import { loadWeekGoals } from '../../infrastructure/db/repositories/weekGoalsRepository'
 import { useGiverName } from './useGiverName'
 import { Link } from 'react-router-dom'
@@ -75,7 +76,7 @@ export function CarrotBalanceChip() {
       data-testid="carrot-balance-chip"
     >
       <span aria-hidden="true">🥕</span>
-      <span className="hud-num font-bold">{balance}</span>
+      <span className="hud-num font-bold">{carrots(balance)}</span>
     </Link>
   )
 }

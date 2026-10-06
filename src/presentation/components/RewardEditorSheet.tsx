@@ -1,4 +1,5 @@
 import { RewardGlyph } from './RewardGlyph'
+import { carrots } from '../units'
 import { REWARD_ICONS } from '../../domain/rewards/rewardIcons'
 import { pickEmoji, pickIcon, STARTER_IDEAS, type IconDraft } from '../rewardDraft'
 import { rewardTier, weeklyForecast, workoutsFor } from '../../domain/rewards/pricing'
@@ -192,7 +193,7 @@ export function RewardEditorSheet({
                 >
                   −
                 </button>
-                <span className="hud-num w-20 text-center text-lg font-bold">{draft.cost} 🥕</span>
+                <span className="hud-num w-20 text-center text-lg font-bold">{carrots(draft.cost)} 🥕</span>
                 <button
                   type="button"
                   className="btn-secondary min-h-11 min-w-11 p-0"
@@ -218,7 +219,7 @@ export function RewardEditorSheet({
                   aria-pressed={draft.cost === preset.cost}
                   onClick={() => setDraft((d) => ({ ...d, cost: preset.cost, touched: { ...d.touched, cost: true } }))}
                 >
-                  {preset.label} {preset.cost}
+                  {preset.label} {carrots(preset.cost)}
                 </button>
               ))}
             </div>
@@ -249,7 +250,7 @@ export function RewardEditorSheet({
                       {reward.title}
                       {!reward.active ? ' (hidden)' : ''}
                     </span>
-                    <span className="block text-sm text-ink-muted">{reward.cost} 🥕</span>
+                    <span className="block text-sm text-ink-muted">{carrots(reward.cost)} 🥕</span>
                   </span>
                 </div>
                 <div className="flex flex-wrap gap-2">
