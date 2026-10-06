@@ -9,11 +9,12 @@ import { asset } from '../assetUrl'
 import { countLabel } from '../format'
 import { useEffect, useState } from 'react'
 import { ROTATION, foundationStrengthStarterTemplates } from '../../domain/content/fixtures/foundationStrengthStarter'
-import { getExercises, getTemplate } from '../../domain/content/catalog'
+import { getExercises, getHerMix, getTemplate } from '../../domain/content/catalog'
 import { getPlan } from '../../infrastructure/db/repositories/sessionRepository'
 import { getCurrentState, settleOpenSessions } from '../../application/sessionService'
 import { ResumeActions } from '../components/ResumeActions'
 import { listCustomTemplates } from '../../infrastructure/db/repositories/customTemplateRepository'
+import { HeartBadge } from '../components/HeartBadge'
 import { getWeeklySchedule } from '../../infrastructure/db/repositories/scheduleRepository'
 import { db } from '../../infrastructure/db/schema'
 import type { Exercise, WorkoutTemplate } from '../../domain/content/types'
@@ -58,7 +59,7 @@ type TodayData = {
   // Workouts this week should reach (the goal this week started with: domain/progress/weekGoals.ts).
   weekGoal: number
   // Everything you could start instead, primary pick excluded.
-  others: { template: WorkoutTemplate; custom: boolean }[]
+  others: { template: WorkoutTemplate; custom: boolean; herMix?: boolean }[]
   // Any workout ever finished on this profile (retires the welcome card).
   hasFinished: boolean
   // The open workout offered for resume, if any.
@@ -86,7 +87,7 @@ async function loadToday(now: Date): Promise<TodayData> {
   // First, so a workout abandoned long ago is finished (at its last action)
   // before history is read: it counts, and never blocks today.
   const resumable = await settleOpenSessions(now)
-  const [results, schedule, custom, plans, events, rewards, savingFor] = await Promise.all([
+  const [results, schedule, custom, plans, events, rewards, savingFor, herMix] = await Promise.all([
     db.sessionResults.toArray(),
     getWeeklySchedule(),
     listCustomTemplates(),
@@ -94,6 +95,9 @@ async function loadToday(now: Date): Promise<TodayData> {
     db.sessionEvents.toArray(),
     listRewards().catch(() => []),
     getSetting<string | null>(SAVING_FOR_KEY).catch(() => null),
+    // Thumbnails-only failure mode, like the rest of Today: no mix tile
+    // beats a blank screen.
+    getHerMix().catch(() => null),
   ])
   const savingGoal = savingGoalReward(rewards, savingFor)
   // Only read when she's saving for something; a failed read keeps the
@@ -186,6 +190,8 @@ async function loadToday(now: Date): Promise<TodayData> {
   // state all routines stay one tap away below.
   const hideId = mode === 'ready' ? primary.id : null
   const others = [
+    // Her mix leads the row once she has hearted three moves.
+    ...(herMix ? [{ template: herMix, custom: false, herMix: true }] : []),
     ...foundationStrengthStarterTemplates.map((template) => ({ template, custom: false })),
     ...custom.map((template) => ({ template, custom: true })),
   ].filter(({ template }) => template.id !== hideId)
@@ -381,23 +387,22 @@ export function TodayScreen() {
 
       {data && data.others.length > 0 && (
         <TileRow label={data.mission.kind === 'ready' ? 'Or pick another' : 'Workouts'}>
-          {data.others.map(({ template, custom }) => {
+          {data.others.map(({ template, custom, herMix }) => {
             const loop = firstRaeLoop(template.exercises.map((e) => e.exerciseId))
             const still = loop ? raeStillFor(loop.exerciseIds[0]) : null
             const draft = DRAFT_TEMPLATE_IDS.has(template.id)
+            const picture = still ? (
+              <img src={still.src} alt="" className="h-12 w-12 object-contain pixelated" />
+            ) : (
+              <span className="text-3xl">🌸</span>
+            )
             return (
               <TodayTile
                 key={template.id}
                 to={`/checkin/${template.id}`}
-                name={`${template.name}, ${custom ? 'your routine, ' : ''}${describe(template)}${draft ? ', draft' : ''}`}
+                name={`${template.name}, ${herMix ? 'your hearted moves, ' : custom ? 'your routine, ' : ''}${describe(template)}${draft ? ', draft' : ''}`}
                 short={template.name}
-                art={
-                  still ? (
-                    <img src={still.src} alt="" className="h-12 w-12 object-contain pixelated" />
-                  ) : (
-                    <span className="text-3xl">🌸</span>
-                  )
-                }
+                art={herMix ? <HeartBadge>{picture}</HeartBadge> : picture}
                 value={draft ? 'Draft' : `⏱${estimateMinutes(template)}`}
               />
             )

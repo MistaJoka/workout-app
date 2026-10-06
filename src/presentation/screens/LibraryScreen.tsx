@@ -4,7 +4,8 @@ import { estimateMinutes } from '../../domain/content/workoutEstimate'
 import { countLabel } from '../format'
 import { useDeferredValue, useEffect, useMemo, useState } from 'react'
 import { Link } from 'react-router-dom'
-import { getExercises, loadLibrary } from '../../domain/content/catalog'
+import { getExercises, getHerMix, loadLibrary } from '../../domain/content/catalog'
+import { HeartBadge } from '../components/HeartBadge'
 import { listHearts } from '../../infrastructure/db/repositories/favoritesRepository'
 import { EQUIPMENT_FILTER_OPTIONS, MUSCLE_GROUPS, exerciseMeta, filterExercises, isShownNow, orderForBrowsing, type LibraryFilters } from '../../domain/content/library'
 import type { Exercise } from '../../domain/content/types'
@@ -31,6 +32,7 @@ export function LibraryScreen() {
   const [filters, setFilters] = useState<LibraryFilters>({})
   const [limit, setLimit] = useState(PAGE)
   const [loadFailed, setLoadFailed] = useState(false)
+  const [herMix, setHerMix] = useState<WorkoutTemplate | null>(null)
   const [heartedMoves, setHeartedMoves] = useState<Exercise[]>([])
   const [heartOnly, setHeartOnly] = useState(false)
   const hearted = useMemo(() => new Set(heartedMoves.map((e) => e.id)), [heartedMoves])
@@ -42,6 +44,9 @@ export function LibraryScreen() {
     listCustomTemplates()
       .then(setCustom)
       .catch(() => setCustom([]))
+    getHerMix()
+      .then(setHerMix)
+      .catch(() => setHerMix(null))
     // Hearted moves resolve on their own: the starter moves (Plank, Squat...)
     // live outside the discovery library, and hearts can include them.
     listHearts()
@@ -99,6 +104,27 @@ export function LibraryScreen() {
           {/* Each routine is its moves, shown as Rae, not a count; "+ New"
               sits at the end of the row it adds to. */}
           <TileRow label="Routines">
+            {herMix && (
+              <TodayTile
+                to={`/checkin/${herMix.id}`}
+                name={`Her mix, your hearted moves, ${countLabel(herMix.exercises.length, 'exercise')}`}
+                short="Her mix"
+                art={
+                  <HeartBadge>
+                    <span className="flex -space-x-5">
+                      {herMix.exercises
+                        .map((e) => raeStillFor(e.exerciseId))
+                        .filter((still): still is { src: string; alt: string } => still !== null)
+                        .slice(0, 3)
+                        .map((still) => (
+                          <img key={still.src} src={still.src} alt="" className="h-12 w-9 object-contain pixelated" />
+                        ))}
+                    </span>
+                  </HeartBadge>
+                }
+                value={`⏱${estimateMinutes(herMix)}`}
+              />
+            )}
             {[...foundationStrengthStarterTemplates, ...custom].map((template) => {
               const draft = DRAFT_TEMPLATE_IDS.has(template.id)
               const stills = template.exercises
