@@ -5,6 +5,7 @@ import { countLabel } from '../format'
 import { useDeferredValue, useEffect, useMemo, useState } from 'react'
 import { Link } from 'react-router-dom'
 import { getExercises, loadLibrary } from '../../domain/content/catalog'
+import { listHearts } from '../../infrastructure/db/repositories/favoritesRepository'
 import { EQUIPMENT_FILTER_OPTIONS, MUSCLE_GROUPS, exerciseMeta, filterExercises, isShownNow, orderForBrowsing, type LibraryFilters } from '../../domain/content/library'
 import type { Exercise } from '../../domain/content/types'
 import { foundationStrengthStarterTemplates } from '../../domain/content/fixtures/foundationStrengthStarter'
@@ -30,6 +31,9 @@ export function LibraryScreen() {
   const [filters, setFilters] = useState<LibraryFilters>({})
   const [limit, setLimit] = useState(PAGE)
   const [loadFailed, setLoadFailed] = useState(false)
+  const [heartedMoves, setHeartedMoves] = useState<Exercise[]>([])
+  const [heartOnly, setHeartOnly] = useState(false)
+  const hearted = useMemo(() => new Set(heartedMoves.map((e) => e.id)), [heartedMoves])
 
   useEffect(() => {
     loadLibrary()
@@ -38,6 +42,12 @@ export function LibraryScreen() {
     listCustomTemplates()
       .then(setCustom)
       .catch(() => setCustom([]))
+    // Hearted moves resolve on their own: the starter moves (Plank, Squat...)
+    // live outside the discovery library, and hearts can include them.
+    listHearts()
+      .then((hearts) => getExercises(hearts.map((h) => h.exerciseId)))
+      .then((found) => setHeartedMoves([...found.values()].filter(isShownNow)))
+      .catch(() => setHeartedMoves([]))
   }, [])
 
   // Only levels the library actually has: an empty chip is a dead end.
@@ -52,13 +62,14 @@ export function LibraryScreen() {
   const [raeOnly, setRaeOnly] = useState(false)
   // Moves Rae demonstrates lead the list (orderForBrowsing); "Rae demos"
   // narrows to just those.
+  const source = heartOnly ? heartedMoves : library
   const matched = useMemo(
-    () => (library ? orderForBrowsing(filterExercises(library, deferredFilters), hasRaeLoop, deferredFilters.query) : []),
-    [library, deferredFilters]
+    () => (source ? orderForBrowsing(filterExercises(source, deferredFilters), hasRaeLoop, deferredFilters.query) : []),
+    [source, deferredFilters]
   )
   const raeCount = useMemo(() => matched.filter((e) => hasRaeLoop(e.id)).length, [matched])
   const results = useMemo(() => (raeOnly ? matched.filter((e) => hasRaeLoop(e.id)) : matched), [matched, raeOnly])
-  const filtering = Boolean(filters.query || filters.muscle || filters.equipment || filters.level || raeOnly)
+  const filtering = Boolean(filters.query || filters.muscle || filters.equipment || filters.level || raeOnly || heartOnly)
   // The moves Rae demonstrates herself (the curated starter set, which
   // lives outside the discovery library), leading the page when you're
   // browsing rather than searching.
@@ -203,6 +214,21 @@ export function LibraryScreen() {
         {library && (
           <div className="flex items-center justify-between gap-2">
             <p className="text-xs text-ink-muted">{countLabel(results.length, 'exercise')}</p>
+            <span className="flex gap-2">
+            {hearted.size > 0 && (
+              <button
+                type="button"
+                aria-pressed={heartOnly}
+                aria-label={`Hearted moves only, ${hearted.size}`}
+                onClick={() => {
+                  setLimit(PAGE)
+                  setHeartOnly((on) => !on)
+                }}
+                className={`chip ${heartOnly ? 'chip-active' : ''}`}
+              >
+                ♥ {hearted.size}
+              </button>
+            )}
             {raeCount > 0 && (
               <button
                 type="button"
@@ -216,6 +242,7 @@ export function LibraryScreen() {
                 Rae demos ({raeCount})
               </button>
             )}
+            </span>
           </div>
         )}
         {library && results.length === 0 && (
@@ -230,7 +257,17 @@ export function LibraryScreen() {
               >
                 <ExerciseThumb exercise={exercise} className="h-14 w-20 rounded-panel" />
                 <div className="min-w-0">
-                  <p className="truncate font-semibold">{exercise.name}</p>
+                  <p className="truncate font-semibold">
+                    {exercise.name}
+                    {hearted.has(exercise.id) && (
+                      <span className="sr-only">, hearted</span>
+                    )}
+                    {hearted.has(exercise.id) && (
+                      <span aria-hidden="true" className="ml-1 text-primary">
+                        ♥
+                      </span>
+                    )}
+                  </p>
                   <p className="truncate text-xs text-ink-muted">{exerciseMeta(exercise).join(', ')}</p>
                 </div>
               </Link>

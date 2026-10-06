@@ -11,6 +11,7 @@ import { MovementMedia } from '../components/MovementMedia'
 import { raeCardFor } from '../components/raeLoops'
 import { ExerciseYou } from '../components/ExerciseYou'
 import { BackButton } from '../components/BackButton'
+import { HeartButton } from '../components/HeartButton'
 import { Skeleton, SkeletonBlock, SkeletonHeading, SkeletonList } from '../components/Skeleton'
 import { defaultPrescription } from './routineBuilderRows'
 
@@ -83,7 +84,10 @@ export function ExerciseDetailScreen() {
     <div className="p-4 space-y-4 pb-24">
       <BackButton />
       <div className="space-y-2">
-        <h1 className="text-2xl font-bold">{exercise.name}</h1>
+        <div className="flex items-start justify-between gap-2">
+          <h1 className="text-2xl font-bold">{exercise.name}</h1>
+          <HeartButton exerciseId={exercise.id} name={exercise.name} />
+        </div>
         <ul className="flex flex-wrap gap-1.5" aria-label="About this move">
           {meta.map((label) => (
             <li key={label} className="rounded-full bg-field-info px-3 py-1 text-xs font-bold">

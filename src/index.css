@@ -704,6 +704,12 @@ input[type='range'] {
   [data-motion='full'] .tap-stage-ripple { display: none; }
 }
 
+/* HeartButton: a one-shot pop when a move is hearted (full motion only;
+   the glyph swap carries the information). */
+@keyframes heart-pop { 0% { transform: scale(0.6); } 60% { transform: scale(1.3); } 100% { transform: scale(1); } }
+[data-motion='full'] .heart-pop { display: inline-block; animation: heart-pop 0.35s ease-out; }
+@media (prefers-reduced-motion: reduce) { [data-motion='full'] .heart-pop { animation: none; } }
+
 /* Short screens (the Flip 7's folded cover screen is ~361x399): the
    player's target and Rae's move sit side by side, and the move is sized to
    the space above the Complete Set bar, so she never has to scroll to see
