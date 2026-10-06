@@ -7,7 +7,7 @@ import {
 import { listedRaeMoves, raeMoveById } from './fixtures/raeMoves'
 import { getCustomTemplate, listCustomTemplates } from '../../infrastructure/db/repositories/customTemplateRepository'
 import { listHearts } from '../../infrastructure/db/repositories/favoritesRepository'
-import { buildHerMix, HER_MIX_ID } from './herMix'
+import { buildHerMix, HER_MIX_ID, HER_MIX_NAME } from './herMix'
 
 // Her mix is built from hearts on every read (domain/content/herMix.ts):
 // it exists only while at least three shown moves are hearted.
@@ -23,12 +23,23 @@ export async function getTemplate(id: string): Promise<WorkoutTemplate | undefin
   return curatedTemplateById.get(id) ?? (await getCustomTemplate(id))
 }
 
+// A routine's name for history and share cards. Her mix keeps its name
+// after she un-hearts it below three moves (the mix is gone, its sessions
+// aren't); unknown ids stay undefined so callers keep their own fallback.
+export async function getTemplateName(id: string): Promise<string | undefined> {
+  if (id === HER_MIX_ID) return HER_MIX_NAME
+  return (await getTemplate(id))?.name
+}
+
 export async function listAllTemplates(): Promise<{
   curated: WorkoutTemplate[]
   custom: WorkoutTemplate[]
   herMix: WorkoutTemplate | null
 }> {
-  const [custom, herMix] = await Promise.all([listCustomTemplates(), getHerMix()])
+  // A failed library chunk load (offline, or an old build's hash gone)
+  // must not take Schedule, reminders or Surprise down with it: the mix
+  // just doesn't show this time.
+  const [custom, herMix] = await Promise.all([listCustomTemplates(), getHerMix().catch(() => null)])
   return { curated: foundationStrengthStarterTemplates, custom, herMix }
 }
 

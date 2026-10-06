@@ -1,3 +1,4 @@
+import { HER_MIX_ID } from '../content/herMix'
 // Weekly plan: which routine (template id) or rest each weekday holds.
 // Keyed by JS getDay() (0 = Sunday). null = nothing chosen for that day.
 export type DayPlan = string | 'rest' | null
@@ -42,7 +43,9 @@ const WEEKDAYS: Weekday[] = [0, 1, 2, 3, 4, 5, 6]
 export function pruneSchedule(schedule: WeeklySchedule, knownTemplateIds: ReadonlySet<string>): WeeklySchedule {
   const stale = WEEKDAYS.filter((d) => {
     const plan = schedule[d]
-    return plan != null && plan !== 'rest' && !knownTemplateIds.has(plan)
+    // Her mix comes and goes with her hearts (un-hearting to swap a move);
+    // its days wait for it, and Today falls back meanwhile.
+    return plan != null && plan !== 'rest' && plan !== HER_MIX_ID && !knownTemplateIds.has(plan)
   })
   if (stale.length === 0) return schedule
   const next = { ...schedule }

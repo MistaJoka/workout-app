@@ -2,7 +2,7 @@ import { useEffect, useRef, useState, type CSSProperties } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { listAllTemplates } from '../../domain/content/catalog'
 import { DRAFT_TEMPLATE_IDS } from '../../domain/content/fixtures/raeDraftTemplates'
-import { pickSurprise, surprisePool } from '../../domain/content/surprise'
+import { lastMainTemplateId, pickSurprise, surprisePool } from '../../domain/content/surprise'
 import type { WorkoutTemplate } from '../../domain/content/types'
 import { getAllSessionHistory } from '../../infrastructure/db/repositories/sessionRepository'
 import { playCelebration } from '../../application/celebrationSounds'
@@ -21,8 +21,7 @@ type Loaded = { pick: WorkoutTemplate; reel: string[] }
 
 async function load(): Promise<Loaded | null> {
   const [{ curated, custom, herMix }, { plans, results }] = await Promise.all([listAllTemplates(), getAllSessionHistory()])
-  const latest = [...results].sort((a, b) => b.endedAt.localeCompare(a.endedAt))[0]
-  const lastTemplateId = latest ? plans.find((p) => p.id === latest.planId)?.templateId ?? null : null
+  const lastTemplateId = lastMainTemplateId(plans, results, DRAFT_TEMPLATE_IDS)
   const pool = surprisePool({ curated, custom, herMix, lastTemplateId, draftIds: DRAFT_TEMPLATE_IDS })
   const pick = pickSurprise(pool)
   if (!pick) return null

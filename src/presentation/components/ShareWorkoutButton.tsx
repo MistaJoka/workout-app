@@ -1,5 +1,5 @@
 import { useState } from 'react'
-import { getTemplate } from '../../domain/content/catalog'
+import { getTemplateName } from '../../domain/content/catalog'
 import { speciesFor } from '../../domain/progress/garden'
 import { projectSetRecords } from '../../domain/progress/history'
 import { sessionHighlights } from '../../domain/progress/sessionHighlights'
@@ -52,7 +52,7 @@ export async function renderWorkoutCard(sessionId: string): Promise<{ blob: Blob
   const result = results.find((r) => r.sessionId === sessionId)
   const plan = plans.find((p) => p.id === result?.planId)
   if (!result || !plan) throw new Error('Workout not found')
-  const template = await getTemplate(plan.templateId).catch(() => undefined)
+  const templateName = await getTemplateName(plan.templateId).catch(() => undefined)
   const sessionEvents = events.filter((e) => e.sessionId === sessionId)
   const highlights = sessionHighlights(projectSetRecords(plans, results, events), results, sessionId)
   const best = highlights.newBests[0]
@@ -67,7 +67,7 @@ export async function renderWorkoutCard(sessionId: string): Promise<{ blob: Blob
   const profileName = activeProfile().name
   const species = speciesFor(sessionId)
   const model = buildCardModel({
-    workoutName: template?.name ?? 'Workout',
+    workoutName: templateName ?? 'Workout',
     endedAt: result.endedAt,
     stats: completeStats(plan, result, sessionEvents),
     species,

@@ -4,6 +4,7 @@ import type { Exercise, WorkoutTemplate } from './types'
 import { PACK_ID } from './fixtures/foundationStrengthStarter'
 
 export const HER_MIX_ID = 'her-mix'
+export const HER_MIX_NAME = 'Her mix'
 export const HER_MIX_MIN = 3
 export const HER_MIX_MAX = 8
 
@@ -26,7 +27,7 @@ export function buildHerMix(
   return {
     id: HER_MIX_ID,
     packId: PACK_ID,
-    name: 'Her mix',
+    name: HER_MIX_NAME,
     version: hashIds(shown.map((e) => e.id)),
     exercises: shown.map((e, order) => ({
       exerciseId: e.id,

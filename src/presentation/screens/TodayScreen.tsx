@@ -9,7 +9,8 @@ import { asset } from '../assetUrl'
 import { countLabel } from '../format'
 import { useEffect, useState } from 'react'
 import { ROTATION, foundationStrengthStarterTemplates } from '../../domain/content/fixtures/foundationStrengthStarter'
-import { getExercises, getHerMix, getTemplate } from '../../domain/content/catalog'
+import { getExercises, getHerMix, getTemplate, getTemplateName } from '../../domain/content/catalog'
+import { HER_MIX_ID, HER_MIX_NAME } from '../../domain/content/herMix'
 import { getPlan } from '../../infrastructure/db/repositories/sessionRepository'
 import { getCurrentState, settleOpenSessions } from '../../application/sessionService'
 import { ResumeActions } from '../components/ResumeActions'
@@ -140,7 +141,7 @@ async function loadToday(now: Date): Promise<TodayData> {
     const { done, total } = setsDone(plan, state)
     mission = {
       kind: 'resume',
-      name: (await getTemplate(plan.templateId))?.name ?? 'Your workout',
+      name: (await getTemplateName(plan.templateId)) ?? 'Your workout',
       current: plan.exercises[state.currentExerciseIndex]?.name ?? 'your last set',
       done,
       total,
@@ -153,7 +154,7 @@ async function loadToday(now: Date): Promise<TodayData> {
     const count = today.length > 1 ? `, ${today.length} workouts today` : ''
     mission = {
       kind: 'done',
-      name: (plan && (await getTemplate(plan.templateId))?.name) ?? 'Workout',
+      name: (plan && (await getTemplateName(plan.templateId))) ?? 'Workout',
       detail: `${latest.totalSetsCompleted} sets in ${minutes} min${count}`,
       extra,
     }
@@ -201,10 +202,12 @@ async function loadToday(now: Date): Promise<TodayData> {
   const week = buildWeek(results, schedule, now)
   const templateNames: Record<string, string> = {}
   for (const t of [...foundationStrengthStarterTemplates, ...custom]) templateNames[t.id] = t.name
+  // Her mix keeps its name for planned pots and Rae's memory even when gone.
+  templateNames[HER_MIX_ID] = HER_MIX_NAME
   const sessionNames: Record<string, string> = {}
   for (const s of week.flatMap((d) => d.sessions)) {
     const plan = await getPlan(s.planId)
-    if (plan) sessionNames[s.sessionId] = templateNames[plan.templateId] ?? (await getTemplate(plan.templateId))?.name ?? 'Workout'
+    if (plan) sessionNames[s.sessionId] = templateNames[plan.templateId] ?? (await getTemplateName(plan.templateId)) ?? 'Workout'
   }
 
   // What Rae might remember about recent history, for raeSays' memory

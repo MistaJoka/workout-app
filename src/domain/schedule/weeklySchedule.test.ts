@@ -40,6 +40,11 @@ describe('pruneSchedule', () => {
     expect(pruneSchedule(schedule, new Set(['fs.full-body-a']))).toEqual({ ...EMPTY_SCHEDULE, 1: 'fs.full-body-a', 3: 'rest' })
   })
 
+  it('keeps a planned Her mix day even while the mix is gone (it returns with her hearts)', () => {
+    const schedule: WeeklySchedule = { ...EMPTY_SCHEDULE, 4: 'her-mix' }
+    expect(pruneSchedule(schedule, new Set(['fs.full-body-a']))).toBe(schedule)
+  })
+
   it('returns the same object when nothing is stale', () => {
     const schedule: WeeklySchedule = { ...EMPTY_SCHEDULE, 1: 'fs.full-body-a' }
     expect(pruneSchedule(schedule, new Set(['fs.full-body-a']))).toBe(schedule)

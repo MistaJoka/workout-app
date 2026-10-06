@@ -5,7 +5,7 @@ import { giverRole } from '../../domain/rewards/pin'
 import { Link } from 'react-router-dom'
 import { RecapLink } from '../components/RecapEntry'
 import { getAllSessionHistory } from '../../infrastructure/db/repositories/sessionRepository'
-import { getTemplate } from '../../domain/content/catalog'
+import { getTemplate, getTemplateName } from '../../domain/content/catalog'
 import { projectSetRecords } from '../../domain/progress/history'
 import { calculateWeekStreak, detectPersonalRecords, weekProgress, weeklyTotals } from '../../domain/progress/stats'
 import { getWeeklySchedule } from '../../infrastructure/db/repositories/scheduleRepository'
@@ -91,7 +91,10 @@ export function ProgressScreen() {
 
   async function load(): Promise<Snapshot> {
     const [{ plans, results, events }, schedule] = await Promise.all([getAllSessionHistory(), getWeeklySchedule()])
-    const rows = await buildHistoryRows(plans, results, getTemplate)
+    const rows = await buildHistoryRows(plans, results, async (id) => {
+      const name = await getTemplateName(id)
+      return name ? { name } : undefined
+    })
     const setRecords = projectSetRecords(plans, results, events)
     const now = new Date()
     const resolution = resolveToday(schedule, now, ROTATION[0])

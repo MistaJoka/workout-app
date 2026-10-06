@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react'
 import { useParams } from 'react-router-dom'
-import { getTemplate } from '../../domain/content/catalog'
+import { getTemplateName } from '../../domain/content/catalog'
 import { summarizeSession, type SessionDetail, type SessionDetailSet } from '../../domain/progress/sessionDetail'
 import { getEventsForSession, getPlan, getResult } from '../../infrastructure/db/repositories/sessionRepository'
 import { formatWeight, type WeightUnit } from '../units'
@@ -110,8 +110,8 @@ export function SessionDetailScreen() {
 async function load(sessionId: string): Promise<Loaded | null> {
   const [plan, result, events] = await Promise.all([getPlan(sessionId), getResult(sessionId), getEventsForSession(sessionId)])
   if (!plan || !result) return null
-  const template = await getTemplate(plan.templateId).catch(() => undefined)
-  return { name: template?.name ?? 'Workout', endedAt: result.endedAt, detail: summarizeSession(plan, result, events) }
+  const name = await getTemplateName(plan.templateId).catch(() => undefined)
+  return { name: name ?? 'Workout', endedAt: result.endedAt, detail: summarizeSession(plan, result, events) }
 }
 
 function describeSet(set: SessionDetailSet, unit: WeightUnit): string {

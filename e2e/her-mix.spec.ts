@@ -1,5 +1,5 @@
 import { expect, test, type Page } from '@playwright/test'
-import { dismissWelcome } from './helpers'
+import { dismissWelcome, finishWorkout, openProgressMore } from './helpers'
 
 async function heart(page: Page, id: string) {
   await page.goto('about:blank')
@@ -34,4 +34,26 @@ test('Her mix gone (fewer than three hearts): its Start link says not available'
   await page.goto('/#/checkin/her-mix')
   await dismissWelcome(page)
   await expect(page.getByText("That workout isn't available.")).toBeVisible()
+})
+
+test('a finished Her mix keeps its name in history after an un-heart', async ({ page }) => {
+  test.setTimeout(120_000)
+  await heart(page, 'fs.bodyweight-squat')
+  await heart(page, 'fs.plank')
+  await heart(page, 'fs.dead-bug')
+  await page.goto('about:blank')
+  await page.goto('/#/checkin/her-mix')
+  await page.getByRole('radio', { name: /^Short/ }).click()
+  await page.getByRole('button', { name: 'Start workout' }).click()
+  await finishWorkout(page)
+
+  await page.goto('about:blank')
+  await page.goto('/#/exercise/fs.plank')
+  await page.getByRole('button', { name: /^Un-heart / }).click()
+  await expect(page.getByRole('button', { name: /^Heart / })).toBeVisible()
+
+  await page.goto('about:blank')
+  await page.goto('/#/progress')
+  await openProgressMore(page)
+  await expect(page.getByText('Her mix', { exact: true }).first()).toBeVisible()
 })

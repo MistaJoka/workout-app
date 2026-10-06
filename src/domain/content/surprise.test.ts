@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest'
-import { pickSurprise, surprisePool } from './surprise'
+import { lastMainTemplateId, pickSurprise, surprisePool } from './surprise'
 import type { WorkoutTemplate } from './types'
 
 const t = (id: string): WorkoutTemplate => ({ id, version: 1, name: id, packId: 'p', exercises: [] })
@@ -35,5 +35,18 @@ describe('pickSurprise', () => {
 
   it('returns null for an empty pool', () => {
     expect(pickSurprise([])).toBeNull()
+  })
+})
+
+describe('lastMainTemplateId', () => {
+  const plan = (id: string, templateId: string) => ({ id, templateId })
+  const result = (planId: string, endedAt: string) => ({ planId, endedAt })
+  it('skips a cool-down (a draft) done after the main workout', () => {
+    const plans = [plan('p1', 'fs.full-body-a'), plan('p2', 'draft.cool-down')]
+    const results = [result('p1', '2026-10-05T10:00:00.000Z'), result('p2', '2026-10-05T10:20:00.000Z')]
+    expect(lastMainTemplateId(plans, results, new Set(['draft.cool-down']))).toBe('fs.full-body-a')
+  })
+  it('is null with no history', () => {
+    expect(lastMainTemplateId([], [], new Set())).toBeNull()
   })
 })
