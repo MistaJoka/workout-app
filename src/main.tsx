@@ -7,6 +7,7 @@ import { registerServiceWorker } from './presentation/pwa/registerServiceWorker'
 import { requestPersistentStorage } from './presentation/pwa/storagePersistence'
 import { listenForAppLinks } from './presentation/pwa/appLinks'
 import { listenForReminders } from './infrastructure/reminders'
+import { listenForInstallPrompt } from './presentation/pwa/installPrompt'
 import { ErrorBoundary } from './presentation/components/ErrorBoundary'
 import { OfflineBanner } from './presentation/components/OfflineBanner'
 import { UpdateToast } from './presentation/components/UpdateToast'
@@ -27,6 +28,7 @@ createRoot(rootElement).render(
 )
 
 registerServiceWorker()
+listenForInstallPrompt()
 void requestPersistentStorage()
 void listenForAppLinks()
 void listenForReminders()

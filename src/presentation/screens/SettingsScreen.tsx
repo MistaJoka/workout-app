@@ -1,3 +1,4 @@
+import { InstallCard } from '../components/InstallCard'
 import { Link } from 'react-router-dom'
 import { loadWeekGoals } from '../../infrastructure/db/repositories/weekGoalsRepository'
 import { useGiverName } from '../components/useGiverName'
@@ -140,6 +141,8 @@ export function SettingsScreen() {
   return (
     <div className="p-4 space-y-6">
       <h1 className="text-xl font-bold">Settings</h1>
+
+      <InstallCard />
 
       <SettingsGroup title="You">
         {/* ProfileSwitcher reads the profile list once at mount; remount it

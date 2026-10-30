@@ -1,23 +1,66 @@
 {
+  "id": "./",
   "name": "Foundation Strength",
   "short_name": "Foundation",
+  "description": "Guided home workouts with Rae: one tap to start, every move shown step by step. Works offline.",
+  "lang": "en",
   "start_url": ".",
   "scope": ".",
   "display": "standalone",
+  "orientation": "portrait",
   "background_color": "#f8faff",
   "theme_color": "#f8faff",
+  "categories": [
+    "health",
+    "fitness"
+  ],
   "icons": [
     {
       "src": "icons/icon-192.png",
       "sizes": "192x192",
       "type": "image/png",
-      "purpose": "any maskable"
+      "purpose": "any"
     },
     {
       "src": "icons/icon-512.png",
       "sizes": "512x512",
       "type": "image/png",
-      "purpose": "any maskable"
+      "purpose": "any"
+    },
+    {
+      "src": "icons/icon-192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "maskable"
+    },
+    {
+      "src": "icons/icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "maskable"
+    }
+  ],
+  "screenshots": [
+    {
+      "src": "screenshots/today.webp",
+      "sizes": "1080x2400",
+      "type": "image/webp",
+      "form_factor": "narrow",
+      "label": "Today: your workout, one tap away"
+    },
+    {
+      "src": "screenshots/start.webp",
+      "sizes": "1080x2400",
+      "type": "image/webp",
+      "form_factor": "narrow",
+      "label": "Start: short, usual or long"
+    },
+    {
+      "src": "screenshots/player.webp",
+      "sizes": "1080x2400",
+      "type": "image/webp",
+      "form_factor": "narrow",
+      "label": "Rae shows every move"
     }
   ],
   "shortcuts": [
