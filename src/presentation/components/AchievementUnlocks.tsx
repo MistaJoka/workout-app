@@ -7,7 +7,7 @@ import {
   type AchievementIcon,
   type EvaluatedAchievement,
 } from '../../domain/progress/achievements'
-import { getAllSessionHistory } from '../../infrastructure/db/repositories/sessionRepository'
+import { loadSessionHistory } from '../../application/historyIndex'
 import { getWeeklySchedule } from '../../infrastructure/db/repositories/scheduleRepository'
 import { playCelebration } from '../../application/celebrationSounds'
 import { ShareCardButton } from './ShareCardButton'
@@ -16,7 +16,7 @@ import { useFeedbackSettings } from './useFeedbackSettings'
 // Every achievement, evaluated from this profile's history. Read-only and
 // derived each time, so nothing can drift or be lost.
 export async function loadAchievements(): Promise<EvaluatedAchievement[]> {
-  const [history, schedule] = await Promise.all([getAllSessionHistory(), getWeeklySchedule()])
+  const [history, schedule] = await Promise.all([loadSessionHistory(), getWeeklySchedule()])
   return evaluateAchievements(history, await loadWeekGoals({ ...history, schedule }))
 }
 

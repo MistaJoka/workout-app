@@ -3,7 +3,7 @@ import { getTemplateName } from '../../domain/content/catalog'
 import { speciesFor } from '../../domain/progress/garden'
 import { projectSetRecords } from '../../domain/progress/history'
 import { sessionHighlights } from '../../domain/progress/sessionHighlights'
-import { getAllSessionHistory } from '../../infrastructure/db/repositories/sessionRepository'
+import { loadSessionHistory } from '../../application/historyIndex'
 import { activeProfile } from '../../infrastructure/profiles'
 import { hasRealName } from '../greeting'
 import { completeStats } from '../screens/completeStats'
@@ -48,7 +48,7 @@ export function ShareWorkoutButton({ sessionId }: { sessionId: string }) {
 }
 
 export async function renderWorkoutCard(sessionId: string): Promise<{ blob: Blob; filename: string; model: CardModel }> {
-  const { plans, results, events } = await getAllSessionHistory()
+  const { plans, results, events } = await loadSessionHistory()
   const result = results.find((r) => r.sessionId === sessionId)
   const plan = plans.find((p) => p.id === result?.planId)
   if (!result || !plan) throw new Error('Workout not found')

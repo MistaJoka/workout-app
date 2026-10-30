@@ -5,11 +5,11 @@ import { loadWeekGoals } from '../../infrastructure/db/repositories/weekGoalsRep
 // loadAchievements() does for badges.
 
 import { bossDefeats, bossState, pastBossWeeks, type BossDefeat, type BossHistory, type BossState, type BossWeekSummary } from '../../domain/game/bosses'
-import { getAllSessionHistory } from '../../infrastructure/db/repositories/sessionRepository'
+import { loadSessionHistory } from '../../application/historyIndex'
 import { getWeeklySchedule } from '../../infrastructure/db/repositories/scheduleRepository'
 
 async function loadHistoryAndGoal(): Promise<{ history: BossHistory; goal: (dateInWeek: Date) => number }> {
-  const [history, schedule] = await Promise.all([getAllSessionHistory(), getWeeklySchedule()])
+  const [history, schedule] = await Promise.all([loadSessionHistory(), getWeeklySchedule()])
   return { history, goal: await loadWeekGoals({ ...history, schedule }) }
 }
 

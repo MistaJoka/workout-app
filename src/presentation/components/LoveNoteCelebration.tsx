@@ -10,7 +10,7 @@ import {
 } from '../../infrastructure/db/repositories/loveNotesRepository'
 import { getSetting } from '../../infrastructure/db/repositories/settingsRepository'
 import { DEFAULT_GIVER_NAME } from '../../domain/rewards/pin'
-import { getAllSessionHistory } from '../../infrastructure/db/repositories/sessionRepository'
+import { loadSessionHistory } from '../../application/historyIndex'
 import { getWeeklySchedule } from '../../infrastructure/db/repositories/scheduleRepository'
 import { goalBloomForSession, goalBlooms } from '../../domain/progress/goalBloom'
 import { LoveNoteEnvelope } from './LoveNoteEnvelope'
@@ -30,7 +30,7 @@ async function loadGiverName(): Promise<string> {
 export async function loadLoveNoteUnlockForSession(
   sessionId: string
 ): Promise<{ note: LoveNoteRecord; giverName: string } | null> {
-  const [{ results }, schedule, giverName] = await Promise.all([getAllSessionHistory(), getWeeklySchedule(), loadGiverName()])
+  const [{ results }, schedule, giverName] = await Promise.all([loadSessionHistory(), getWeeklySchedule(), loadGiverName()])
   const goalMetThisSession = goalBloomForSession(results, await loadWeekGoals({ results, schedule }), sessionId) !== null
   const thisSessionEndedAt = results.find((r) => r.sessionId === sessionId)?.endedAt ?? new Date().toISOString()
   const note = await evaluateLoveNoteUnlockForSession(sessionId, {
@@ -47,7 +47,7 @@ async function catchUpThenLoadUnread(): Promise<LoveNoteRecord | null> {
   try {
     // Nothing locked (the usual case): skip reading history at all.
     if (!(await listLoveNotes()).some((n) => n.unlockedAt === null)) return loadUnreadLoveNote()
-    const [{ results }, schedule] = await Promise.all([getAllSessionHistory(), getWeeklySchedule()])
+    const [{ results }, schedule] = await Promise.all([loadSessionHistory(), getWeeklySchedule()])
     const goalSessions = new Set(goalBlooms(results, await loadWeekGoals({ results, schedule })).map((b) => b.sessionId))
     await catchUpLoveNoteUnlocks(results.map((r) => ({ sessionId: r.sessionId, endedAt: r.endedAt, goalMet: goalSessions.has(r.sessionId) })))
   } catch {

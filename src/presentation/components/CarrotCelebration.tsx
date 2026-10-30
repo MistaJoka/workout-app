@@ -6,7 +6,7 @@ import { Link } from 'react-router-dom'
 import { earnedCarrots, carrotsForSession, type SessionCarrots } from '../../domain/rewards/carrots'
 import { BOSS_ROSTER, bossDefeats } from '../../domain/game/bosses'
 import { bossCarrotSources, withBossCarrots } from '../../domain/rewards/bossCarrots'
-import { getAllSessionHistory } from '../../infrastructure/db/repositories/sessionRepository'
+import { loadSessionHistory } from '../../application/historyIndex'
 import { getWeeklySchedule } from '../../infrastructure/db/repositories/scheduleRepository'
 import { totalSpent } from '../../infrastructure/db/repositories/redemptionsRepository'
 import { useCountUp } from './CountUp'
@@ -22,7 +22,7 @@ import { effectiveMotion, usePrefersReducedMotion } from './MovementMedia'
 // ever grows, which is what lets redeemReward check it against spending
 // inside its own transaction.
 export async function loadEarnedCarrots(): Promise<number> {
-  const [{ plans, results, events }, schedule] = await Promise.all([getAllSessionHistory(), getWeeklySchedule()])
+  const [{ plans, results, events }, schedule] = await Promise.all([loadSessionHistory(), getWeeklySchedule()])
   const goal = await loadWeekGoals({ plans, results, schedule })
   return earnedCarrots({ plans, results, events }, goal, bossSources({ plans, results, events }, goal)).total
 }
@@ -33,7 +33,7 @@ export async function loadCarrotBalance(): Promise<number> {
 }
 
 export async function loadSessionCarrots(sessionId: string): Promise<SessionCarrots | null> {
-  const [{ plans, results, events }, schedule] = await Promise.all([getAllSessionHistory(), getWeeklySchedule()])
+  const [{ plans, results, events }, schedule] = await Promise.all([loadSessionHistory(), getWeeklySchedule()])
   const goal = await loadWeekGoals({ plans, results, schedule })
   return withBossCarrots(carrotsForSession({ plans, results, events }, goal, sessionId), bossSources({ plans, results, events }, goal))
 }

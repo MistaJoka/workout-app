@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react'
 import { loadWeekGoals } from '../../infrastructure/db/repositories/weekGoalsRepository'
-import { getAllSessionHistory } from '../../infrastructure/db/repositories/sessionRepository'
+import { loadSessionHistory } from '../../application/historyIndex'
 import { getWeeklySchedule } from '../../infrastructure/db/repositories/scheduleRepository'
 import { computeXp } from '../../domain/progress/xp'
 import { nextGoal } from '../../domain/progress/nextGoal'
@@ -16,7 +16,7 @@ export function NextUpTeaser() {
 
   useEffect(() => {
     let cancelled = false
-    Promise.all([getAllSessionHistory(), getWeeklySchedule()])
+    Promise.all([loadSessionHistory(), getWeeklySchedule()])
       .then(async ([history, schedule]) => {
         const goals = await loadWeekGoals({ ...history, schedule })
         if (cancelled) return

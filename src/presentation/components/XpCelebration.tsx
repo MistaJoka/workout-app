@@ -1,6 +1,6 @@
 import { useEffect, useRef, useState, type ReactNode } from 'react'
 import { loadWeekGoals } from '../../infrastructure/db/repositories/weekGoalsRepository'
-import { getAllSessionHistory } from '../../infrastructure/db/repositories/sessionRepository'
+import { loadSessionHistory } from '../../application/historyIndex'
 import { getWeeklySchedule } from '../../infrastructure/db/repositories/scheduleRepository'
 import { computeXp, levelFor, sessionXpGain, type LevelInfo, type SessionXpGain } from '../../domain/progress/xp'
 import { useTheme } from '../theme/ThemeContext'
@@ -16,12 +16,12 @@ import { useFeedbackSettings } from './useFeedbackSettings'
 // blocks a tap (the level-up overlay ignores the pointer and fades itself).
 
 export async function loadSessionXp(sessionId: string): Promise<SessionXpGain> {
-  const [history, schedule] = await Promise.all([getAllSessionHistory(), getWeeklySchedule()])
+  const [history, schedule] = await Promise.all([loadSessionHistory(), getWeeklySchedule()])
   return sessionXpGain(history, await loadWeekGoals({ ...history, schedule }), sessionId)
 }
 
 export async function loadLevel(): Promise<LevelInfo> {
-  const [history, schedule] = await Promise.all([getAllSessionHistory(), getWeeklySchedule()])
+  const [history, schedule] = await Promise.all([loadSessionHistory(), getWeeklySchedule()])
   return levelFor(computeXp(history, await loadWeekGoals({ ...history, schedule })).total)
 }
 
