@@ -175,6 +175,23 @@ Use this mailbox when implementation reaches a product/data/spec/asset/test gap 
 **Constraints already known:** chapters must keep the no-guilt tone (nothing lost by resting, no "you missed me"); Rae canon per `assets/pixel-bloom/db/rae-character-lock.v1.json` and `docs/RAE_CHARACTER_BIBLE_V1.md`; room art per `docs/PIXEL_BLOOM_ASSET_SYSTEM.md`.
 **Proposed fallback if unresolved:** none needed: the story and room simply stay complete at their current length; the badge ladders carry the long tail meanwhile.
 
+## REQ-20261029-009 — Owner decisions from the Flip 7 UX audit
+
+**Status:** OPEN (defaults below are live until the owner answers)
+**Blocking:** no
+**Implementation context:** `docs/superpowers/plans/2026-10-29-ux-flow-audit.md` (F3, F6, F8, S2, S7, E4); release goal "send her the link, she installs, she starts"
+**Need:** six owner decisions.
+1. **Home-screen name** (F3). Manifest says "Foundation Strength" / short "Foundation"; the iPhone title says "Workout". *Default:* unchanged ("Foundation" under the icon on Android).
+2. **The tailnet-only :8443 install** (F6). It is a separate data store from her Funnel host (:10000). *Default:* left running for the owner; every share link now points at :10000 (`appContext.ts`).
+3. **Draft workouts** (F8, also REQ-20260929-006). Warm-up, Cool-down and Chair day show a Draft tag on Today, Library and Start's "Warm up first". *Default:* unchanged until reviewed.
+4. **One destination for routine tiles** (S2). Today's tiles open Start; Library's open Routine Detail. *Default:* unchanged; audit recommends Start everywhere.
+5. **The second "Start workout" label** (S7) on the Start screen right after Today's. *Default:* unchanged.
+6. **Daily "Who's working out?"** (E4) once a second profile exists on her phone. *Default:* unchanged (asks daily).
+**Why it matters:** each is a product call the audit could not make; all affect her first week.
+**Requested output:** decision
+**Constraints already known:** minimal text, one-finger navigation, no fifth tab.
+**Proposed fallback if unresolved:** keep the defaults above.
+
 ## Template
 
 ```md
