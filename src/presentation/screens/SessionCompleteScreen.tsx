@@ -16,6 +16,7 @@ import { formatWeight } from '../units'
 import { useWeightUnit } from '../components/useWeightUnit'
 import { ThumbBar } from '../components/ThumbBar'
 import { RaeFace } from '../components/Rae'
+import { NotFound } from '../components/NotFound'
 import { BackupNudge } from '../components/BackupNudge'
 import { PixelBloom } from '../components/PixelBloom'
 import { CompleteHighlights } from '../components/CompleteHighlights'
@@ -67,6 +68,9 @@ export function SessionCompleteScreen() {
   // Carrots this workout earned (Hubby Bunny's reward shop), null while
   // loading or if it couldn't be read -- the screen never waits on it.
   const [carrots, setCarrots] = useState<SessionCarrots | null>(null)
+  // True once the plan is known not to exist (a stale or made-up link):
+  // there was no workout, so there's nothing to celebrate.
+  const [missing, setMissing] = useState(false)
 
   useEffect(() => {
     if (!sessionId) return
@@ -98,7 +102,10 @@ export function SessionCompleteScreen() {
     // After a main workout, offer the optional cool-down (never after the
     // warm-up or cool-down themselves).
     getPlan(sessionId)
-      .then((plan) => setCoolDown(plan ? bookendsFor(plan.templateId, (id) => templateById.get(id)).coolDown : undefined))
+      .then((plan) => {
+        setMissing(!plan)
+        setCoolDown(plan ? bookendsFor(plan.templateId, (id) => templateById.get(id)).coolDown : undefined)
+      })
       .catch(() => setCoolDown(undefined))
   }, [sessionId])
 
@@ -146,6 +153,8 @@ export function SessionCompleteScreen() {
   const handleDismiss = (exerciseId: string) => resolveCandidate(exerciseId, dismissProgressionCandidate)
 
   const shortened = result?.status === 'COMPLETED_SHORTENED'
+
+  if (missing) return <NotFound message="That workout isn't in your history." />
 
   return (
     <div className="field-success min-h-screen rounded-none p-6 pt-16 pb-28 text-center space-y-4">
@@ -273,7 +282,9 @@ export function SessionCompleteScreen() {
               <ShareWorkoutButton sessionId={sessionId} />
             </div>
           )}
-          <Link to="/progress" className="btn-ghost min-h-11 flex-1">
+          {/* replace: Back from Progress never lands on this finished
+              screen again (Complete leaves history). */}
+          <Link to="/progress" replace className="btn-ghost min-h-11 flex-1">
             See your progress
           </Link>
         </div>
@@ -305,7 +316,7 @@ export function SessionCompleteScreen() {
           last "Yes"/"Complete Set" was, so a double tap on the final set
           would skip straight past this screen and any Try Next Level offer. */}
       <ThumbBar armKey="complete">
-        <Link to="/" className="btn-primary btn-lg w-full">
+        <Link to="/" replace className="btn-primary btn-lg w-full">
           Back to Today
         </Link>
       </ThumbBar>

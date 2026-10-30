@@ -11,6 +11,7 @@ import { MovementMedia } from '../components/MovementMedia'
 import { raeCardFor } from '../components/raeLoops'
 import { ExerciseYou } from '../components/ExerciseYou'
 import { BackButton } from '../components/BackButton'
+import { NotFound } from '../components/NotFound'
 import { HeartButton } from '../components/HeartButton'
 import { Skeleton, SkeletonBlock, SkeletonHeading, SkeletonList } from '../components/Skeleton'
 import { defaultPrescription } from './routineBuilderRows'
@@ -38,14 +39,7 @@ export function ExerciseDetailScreen() {
       </Skeleton>
     )
   if (exercise === null) {
-    return (
-      <div className="p-4 space-y-2">
-        <p>That exercise isn't in the library.</p>
-        <button className="underline" onClick={() => navigate('/library')}>
-          Back to Library
-        </button>
-      </div>
-    )
+    return <NotFound message="That exercise isn't in the library." />
   }
 
   const current = exercise

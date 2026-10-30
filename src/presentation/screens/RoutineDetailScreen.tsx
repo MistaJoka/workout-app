@@ -9,6 +9,7 @@ import type { WeeklySchedule } from '../../domain/schedule/weeklySchedule'
 import { formatWeight } from '../units'
 import { useWeightUnit } from '../components/useWeightUnit'
 import { BackButton } from '../components/BackButton'
+import { NotFound } from '../components/NotFound'
 import { ConfirmSheet } from '../components/ConfirmSheet'
 import { DraftTag } from '../components/DraftTag'
 import { ExerciseThumb } from '../components/ExerciseThumb'
@@ -88,15 +89,7 @@ export function RoutineDetailScreen() {
       </Skeleton>
     )
   if (template === null) {
-    return (
-      <div className="p-4 space-y-4">
-        <BackButton />
-        <p className="font-bold">That routine isn't available.</p>
-        <button type="button" className="btn-secondary w-full" onClick={() => navigate('/library')}>
-          Back to Library
-        </button>
-      </div>
-    )
+    return <NotFound message="That routine isn't available." />
   }
 
   const custom = isCustomTemplateId(template.id)

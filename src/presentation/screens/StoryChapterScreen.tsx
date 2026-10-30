@@ -3,6 +3,7 @@ import { Link, useParams } from 'react-router-dom'
 import { RAE_STORY } from '../../domain/content/raeStory'
 import { db } from '../../infrastructure/db/schema'
 import { BackButton } from '../components/BackButton'
+import { NotFound } from '../components/NotFound'
 import { RaeFace, type RaeExpression } from '../components/Rae'
 import { Skeleton, SkeletonBlock, SkeletonHeading } from '../components/Skeleton'
 import { markChapterSeen } from '../storySeen'
@@ -41,15 +42,7 @@ export function StoryChapterScreen() {
   }, [unlocked, chapter])
 
   if (!chapter) {
-    return (
-      <div className="p-4 space-y-4">
-        <BackButton label="Story" />
-        <p className="font-bold">That chapter doesn't exist yet.</p>
-        <Link to="/story" className="btn-primary block w-full text-center">
-          Back to the story
-        </Link>
-      </div>
-    )
+    return <NotFound message="That chapter doesn't exist yet." backLabel="Story" />
   }
 
   if (failed) {

@@ -6,6 +6,7 @@ import { getEventsForSession, getPlan, getResult } from '../../infrastructure/db
 import { formatWeight, type WeightUnit } from '../units'
 import { useWeightUnit } from '../components/useWeightUnit'
 import { BackButton } from '../components/BackButton'
+import { NotFound } from '../components/NotFound'
 import { Skeleton, SkeletonHeading, SkeletonList } from '../components/Skeleton'
 
 type Loaded = { name: string; endedAt: string; detail: SessionDetail }
@@ -55,12 +56,7 @@ export function SessionDetailScreen() {
     )
   }
   if (loaded === null) {
-    return (
-      <div className="p-4 space-y-4">
-        <BackButton />
-        <p>That workout isn't in your history.</p>
-      </div>
-    )
+    return <NotFound message="That workout isn't in your history." />
   }
 
   const { name, endedAt, detail } = loaded
