@@ -23,6 +23,7 @@ import { bookendsFor, estimateMinutes } from '../../domain/content/workoutEstima
 import { templateById } from '../../domain/content/fixtures/foundationStrengthStarter'
 import { useWeightUnit } from '../components/useWeightUnit'
 import { formatWeight } from '../units'
+import { SwapPicker } from '../components/SwapPicker'
 
 type Loaded = {
   template: WorkoutTemplate
@@ -36,16 +37,22 @@ type Loaded = {
 // rules retain every exercise), so energy/comfort/minutes changed nothing
 // and cost three taps (owner, 2026-09-28: "one-tap Start"). The plan says
 // which rules made it via ruleVersion's default.
-function buildPlan(loaded: Loaded, length: WorkoutLength): SessionPlan {
+// Swapped-in moves (by slot order) and their own confirmed progression, so
+// a move she has levelled up elsewhere keeps its reps here too.
+type Swaps = { bySlot: Map<number, Exercise>; reps: Map<string, number>; weight: Map<string, number> }
+const NO_SWAPS: Swaps = { bySlot: new Map(), reps: new Map(), weight: new Map() }
+
+function buildPlan(loaded: Loaded, length: WorkoutLength, swaps: Swaps = NO_SWAPS): SessionPlan {
   return createSessionPlanFromTemplate({
     id: newId(),
     createdAt: new Date().toISOString(),
     template: loaded.template,
-    exercises: loaded.exercises,
-    repsOverridesByExerciseId: loaded.repsOverridesByExerciseId,
-    weightOverridesByExerciseId: loaded.weightOverridesByExerciseId,
+    exercises: [...loaded.exercises, ...swaps.bySlot.values()],
+    repsOverridesByExerciseId: new Map([...loaded.repsOverridesByExerciseId, ...swaps.reps]),
+    weightOverridesByExerciseId: new Map([...loaded.weightOverridesByExerciseId, ...swaps.weight]),
     weeklyGoal: loaded.weeklyGoal,
     length,
+    ...(swaps.bySlot.size > 0 ? { swaps: swaps.bySlot } : {}),
   })
 }
 
@@ -87,6 +94,9 @@ export function CheckInScreen() {
   const [error, setError] = useState<string | null>(null)
   // Short / Usual / Long (lengthDial.ts): starts on Usual on every visit.
   const [length, setLength] = useState<WorkoutLength>('usual')
+  // Swaps last for this visit only, like the length dial.
+  const [swaps, setSwaps] = useState<Swaps>(NO_SWAPS)
+  const [swapSlot, setSwapSlot] = useState<number | null>(null)
 
   useEffect(() => {
     if (!templateId) return
@@ -106,7 +116,12 @@ export function CheckInScreen() {
 
   // The list shows exactly what Start will run: same inputs, and the plan
   // built at Start differs only in its fresh id and timestamp.
-  const preview = useMemo(() => (loaded ? buildPlan(loaded, length) : null), [loaded, length])
+  const preview = useMemo(() => (loaded ? buildPlan(loaded, length, swaps) : null), [loaded, length, swaps])
+  const inWorkout = useMemo(() => {
+    if (!loaded || !preview) return []
+    const known = new Map([...loaded.exercises, ...swaps.bySlot.values()].map((e) => [e.id, e]))
+    return preview.exercises.flatMap((e) => known.get(e.exerciseId) ?? [])
+  }, [loaded, preview, swaps])
 
   if (loadFailed) {
     return (
@@ -140,6 +155,48 @@ export function CheckInScreen() {
   }
 
   const totalSets = preview.exercises.reduce((sum, e) => sum + e.sets, 0)
+  const slot = swapSlot != null ? loaded.template.exercises.find((e) => e.order === swapSlot) : undefined
+  if (slot) {
+    const original = loaded.exercises.find((e) => e.id === slot.exerciseId)
+    const current = preview.exercises.find((e) => e.order === slot.order)
+    const close = () => setSwapSlot(null)
+    const setSlot = (next: Exercise | null, reps?: number | null, weight?: number | null) =>
+      setSwaps((prev) => {
+        const bySlot = new Map(prev.bySlot)
+        const repsMap = new Map(prev.reps)
+        const weightMap = new Map(prev.weight)
+        if (next) {
+          bySlot.set(slot.order, next)
+          if (reps != null) repsMap.set(next.id, reps)
+          if (weight != null) weightMap.set(next.id, weight)
+        } else bySlot.delete(slot.order)
+        return { bySlot, reps: repsMap, weight: weightMap }
+      })
+    return (
+      <SwapPicker
+        slotName={current?.name ?? original?.name ?? 'move'}
+        original={original}
+        originalName={original?.name ?? 'the original'}
+        isSwapped={swaps.bySlot.has(slot.order)}
+        inWorkout={inWorkout}
+        onPick={(exercise) => {
+          // Its own progression, if any; a failed read just means defaults.
+          void getProgression(exercise.id)
+            .catch(() => null)
+            .then((record) => {
+              setSlot(exercise, record?.currentPrescribedReps, record?.currentWeightKg)
+              close()
+            })
+        }}
+        onRestore={() => {
+          setSlot(null)
+          close()
+        }}
+        onClose={close}
+      />
+    )
+  }
+
   const minutesFor: Record<WorkoutLength, number> = {
     short: estimateMinutes(scaleTemplate(loaded.template, 'short')),
     usual: estimateMinutes(loaded.template),
@@ -147,7 +204,9 @@ export function CheckInScreen() {
   }
   const minutes = minutesFor[length]
   const first = preview.exercises[0]
-  const firstContent = first ? loaded.exercises.find((e) => e.id === first.exerciseId) : undefined
+  const firstContent = first
+    ? [...loaded.exercises, ...swaps.bySlot.values()].find((e) => e.id === first.exerciseId)
+    : undefined
   const { warmUp } = bookendsFor(loaded.template.id, (id) => templateById.get(id))
 
   async function handleStart() {
@@ -160,7 +219,7 @@ export function CheckInScreen() {
     setError(null)
     // A fresh id/timestamp at the moment of starting: this is the
     // immutable SessionPlan snapshot.
-    const plan = buildPlan(loaded, length)
+    const plan = buildPlan(loaded, length, swaps)
     try {
       await startSession(plan)
       // The hype overlay (WorkoutPlayerScreen) only runs right after a tap
@@ -220,26 +279,35 @@ export function CheckInScreen() {
       )}
 
       <ul className="space-y-2" aria-label="Your workout">
-        {preview.exercises.map((exercise) => (
-          <li key={exercise.exerciseId}>
-            <Link to={`/exercise/${exercise.exerciseId}`} className="card flex min-h-11 items-center gap-3 p-2">
-              <ExerciseThumb
-                exercise={loaded.exercises.find((e) => e.id === exercise.exerciseId)}
-                className="h-12 w-16 rounded-panel"
-              />
-              <span className="min-w-0 flex-1">
-                <span className="block truncate font-semibold">{exercise.name}</span>
-                <span className="block text-sm text-ink-muted">
-                  {exercise.sets} × {exercise.reps ? `${exercise.reps} reps` : `${exercise.timeSeconds}s`}
-                  {exercise.weightKg != null ? ` @ ${formatWeight(exercise.weightKg, unit)}` : ''}
+        {preview.exercises.map((exercise) => {
+          const swapped = swaps.bySlot.get(exercise.order)
+          const content = swapped ?? loaded.exercises.find((e) => e.id === exercise.exerciseId)
+          return (
+            <li key={exercise.order} className="card flex min-h-11 items-center gap-1 p-2">
+              <Link to={`/exercise/${exercise.exerciseId}`} className="flex min-w-0 flex-1 items-center gap-3">
+                <ExerciseThumb exercise={content} className="h-12 w-16 rounded-panel" />
+                <span className="min-w-0 flex-1">
+                  <span className="block truncate font-semibold">{exercise.name}</span>
+                  <span className="block text-sm text-ink-muted">
+                    {exercise.sets} × {exercise.reps ? `${exercise.reps} reps` : `${exercise.timeSeconds}s`}
+                    {exercise.weightKg != null ? ` @ ${formatWeight(exercise.weightKg, unit)}` : ''}
+                  </span>
                 </span>
-              </span>
-              <span aria-hidden="true" className="flex-none pr-1 text-ink-muted">
-                ›
-              </span>
-            </Link>
-          </li>
-        ))}
+              </Link>
+              {/* Swap this move for today only (domain/session/swaps.ts). */}
+              <button
+                type="button"
+                className={`flex h-11 w-11 flex-none items-center justify-center rounded-full text-lg ${
+                  swapped ? 'bg-field-primary text-primary-ink' : 'text-ink-muted'
+                }`}
+                aria-label={swapped ? `${exercise.name}, swapped in. Change` : `Swap ${exercise.name}`}
+                onClick={() => setSwapSlot(exercise.order)}
+              >
+                <span aria-hidden="true">⇄</span>
+              </button>
+            </li>
+          )
+        })}
       </ul>
 
       {/* Safety at the point of risk, not just once on first run (see

@@ -9,6 +9,8 @@ export type ReasonCode =
   | 'SESSION_COMPRESSED'
   | 'LENGTH_SHORT'
   | 'LENGTH_LONG'
+  // She swapped this move in on the Start screen (domain/session/swaps.ts).
+  | 'SWAPPED_BY_USER'
 
 export type AdaptationDecision = {
   exerciseId: string

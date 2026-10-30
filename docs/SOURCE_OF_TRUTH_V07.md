@@ -44,6 +44,7 @@ The following are first-class v0.7 behaviors because they exist in the reconcile
 - offline/PWA behavior;
 - workout-day reminders in the installed PWA via Periodic Background Sync, best-effort timing, no push server (owner decision 2026-10-29);
 - home-screen shortcuts from the web manifest;
+- swapping a move on the Start screen for one workout, chosen by her from the library, never an app-claimed equivalent (owner decision 2026-10-29);
 - one theme (Pixel Bloom) and three motion preferences.
 
 These additions do not authorize unrelated scope expansion.

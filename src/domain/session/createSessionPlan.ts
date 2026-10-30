@@ -4,6 +4,7 @@ import type { AdaptationRule, CheckInInput } from '../adaptation/types'
 import { computeReproducibilityHash } from './reproducibilityHash'
 import type { SessionPlan, SessionPlanExercise } from './types'
 import { lengthDecisions, scaleTemplate, type WorkoutLength } from './lengthDial'
+import { applySwaps } from './swaps'
 
 export type CreateSessionPlanParams = {
   id: string
@@ -26,6 +27,9 @@ export type CreateSessionPlanParams = {
   weeklyGoal?: number
   // Short / Usual / Long from the Start screen; scales sets only.
   length?: WorkoutLength
+  // Moves she swapped in on the Start screen, by slot order (swaps.ts).
+  // Their Exercise records must be in `exercises` for their names.
+  swaps?: ReadonlyMap<number, Exercise>
 }
 
 // A routine can outlive an exercise (the library was cut to home-friendly
@@ -48,10 +52,22 @@ export function createSessionPlanFromTemplate(params: CreateSessionPlanParams): 
     weightOverridesByExerciseId,
     weeklyGoal,
     length = 'usual',
+    swaps,
   } = params
-  const scaled = scaleTemplate(template, length)
-  const adaptations = [...adaptTemplate(scaled, checkIn, rules), ...lengthDecisions(template, length)]
   const exerciseById = new Map(exerciseRecords.map((e) => [e.id, e]))
+  const swapped = swaps ? applySwaps(template, swaps) : template
+  const swapDecisions = template.exercises.flatMap((slot) => {
+    const next = swaps?.get(slot.order)
+    if (!next) return []
+    const was = exerciseById.get(slot.exerciseId)?.name ?? readableId(slot.exerciseId)
+    return [{ exerciseId: next.id, reasonCode: 'SWAPPED_BY_USER' as const, detail: `Swapped in for ${was}.` }]
+  })
+  const scaled = scaleTemplate(swapped, length)
+  const adaptations = [
+    ...adaptTemplate(scaled, checkIn, rules),
+    ...lengthDecisions(swapped, length),
+    ...swapDecisions,
+  ]
   const exercises: SessionPlanExercise[] = scaled.exercises.map((templateExercise) => {
     const authoredReps = templateExercise.prescription.reps
     const override = repsOverridesByExerciseId?.get(templateExercise.exerciseId)
