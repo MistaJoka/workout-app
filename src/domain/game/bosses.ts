@@ -2,6 +2,7 @@ import { effectiveSetSlots } from '../session/appliedEvents'
 import { goalForWeek, type WeekGoal } from '../progress/weekGoals'
 import { flowStatus } from '../session/flow'
 import type { SessionEvent, SessionPlan, SessionResult } from '../session/types'
+import { eventsBySession as groupEvents, plansById, type EventsBySession } from '../progress/historyIndex'
 
 // Weekly boss battles: a cute pixel boss "guards" each Monday-start week.
 // Every counted set this week chips its HP; a full week's worth of normal
@@ -155,33 +156,31 @@ export type BossState = {
 type WeekProgress = BossState & { defeatedSessionId: string | null }
 
 type HistoryIndex = {
-  planById: Map<string, BossHistory['plans'][number]>
-  eventsBySession: Map<string, SessionEvent[]>
+  planById: ReadonlyMap<string, BossHistory['plans'][number]>
+  eventsBySession: EventsBySession
   resultsByWeek: Map<string, BossHistory['results'][number][]>
 }
 
-// Built once per history object (cached weakly): bossDefeats walks every
-// week, and rebuilding these per week made it quadratic in history size.
-const indexCache = new WeakMap<BossHistory, HistoryIndex>()
+// Built once per results array (cached weakly), with events and plans
+// grouped once per their own arrays (progress/historyIndex.ts): bossDefeats
+// walks every week, and rebuilding these per week made it quadratic in
+// history size. Keyed by the arrays, not the history object, since callers
+// wrap the same arrays in a fresh object each time.
+const weekCache = new WeakMap<BossHistory['results'], Map<string, BossHistory['results'][number][]>>()
 
 function indexFor(history: BossHistory): HistoryIndex {
-  const cached = indexCache.get(history)
-  if (cached) return cached
-  const planById = new Map(history.plans.map((p) => [p.id, p]))
-  const eventsBySession = new Map<string, SessionEvent[]>()
-  for (const event of history.events) {
-    const list = eventsBySession.get(event.sessionId) ?? []
-    list.push(event)
-    eventsBySession.set(event.sessionId, list)
+  let resultsByWeek = weekCache.get(history.results)
+  if (!resultsByWeek) {
+    resultsByWeek = new Map()
+    for (const r of [...history.results].sort((a, b) => a.endedAt.localeCompare(b.endedAt))) {
+      const key = localDayKey(mondayStart(new Date(r.endedAt)))
+      const list = resultsByWeek.get(key)
+      if (list) list.push(r)
+      else resultsByWeek.set(key, [r])
+    }
+    weekCache.set(history.results, resultsByWeek)
   }
-  const resultsByWeek = new Map<string, BossHistory['results'][number][]>()
-  for (const r of [...history.results].sort((a, b) => a.endedAt.localeCompare(b.endedAt))) {
-    const key = localDayKey(mondayStart(new Date(r.endedAt)))
-    resultsByWeek.set(key, [...(resultsByWeek.get(key) ?? []), r])
-  }
-  const index = { planById, eventsBySession, resultsByWeek }
-  indexCache.set(history, index)
-  return index
+  return { planById: plansById(history.plans), eventsBySession: groupEvents(history.events), resultsByWeek }
 }
 
 // Shared by bossState (one week, "now") and bossDefeats (every week in

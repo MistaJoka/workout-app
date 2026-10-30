@@ -1,6 +1,24 @@
 import { describe, expect, it } from 'vitest'
 import { effectiveSetSlots, withoutIneffectiveSets } from './appliedEvents'
 import type { SessionEvent, SessionPlan } from './types'
+import { syntheticHistory } from '../progress/__fixtures__/syntheticHistory'
+import { eventsBySession } from '../progress/historyIndex'
+
+describe('effectiveSetSlots on a frozen (shared history) list', () => {
+  it('replays once per list and plan, with the same answer as an unfrozen copy', () => {
+    const history = syntheticHistory({ sessions: 20, now: new Date(2026, 9, 29, 18), seed: 9 })
+    const byId = new Map(history.plans.map((p) => [p.id, p]))
+    for (const [sessionId, list] of eventsBySession(history.events)) {
+      const plan = byId.get(sessionId)!
+      const slots = effectiveSetSlots(plan, list)
+      expect(Object.isFrozen(list)).toBe(true)
+      expect(effectiveSetSlots(plan, list)).toBe(slots)
+      expect(slots).toEqual(effectiveSetSlots(plan, [...list]))
+      // Another plan object never gets this plan's cached slots.
+      expect(effectiveSetSlots({ ...plan }, list)).not.toBe(slots)
+    }
+  })
+})
 
 const plan: SessionPlan = {
   id: 's',

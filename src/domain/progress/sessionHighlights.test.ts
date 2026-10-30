@@ -2,6 +2,8 @@ import { describe, expect, it } from 'vitest'
 import { sessionHighlights } from './sessionHighlights'
 import type { SetRecord } from './types'
 import type { SessionResult } from '../session/types'
+import { projectSetRecords } from './history'
+import { clonedHistory, syntheticHistory } from './__fixtures__/syntheticHistory'
 
 function rec(sessionId: string, endedAt: string, exerciseId: string, reps: number, met = true): SetRecord {
   return {
@@ -58,5 +60,35 @@ describe('sessionHighlights', () => {
     expect(sessionHighlights([], results, 's5').milestone).toBe(5)
     expect(sessionHighlights([], results, 's6').milestone).toBeNull()
     expect(sessionHighlights([], results, 's10').milestone).toBe(10)
+  })
+})
+
+describe('sessionHighlights on projected history (one shared pass)', () => {
+  const now = new Date(2026, 9, 29, 18)
+  for (const [name, history] of [
+    ['varied', syntheticHistory({ sessions: 120, now, seed: 11 })],
+    ['plateau', clonedHistory({ sessions: 60, now })],
+  ] as const) {
+    it(`gives every ${name} session the same new bests as a full scan`, () => {
+      const projected = projectSetRecords(history.plans, history.results, history.events)
+      // A copy isn't a projection, so it takes the scanning path.
+      const scanned = [...projected]
+      for (const r of history.results) {
+        expect(sessionHighlights(projected, history.results, r.sessionId)).toEqual(
+          sessionHighlights(scanned, history.results, r.sessionId)
+        )
+      }
+      const multi = history.results.some((r) => sessionHighlights(projected, history.results, r.sessionId).newBests.length > 1)
+      expect(multi).toBe(name === 'varied')
+    })
+  }
+
+  it('judges a session at its result time, not its records, when they disagree', () => {
+    const history = syntheticHistory({ sessions: 30, now, seed: 5 })
+    const projected = projectSetRecords(history.plans, history.results, history.events)
+    const moved = history.results.map((r) => ({ ...r, endedAt: '2026-01-01T00:00:00.000Z' }))
+    for (const r of moved) {
+      expect(sessionHighlights(projected, moved, r.sessionId)).toEqual(sessionHighlights([...projected], moved, r.sessionId))
+    }
   })
 })

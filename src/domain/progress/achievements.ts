@@ -126,7 +126,11 @@ export function evaluateAchievements(history: AchievementHistory, weeklyGoal: We
   const results = [...history.results].sort((a, b) => a.endedAt.localeCompare(b.endedAt))
   const records = projectSetRecords(history.plans, history.results, history.events)
   const recordsBySession = new Map<string, typeof records>()
-  for (const r of records) recordsBySession.set(r.sessionId, [...(recordsBySession.get(r.sessionId) ?? []), r])
+  for (const r of records) {
+    const list = recordsBySession.get(r.sessionId)
+    if (list) list.push(r)
+    else recordsBySession.set(r.sessionId, [r])
+  }
 
   const earned = new Map<string, { unlockedAt: string; sessionId: string }>()
   const earn = (id: string, result: SessionResult) => {

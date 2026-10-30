@@ -1,5 +1,6 @@
 import type { SessionEvent, SessionPlan, SessionResult } from './types'
 import { effectiveSets } from './appliedEvents'
+import { plansById, sessionEventsOf } from '../progress/historyIndex'
 
 // One-line summary of the most recent completed session that actually
 // performed this exercise, e.g. "Last time: 10, 10 ✓" (all sets met),
@@ -13,7 +14,7 @@ export function summarizeLastTime(
   exerciseId: string,
   formatWeight: (kg: number) => string = (kg) => `${kg} kg`
 ): string | null {
-  const planById = new Map(plans.map((p) => [p.id, p]))
+  const planById = plansById(plans)
   const ordered = [...results].sort((a, b) => b.endedAt.localeCompare(a.endedAt))
 
   for (const result of ordered) {
@@ -21,10 +22,7 @@ export function summarizeLastTime(
     const exercise = plan?.exercises.find((e) => e.exerciseId === exerciseId)
     if (!plan || !exercise) continue
 
-    const sets = effectiveSets(
-      plan,
-      events.filter((e) => e.sessionId === result.sessionId)
-    ).filter((e) => e.payload.exerciseId === exerciseId)
+    const sets = effectiveSets(plan, sessionEventsOf(events, result.sessionId)).filter((e) => e.payload.exerciseId === exerciseId)
     if (sets.length === 0) continue
 
     if (exercise.reps == null) {

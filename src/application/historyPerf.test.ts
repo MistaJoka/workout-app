@@ -21,6 +21,7 @@ import { compareWeeks } from '../domain/progress/weekCompare'
 import { flowStatus } from '../domain/session/flow'
 import { buildWeekGoals, mondayKey } from '../domain/progress/weekGoals'
 import { buildRaeMemory } from '../presentation/raeMemory'
+import { sessionEventsOf } from '../domain/progress/historyIndex'
 import type { SessionEvent } from '../domain/session/types'
 
 // History makes Today, Progress, Badges, Recap and Complete slow (UX audit
@@ -111,7 +112,7 @@ const CASES: Record<string, (h: Fresh) => unknown> = {
   compareWeeks: (h) => compareWeeks(h, goalsFor(h), now),
   flowStatus: (h) => {
     const byId = new Map(h.plans.map((p) => [p.id, p]))
-    return h.results.map((r) => flowStatus(byId.get(r.planId)!, h.events.filter((e) => e.sessionId === r.sessionId)))
+    return h.results.map((r) => flowStatus(byId.get(r.planId)!, sessionEventsOf(h.events, r.sessionId)))
   },
   weekGoals: (h) => {
     const goals = goalsFor(h)
@@ -158,9 +159,12 @@ const GOLDEN: Record<string, string> = {
   'plateau.raeMemory': 'e37f27a619cf541d',
 }
 
-// Generous: about ten times what the indexed code takes on a fast machine,
-// so a slow CI box passes and only a return of nested history loops fails.
-const BUDGET_MS: Record<string, number> = {}
+// Generous: the indexed code takes 2-35 ms per case on a desktop (fresh
+// arrays, nothing cached), so a slow or busy CI box passes. The two cases
+// that were quadratic get a tighter bound their old cost (135-180 ms on the
+// same desktop) fails; the rest catch anything gone badly superlinear.
+const DEFAULT_BUDGET_MS = 250
+const BUDGET_MS: Record<string, number> = { sessionHighlights: 100, recaps: 100 }
 
 describe('history at two years (300 workouts)', () => {
   it('is a realistic history', () => {
@@ -177,9 +181,8 @@ describe('history at two years (300 workouts)', () => {
       const started = performance.now()
       const out = run(h)
       const ms = performance.now() - started
-      console.log(`${name}: ${ms.toFixed(1)} ms ${digest(out)}`)
       expect(digest(out)).toBe(GOLDEN[name])
-      if (BUDGET_MS[name]) expect(ms).toBeLessThan(BUDGET_MS[name])
+      expect(ms).toBeLessThan(BUDGET_MS[caseName] ?? DEFAULT_BUDGET_MS)
     })
   }
 })

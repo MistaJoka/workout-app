@@ -1,6 +1,7 @@
 import type { SessionEvent, SessionPlan, SessionResult } from '../session/types'
 import type { SetRecord } from './types'
 import { effectiveSetSlots } from '../session/appliedEvents'
+import { eventsBySession, plansById } from './historyIndex'
 
 // Projects persisted history into SetRecords. Pure: no storage authority of
 // its own (docs/rnd/foss-fitness/sources/ischys.md, "Local target architecture").
@@ -31,7 +32,18 @@ export function projectSetRecords(
   if (cached && cached.plans === plans && cached.results === results) return cached.records
   const records = projectSetRecordsUncached(plans, results, events)
   projectionCache.set(events, { plans, results, records })
+  projections.add(records)
   return records
+}
+
+// Records this module projected: ordered by session end, every session's
+// records carrying its result's endedAt, and never mutated (callers treat
+// them as read-only). sessionHighlights relies on that to answer from one
+// shared pass instead of re-scanning history per session.
+const projections = new WeakSet<readonly SetRecord[]>()
+
+export function isProjectedRecords(records: readonly SetRecord[]): boolean {
+  return projections.has(records)
 }
 
 function projectSetRecordsUncached(
@@ -39,13 +51,8 @@ function projectSetRecordsUncached(
   results: readonly SessionResult[],
   events: readonly SessionEvent[]
 ): SetRecord[] {
-  const planById = new Map(plans.map((p) => [p.id, p]))
-  const eventsBySession = new Map<string, SessionEvent[]>()
-  for (const event of events) {
-    const list = eventsBySession.get(event.sessionId) ?? []
-    list.push(event)
-    eventsBySession.set(event.sessionId, list)
-  }
+  const planById = plansById(plans)
+  const bySession = eventsBySession(events)
 
   const ordered = [...results].sort((a, b) => a.endedAt.localeCompare(b.endedAt))
   const records: SetRecord[] = []
@@ -53,7 +60,7 @@ function projectSetRecordsUncached(
   for (const result of ordered) {
     const plan = planById.get(result.planId)
     if (!plan) continue
-    for (const { event, exerciseIndex, setNumber } of effectiveSetSlots(plan, eventsBySession.get(result.sessionId) ?? [])) {
+    for (const { event, exerciseIndex, setNumber } of effectiveSetSlots(plan, bySession.get(result.sessionId) ?? [])) {
       const exercise = plan.exercises[exerciseIndex]
       if (!exercise) continue
       records.push({

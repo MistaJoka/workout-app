@@ -55,7 +55,23 @@ export type SetSlot = { event: SessionEvent; exerciseIndex: number; setNumber: n
 // (EXERCISE_SKIPPED) doesn't shift later sets onto the wrong exercise.
 // History with no start event can't be replayed; its sets fill the plan's
 // slots in order.
-export function effectiveSetSlots(plan: SessionPlan, sessionEvents: readonly SessionEvent[]): SetSlot[] {
+//
+// A replay costs a pass through the machine, and history readers ask for
+// the same finished session's slots many times per screen (records, flow,
+// carrots, boss damage). A frozen events list can't change, so its slots
+// are remembered per plan; the result is then frozen too (read-only).
+const slotCache = new WeakMap<readonly SessionEvent[], { plan: SessionPlan; slots: readonly SetSlot[] }>()
+
+export function effectiveSetSlots(plan: SessionPlan, sessionEvents: readonly SessionEvent[]): readonly SetSlot[] {
+  if (!Object.isFrozen(sessionEvents)) return replaySlots(plan, sessionEvents)
+  const cached = slotCache.get(sessionEvents)
+  if (cached && cached.plan === plan) return cached.slots
+  const slots = Object.freeze(replaySlots(plan, sessionEvents))
+  slotCache.set(sessionEvents, { plan, slots })
+  return slots
+}
+
+function replaySlots(plan: SessionPlan, sessionEvents: readonly SessionEvent[]): SetSlot[] {
   const ordered = inOrder(sessionEvents)
   if (!ordered.some((e) => e.type === 'SESSION_STARTED')) {
     const slots = plan.exercises.flatMap((exercise, exerciseIndex) =>
