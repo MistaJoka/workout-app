@@ -10,6 +10,7 @@ async function openNewRoutine(page: Page): Promise<void> {
   await page.goto('/#/')
   await dismissWelcome(page)
   await page.getByRole('link', { name: 'Library' }).click()
+  await page.getByRole('tab', { name: 'Routines' }).click()
   await page.getByRole('link', { name: /New routine/ }).first().click()
   await expect(page.getByRole('heading', { name: 'New routine' })).toBeVisible()
 }
