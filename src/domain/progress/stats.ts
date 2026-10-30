@@ -1,5 +1,6 @@
 import type { SessionResult } from '../session/types'
 import { goalForWeek, type WeekGoal } from './weekGoals'
+import { activityDate } from './activities'
 import type { WeeklySchedule } from '../schedule/weeklySchedule'
 import type { ExerciseHistoryPoint, PersonalRecord, SetRecord, WeekTotal } from './types'
 
@@ -110,13 +111,33 @@ export function weeklyGoal(schedule: WeeklySchedule | null): number {
   return planned > 0 ? planned : DEFAULT_WEEKLY_GOAL
 }
 
-// Consecutive Monday-start weeks with at least `goal` finished workouts. The
-// current week counts once it has met the goal and never breaks the streak
-// while it's still in progress, so a planned rest day costs nothing.
-export function calculateWeekStreak(results: readonly SessionResult[], goal: WeekGoal, now: Date): number {
+// An activity done outside the app (domain/progress/activities.ts). Only
+// its day matters here; a deleted one (tombstone) never counts.
+export type WeekActivity = { day: string; deletedAt?: string | null }
+
+// When each finished workout and each live activity happened: what the
+// week goal and week streak count (owner, 2026-10-29: an activity counts
+// as a workout day there, and nowhere else).
+function weekEntryDates(results: readonly SessionResult[], activities: readonly WeekActivity[]): Date[] {
+  return [
+    ...results.map((r) => new Date(r.endedAt)),
+    ...activities.filter((a) => a.deletedAt == null).map((a) => activityDate(a.day)),
+  ]
+}
+
+// Consecutive Monday-start weeks with at least `goal` finished workouts
+// (other activities included). The current week counts once it has met the
+// goal and never breaks the streak while it's still in progress, so a
+// planned rest day costs nothing.
+export function calculateWeekStreak(
+  results: readonly SessionResult[],
+  goal: WeekGoal,
+  now: Date,
+  activities: readonly WeekActivity[] = []
+): number {
   const counts = new Map<string, number>()
-  for (const r of results) {
-    const key = localDayKey(isoWeekStart(new Date(r.endedAt)))
+  for (const date of weekEntryDates(results, activities)) {
+    const key = localDayKey(isoWeekStart(date))
     counts.set(key, (counts.get(key) ?? 0) + 1)
   }
   const met = (week: Date) => (counts.get(localDayKey(week)) ?? 0) >= goalForWeek(goal, week)
@@ -130,15 +151,17 @@ export function calculateWeekStreak(results: readonly SessionResult[], goal: Wee
   return streak
 }
 
-// This Monday-start week's finished workouts against the weekly goal, so a
-// first workout reads "1 of 2", never "0 week streak".
+// This Monday-start week's finished workouts (other activities included)
+// against the weekly goal, so a first workout reads "1 of 2", never "0 week
+// streak".
 export function weekProgress(
   results: readonly SessionResult[],
   goalOrSchedule: WeekGoal | WeeklySchedule | null,
-  now: Date
+  now: Date,
+  activities: readonly WeekActivity[] = []
 ): { done: number; goal: number; met: boolean } {
   const week = localDayKey(isoWeekStart(now))
-  const done = results.filter((r) => localDayKey(isoWeekStart(new Date(r.endedAt))) === week).length
+  const done = weekEntryDates(results, activities).filter((d) => localDayKey(isoWeekStart(d)) === week).length
   const goal =
     typeof goalOrSchedule === 'number' || typeof goalOrSchedule === 'function'
       ? goalForWeek(goalOrSchedule, now)

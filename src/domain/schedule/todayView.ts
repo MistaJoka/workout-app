@@ -1,5 +1,6 @@
 import type { SessionResult } from '../session/types'
 import type { Weekday, WeeklySchedule } from './weeklySchedule'
+import { activityDate, type ActivityKind } from '../progress/activities'
 
 // What Today shows, derived purely from history, the weekly plan and the
 // clock. Nothing here is judgment: a planned day that passed without a
@@ -9,6 +10,8 @@ export type DayMark = 'done' | 'planned' | 'rest' | 'open'
 
 export type WeekSession = { sessionId: string; planId: string; endedAt: string }
 
+export type WeekDayActivity = { id: string; kind: ActivityKind; day: string }
+
 export type WeekDay = {
   weekday: Weekday
   letter: string
@@ -16,9 +19,12 @@ export type WeekDay = {
   // Before today (a planned day that passed opens the planner, not Start).
   isPast: boolean
   mark: DayMark
+  // Finished workouts plus other activities (both count toward the week).
   count: number
   // That day's finished workouts, newest first.
   sessions: WeekSession[]
+  // That day's other activities (domain/progress/activities.ts).
+  activities: WeekDayActivity[]
   // The workout planned for the day; null for rest or nothing planned.
   plannedTemplateId: string | null
 }
@@ -53,7 +59,12 @@ function mondayOf(date: Date): Date {
   return new Date(date.getFullYear(), date.getMonth(), date.getDate() + offset)
 }
 
-export function buildWeek(results: readonly SessionResult[], schedule: WeeklySchedule | null, now: Date): WeekDay[] {
+export function buildWeek(
+  results: readonly SessionResult[],
+  schedule: WeeklySchedule | null,
+  now: Date,
+  activities: readonly (WeekDayActivity & { deletedAt?: string | null })[] = []
+): WeekDay[] {
   const byDay = new Map<string, WeekSession[]>()
   for (const r of [...results].sort((a, b) => b.endedAt.localeCompare(a.endedAt))) {
     const key = dayKey(new Date(r.endedAt))
@@ -61,13 +72,20 @@ export function buildWeek(results: readonly SessionResult[], schedule: WeeklySch
     list.push({ sessionId: r.sessionId, planId: r.planId, endedAt: r.endedAt })
     byDay.set(key, list)
   }
+  const activitiesByDay = new Map<string, WeekDayActivity[]>()
+  for (const a of activities) {
+    if (a.deletedAt != null) continue
+    const key = dayKey(activityDate(a.day))
+    activitiesByDay.set(key, [...(activitiesByDay.get(key) ?? []), { id: a.id, kind: a.kind, day: a.day }])
+  }
   const monday = mondayOf(now)
   const todayKey = dayKey(now)
   const todayStart = new Date(now.getFullYear(), now.getMonth(), now.getDate()).getTime()
   return MONDAY_FIRST.map((weekday, i) => {
     const date = new Date(monday.getFullYear(), monday.getMonth(), monday.getDate() + i)
     const sessions = byDay.get(dayKey(date)) ?? []
-    const count = sessions.length
+    const dayActivities = activitiesByDay.get(dayKey(date)) ?? []
+    const count = sessions.length + dayActivities.length
     const plan = schedule?.[weekday] ?? null
     const mark: DayMark = count > 0 ? 'done' : plan === 'rest' ? 'rest' : plan ? 'planned' : 'open'
     return {
@@ -78,6 +96,7 @@ export function buildWeek(results: readonly SessionResult[], schedule: WeeklySch
       mark,
       count,
       sessions,
+      activities: dayActivities,
       plannedTemplateId: plan && plan !== 'rest' ? plan : null,
     }
   })
