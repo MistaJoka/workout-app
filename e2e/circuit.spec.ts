@@ -39,18 +39,22 @@ test('build a circuit, then run it move by move, round by round', async ({ page 
   await expect(page.getByText(/2 moves, 2 rounds/)).toBeVisible()
   await page.getByRole('button', { name: 'Start workout' }).click()
 
-  const first = (await page.getByRole('heading').first().textContent())?.trim() ?? ''
+  // The move's own name, not the start overlay's routine heading.
   await expect(page.getByText('Round 1 of 2')).toBeVisible()
+  const moveName = page.locator('.player-target h2')
+  await expect(moveName).toBeVisible()
+  const first = (await moveName.textContent())?.trim() ?? ''
   await completeSet(page)
   // Up next is the second move, still round 1.
   await expect(page.getByText('Round 1 of 2')).toBeVisible()
   await skipRest(page)
-  const second = (await page.getByRole('heading').first().textContent())?.trim() ?? ''
+  await expect(moveName).not.toHaveText(first)
+  const second = (await moveName.textContent())?.trim() ?? ''
   expect(second).not.toBe(first)
   await completeSet(page)
   await skipRest(page)
   // Back to the first move for round 2.
-  await expect(page.getByRole('heading', { name: first }).first()).toBeVisible()
+  await expect(moveName).toHaveText(first)
   await expect(page.getByText('Round 2 of 2')).toBeVisible()
   await finishWorkout(page)
   await expect(page.getByText('4/4')).toBeVisible()

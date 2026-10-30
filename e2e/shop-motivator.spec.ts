@@ -6,6 +6,7 @@ test.use({ viewport: { width: 384, height: 824 } })
 async function openShopAsHubby(page: Page) {
   await page.goto('/#/settings')
   await page.getByRole('link', { name: "Hubby's reward shop" }).click()
+  await page.getByRole('button', { name: 'Set up shop' }).click()
   await page.getByLabel('New PIN', { exact: true }).fill('4821')
   await page.getByLabel('Confirm PIN', { exact: true }).fill('4821')
   await page.getByRole('button', { name: 'Save PIN' }).click()

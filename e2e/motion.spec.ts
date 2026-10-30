@@ -20,6 +20,7 @@ test('a screen is tappable the instant it appears', async ({ page }) => {
   await page.goto('/#/')
   // No waiting after navigation: the routine link must take the tap at once.
   await page.getByRole('link', { name: 'Library' }).click()
+  await page.getByRole('tab', { name: 'Routines' }).click({ timeout: 1_000 })
   await page.getByRole('link', { name: /Full-Body A/ }).first().click({ timeout: 1_000 })
   await expect(page.getByRole('heading', { name: 'Full-Body A' })).toBeVisible()
 })

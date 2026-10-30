@@ -53,10 +53,13 @@ test.describe('schedule and reminders', () => {
     await expect(page.getByRole('button', { name: /^Friday/ })).toContainText('Temp Day')
 
     await page.goto('/#/library')
+    await page.getByRole('tab', { name: 'Routines' }).click()
     await page.getByRole('link', { name: /Temp Day/ }).click()
     await page.getByRole('button', { name: 'Delete' }).click()
     await page.getByRole('button', { name: 'Yes, delete' }).click()
-    await expect(page.getByPlaceholder('Search exercises')).toBeVisible()
+    // Back on the Library's Routines panel, where she came from, without it.
+    await expect(page.getByRole('heading', { name: 'Library' })).toBeVisible()
+    await expect(page.getByRole('link', { name: /Temp Day/ })).toHaveCount(0)
 
     await page.goto('/#/schedule')
     await expect(page.getByRole('button', { name: /^Friday/ })).toContainText('Not planned')
@@ -64,6 +67,7 @@ test.describe('schedule and reminders', () => {
 
   test('the draft Rae workouts are offered alongside the starter ones', async ({ page }) => {
     await page.goto('/#/library')
+    await page.getByRole('tab', { name: 'Routines' }).click()
     for (const name of ['Warm-up', 'Cool-down', 'Chair day']) {
       await expect(page.getByRole('link', { name: new RegExp(name) }).first()).toBeVisible()
     }
