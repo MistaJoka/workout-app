@@ -32,7 +32,7 @@ async function load(): Promise<Loaded | null> {
 
 // Surprise me (route /surprise): a slot-machine reel of her routines spins,
 // slows and lands on one; Rae cheers; then the Start screen for it. A tap
-// skips the spin. Reduced/off motion shows the pick straight away.
+// skips the spin, and a tap on the pick skips the wait. Reduced/off motion shows the pick straight away.
 export function SurpriseScreen() {
   const navigate = useNavigate()
   const [feedback] = useFeedbackSettings()
@@ -84,7 +84,14 @@ export function SurpriseScreen() {
   }
 
   return (
-    <div className="surprise-stage flex min-h-[80vh] flex-col p-4" onClick={() => setLanded(true)}>
+    <div
+      className="surprise-stage flex min-h-[80vh] flex-col p-4"
+      onClick={() => {
+        // First tap lands the reel; a tap on the pick goes straight to Start.
+        if (showResult && loaded) navigate(`/checkin/${loaded.pick.id}`, { replace: true })
+        else setLanded(true)
+      }}
+    >
       <div className="self-start">
         <BackButton />
       </div>
