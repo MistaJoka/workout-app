@@ -24,3 +24,12 @@ test('the last collection tile is never stranded alone', async ({ page }) => {
     expect(last.width).toBeGreaterThan(gridBox.width - 2)
   }
 })
+
+// Day one: no workouts yet, but the collection (shop, notes, garden...) is
+// already reachable from Progress, not only through Settings.
+test('a brand-new profile already sees the collection on Progress', async ({ page }) => {
+  await page.goto('/#/progress')
+  await expect(page.getByText('Your first workout starts the scoreboard.', { exact: false })).toBeVisible()
+  await expect(page.getByTestId('collection-grid')).toBeVisible()
+  await expect(page.getByTestId('collection-grid').getByRole('link')).not.toHaveCount(0)
+})

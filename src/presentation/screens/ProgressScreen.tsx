@@ -162,6 +162,23 @@ export function ProgressScreen() {
   const history = rows ? mergeHistory(rows, snapshot?.activities ?? []) : []
   const shownHistory = showAllHistory ? history : history.slice(0, LIST_PREVIEW_COUNT)
 
+  // Your collection: garden, badges, story, recaps, the shop and love
+  // notes as a compact tile grid. Shown from day one (audit O2), so the shop
+  // and notes are reachable before the first workout too.
+  const collection = snapshot ? (
+    <section className="space-y-2">
+      <p className="sr-only">Your collection</p>
+      <div className="collection-grid grid grid-cols-3 gap-2" data-testid="collection-grid">
+        <GardenCard garden={snapshot.garden} compact />
+        <BadgesTile earned={snapshot.badges.earned} total={snapshot.badges.total} icon={snapshot.badges.icon} />
+        <StoryTile unlocked={snapshot.storyChapters} />
+        <RecapLink compact />
+        <RewardsShopTile />
+        <LoveNotesTile />
+      </div>
+    </section>
+  ) : null
+
   return (
     <div className="p-4 space-y-4">
       <div className="flex items-center justify-between gap-2">
@@ -204,6 +221,7 @@ export function ProgressScreen() {
           <Link to={snapshot.startHref} className="btn-primary btn-lg w-full">
             Start a workout
           </Link>
+          {collection}
         </>
       )}
 
@@ -235,19 +253,7 @@ export function ProgressScreen() {
 
           <WeekCompareCard compare={snapshot.compare} bare />
 
-          {/* Your collection: garden, badges and recaps as a compact tile
-              grid instead of four full-width rows. */}
-          <section className="space-y-2">
-            <p className="sr-only">Your collection</p>
-            <div className="collection-grid grid grid-cols-3 gap-2" data-testid="collection-grid">
-              <GardenCard garden={snapshot.garden} compact />
-              <BadgesTile earned={snapshot.badges.earned} total={snapshot.badges.total} icon={snapshot.badges.icon} />
-              <StoryTile unlocked={snapshot.storyChapters} />
-              <RecapLink compact />
-              <RewardsShopTile />
-              <LoveNotesTile />
-            </div>
-          </section>
+          {collection}
 
           {/* Activity: the month calendar leads, the 8-week bar chart is a
               compact footnote underneath. */}
