@@ -4,6 +4,7 @@ import { DEFAULT_REMINDER_SETTINGS, type ReminderSettings } from '../../domain/s
 import {
   getReminderSettings,
   reminderPermission,
+  remindersAreBestEffort,
   requestReminderPermission,
   saveReminderSettings,
   syncReminders,
@@ -21,11 +22,16 @@ export const REMINDER_TIMES: { label: string; time: TimeOfDay }[] = [
 const sameTime = (a: TimeOfDay, b: TimeOfDay) => a.hour === b.hour && a.minute === b.minute
 const labelFor = (time: TimeOfDay) => REMINDER_TIMES.find((o) => sameTime(o.time, time))?.label ?? ''
 
-const BLOCKED =
+const BLOCKED_NATIVE =
   'Notifications are off for this app. Turn them on in Android Settings, Apps, Foundation Strength, Notifications.'
+const BLOCKED_WEB = 'Notifications are blocked. Allow them in Chrome: tap ⋮, then Settings, Site settings, Notifications.'
+const NEEDS_INSTALL = 'Install the app to get reminders: in Chrome tap ⋮, then Add to Home screen.'
+const blocked = () => (remindersAreBestEffort() ? BLOCKED_WEB : BLOCKED_NATIVE)
 
-// Android app only (Schedule shows "Add to Calendar" in a browser): a nudge
-// from Rae on planned workout days (infrastructure/reminders.ts).
+// The Android app and the installed PWA (Schedule shows "Add to Calendar"
+// elsewhere): a nudge from Rae on planned workout days
+// (infrastructure/reminders.ts). The PWA's nudge comes when Chrome next
+// wakes the app, so it says "around" the time.
 export function ReminderCard() {
   const [settings, setSettings] = useState<ReminderSettings | null>(null)
   const [note, setNote] = useState<string | null>(null)
@@ -36,7 +42,7 @@ export function ReminderCard() {
       .then(([stored, permission]) => {
         if (cancelled) return
         setSettings(stored)
-        if (stored.enabled && permission === 'denied') setNote(BLOCKED)
+        if (stored.enabled && permission === 'denied') setNote(blocked())
       })
       .catch(() => {
         if (!cancelled) setSettings(DEFAULT_REMINDER_SETTINGS)
@@ -52,8 +58,12 @@ export function ReminderCard() {
     setNote(null)
     try {
       await saveReminderSettings(next)
-      await syncReminders()
-      if (next.enabled && saidOn) setNote(`Rae will check in at ${labelFor(next.time)} on your workout days.`)
+      const outcome = await syncReminders()
+      if (outcome === 'needs-install') setNote(NEEDS_INSTALL)
+      else if (next.enabled && saidOn)
+        setNote(
+          `Rae will check in ${remindersAreBestEffort() ? 'around' : 'at'} ${labelFor(next.time)} on your workout days.`,
+        )
     } catch {
       setSettings(previous)
       setNote("Couldn't set reminders. Try again.")
@@ -65,7 +75,7 @@ export function ReminderCard() {
     if (settings.enabled) return apply({ ...settings, enabled: false }, false)
     const permission = await requestReminderPermission().catch(() => 'denied' as const)
     if (permission !== 'granted') {
-      setNote(BLOCKED)
+      setNote(blocked())
       return
     }
     return apply({ ...settings, enabled: true }, true)

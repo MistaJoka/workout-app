@@ -110,6 +110,35 @@ self.addEventListener('install', (event) => {
   )
 })
 
+// Workout reminders (public/sw-reminders.js): Chrome's Periodic Background
+// Sync wakes the installed app now and then; each wake shows what is due.
+// Resolved next to this file, so it works under any base path.
+importScripts('sw-reminders.js')
+
+self.addEventListener('periodicsync', (event) => {
+  if (event.tag !== 'workout-reminders') return
+  event.waitUntil(self.workoutReminders.showDueReminders().catch(() => undefined))
+})
+
+// Tapping a reminder brings the open app forward as it is (never yanks her
+// off a workout in progress), or opens it on Today.
+self.addEventListener('notificationclick', (event) => {
+  event.notification.close()
+  const url = (event.notification.data && event.notification.data.url) || self.registration.scope
+  event.waitUntil(
+    (async () => {
+      const windows = await self.clients.matchAll({ type: 'window', includeUncontrolled: true })
+      for (const client of windows) {
+        if (client.url.startsWith(self.registration.scope)) {
+          await client.focus()
+          return
+        }
+      }
+      await self.clients.openWindow(url)
+    })()
+  )
+})
+
 // The "Update ready" toast's Reload asks the waiting worker to take over.
 self.addEventListener('message', (event) => {
   if (event.data && event.data.type === 'SKIP_WAITING') self.skipWaiting()
