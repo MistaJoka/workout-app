@@ -52,6 +52,9 @@ export function RoutineBuilderScreen() {
   // null = move by move; a number = a circuit of that many rounds
   // (domain/session/circuit.ts).
   const [rounds, setRounds] = useState<number | null>(null)
+  // One move's controls open at a time (audit S6: nine controls per move
+  // made three moves two screens long). A lone move is always open.
+  const [openId, setOpenId] = useState<string | null>(null)
   const [loaded, setLoaded] = useState(!editingId && !params.get('add'))
   const [picking, setPicking] = useState(false)
   const [saving, setSaving] = useState(false)
@@ -209,6 +212,7 @@ export function RoutineBuilderScreen() {
         excludeIds={rows.map((r) => r.exerciseId)}
         onPick={(exercise) => {
           setRows((r) => [...r, defaultRow(exercise)])
+          setOpenId(exercise.id)
           setPicking(false)
         }}
         onClose={() => setPicking(false)}
@@ -273,13 +277,27 @@ export function RoutineBuilderScreen() {
       {rows.length === 0 && <RaeNote expression="wink">Add your first exercise and we'll build this together.</RaeNote>}
 
       <ul className="space-y-3">
-        {rows.map((row, index) => (
+        {rows.map((row, index) => {
+          const open = rows.length === 1 || openId === row.exerciseId
+          const name = row.exercise ? row.exercise.name : 'Exercise no longer available'
+          const target = row.reps != null ? `${row.reps}` : `${row.timeSeconds ?? 30}s`
+          const summary = rounds == null ? `${row.sets} × ${target} · ${row.restSeconds}s rest` : target
+          return (
           <li key={row.exerciseId} className="card p-3 space-y-3">
             <div className="flex items-center gap-2">
-              <ExerciseThumb exercise={row.exercise} className="h-12 w-16 rounded-panel" />
-              <p className="min-w-0 flex-1 truncate font-semibold">
-                {row.exercise ? row.exercise.name : 'Exercise no longer available'}
-              </p>
+              <button
+                type="button"
+                className="flex min-h-11 min-w-0 flex-1 items-center gap-2 text-left"
+                aria-expanded={open}
+                aria-label={`${name}, ${summary}. ${open ? 'Hide' : 'Edit'} settings`}
+                onClick={() => setOpenId(open && rows.length > 1 ? null : row.exerciseId)}
+              >
+                <ExerciseThumb exercise={row.exercise} className="h-12 w-16 flex-none rounded-panel" />
+                <span className="min-w-0 flex-1">
+                  <span className="block truncate font-semibold">{name}</span>
+                  <span className="block truncate text-sm text-ink-muted">{summary}</span>
+                </span>
+              </button>
               <button type="button" className={ROW_BTN} aria-label="Move up" onClick={() => move(index, -1)}>
                 ↑
               </button>
@@ -291,6 +309,7 @@ export function RoutineBuilderScreen() {
               </button>
             </div>
             {/* Two across: at 390px, three steppers with 44px buttons leave no room for the number. */}
+            {open && (
             <div className="grid grid-cols-2 gap-2">
               {rounds == null && (
                 <Stepper label="Sets" value={row.sets} min={1} max={8} step={1} onChange={(v) => update(index, { sets: v })} />
@@ -329,8 +348,10 @@ export function RoutineBuilderScreen() {
                 />
               )}
             </div>
+            )}
           </li>
-        ))}
+          )
+        })}
       </ul>
 
       <button className="w-full rounded-panel border border-primary px-4 py-3 text-primary-ink" onClick={() => setPicking(true)}>
