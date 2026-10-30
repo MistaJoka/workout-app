@@ -10,7 +10,12 @@ vi.mock('../presentation/appContext', () => ({ isNativeApp: () => false }))
 const register = vi.fn(async () => undefined)
 const notification = { permission: 'granted' as NotificationPermission, requestPermission: vi.fn(async () => 'granted') }
 vi.stubGlobal('Notification', notification)
-vi.stubGlobal('window', { Notification: notification, PeriodicSyncManager: function PeriodicSyncManager() {} })
+const display = { standalone: true }
+vi.stubGlobal('window', {
+  Notification: notification,
+  PeriodicSyncManager: function PeriodicSyncManager() {},
+  matchMedia: (q: string) => ({ matches: q === '(display-mode: standalone)' && display.standalone }),
+})
 vi.stubGlobal('navigator', { serviceWorker: { ready: Promise.resolve({ periodicSync: { register } }) } })
 
 import { db } from './db/schema'
@@ -34,8 +39,17 @@ beforeEach(async () => {
 })
 
 describe('web reminders (installed PWA)', () => {
-  it('counts as supported where Periodic Background Sync exists', () => {
+  it('counts as supported in the installed app where Periodic Background Sync exists', () => {
     expect(remindersSupported()).toBe(true)
+  })
+
+  it('is not offered in a plain browser tab (Calendar export stays there)', () => {
+    display.standalone = false
+    try {
+      expect(remindersSupported()).toBe(false)
+    } finally {
+      display.standalone = true
+    }
   })
 
   it('saves the planned days for the service worker and asks Chrome to wake the app', async () => {

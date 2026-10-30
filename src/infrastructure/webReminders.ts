@@ -22,13 +22,24 @@ type PeriodicSyncRegistration = ServiceWorkerRegistration & {
   periodicSync?: { register(tag: string, options: { minInterval: number }): Promise<void> }
 }
 
+// Only the installed app: Chrome never wakes a plain browser tab, so a tab
+// keeps the Calendar export (Schedule screen) until she installs it.
 export function webRemindersSupported(): boolean {
   return (
     typeof window !== 'undefined' &&
     'serviceWorker' in navigator &&
     'Notification' in window &&
-    'PeriodicSyncManager' in window
+    'PeriodicSyncManager' in window &&
+    isInstalled()
   )
+}
+
+function isInstalled(): boolean {
+  try {
+    return typeof window.matchMedia === 'function' && window.matchMedia('(display-mode: standalone)').matches
+  } catch {
+    return false
+  }
 }
 
 export type WebPermission = 'granted' | 'denied' | 'prompt'
