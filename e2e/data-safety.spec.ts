@@ -82,3 +82,46 @@ test('restoring a backup after a reinstall brings back the profile name and embl
   expect(profiles.profiles[0]).toMatchObject({ id: 'default', name: 'Rae', emblem: 'lilac-puff' })
   await expect(page.getByText('Rae').first()).toBeVisible()
 })
+
+// A write that fails on the phone (storage full, a flaky disk) must say so,
+// leave the workout exactly where it was, and work on the next try.
+test('a failed save keeps the set and works on retry', async ({ page }) => {
+  await page.goto('/')
+  await dismissWelcome(page)
+  await startQuick10(page)
+  // The next IndexedDB add throws once, like a full disk.
+  await page.evaluate(() => {
+    const original = IDBObjectStore.prototype.add
+    let armed = true
+    IDBObjectStore.prototype.add = function (this: IDBObjectStore, ...args: Parameters<IDBObjectStore['add']>) {
+      if (armed) {
+        armed = false
+        throw new DOMException('Disk full', 'QuotaExceededError')
+      }
+      return original.apply(this, args)
+    }
+  })
+  const armedBar = page.locator('[data-armed="true"]')
+  await expect(armedBar).toBeVisible()
+  await page.getByRole('button', { name: 'Complete Set', exact: true }).click()
+  const yes = page.getByRole('button', { name: 'Yes', exact: true })
+  if (await yes.isVisible().catch(() => false)) {
+    await expect(armedBar).toBeVisible()
+    await yes.click()
+  }
+  await expect(page.getByText(/Couldn't save on this device|out of space/)).toBeVisible()
+  await expect(page.getByText(/Set 1 of/)).toBeVisible()
+  await expect(page.getByRole('timer')).toHaveCount(0)
+
+  // Retry: the same tap now saves, and the rest starts.
+  await expect(armedBar).toBeVisible()
+  // The rep question is still up after a failed save; otherwise start over.
+  if (await yes.isVisible().catch(() => false)) {
+    await yes.click()
+  } else {
+    await page.getByRole('button', { name: 'Complete Set', exact: true }).click()
+    await expect(armedBar).toBeVisible()
+    await yes.click()
+  }
+  await expect(page.getByRole('timer')).toBeVisible()
+})
