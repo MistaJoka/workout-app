@@ -88,9 +88,12 @@ test('gift links: compose on one phone, accept on another, then round-trip a del
   await expect(her.getByTestId('gift-from')).toHaveText('Hubby Bunny')
   await expect(her.getByTestId('gift-rewards')).toContainText('Foot rub')
   await expect(her.getByTestId('gift-rewards').locator('img[src*="foot-rub"]')).toHaveCount(1)
-  // A plain browser tab (not the installed app) says its data is separate,
-  // without blocking Accept for browser-only use.
-  await expect(her.getByTestId('open-in-app')).toContainText('keeps its own data')
+  // On iPhone a plain browser tab says its data is separate, without
+  // blocking Accept for browser-only use. On Android (and desktop Chromium)
+  // the tab and the installed app share storage, so it says nothing.
+  const ios = /iPhone|iPad|iPod/.test(await her.evaluate(() => navigator.userAgent))
+  if (ios) await expect(her.getByTestId('open-in-app')).toContainText('keeps its own data')
+  else await expect(her.getByTestId('open-in-app')).toHaveCount(0)
   await expect(her.getByTestId('gift-sealed-notes')).toContainText('1 sealed love note')
   await expect(her.getByText('Proud of you, superstar')).toHaveCount(0)
   await her.getByRole('button', { name: 'Accept' }).click()

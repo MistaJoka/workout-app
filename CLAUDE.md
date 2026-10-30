@@ -49,7 +49,7 @@ npm run apk                   # Android APK via Capacitor (android/, capacitor.c
 npm run apk:release           # signed release APK; needs android/keystore.properties or FS_KEYSTORE* env vars (scripts/make-keystore.sh) -> release/foundation-strength-<version>-release.apk
 npm run aab                   # signed release AAB for Play Store, same signing requirement -> release/foundation-strength-<version>.aab
 npm run generate:library      # regenerate src/domain/content/generated/libraryExercises.json from the pinned free-exercise-db revision
-npm run build && systemctl --user restart workout-app.service   # deploy: tailnet https://nomad.tailed9e33.ts.net:8443 (stable); LAN http://<this machine's DHCP IP>:4173 — `ip -4 -br addr`, was 192.168.1.130 on 2026-09-19
+npm run build && systemctl --user restart workout-app.service   # owner's tailnet-only install https://nomad.tailed9e33.ts.net:8443 (a separate data store; her phone uses the Funnel host, see Hosting, and every share link points there); LAN http://<this machine's DHCP IP>:4173 — `ip -4 -br addr`, was 192.168.1.130 on 2026-09-19
 ```
 
 Always `git fetch origin` before pushing: the ChatGPT support agent commits directly to `origin/master` (under `support/`, `docs/`, `README.md`, `AGENTS.md`, and this file).

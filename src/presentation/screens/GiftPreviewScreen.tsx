@@ -21,7 +21,7 @@ import { playCelebration } from '../../application/celebrationSounds'
 import { useFeedbackSettings } from '../components/useFeedbackSettings'
 import { Skeleton, SkeletonHeading } from '../components/Skeleton'
 import { hasRealName } from '../greeting'
-import { isInstalledApp } from '../appContext'
+import { isInstalledApp, browserStorageIsSeparate } from '../appContext'
 
 // Her side of a gift link (route `/gift?d=...`): decode what Hubby Bunny
 // sent, show a preview that never reveals a locked note's actual text
@@ -170,7 +170,7 @@ export function GiftPreviewScreen() {
         </>
       )}
 
-      {(state.kind === 'gift' || state.kind === 'delivered' || state.kind === 'wish') && !isInstalledApp() && <OpenInAppNotice />}
+      {(state.kind === 'gift' || state.kind === 'delivered' || state.kind === 'wish') && !isInstalledApp() && browserStorageIsSeparate() && <OpenInAppNotice />}
 
       {state.kind === 'thanks' && (
         <>
@@ -344,8 +344,9 @@ function GiftBoxArt() {
   )
 }
 
-// A link tapped in a message opens the browser, whose storage is separate
-// from the home-screen app or the Android app (on iPhone too). Saying so
+// On iPhone a link tapped in a message opens Safari, whose storage is
+// separate from the home-screen app (browserStorageIsSeparate; on Android
+// the tab and the installed PWA share storage, so nothing is shown there). Saying so
 // beats quietly adding the gift where the app will never see it. Accept
 // still works here for anyone who only uses the browser.
 function OpenInAppNotice() {

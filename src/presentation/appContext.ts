@@ -2,12 +2,15 @@ import { Capacitor } from '@capacitor/core'
 
 // Where links point, and whether we're running as the installed app.
 //
-// Inside the APK the page's own origin is Capacitor's internal
-// https://localhost, so a link made there (a wish, a thank-you) would be
-// dead on the other phone. Links always use the public web app's address.
+// Links (a gift, a wish, a thank-you) always use the one public address
+// her phone can reach: the self-hosted PWA over Tailscale Funnel (CLAUDE.md,
+// Hosting). Made inside the APK (origin https://localhost), on the
+// tailnet-only :8443 install or on the LAN, a link to the page's own origin
+// would be dead on her phone, and another origin is a separate data store
+// anyway. Only a real localhost page (dev, tests) links to itself.
 // Override per build with VITE_PUBLIC_APP_URL.
 export const PUBLIC_APP_URL: string =
-  (import.meta.env.VITE_PUBLIC_APP_URL as string | undefined) ?? 'https://nomad.tailed9e33.ts.net:8443/'
+  (import.meta.env.VITE_PUBLIC_APP_URL as string | undefined) ?? 'https://nomad.tailed9e33.ts.net:10000/'
 
 export function linkLocationFor(input: {
   native: boolean
@@ -15,9 +18,26 @@ export function linkLocationFor(input: {
   baseUrl: string
   publicUrl: string
 }): { origin: string; baseUrl: string } {
-  if (!input.native) return { origin: input.origin, baseUrl: input.baseUrl }
+  if (!input.native && isLocalDev(input.origin)) return { origin: input.origin, baseUrl: input.baseUrl }
   const url = new URL(input.publicUrl)
   return { origin: url.origin, baseUrl: url.pathname || '/' }
+}
+
+function isLocalDev(origin: string): boolean {
+  try {
+    const host = new URL(origin).hostname
+    return host === 'localhost' || host === '127.0.0.1' || host === '[::1]'
+  } catch {
+    return false
+  }
+}
+
+// Whether a link that opens in the browser lands in different storage from
+// the installed app. True on iPhone/iPad (Safari and a home-screen app keep
+// separate data). False on Android, where a Chrome tab and the installed
+// PWA share the site's storage (and Chrome usually opens the app directly).
+export function browserStorageIsSeparate(userAgent: string = navigator.userAgent): boolean {
+  return /iPhone|iPad|iPod/.test(userAgent)
 }
 
 export function isNativeApp(): boolean {
