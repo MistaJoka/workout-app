@@ -21,6 +21,12 @@ class FakeWindow implements SentinelWindow {
     this.entries = [{ state, url }]
   }
 
+  location = {
+    get href() {
+      return self().url
+    },
+  }
+
   history = {
     get state() {
       return self().entries[self().index].state
@@ -71,6 +77,10 @@ class FakeWindow implements SentinelWindow {
       this.timers = this.timers.filter((t) => t !== due)
       due.fn()
     }
+  }
+
+  dispatchPopForTest() {
+    this.dispatchPop()
   }
 
   private dispatchPop() {
@@ -223,6 +233,19 @@ describe('back sentinels', () => {
     stale.flush()
     expect(stale.index).toBe(0)
     expect(stale.routerSaw).toEqual([])
+  })
+
+  it('a hash change from a link or typed URL while held reaches the router', () => {
+    const { win, sentinels } = setup()
+    let backs = 0
+    sentinels.hold(() => backs++)
+    // The browser adds an entry with no state and fires popstate.
+    win.entries = win.entries.slice(0, win.index + 1)
+    win.entries.push({ state: null, url: '#/b' })
+    win.index += 1
+    win.dispatchPopForTest()
+    expect(backs).toBe(0)
+    expect(win.routerSaw).toEqual(['#/b'])
   })
 
   it('a holder that stays (busy sheet ignores back) is re-armed', () => {

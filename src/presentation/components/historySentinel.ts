@@ -28,6 +28,7 @@ type HistoryLike = {
 
 export type SentinelWindow = {
   history: HistoryLike
+  location: { readonly href: string }
   addEventListener(type: 'popstate', listener: (event: Event) => void, capture: boolean): void
   setTimeout(handler: () => void, ms: number): unknown
   clearTimeout(id: unknown): void
@@ -54,6 +55,8 @@ export function createBackSentinels(win: SentinelWindow): BackSentinels {
   let holders: Holder[] = []
   // The sentinel entry is the current history entry.
   let armed = false
+  // The URL the sentinel was pushed on (the page it guards).
+  let armedUrl = ''
   // Our own pops (go(-1) over the sentinel) whose popstate hasn't arrived.
   let ownPops = 0
   let ownPopTimer: unknown = null
@@ -73,6 +76,7 @@ export function createBackSentinels(win: SentinelWindow): BackSentinels {
     const base = h.state && typeof h.state === 'object' ? h.state : {}
     orig.push({ ...base, [KEY]: true }, '')
     armed = true
+    armedUrl = win.location.href
   }
 
   function scheduleRearm() {
@@ -182,6 +186,13 @@ export function createBackSentinels(win: SentinelWindow): BackSentinels {
         return
       }
       if (!armed) return
+      if (win.location.href !== armedUrl) {
+        // Not Back over the sentinel: a link or typed URL changed the hash
+        // (a new entry after ours). Let the router follow it.
+        armed = false
+        scheduleRearm()
+        return
+      }
       // The user went Back over the sentinel: the page stays.
       event.stopImmediatePropagation()
       armed = false
