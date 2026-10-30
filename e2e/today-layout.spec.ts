@@ -46,12 +46,16 @@ test('no sideways page scroll at 360px', async ({ page }) => {
 
 test('Library: routines are tiles and each Rae move shows once', async ({ page }) => {
   await page.goto('/#/library')
-  await expect(page.getByRole('list', { name: 'Routines' }).getByRole('link', { name: /^Full-Body A, / })).toBeVisible()
-  await expect(page.getByRole('list', { name: 'Routines' }).getByRole('link', { name: 'New routine' })).toBeVisible()
+  // Moves panel first: Rae's own moves, each once.
   const moves = page.getByRole('region', { name: 'Moves Rae shows you' }).getByRole('link')
   await expect(moves.first()).toBeVisible()
   const names = await moves.allInnerTexts()
   expect(new Set(names).size).toBe(names.length)
+  // Routines panel: routines are tiles.
+  await page.getByRole('tab', { name: 'Routines' }).click()
+  await expect(page.getByRole('list', { name: 'Routines' }).getByRole('link', { name: /^Full-Body A, / })).toBeVisible()
+  await expect(page.getByRole('list', { name: 'Routines' }).getByRole('link', { name: 'New routine' })).toBeVisible()
+  await expect(page.getByRole('link', { name: /Plan your week/ })).toBeVisible()
 })
 
 test('Progress leads with numbers and pictures; details wait behind More', async ({ page }) => {

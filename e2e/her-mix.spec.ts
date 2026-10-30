@@ -20,6 +20,7 @@ test('three hearts make Her mix, which starts like any routine', async ({ page }
   await heart(page, 'fs.dead-bug')
   await page.goto('about:blank')
   await page.goto('/#/library')
+  await page.getByRole('tab', { name: 'Routines' }).click()
   await expect(page.getByRole('link', { name: /^Her mix/ })).toBeVisible()
   await page.goto('about:blank')
   await page.goto('/')

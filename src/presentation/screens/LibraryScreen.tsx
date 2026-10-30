@@ -22,6 +22,19 @@ import { Skeleton, SkeletonList } from '../components/Skeleton'
 const PAGE = 40
 const LEVELS = ['beginner', 'intermediate', 'expert'] as const
 
+// Library is two panels, one at a time (owner rule: tabs/panels, not one
+// long page; audit O1). Moves leads: Today already offers the routines.
+// The choice holds for this visit to the app.
+type Panel = 'moves' | 'routines'
+const PANEL_KEY = 'workout-app:library-panel'
+function initialPanel(): Panel {
+  try {
+    return sessionStorage.getItem(PANEL_KEY) === 'routines' ? 'routines' : 'moves'
+  } catch {
+    return 'moves'
+  }
+}
+
 function hasRaeLoop(exerciseId: string): boolean {
   return raeLoopForExercise(exerciseId) !== undefined
 }
@@ -36,6 +49,15 @@ export function LibraryScreen() {
   const [heartedMoves, setHeartedMoves] = useState<Exercise[]>([])
   const [heartOnly, setHeartOnly] = useState(false)
   const hearted = useMemo(() => new Set(heartedMoves.map((e) => e.id)), [heartedMoves])
+  const [panel, setPanelState] = useState<Panel>(initialPanel)
+  const setPanel = (next: Panel) => {
+    setPanelState(next)
+    try {
+      sessionStorage.setItem(PANEL_KEY, next)
+    } catch {
+      // Private mode: the choice just isn't remembered.
+    }
+  }
 
   useEffect(() => {
     loadLibrary()
@@ -98,9 +120,30 @@ export function LibraryScreen() {
     <div className="p-4 pb-20 space-y-4">
       <h1 className="text-xl font-bold">Library</h1>
 
-      {!filtering && (
-        <section className="space-y-2">
-          <p className="text-sm font-semibold text-ink-muted">Routines</p>
+      <div role="tablist" aria-label="Library" className="grid grid-cols-2 gap-2">
+        {(
+          [
+            ['moves', 'Moves'],
+            ['routines', 'Routines'],
+          ] as const
+        ).map(([id, label]) => (
+          <button
+            key={id}
+            type="button"
+            role="tab"
+            id={`library-tab-${id}`}
+            aria-selected={panel === id}
+            aria-controls={`library-panel-${id}`}
+            className={`chip min-h-11 justify-center ${panel === id ? 'chip-active' : ''}`}
+            onClick={() => setPanel(id)}
+          >
+            {label}
+          </button>
+        ))}
+      </div>
+
+      {panel === 'routines' && (
+        <section className="space-y-2" role="tabpanel" id="library-panel-routines" aria-labelledby="library-tab-routines">
           {/* Each routine is its moves, shown as Rae, not a count; "+ New"
               sits at the end of the row it adds to. */}
           <TileRow label="Routines">
@@ -154,9 +197,19 @@ export function LibraryScreen() {
             })}
             <TodayTile to="/routines/new" name="New routine" short="New" art={<span className="text-3xl">+</span>} />
           </TileRow>
+          <Link to="/schedule" className="card flex min-h-11 items-center justify-between gap-3 px-4 py-3">
+            <span className="font-semibold">
+              <span aria-hidden="true">📅 </span>Plan your week
+            </span>
+            <span aria-hidden="true" className="text-ink-muted">
+              ›
+            </span>
+          </Link>
         </section>
       )}
 
+      {panel === 'moves' && (
+      <div className="space-y-4" role="tabpanel" id="library-panel-moves" aria-labelledby="library-tab-moves">
       {!filtering && raeMoves.length > 0 && (
         <section className="space-y-2" aria-label="Moves Rae shows you">
           <p className="text-sm font-semibold text-ink-muted" aria-hidden>
@@ -309,6 +362,8 @@ export function LibraryScreen() {
           </button>
         )}
       </section>
+      </div>
+      )}
     </div>
   )
 }
