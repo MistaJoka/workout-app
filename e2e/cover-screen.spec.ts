@@ -21,3 +21,16 @@ test('on the cover screen, Rae doing the move fits above Complete Set', async ({
   const setLabel = (await page.getByText(/^Set 1 of \d+$/).boundingBox())!
   expect(setLabel.x + setLabel.width).toBeLessThanOrEqual(media.x)
 })
+
+test('on the cover screen, Today shows Start workout without scrolling', async ({ page }) => {
+  await page.goto('/')
+  const gotIt = page.getByRole('button', { name: 'Got it' })
+  if (await gotIt.isVisible().catch(() => false)) await gotIt.click()
+  const start = page.locator('.today-mission').getByRole('link', { name: 'Start workout' })
+  await expect(start).toBeVisible()
+  const box = (await start.boundingBox())!
+  const tabBar = (await page.getByRole('link', { name: 'Today' }).last().boundingBox())!
+  expect(box.y + box.height).toBeLessThanOrEqual(tabBar.y)
+  expect(await page.evaluate(() => window.scrollY)).toBe(0)
+})
+

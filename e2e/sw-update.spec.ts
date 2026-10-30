@@ -50,13 +50,16 @@ async function run(page: Page, context: BrowserContext, original: string): Promi
   })
   await expect.poll(() => page.evaluate(async () => (await navigator.serviceWorker.getRegistration())?.waiting != null)).toBe(true)
 
-  // The new build waits: the toast shows, the workout is untouched, and the
-  // lazy library chunk of the running build still loads with the network off.
-  await expect(page.getByText('Update ready')).toBeVisible()
+  // The new build waits: the workout is untouched and the toast holds off
+  // while she's in the player (it covered the target on the cover screen).
+  // The lazy library chunk of the running build still loads offline, and
+  // there the toast appears.
   await expect(page.getByText(/Set 1 of/)).toBeVisible()
+  await expect(page.getByText('Update ready')).toHaveCount(0)
   await context.setOffline(true)
   await page.goto('/#/library')
   await expect(page.getByText(/\d+ exercises/).first()).toBeVisible()
+  await expect(page.getByText('Update ready')).toBeVisible()
   await context.setOffline(false)
 
   // Reload hands over to the new worker and reloads onto it.

@@ -738,6 +738,14 @@ input[type='range'] {
   .player-last-time {
     display: none;
   }
+  /* Today on the cover screen: the room (decor) steps aside so today's
+     workout and its Start sit above the tab bar without scrolling. */
+  .today-stage > .rae-room {
+    display: none;
+  }
+  .today-stage > .today-mission {
+    border-radius: 1.75rem;
+  }
 }
 
 
