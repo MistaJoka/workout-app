@@ -14,8 +14,13 @@ import { resolveToday } from '../../domain/schedule/weeklySchedule'
 import type { PersonalRecord, WeekTotal } from '../../domain/progress/types'
 import { formatWeight, carrots } from '../units'
 import { useWeightUnit } from '../components/useWeightUnit'
-import { BodyWeightCard } from '../components/BodyWeightCard'
-import { buildHistoryRows, type HistoryRow } from './progressHistoryRows'
+import { BodyPanel } from '../components/BodyPanel'
+import { buildHistoryRows, mergeHistory, type HistoryRow } from './progressHistoryRows'
+import { deleteActivity, listLiveActivities } from '../../infrastructure/db/repositories/activitiesRepository'
+import { activityKind, activityLabel, type ActivityEntry } from '../../domain/progress/activities'
+import { ConfirmSheet } from '../components/ConfirmSheet'
+import { storageErrorMessage } from '../../infrastructure/storageErrors'
+import { shortDay } from '../activityDays'
 import { RaeNote } from '../components/RaeNote'
 import { MonthBlooms } from '../components/MonthBlooms'
 import { goalTally, weekSummary } from '../components/WeekBlooms'
@@ -42,6 +47,9 @@ const LIST_PREVIEW_COUNT = 5
 
 type Snapshot = {
   rows: HistoryRow[]
+  // Other activities (live only): they count toward the week and show in
+  // History, set apart from app workouts.
+  activities: ActivityEntry[]
   // This week's finished workouts against weeklyGoal, and the weeks in a
   // row that met it. Progress leads with the week, so a first workout reads
   // "1 of 2", never "0 week streak".
@@ -73,6 +81,24 @@ export function ProgressScreen() {
   const [unit] = useWeightUnit()
   const [showAllExercises, setShowAllExercises] = useState(false)
   const [showAllHistory, setShowAllHistory] = useState(false)
+  const [deleting, setDeleting] = useState<ActivityEntry | null>(null)
+  const [deleteBusy, setDeleteBusy] = useState(false)
+  const [deleteError, setDeleteError] = useState<string | null>(null)
+
+  async function confirmDeleteActivity() {
+    if (!deleting) return
+    setDeleteBusy(true)
+    setDeleteError(null)
+    try {
+      await deleteActivity(deleting.id)
+      setDeleting(null)
+      setAttempt((n) => n + 1)
+    } catch (error) {
+      setDeleteError(storageErrorMessage(error, 'save'))
+    } finally {
+      setDeleteBusy(false)
+    }
+  }
 
   useEffect(() => {
     let cancelled = false
@@ -90,7 +116,11 @@ export function ProgressScreen() {
   }, [attempt])
 
   async function load(): Promise<Snapshot> {
-    const [{ plans, results, events }, schedule] = await Promise.all([getAllSessionHistory(), getWeeklySchedule()])
+    const [{ plans, results, events }, schedule, activities] = await Promise.all([
+      getAllSessionHistory(),
+      getWeeklySchedule(),
+      listLiveActivities().catch(() => [] as ActivityEntry[]),
+    ])
     const rows = await buildHistoryRows(plans, results, async (id) => {
       const name = await getTemplateName(id)
       return name ? { name } : undefined
@@ -104,15 +134,16 @@ export function ProgressScreen() {
         : (await getTemplate(resolution.templateId).catch(() => undefined))
           ? resolution.templateId
           : ROTATION[0]
-    const goal = await loadWeekGoals({ plans, results, schedule })
+    const goal = await loadWeekGoals({ plans, results, schedule, activities })
     const achievements = evaluateAchievements({ plans, results, events }, goal)
     const earnedAchievements = achievements.filter((a) => a.unlockedAt)
     const newestBadge = [...earnedAchievements].sort((a, b) => (b.unlockedAt ?? '').localeCompare(a.unlockedAt ?? ''))[0]
     return {
       startHref: startId ? `/checkin/${encodeURIComponent(startId)}` : '/',
       rows,
-      week: weekProgress(results, goal, now),
-      streak: calculateWeekStreak(results, goal, now),
+      activities,
+      week: weekProgress(results, goal, now, activities),
+      streak: calculateWeekStreak(results, goal, now, activities),
       weeks: weeklyTotals(results, now, 8),
       records: [...detectPersonalRecords(setRecords).values()].sort((a, b) => a.exerciseName.localeCompare(b.exerciseName)),
       garden: buildGarden(results, goal),
@@ -128,11 +159,22 @@ export function ProgressScreen() {
   const totalSets = rows?.reduce((sum, r) => sum + r.totalSetsCompleted, 0) ?? 0
   const exerciseRecords = snapshot?.records ?? []
   const shownRecords = showAllExercises ? exerciseRecords : exerciseRecords.slice(0, LIST_PREVIEW_COUNT)
-  const shownHistory = rows ? (showAllHistory ? rows : rows.slice(0, LIST_PREVIEW_COUNT)) : []
+  const history = rows ? mergeHistory(rows, snapshot?.activities ?? []) : []
+  const shownHistory = showAllHistory ? history : history.slice(0, LIST_PREVIEW_COUNT)
 
   return (
     <div className="p-4 space-y-4">
-      <h1 className="text-xl font-bold">Progress</h1>
+      <div className="flex items-center justify-between gap-2">
+        <h1 className="text-xl font-bold">Progress</h1>
+        {/* A workout done outside the app (a walk, a class) counts toward the week. */}
+        <Link
+          to="/activity"
+          className="btn-secondary btn-sm"
+          aria-label="Log other activity: a walk, run, class or anything you did outside the app"
+        >
+          + <span aria-hidden>👟</span>
+        </Link>
+      </div>
 
       {snapshot === null && !failed && (
         <Skeleton className="space-y-4">
@@ -259,29 +301,57 @@ export function ProgressScreen() {
           )}
           {/* After the workout wins, not before them: opening Progress should
               lead with what you've done, not a scale prompt. */}
-          <BodyWeightCard />
+          <BodyPanel />
 
-          {rows && rows.length > 0 && (
-            <section className="space-y-2">
+          {history.length > 0 && (
+            <section className="space-y-2" data-testid="progress-history">
               <p className="text-sm font-semibold text-ink-muted">History</p>
               <ul className="space-y-2">
-                {shownHistory.map((row) => (
-                  <li key={row.sessionId}>
-                    <Link to={`/history/${encodeURIComponent(row.sessionId)}`} className="block card p-3">
-                      <div className="flex items-baseline justify-between gap-2">
-                        <p className="font-semibold">{row.workoutName}</p>
-                        <p className="text-xs text-ink-muted">{formatDate(row.endedAt)}</p>
-                      </div>
-                      <p className="text-sm text-ink-muted">
-                        {row.totalSetsCompleted}/{row.totalSetsPlanned} sets
-                        {row.status === 'COMPLETED_SHORTENED' ? ', ended early' : ''}
-                      </p>
-                    </Link>
-                  </li>
-                ))}
+                {shownHistory.map((item) =>
+                  item.kind === 'workout' ? (
+                    <li key={item.row.sessionId}>
+                      <Link to={`/history/${encodeURIComponent(item.row.sessionId)}`} className="block card p-3">
+                        <div className="flex items-baseline justify-between gap-2">
+                          <p className="font-semibold">{item.row.workoutName}</p>
+                          <p className="text-xs text-ink-muted">{formatDate(item.row.endedAt)}</p>
+                        </div>
+                        <p className="text-sm text-ink-muted">
+                          {item.row.totalSetsCompleted}/{item.row.totalSetsPlanned} sets
+                          {item.row.status === 'COMPLETED_SHORTENED' ? ', ended early' : ''}
+                        </p>
+                      </Link>
+                    </li>
+                  ) : (
+                    // Other activity: a calm field, not a card, with its
+                    // emoji up front, so it never reads as an app workout.
+                    <li
+                      key={item.activity.id}
+                      className="field-calm flex items-center gap-3 py-1 pl-3"
+                      data-testid="history-activity"
+                    >
+                      <span aria-hidden className="text-2xl">
+                        {activityKind(item.activity.kind).emoji}
+                      </span>
+                      <span className="min-w-0 flex-1">
+                        <span className="sr-only">Other activity: </span>
+                        <span className="block font-semibold">{activityKind(item.activity.kind).name}</span>
+                        <span className="block text-sm text-ink-muted">{item.activity.minutes} min</span>
+                      </span>
+                      <span className="text-xs text-ink-muted">{shortDay(item.activity.day)}</span>
+                      <button
+                        type="button"
+                        className="inline-flex h-11 w-11 flex-none items-center justify-center rounded-control text-ink-muted active:bg-field-primary"
+                        aria-label={`Delete ${activityLabel(item.activity)} on ${shortDay(item.activity.day)}`}
+                        onClick={() => setDeleting(item.activity)}
+                      >
+                        ✕
+                      </button>
+                    </li>
+                  )
+                )}
               </ul>
               <ShowAllButton
-                total={rows.length}
+                total={history.length}
                 shown={LIST_PREVIEW_COUNT}
                 expanded={showAllHistory}
                 onClick={() => setShowAllHistory((v) => !v)}
@@ -289,6 +359,23 @@ export function ProgressScreen() {
             </section>
           )}
         </details>
+      )}
+
+      {deleting && (
+        <ConfirmSheet
+          title="Delete this activity?"
+          confirmLabel="Delete"
+          cancelLabel="Keep it"
+          busy={deleteBusy}
+          error={deleteError}
+          onConfirm={() => void confirmDeleteActivity()}
+          onCancel={() => {
+            setDeleting(null)
+            setDeleteError(null)
+          }}
+        >
+          {activityLabel(deleting)}, {shortDay(deleting.day)}
+        </ConfirmSheet>
       )}
     </div>
   )

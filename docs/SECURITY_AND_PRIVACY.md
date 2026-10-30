@@ -3,7 +3,7 @@
 **Status:** AUTHORITATIVE SECURITY CONTEXT  
 **Scope:** private/local-first PWA, no required backend/authentication
 
-The app stores fitness history, body-weight data, routines and profile names. Treat that information as sensitive personal data even though the product is not a medical record system.
+The app stores fitness history, body-weight data, body measurements, progress photos, routines and profile names. Treat that information as sensitive personal data even though the product is not a medical record system.
 
 ## 1. Threat model
 
@@ -34,7 +34,9 @@ The Hubby PIN (gating the reward shop and love notes) is the same kind of soft h
 - workout/session history;
 - progression/familiarity;
 - custom routines/schedule;
-- body weight;
+- body weight and body measurements;
+- other activities (workouts done outside the app);
+- progress photos (the most sensitive data the app holds: pictures of a person's body);
 - check-in responses;
 - settings/preferences where they reveal behavior.
 
@@ -45,7 +47,7 @@ The Hubby PIN (gating the reward shop and love notes) is the same kind of soft h
 - app code/build metadata.
 
 ### Export files
-Treat exports as sensitive because they can contain most or all local user data in portable form.
+Treat exports as sensitive because they can contain most or all local user data in portable form. Since 2026-10-29 they also carry progress photos (base64), which makes them both larger and more sensitive; the backup card says so.
 
 ## 3. Local persistence rules
 
@@ -55,6 +57,15 @@ Treat exports as sensitive because they can contain most or all local user data 
 - explicit destructive reset/profile deletion requires confirmation;
 - avoid logging sensitive complete records to console in production;
 - no secret/API credential should ever be embedded in client source or export files.
+
+### Progress photos (owner decision 2026-10-29)
+- taken through the phone's own camera or file picker (`<input type="file" accept="image/*" capture="user">`); the app never opens a camera stream, never analyzes a picture, and has no pose tracking;
+- re-encoded on the device before storage (decoded, scaled to at most 1280 px, JPEG 0.8 through a canvas), so EXIF, GPS location, device and other metadata are not kept;
+- stored only as Blobs in the active profile's IndexedDB (`progressPhotos`), shown through short-lived `blob:` object URLs that are revoked when the screen closes;
+- never uploaded, shared or synced: they leave the device only inside a backup file the person saves herself;
+- deleting one removes the picture data and keeps a tombstone row (no picture), so importing an older backup can't bring it back;
+- another profile's backup never imports photos (or measurements or activities);
+- adding a photo re-asks for persistent storage; a full or failing store is reported as a storage problem, never a network one.
 
 ## 4. Network minimization
 
@@ -98,7 +109,8 @@ Required behavior:
 - do not accept arbitrary URLs/scripts as executable resources;
 - preserve or explicitly migrate known versions;
 - avoid partial destructive imports where rollback is impossible;
-- test duplicate event/result IDs and invalid references.
+- test duplicate event/result IDs and invalid references;
+- imported photos must be base64 whose bytes are really JPEG, PNG or WebP (magic-byte check at parse time, size-capped per row); the stored type comes from those bytes, never from the file's claim, so an SVG or script can't be smuggled in as a "photo".
 
 ## 7. Exercise/content provenance
 
@@ -141,7 +153,7 @@ Default behavior:
 - no ad SDK;
 - no social sharing;
 - no public profile;
-- no camera/mic;
+- no camera/mic streams (progress photos use the OS camera/file picker only, by explicit owner decision 2026-10-29);
 - no cloud AI;
 - no automatic external upload of exports/history.
 

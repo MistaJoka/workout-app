@@ -1,5 +1,24 @@
 import { describe, expect, it } from 'vitest'
-import { storageUsageLabel } from './storagePersistence'
+import { askPersist, storageUsageLabel } from './storagePersistence'
+
+describe('askPersist', () => {
+  it('is protected when already persisted, without asking again', async () => {
+    let asked = 0
+    const status = await askPersist({ persisted: async () => true, persist: async () => (asked++, true) })
+    expect(status).toBe('protected')
+    expect(asked).toBe(0)
+  })
+
+  it('asks when not yet persisted and reports the answer', async () => {
+    expect(await askPersist({ persisted: async () => false, persist: async () => true })).toBe('protected')
+    expect(await askPersist({ persisted: async () => false, persist: async () => false })).toBe('best-effort')
+  })
+
+  it('is unknown without the API or when it throws', async () => {
+    expect(await askPersist(undefined)).toBe('unknown')
+    expect(await askPersist({ persist: () => Promise.reject(new Error('nope')) })).toBe('unknown')
+  })
+})
 
 describe('storageUsageLabel', () => {
   it('shows usage against the allowance', () => {

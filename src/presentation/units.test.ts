@@ -1,5 +1,35 @@
 import { describe, expect, it } from 'vitest'
-import { carrots, defaultWeightUnitForLocale, formatWeight, kgToUnit, roundToStep, unitToKg } from './units'
+import {
+  carrots,
+  cmToUnit,
+  defaultWeightUnitForLocale,
+  formatLength,
+  formatWeight,
+  kgToUnit,
+  lengthUnitFor,
+  roundToStep,
+  unitToCm,
+  unitToKg,
+} from './units'
+
+describe('length units follow the weight setting', () => {
+  it('lb shows inches, kg shows centimeters', () => {
+    expect(lengthUnitFor('lb')).toBe('in')
+    expect(lengthUnitFor('kg')).toBe('cm')
+  })
+
+  it('converts and round-trips cm through inches', () => {
+    expect(cmToUnit(2.54, 'in')).toBeCloseTo(1, 6)
+    expect(unitToCm(cmToUnit(81.3, 'in'), 'in')).toBeCloseTo(81.3, 6)
+    expect(cmToUnit(80, 'cm')).toBe(80)
+  })
+
+  it('formats with at most one decimal', () => {
+    expect(formatLength(80, 'cm')).toBe('80 cm')
+    expect(formatLength(81.28, 'in')).toBe('32 in')
+    expect(formatLength(80, 'in')).toBe('31.5 in')
+  })
+})
 
 describe('units', () => {
   it('round-trips kg through lb within rounding', () => {

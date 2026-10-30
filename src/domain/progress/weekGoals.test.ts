@@ -38,6 +38,50 @@ describe('mondayKey', () => {
   })
 })
 
+describe('buildWeekGoals with other activities', () => {
+  const activity = (day: string, loggedAt: string, weeklyGoal?: number, deletedAt: string | null = null) => ({
+    day,
+    loggedAt,
+    deletedAt,
+    ...(weeklyGoal != null ? { weeklyGoal } : {}),
+  })
+
+  it("an activity logged before the week's first workout pins that week's goal", () => {
+    const goals = buildWeekGoals({
+      plans: [plan('b', 3)],
+      results: [result('b', at(2026, 10, 1))],
+      activities: [activity('2026-09-29', at(2026, 9, 29), 2)],
+      legacyGoal: 1,
+      currentGoal: 3,
+    })
+    expect(goals(new Date(2026, 9, 1))).toBe(2)
+  })
+
+  it('a back-dated activity logged after the first workout does not re-score the week', () => {
+    const goals = buildWeekGoals({
+      plans: [plan('a', 2)],
+      results: [result('a', at(2026, 9, 30))],
+      // Logged Friday for Monday, after the schedule went to 4.
+      activities: [activity('2026-09-28', at(2026, 10, 2), 4)],
+      legacyGoal: 1,
+      currentGoal: 4,
+    })
+    expect(goals(new Date(2026, 8, 28))).toBe(2)
+  })
+
+  it('an activity with no snapshot, or a deleted one, falls back like a workout would', () => {
+    const goals = buildWeekGoals({
+      plans: [],
+      results: [],
+      activities: [activity('2026-09-29', at(2026, 9, 29)), activity('2026-10-06', at(2026, 10, 6), 5, at(2026, 10, 6))],
+      legacyGoal: 2,
+      currentGoal: 3,
+    })
+    expect(goals(new Date(2026, 8, 30))).toBe(2)
+    expect(goals(new Date(2026, 9, 7))).toBe(3)
+  })
+})
+
 describe('buildWeekGoals: a week keeps the goal it started with', () => {
   it("uses the goal snapshotted on the week's first workout", () => {
     const goals = buildWeekGoals({

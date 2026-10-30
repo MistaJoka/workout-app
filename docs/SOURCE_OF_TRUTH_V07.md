@@ -46,9 +46,25 @@ The following are first-class v0.7 behaviors because they exist in the reconcile
 - home-screen shortcuts from the web manifest;
 - swapping a move on the Start screen for one workout, chosen by her from the library, never an app-claimed equivalent (owner decision 2026-10-29);
 - circuit routines: a custom routine can run as rounds, one set of each move in turn (owner decision 2026-10-29);
-- one theme (Pixel Bloom) and three motion preferences.
+- one theme (Pixel Bloom) and three motion preferences;
+- other activity, body measurements and progress photos (owner decisions 2026-10-29, below).
 
 These additions do not authorize unrelated scope expansion.
+
+### Owner decisions 2026-10-29: other activity, body measurements, progress photos
+
+**Other activity.** She can record a workout done outside the app (`/activity`, from a tile in Today's workout row and a `+` on Progress): a kind (walk, run, bike, swim, yoga, class, sport, other; each with an emoji), minutes (15/30/45/60 plus a 5-minute stepper, 5–600), and a day (today by default, up to 7 days back). Rules (`domain/progress/activities.ts`):
+- it counts as a workout toward the weekly goal and the weekly streak: `weekProgress`, `calculateWeekStreak`, Today's week pots (a clover, not a flower, on an activity-only day) and Rae's "goal met" line;
+- like a SessionPlan, it snapshots the live weekly goal when logged, so if it opens a week it pins that week's goal (`buildWeekGoals`, ordered by when it was logged so a back-dated activity can't re-score a week a workout already pinned);
+- it is never progression evidence, familiarity, a personal record or exercise history, and it earns none of the per-workout rewards (XP, carrots, boss hits, badges, garden flowers, story chapters, workout milestones, the 8-week chart): those stay tied to workouts done in the app (decided here: they are derived per finished session, and an activity has no plan, sets or effort to score);
+- it shows in Progress > More > History, in a calm field with its emoji, never as a card like an app workout;
+- deleting asks first (ConfirmSheet) and leaves a tombstone (`deletedAt`), so a backup import can't revive it.
+
+**Body measurements.** Next to body weight, in one Body panel (Progress > More > Body: Weight / Size / Photos tabs, so Progress doesn't grow): optional waist, hips, chest, upper arm, thigh. Stored in cm, shown in inches when the unit setting is lb (one setting; never store inches). One entry per local day; saving again the same day replaces it. Each site shows its latest value, its 30-day change and a sparkline, the same rule as body weight. Values outside 10–300 cm are refused as typos. Deleting a day asks first and leaves an empty row (a tombstone, newest-wins on import).
+
+**Progress photos.** From the phone's camera (`<input type="file" accept="image/*" capture="user">`) or gallery. Each picture is decoded, scaled to at most 1280 px on the long edge and re-encoded as JPEG (quality 0.8) through a canvas on the device, which drops EXIF/GPS and all other metadata, then stored as a Blob in this profile's IndexedDB (`progressPhotos`). A gallery pick keeps its file date as its day; a camera shot is today. Progress shows the newest six; `/photos` has the full grid, a full-size view, side-by-side compare of any two (older on the left) and delete (asks first; the picture is removed and a tombstone stays). Photos never leave the device except inside a backup she saves herself. Adding one re-asks for persistent storage; failures are storage errors (quota included), never network errors.
+
+**Backups.** All three are exported and imported (`activities`, `bodyMeasurements`, `progressPhotos` with the picture as base64; the bundle stays version 1 since every new key is optional, so older backups import unchanged). Imported pictures must really be JPEG/PNG/WebP by their bytes. Another profile's backup brings none of the three. Settings' backup card says backups include photos and can be large.
 
 ## 3. Explicit exclusions
 
@@ -60,7 +76,7 @@ Unless the owner explicitly changes this contract:
 - no mandatory cloud sync;
 - no runtime LLM/AI/image-generation API;
 - no chatbot coach;
-- no camera pose tracking;
+- no camera pose tracking (progress photos taken through the phone's own camera/file picker are allowed: owner, 2026-10-29; they are never analyzed);
 - no microphone/voice coaching;
 - no automatic diagnosis or clinical decision-making;
 - no social feed, followers or competitive network;
@@ -293,6 +309,7 @@ Persist at minimum:
 - familiarity;
 - progression;
 - body-weight entries;
+- other activities, body measurements and progress photos (DB v7);
 - profile metadata/scope;
 - backup/export metadata when required.
 

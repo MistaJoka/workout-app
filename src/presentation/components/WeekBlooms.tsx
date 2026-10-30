@@ -7,6 +7,7 @@ import { goalGradientLine } from '../../domain/progress/stats'
 import { MOMENTUM_STYLE, momentumProps } from './TodayMomentum'
 import { GARDEN_DAY_STYLE, SpeciesHead, daySpecies, speciesSuffix } from './gardenDay'
 import type { GardenSpecies } from '../../domain/progress/garden'
+import { activityKind } from '../../domain/progress/activities'
 
 // This week as seven little pots on Rae's windowsill: a flower blooms on
 // every day with a finished workout. Planned days hold a sprout, rest days
@@ -61,8 +62,24 @@ function Flower({ species, x = 0, small = false }: { species: GardenSpecies; x?:
   )
 }
 
+// A day with only other activities (a walk, a class): a leafy clover, not
+// a flower, so it reads as "moved today" without posing as an app workout
+// (flowers stay the garden's, which only app workouts grow).
+function Clover() {
+  return (
+    <>
+      <rect x="7" y="9" width="2" height="5" fill={LEAF_DARK} />
+      <rect x="4" y="6" width="3" height="3" fill={LEAF} />
+      <rect x="9" y="6" width="3" height="3" fill={LEAF} />
+      <rect x="6" y="3" width="4" height="3" fill={LEAF} />
+      <rect x="7" y="6" width="2" height="2" fill={LEAF_DARK} />
+    </>
+  )
+}
+
 // Two workouts on a day: the older one small behind, the newest in front.
 function Plant({ mark, species }: { mark: DayMark; species: GardenSpecies[] }) {
+  if (mark === 'done' && species.length === 0) return <Clover />
   if (mark === 'done' && species.length > 0) {
     return species.length > 1 ? (
       <>
@@ -90,9 +107,12 @@ const NO_NAMES: WeekNames = { sessions: {}, templates: {} }
 export function dayLabel(day: WeekDay, names: WeekNames): string {
   const prefix = `${WEEKDAY_LABELS[day.weekday]}${day.isToday ? ', today' : ''}`
   if (day.mark === 'done') {
+    const others = (day.activities ?? []).map((a) => activityKind(a.kind).name).join(' and ')
+    if (day.sessions.length === 0) return `${prefix}, ${others || 'activity'} done`
+    const plus = others ? `, plus ${others}` : ''
     const flowers = speciesSuffix(daySpecies(day.sessions.map((s) => s.sessionId)))
-    if (day.sessions.length > 1) return `${prefix}, ${day.sessions.length} workouts done${flowers}`
-    return `${prefix}, ${names.sessions[day.sessions[0]?.sessionId ?? ''] ?? 'workout'} done${flowers}`
+    if (day.sessions.length > 1) return `${prefix}, ${day.sessions.length} workouts done${flowers}${plus}`
+    return `${prefix}, ${names.sessions[day.sessions[0]?.sessionId ?? ''] ?? 'workout'} done${flowers}${plus}`
   }
   if (day.mark === 'planned') return `${prefix}, ${names.templates[day.plannedTemplateId ?? ''] ?? 'workout'} planned`
   if (day.mark === 'rest') return `${prefix}, rest day`

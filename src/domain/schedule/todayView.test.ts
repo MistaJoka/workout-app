@@ -89,6 +89,22 @@ describe('buildWeek', () => {
     const schedule: WeeklySchedule = { ...EMPTY_SCHEDULE, 2: 'fs.full-body-a' }
     expect(buildWeek([], schedule, NOW)[1].mark).toBe('planned')
   })
+
+  it('counts other activities on their day, apart from workouts, and skips deleted ones', () => {
+    const schedule: WeeklySchedule = { ...EMPTY_SCHEDULE, 2: 'fs.full-body-a' }
+    const week = buildWeek([result(21)], schedule, NOW, [
+      { id: 'w', kind: 'walk', day: '2026-09-22', deletedAt: null },
+      { id: 'y', kind: 'yoga', day: '2026-09-21', deletedAt: null },
+      { id: 'x', kind: 'run', day: '2026-09-24', deletedAt: '2026-09-25T00:00:00.000Z' },
+      { id: 'old', kind: 'run', day: '2026-09-20', deletedAt: null },
+    ])
+    expect(week.map((d) => d.mark)).toEqual(['done', 'done', 'open', 'open', 'open', 'open', 'open'])
+    expect(week[0].count).toBe(2)
+    expect(week[0].sessions).toHaveLength(1)
+    expect(week[1].activities.map((a) => a.kind)).toEqual(['walk'])
+    expect(week[1].sessions).toHaveLength(0)
+    expect(week.reduce((n, d) => n + d.count, 0)).toBe(3)
+  })
 })
 
 describe('workoutsToday', () => {

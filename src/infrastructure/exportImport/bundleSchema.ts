@@ -1,4 +1,8 @@
 import { z } from 'zod'
+import { MAX_ACTIVITY_MINUTES } from '../../domain/progress/activities'
+import { MAX_MEASUREMENT_CM, MIN_MEASUREMENT_CM } from '../../domain/progress/measurements'
+import { sniffImageMime } from '../../domain/progress/photos'
+import { BASE64_PATTERN, base64ToBytes } from './photoCodec'
 
 // Row-level shape checks for a backup file, so a hand-edited or damaged file
 // is rejected before anything is written (docs/SECURITY_AND_PRIVACY.md,
@@ -166,6 +170,69 @@ const loveNote = z
 
 const favorite = z.object({ exerciseId: z.string().min(1), hearted: z.boolean(), updatedAt: isoLike }).passthrough()
 
+const dayKey = z.string().regex(/^\d{4}-\d{2}-\d{2}$/)
+
+const activity = z
+  .object({
+    id: z.string().min(1),
+    kind: z.enum(['walk', 'run', 'bike', 'swim', 'yoga', 'class', 'sport', 'other']),
+    minutes: z.number().int().min(1).max(MAX_ACTIVITY_MINUTES),
+    day: dayKey,
+    loggedAt: isoLike,
+    updatedAt: isoLike,
+    deletedAt: isoLike.nullable(),
+    weeklyGoal: z.number().int().positive().optional(),
+  })
+  .passthrough()
+
+const cm = z.number().min(MIN_MEASUREMENT_CM).max(MAX_MEASUREMENT_CM)
+
+const measurement = z
+  .object({
+    day: dayKey,
+    recordedAt: isoLike,
+    waistCm: cm.optional(),
+    hipsCm: cm.optional(),
+    chestCm: cm.optional(),
+    upperArmCm: cm.optional(),
+    thighCm: cm.optional(),
+  })
+  .passthrough()
+
+// ~15 MB of base64 per picture: far above a 1280px JPEG, low enough that a
+// hostile file can't ask for an absurd allocation per row.
+const MAX_PHOTO_BASE64 = 15_000_000
+
+// The picture's bytes must really be a raster image (checked from its
+// first bytes), so nothing but JPEG/PNG/WebP is ever stored or shown.
+const photoData = z
+  .string()
+  .min(16)
+  .max(MAX_PHOTO_BASE64)
+  .regex(BASE64_PATTERN)
+  .refine((s) => {
+    try {
+      return sniffImageMime(base64ToBytes(s.slice(0, 24))) != null
+    } catch {
+      return false
+    }
+  }, 'not an image')
+
+const photo = z
+  .object({
+    id: z.string().min(1),
+    day: dayKey,
+    takenAt: isoLike,
+    updatedAt: isoLike,
+    deletedAt: isoLike.nullable(),
+    width: z.number().int().positive().optional(),
+    height: z.number().int().positive().optional(),
+    dataBase64: photoData.optional(),
+  })
+  .passthrough()
+  // A photo that isn't deleted has to carry its picture.
+  .refine((p) => p.deletedAt != null || p.dataBase64 != null, 'photo without picture')
+
 export const exportBundleSchema = z
   .object({
     exportedAt: isoLike,
@@ -184,5 +251,8 @@ export const exportBundleSchema = z
     redemptions: z.array(redemption).optional(),
     loveNotes: z.array(loveNote).optional(),
     favorites: z.array(favorite).optional(),
+    activities: z.array(activity).optional(),
+    bodyMeasurements: z.array(measurement).optional(),
+    progressPhotos: z.array(photo).optional(),
   })
   .passthrough()

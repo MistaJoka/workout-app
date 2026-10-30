@@ -231,6 +231,9 @@ export function SettingsScreen() {
           <p className="text-sm text-ink-muted">
             Last backup: {lastExportAt ? new Date(lastExportAt).toLocaleString() : 'never'}
           </p>
+          <p className="text-sm text-ink-muted" data-testid="backup-photos-note">
+            Includes your progress photos, so it can be large.
+          </p>
           <input
             ref={fileInputRef}
             type="file"
@@ -410,12 +413,14 @@ function ImportSheet({
         {otherPerson ? (
           <p className="text-sm" role="alert">
             <span className="font-semibold">This is {fromName}'s backup</span> from {madeOn}. Their workouts are added to{' '}
-            {intoName}'s history. {intoName}'s progress, routines and settings stay as they are.
+            {intoName}'s history. {intoName}'s progress, routines and settings stay as they are. Their photos and body
+            data aren't added.
           </p>
         ) : (
           <p className="text-sm text-ink-muted">
             {fromName ? `${fromName}'s backup` : 'Backup'} from {madeOn}. Adds workouts that aren't here yet. Progress,
-            routines and body weight keep whichever copy is newer; nothing here is rolled back.
+            routines, body weight and measurements keep whichever copy is newer; photos and activities are added, and
+            anything deleted here stays deleted.
           </p>
         )}
         <button type="button" className="btn-primary btn-lg w-full" autoFocus disabled={busy} onClick={onConfirm}>

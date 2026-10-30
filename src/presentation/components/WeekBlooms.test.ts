@@ -12,10 +12,29 @@ function day(overrides: Partial<WeekDay>): WeekDay {
     mark: 'open',
     count: 0,
     sessions: [],
+    activities: [],
     plannedTemplateId: null,
     ...overrides,
   }
 }
+
+describe('dayLabel with other activities', () => {
+  it('names an activity-only day by its activities', () => {
+    const walk = { id: 'a', kind: 'walk' as const, day: '2026-10-28' }
+    const yoga = { id: 'b', kind: 'yoga' as const, day: '2026-10-28' }
+    expect(dayLabel(day({ mark: 'done', count: 2, activities: [walk, yoga] }), { sessions: {}, templates: {} })).toBe(
+      'Wednesday, Walk and Yoga done'
+    )
+  })
+
+  it('adds activities after the workout on a mixed day', () => {
+    const walk = { id: 'a', kind: 'walk' as const, day: '2026-10-28' }
+    const done = day({ mark: 'done', count: 2, sessions: [{ sessionId: 's1', planId: 'p1', endedAt: '' }], activities: [walk] })
+    expect(dayLabel(done, { sessions: { s1: 'Full-Body A' }, templates: {} })).toBe(
+      `Wednesday, Full-Body A done, ${speciesFor('s1').name}, plus Walk`
+    )
+  })
+})
 
 const names = { sessions: { s1: 'Full-Body A', s2: 'Quick 10' }, templates: { 'fs.full-body-a': 'Full-Body A' } }
 

@@ -58,6 +58,10 @@ const LoveNotesBoxScreen = lazy(() =>
 const GiftPreviewScreen = lazy(() =>
   import('./presentation/screens/GiftPreviewScreen').then((m) => ({ default: m.GiftPreviewScreen }))
 )
+const ActivityLogScreen = lazy(() =>
+  import('./presentation/screens/ActivityLogScreen').then((m) => ({ default: m.ActivityLogScreen }))
+)
+const PhotosScreen = lazy(() => import('./presentation/screens/PhotosScreen').then((m) => ({ default: m.PhotosScreen })))
 
 export default function App() {
   return (
@@ -92,6 +96,7 @@ export default function App() {
             <Route path="/boss" element={<BossScreen />} />
             <Route path="/story" element={<StoryScreen />} />
             <Route path="/story/:n" element={<StoryChapterScreen />} />
+            <Route path="/photos" element={<PhotosScreen />} />
           </Route>
           {/* Full-screen flow outside the tab bar fades in the same way. */}
           <Route element={<RouteFade />}>
@@ -99,6 +104,7 @@ export default function App() {
             <Route path="/session/:sessionId" element={<WorkoutPlayerScreen />} />
             <Route path="/session/:sessionId/complete" element={<SessionCompleteScreen />} />
             <Route path="/recap" element={<RecapScreen />} />
+            <Route path="/activity" element={<ActivityLogScreen />} />
           </Route>
           {/* Preview merged into check-in; an old /preview link has no plan state. */}
           <Route path="/preview" element={<Navigate to="/" replace />} />

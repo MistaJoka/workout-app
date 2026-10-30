@@ -87,6 +87,33 @@ describe('weeklyGoal', () => {
   })
 })
 
+describe('other activities count as workout days for the week (owner, 2026-10-29)', () => {
+  // 2026-09-28 is a Monday.
+  const at = (d: number) => result(`r${d}`, local(2026, 9, d).toISOString())
+  const act = (day: string, deletedAt: string | null = null) => ({ day, deletedAt })
+
+  it('weekProgress counts an activity like a finished workout', () => {
+    const now = local(2026, 9, 30)
+    expect(weekProgress([at(29)], 2, now, [act('2026-09-28')])).toEqual({ done: 2, goal: 2, met: true })
+  })
+
+  it('ignores activities from other weeks and deleted ones', () => {
+    const now = local(2026, 9, 30)
+    expect(weekProgress([], 2, now, [act('2026-09-27'), act('2026-09-29', '2026-09-30T00:00:00.000Z')]).done).toBe(0)
+  })
+
+  it('calculateWeekStreak lets activities fill a week', () => {
+    const now = local(2026, 9, 30)
+    // Last week: one workout + one walk; this week: two activities.
+    expect(calculateWeekStreak([at(22)], 2, now, [act('2026-09-24'), act('2026-09-28'), act('2026-09-29')])).toBe(2)
+  })
+
+  it('without activities nothing changes', () => {
+    const now = local(2026, 9, 30)
+    expect(calculateWeekStreak([at(22)], 2, now)).toBe(0)
+  })
+})
+
 describe('calculateWeekStreak', () => {
   // 2026-09-28 is a Monday.
   const at = (d: number) => result(`r${d}`, local(2026, 9, d).toISOString())

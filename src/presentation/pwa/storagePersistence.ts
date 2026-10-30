@@ -1,22 +1,39 @@
 export type StorageStatus = 'protected' | 'best-effort' | 'unknown'
 
+type PersistApi = { persist?: () => Promise<boolean>; persisted?: () => Promise<boolean> }
+
 let requested: Promise<StorageStatus> | null = null
+
+function browserStorage(): PersistApi | undefined {
+  return typeof navigator === 'undefined' ? undefined : (navigator.storage as PersistApi | undefined)
+}
+
+// One ask: already persisted, or granted now.
+export async function askPersist(storage: PersistApi | undefined): Promise<StorageStatus> {
+  try {
+    if (!storage?.persist) return 'unknown'
+    const already = (await storage.persisted?.()) ?? false
+    const granted = already || (await storage.persist())
+    return granted ? 'protected' : 'best-effort'
+  } catch {
+    return 'unknown'
+  }
+}
 
 // Asks the browser not to evict this origin's IndexedDB under storage
 // pressure. Called once at startup; the answer is cached for About.
 export function requestPersistentStorage(): Promise<StorageStatus> {
-  if (!requested) {
-    requested = (async () => {
-      try {
-        if (typeof navigator === 'undefined' || !navigator.storage?.persist) return 'unknown'
-        const already = (await navigator.storage.persisted?.()) ?? false
-        const granted = already || (await navigator.storage.persist())
-        return granted ? 'protected' : 'best-effort'
-      } catch {
-        return 'unknown'
-      }
-    })()
-  }
+  if (!requested) requested = askPersist(browserStorage())
+  return requested
+}
+
+// Before storing something big (a progress photo): asks again unless
+// storage is already protected. Chrome decides per ask (installed PWA,
+// engagement), so a "no" at startup can become a "yes" later.
+export async function ensurePersistentStorage(): Promise<StorageStatus> {
+  const status = await requestPersistentStorage()
+  if (status === 'protected') return status
+  requested = askPersist(browserStorage())
   return requested
 }
 
