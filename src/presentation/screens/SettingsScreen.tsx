@@ -187,6 +187,17 @@ export function SettingsScreen() {
             <ChoiceChip label="lb" active={unit === 'lb'} onClick={() => setUnit('lb')} />
             <ChoiceChip label="kg" active={unit === 'kg'} onClick={() => setUnit('kg')} />
           </SettingsRow>
+          {/* Planning the week and Rae's reminders live on Schedule; this row
+              is the way there from Settings (audit O3/O4). */}
+          <Link to="/schedule" className="flex min-h-14 w-full items-center gap-3 px-3 py-2">
+            <span aria-hidden="true" className="flex-none text-2xl">
+              📅
+            </span>
+            <span className="flex-1 font-semibold">Your week & reminders</span>
+            <span className="text-xl text-ink-muted" aria-hidden>
+              ›
+            </span>
+          </Link>
           <SettingsRow label="Rest timer">
             <ChoiceChip
               label={`Sound ${feedback.sound ? 'on' : 'off'}`}
