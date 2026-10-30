@@ -117,6 +117,9 @@ test('an activity can be deleted after confirming, and the week goes back', asyn
   await page.getByRole('button', { name: 'Yoga', exact: true }).click()
   await page.locator('[data-armed="true"]').waitFor()
   await page.getByRole('button', { name: /^Save Yoga/ }).click()
+  // Save goes back once the write commits; navigating before that would
+  // let its navigate(-1) land after ours.
+  await page.waitForURL((url) => !url.hash.startsWith('#/activity'))
   await page.goto('/#/progress')
   await openProgressMore(page)
   await page.getByRole('button', { name: /^Delete Yoga, 30 min/ }).click()
