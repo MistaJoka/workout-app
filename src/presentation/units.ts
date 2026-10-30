@@ -28,6 +28,30 @@ export function formatWeight(kg: number, unit: WeightUnit): string {
   return `${Number.isInteger(rounded) ? rounded : rounded.toFixed(1)} ${unit}`
 }
 
+// Body measurements: centimeters internally, inches shown whenever the
+// weight setting is lb (one setting, no separate length picker). Never
+// store inches.
+export type LengthUnit = 'cm' | 'in'
+
+const CM_PER_IN = 2.54
+
+export function lengthUnitFor(weightUnit: WeightUnit): LengthUnit {
+  return weightUnit === 'lb' ? 'in' : 'cm'
+}
+
+export function cmToUnit(cm: number, unit: LengthUnit): number {
+  return unit === 'cm' ? cm : cm / CM_PER_IN
+}
+
+export function unitToCm(value: number, unit: LengthUnit): number {
+  return unit === 'cm' ? value : value * CM_PER_IN
+}
+
+export function formatLength(cm: number, unit: LengthUnit): string {
+  const rounded = Math.round(cmToUnit(cm, unit) * 10) / 10
+  return `${Number.isInteger(rounded) ? rounded : rounded.toFixed(1)} ${unit}`
+}
+
 // Onboarding's starting pick for the weight unit, before anyone has chosen
 // one: en-US reads pounds, everywhere else reads metric. Only the initial
 // suggestion -- the person can still change it on the same screen, and the
