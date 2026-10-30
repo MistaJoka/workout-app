@@ -10,7 +10,8 @@ import {
 } from '../../infrastructure/db/repositories/customTemplateRepository'
 import { Chip } from './LibraryScreen'
 import { buildEditRows, defaultPrescription, type EditRow } from './routineBuilderRows'
-import { setUnsavedGuard } from '../components/unsavedGuard'
+import { setUnsavedGuard, useBackGuard } from '../components/unsavedGuard'
+import { NotFound } from '../components/NotFound'
 import { FilterSheet } from '../components/FilterSheet'
 import { kgToUnit, roundToStep, stepInUnit, unitToKg } from '../units'
 import { useWeightUnit } from '../components/useWeightUnit'
@@ -42,6 +43,9 @@ export function RoutineBuilderScreen() {
   const [params] = useSearchParams()
   const navigate = useNavigate()
   const editingId = templateId && isCustomTemplateId(templateId) ? templateId : null
+  // /routines/<id>/edit for a routine that isn't one of hers (or no longer
+  // exists) is not a blank new routine.
+  const [notFound, setNotFound] = useState(templateId !== undefined && !editingId)
 
   const [name, setName] = useState('')
   const [rows, setRows] = useState<Row[]>([])
@@ -67,6 +71,7 @@ export function RoutineBuilderScreen() {
       let loadedRounds: number | null = null
       if (editingId) {
         const template = await getTemplate(editingId)
+        if (!template && !cancelled) setNotFound(true)
         if (template && !cancelled) {
           const exercises = await getExercises(template.exercises.map((e) => e.exerciseId))
           loadedName = template.name
@@ -132,6 +137,13 @@ export function RoutineBuilderScreen() {
     })
   }, [dirty, saving])
 
+  // The Android back gesture asks the same question (HashRouter can't
+  // block it; a history sentinel catches it instead).
+  useBackGuard(dirty && !saving, (proceed) => {
+    setPicking(false)
+    setConfirmingLeave(() => proceed)
+  })
+
   function update(index: number, patch: Partial<Row>) {
     setRows((r) => r.map((row, i) => (i === index ? { ...row, ...patch } : row)))
   }
@@ -179,6 +191,8 @@ export function RoutineBuilderScreen() {
       setSaving(false)
     }
   }
+
+  if (notFound) return <NotFound message="That routine isn't available." />
 
   if (!loaded) {
     return (

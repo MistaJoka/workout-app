@@ -1,4 +1,9 @@
 import { useEffect, useRef, type RefObject } from 'react'
+import { backSentinels } from './historySentinel'
+
+// Patch history before the router starts listening, and pop a sentinel a
+// reload left behind.
+backSentinels()
 
 const FOCUSABLE = 'button:not([disabled]), [href], input:not([disabled]), select:not([disabled]), textarea:not([disabled]), [tabindex]:not([tabindex="-1"])'
 
@@ -14,6 +19,10 @@ export function nextFocusIndex(current: number, count: number, backwards: boolea
 // (`initialFocus`, else its first control), keep Tab inside it, close on
 // Escape, and hand focus back to whatever opened it when it closes. Shared
 // by ConfirmSheet and FilterSheet; any other bottom sheet can use it.
+// The back gesture closes the sheet too (like Escape) instead of leaving
+// the page: while open, the sheet holds a history sentinel
+// (historySentinel.ts), released on close, so a normal close leaves
+// history as it was and a navigation from the sheet replaces it.
 export function useSheetFocus(
   sheetRef: RefObject<HTMLElement | null>,
   onClose: () => void,
@@ -23,6 +32,12 @@ export function useSheetFocus(
   // focus) every render.
   const onCloseRef = useRef(onClose)
   onCloseRef.current = onClose
+
+  useEffect(() => {
+    const sentinels = backSentinels()
+    if (!enabled || !sentinels) return
+    return sentinels.hold(() => onCloseRef.current())
+  }, [enabled])
 
   useEffect(() => {
     if (!enabled) return

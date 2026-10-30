@@ -108,6 +108,8 @@ export default function App() {
           </Route>
           {/* Preview merged into check-in; an old /preview link has no plan state. */}
           <Route path="/preview" element={<Navigate to="/" replace />} />
+          {/* A stale link or old shortcut never renders a blank page. */}
+          <Route path="*" element={<Navigate to="/" replace />} />
         </Routes>
       </HashRouter>
     </ThemeProvider>

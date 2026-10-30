@@ -13,6 +13,7 @@ import { getProgression } from '../../infrastructure/db/repositories/familiarity
 import { getWeeklySchedule } from '../../infrastructure/db/repositories/scheduleRepository'
 import { weeklyGoal } from '../../domain/progress/stats'
 import { BackButton } from '../components/BackButton'
+import { NotFound } from '../components/NotFound'
 import { ThumbBar } from '../components/ThumbBar'
 import { LengthDial } from '../components/LengthDial'
 import { scaleTemplate, type WorkoutLength } from '../../domain/session/lengthDial'
@@ -144,14 +145,7 @@ export function CheckInScreen() {
     )
   }
   if (loaded === null || !preview) {
-    return (
-      <div className="p-4 space-y-2">
-        <p>That workout isn't available.</p>
-        <button className="underline" onClick={() => navigate('/')}>
-          Back to Today
-        </button>
-      </div>
-    )
+    return <NotFound message="That workout isn't available." />
   }
 
   const totalSets = preview.exercises.reduce((sum, e) => sum + e.sets, 0)

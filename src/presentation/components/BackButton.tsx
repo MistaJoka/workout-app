@@ -1,4 +1,12 @@
-import { useNavigate } from 'react-router-dom'
+import { useNavigate, type NavigateFunction } from 'react-router-dom'
+
+// Back one entry when there is one (react-router keeps `idx` in
+// history.state), else Today. Shared with the back-gesture guard.
+export function goBackOrToday(navigate: NavigateFunction): void {
+  const idx = (window.history.state as { idx?: number } | null)?.idx ?? 0
+  if (idx > 0) navigate(-1)
+  else navigate('/')
+}
 
 // A home-screen app has no browser back button, so every screen outside
 // the tab bar needs its own way out. Goes back in history when there is
@@ -14,11 +22,7 @@ export function BackButton({
   onBeforeBack?: (goBack: () => void) => void
 }) {
   const navigate = useNavigate()
-  const goBack = () => {
-    const idx = (window.history.state as { idx?: number } | null)?.idx ?? 0
-    if (idx > 0) navigate(-1)
-    else navigate('/')
-  }
+  const goBack = () => goBackOrToday(navigate)
   return (
     <button type="button" className="btn-ghost -ml-3" onClick={() => (onBeforeBack ? onBeforeBack(goBack) : goBack())}>
       ‹ {label}
