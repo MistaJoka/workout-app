@@ -130,3 +130,16 @@ Missing product truth belongs in `support/CLAUDE_REQUESTS.md`; implementation ag
 - integrate approved Pixel Bloom assets/animation in controlled batches.
 
 Done since this list was written: WebKit journeys run in CI (`e2e-webkit` job, Playwright's Ubuntu image; `npm run e2e:webkit` locally), the offline journey covers going offline mid-session and resuming (`e2e/data-offline.spec.ts`), and session start is atomic (plan + start event in one transaction).
+
+## Self-hosting (PC or Raspberry Pi 4)
+
+The app is served from your own machine over [Tailscale Funnel](https://tailscale.com/kb/1223/funnel): public HTTPS, no router changes, nothing to install on the phone.
+
+```sh
+bash scripts/selfhost.sh         # build + publish + enable; re-run to ship updates
+bash scripts/selfhost.sh --stop  # turn it off
+```
+
+It prints the URL (`https://<machine>.<tailnet>.ts.net:10000/`). Open it in Chrome on the phone and choose **Install app**. The app is offline-first, so the host only needs to be on for the first install and for updates.
+
+On a Raspberry Pi 4: install Node 22+, rsync and Tailscale, `tailscale up`, enable Funnel for the node in the Tailscale admin, clone this repo, `npm ci`, run `sudo loginctl enable-linger $USER` once so the service runs headless, then run the script. Moving hosts changes the URL, and saved data stays with the old URL. Before switching, save a backup in Settings on the phone, install from the new URL, then restore it.
