@@ -3,6 +3,7 @@ import { goalForWeek, mondayKey as weekKey, type WeekGoal } from '../progress/we
 import { projectSetRecords } from '../progress/history'
 import { flowStatus } from '../session/flow'
 import { effectiveSetSlots } from '../session/appliedEvents'
+import { eventsBySession as groupEvents, plansById } from '../progress/historyIndex'
 
 // Carrots: Hubby Bunny's reward-shop currency. Like Bloom XP (xp.ts),
 // EARNED carrots are derived from history every time rather than stored, so
@@ -69,17 +70,11 @@ export function earnedCarrots(
 ): EarnedCarrots {
   const results = [...history.results].sort((a, b) => a.endedAt.localeCompare(b.endedAt))
   const records = projectSetRecords(history.plans, history.results, history.events)
-  const plansById = new Map(history.plans.map((p) => [p.id, p]))
-  const eventsBySession = new Map<string, SessionEvent[]>()
-  for (const event of history.events) {
-    const list = eventsBySession.get(event.sessionId) ?? []
-    list.push(event)
-    eventsBySession.set(event.sessionId, list)
-  }
+  const planById = plansById(history.plans)
+  const eventsBySession = groupEvents(history.events)
 
   // Grouped once: filtering every record per session made this quadratic.
-  const recordsBySession = new Map<string, typeof records>()
-  for (const r of records) recordsBySession.set(r.sessionId, [...(recordsBySession.get(r.sessionId) ?? []), r])
+  const recordsBySession = groupRecords(records)
   const weekCounts = new Map<string, number>()
   const bySession: SessionCarrots[] = []
   let total = 0
@@ -98,7 +93,7 @@ export function earnedCarrots(
         label: `${sessionRecords.length} ${sessionRecords.length === 1 ? 'set' : 'sets'}`,
       })
     }
-    const plan = plansById.get(result.planId)
+    const plan = planById.get(result.planId)
     if (plan && flowStatus(plan, eventsBySession.get(result.sessionId) ?? []).perfect) {
       sources.push({
         id: `${result.sessionId}:perfect`,
@@ -141,6 +136,16 @@ export function earnedCarrots(
   for (const extra of extraCarrotSources) total += extra.amount
 
   return { total, bySession, extra: [...extraCarrotSources] }
+}
+
+function groupRecords<T extends { sessionId: string }>(records: readonly T[]): Map<string, T[]> {
+  const grouped = new Map<string, T[]>()
+  for (const r of records) {
+    const list = grouped.get(r.sessionId)
+    if (list) list.push(r)
+    else grouped.set(r.sessionId, [r])
+  }
+  return grouped
 }
 
 // What one finished session earned, or null if it isn't (yet) a finished

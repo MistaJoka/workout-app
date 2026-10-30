@@ -11,13 +11,13 @@ import { useEffect, useState } from 'react'
 import { ROTATION, foundationStrengthStarterTemplates } from '../../domain/content/fixtures/foundationStrengthStarter'
 import { getExercises, getHerMix, getTemplate, getTemplateName } from '../../domain/content/catalog'
 import { HER_MIX_ID, HER_MIX_NAME } from '../../domain/content/herMix'
-import { getPlan } from '../../infrastructure/db/repositories/sessionRepository'
+import { loadSessionHistory } from '../../application/historyIndex'
+import { plansById } from '../../domain/progress/historyIndex'
 import { getCurrentState, settleOpenSessions } from '../../application/sessionService'
 import { ResumeActions } from '../components/ResumeActions'
 import { listCustomTemplates } from '../../infrastructure/db/repositories/customTemplateRepository'
 import { HeartBadge } from '../components/HeartBadge'
 import { getWeeklySchedule } from '../../infrastructure/db/repositories/scheduleRepository'
-import { db } from '../../infrastructure/db/schema'
 import type { Exercise, WorkoutTemplate } from '../../domain/content/types'
 import { WEEKDAY_LABELS, resolveToday, type Weekday } from '../../domain/schedule/weeklySchedule'
 import { buildWeek, setsDone, todayMode, workoutsToday, type WeekDay } from '../../domain/schedule/todayView'
@@ -89,12 +89,12 @@ async function loadToday(now: Date): Promise<TodayData> {
   // First, so a workout abandoned long ago is finished (at its last action)
   // before history is read: it counts, and never blocks today.
   const resumable = await settleOpenSessions(now)
-  const [results, schedule, custom, plans, events, rewards, savingFor, herMix, activities] = await Promise.all([
-    db.sessionResults.toArray(),
+  const [{ results, plans, events }, schedule, custom, rewards, savingFor, herMix, activities] = await Promise.all([
+    // Shared with every other history reader and kept until the next write
+    // (application/historyIndex.ts), so coming back to Today rereads nothing.
+    loadSessionHistory(),
     getWeeklySchedule(),
     listCustomTemplates(),
-    db.sessionPlans.toArray(),
-    db.sessionEvents.toArray(),
     listRewards().catch(() => []),
     getSetting<string | null>(SAVING_FOR_KEY).catch(() => null),
     // Thumbnails-only failure mode, like the rest of Today: no mix tile
@@ -110,10 +110,12 @@ async function loadToday(now: Date): Promise<TodayData> {
 
   const goals = await loadWeekGoals({ plans, results, schedule, activities })
 
+  const planById = plansById(plans)
+
   // A/B rotation: the template after the most recent curated one.
   let suggestion = ROTATION[0]
   for (const result of [...results].sort((a, b) => b.endedAt.localeCompare(a.endedAt))) {
-    const plan = await getPlan(result.planId)
+    const plan = planById.get(result.planId)
     const index = plan ? ROTATION.indexOf(plan.templateId) : -1
     if (index >= 0) {
       suggestion = ROTATION[(index + 1) % ROTATION.length]
@@ -152,7 +154,7 @@ async function loadToday(now: Date): Promise<TodayData> {
     }
   } else if (mode === 'done') {
     const latest = today[0]
-    const plan = await getPlan(latest.planId)
+    const plan = planById.get(latest.planId)
     const minutes = Math.max(1, Math.round((Date.parse(latest.endedAt) - Date.parse(latest.startedAt)) / 60000))
     const count = today.length > 1 ? `, ${today.length} workouts today` : ''
     mission = {
@@ -201,7 +203,7 @@ async function loadToday(now: Date): Promise<TodayData> {
   ].filter(({ template }) => template.id !== hideId)
 
   // Names for the week's pots: what was done each day (via its plan) and
-  // what is planned. This week only, so a handful of plan reads.
+  // what is planned.
   const week = buildWeek(results, schedule, now, activities)
   const templateNames: Record<string, string> = {}
   for (const t of [...foundationStrengthStarterTemplates, ...custom]) templateNames[t.id] = t.name
@@ -209,7 +211,7 @@ async function loadToday(now: Date): Promise<TodayData> {
   templateNames[HER_MIX_ID] = HER_MIX_NAME
   const sessionNames: Record<string, string> = {}
   for (const s of week.flatMap((d) => d.sessions)) {
-    const plan = await getPlan(s.planId)
+    const plan = planById.get(s.planId)
     if (plan) sessionNames[s.sessionId] = templateNames[plan.templateId] ?? (await getTemplateName(plan.templateId)) ?? 'Workout'
   }
 

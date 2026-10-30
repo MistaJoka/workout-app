@@ -1,4 +1,4 @@
-import { db } from '../infrastructure/db/schema'
+import { loadSessionHistory } from './historyIndex'
 import { summarizeLastTime } from '../domain/session/lastTime'
 import { formatWeight } from '../presentation/units'
 import { readWeightUnit } from '../presentation/components/useWeightUnit'
@@ -6,18 +6,9 @@ import { readWeightUnit } from '../presentation/components/useWeightUnit'
 // In-progress sessions have no SessionResult, so the current one is never
 // counted as "last time" — only finished sessions are.
 export async function getLastTimeSummary(exerciseId: string): Promise<string | null> {
-  const results = await db.sessionResults.toArray()
+  // The shared, cached history (historyIndex.ts): the Start screen asks
+  // this once per move.
+  const [{ plans, results, events }, unit] = await Promise.all([loadSessionHistory(), readWeightUnit()])
   if (results.length === 0) return null
-  const [plans, events, unit] = await Promise.all([
-    db.sessionPlans.bulkGet(results.map((r) => r.planId)),
-    db.sessionEvents.where('sessionId').anyOf(results.map((r) => r.sessionId)).toArray(),
-    readWeightUnit(),
-  ])
-  return summarizeLastTime(
-    plans.filter((p): p is NonNullable<typeof p> => p != null),
-    results,
-    events,
-    exerciseId,
-    (kg) => formatWeight(kg, unit)
-  )
+  return summarizeLastTime(plans, results, events, exerciseId, (kg) => formatWeight(kg, unit))
 }

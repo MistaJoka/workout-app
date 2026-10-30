@@ -77,7 +77,11 @@ export function computeXp(history: XpHistory, weeklyGoal: WeekGoal): { total: nu
   const bySession = new Map<string, SessionXp>()
   // Grouped once: filtering every record per session made this quadratic.
   const recordsBySession = new Map<string, typeof records>()
-  for (const r of records) recordsBySession.set(r.sessionId, [...(recordsBySession.get(r.sessionId) ?? []), r])
+  for (const r of records) {
+    const list = recordsBySession.get(r.sessionId)
+    if (list) list.push(r)
+    else recordsBySession.set(r.sessionId, [r])
+  }
   const weekCounts = new Map<string, number>()
   let total = 0
   for (const result of results) {

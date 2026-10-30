@@ -14,7 +14,7 @@ import {
 import { RARITY_LABEL, speciesFor } from '../../domain/progress/garden'
 import { monthGrid } from '../../domain/progress/monthGrid'
 import type { PersonalRecord } from '../../domain/progress/types'
-import { getAllSessionHistory } from '../../infrastructure/db/repositories/sessionRepository'
+import { loadSessionHistory } from '../../application/historyIndex'
 import { AchievementBadge, loadAchievements } from '../components/AchievementUnlocks'
 import { useCountUp } from '../components/CountUp'
 import { effectiveMotion, usePrefersReducedMotion } from '../components/MovementMedia'
@@ -38,13 +38,13 @@ const HOLD_MS = 250
 type Slide = { id: string; label: string; body: ReactNode }
 
 async function loadRecap(week: Date): Promise<WeekRecap> {
-  const [history, achievements] = await Promise.all([getAllSessionHistory(), loadAchievements().catch(() => [])])
+  const [history, achievements] = await Promise.all([loadSessionHistory(), loadAchievements().catch(() => [])])
   const goals = await loadWeekGoals(history)
   return buildWeekRecap(history, achievements, goals, week)
 }
 
 async function loadMonthRecap(month: Date): Promise<MonthRecap> {
-  const [history, achievements] = await Promise.all([getAllSessionHistory(), loadAchievements().catch(() => [])])
+  const [history, achievements] = await Promise.all([loadSessionHistory(), loadAchievements().catch(() => [])])
   return buildMonthRecap(history, achievements, month)
 }
 

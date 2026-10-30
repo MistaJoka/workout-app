@@ -49,6 +49,7 @@ Dependencies should point downward. Domain code must not import React, Dexie or 
 ### Application
 - `src/application/sessionService.ts` — starts sessions, records events, materializes results, triggers post-session progression/familiarity updates.
 - `src/application/lastTime.ts` — previous-performance summary.
+- `src/application/historyIndex.ts` — `loadSessionHistory()`: the one cached read of plans/results/events for every history-derived screen, kept until any write to those tables (`sessionHistoryVersion()`, Dexie hooks + `storagemutated`); unchanged sessions keep their frozen event lists across re-reads so their replays stay cached. Domain readers share per-array groupings from `src/domain/progress/historyIndex.ts` (`eventsBySession`, `plansById`) instead of filtering history per session; `src/application/historyPerf.test.ts` guards their cost and output at 300 workouts.
 - `src/application/restFeedback.ts` — rest-end sound/haptic feedback.
 
 ### Domain

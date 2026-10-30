@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react'
 import { useNavigate, useParams } from 'react-router-dom'
-import { getAllSessionHistory } from '../../infrastructure/db/repositories/sessionRepository'
+import { loadSessionHistory } from '../../application/historyIndex'
 import { projectSetRecords } from '../../domain/progress/history'
 import { detectPersonalRecords, estimateOneRepMax, perExerciseHistory } from '../../domain/progress/stats'
 import type { ExerciseHistoryPoint, PersonalRecord } from '../../domain/progress/types'
@@ -29,7 +29,7 @@ export function ExerciseHistoryScreen() {
   }, [exerciseId])
 
   async function load(id: string): Promise<View | null> {
-    const { plans, results, events } = await getAllSessionHistory()
+    const { plans, results, events } = await loadSessionHistory()
     const records = projectSetRecords(plans, results, events)
     const points = perExerciseHistory(records, id)
     if (points.length === 0) return null

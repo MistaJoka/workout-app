@@ -16,7 +16,8 @@ import {
   type Boss,
   type BossHistory,
 } from '../../domain/game/bosses'
-import { getAllSessionHistory, getEventsForSession, getPlan, getResult } from '../../infrastructure/db/repositories/sessionRepository'
+import { getEventsForSession, getPlan, getResult } from '../../infrastructure/db/repositories/sessionRepository'
+import { loadSessionHistory } from '../../application/historyIndex'
 import { getWeeklySchedule } from '../../infrastructure/db/repositories/scheduleRepository'
 import { playCelebration } from '../../application/celebrationSounds'
 import { useFeedbackSettings } from './useFeedbackSettings'
@@ -35,7 +36,7 @@ async function loadHit(sessionId: string): Promise<Hit | null> {
     getPlan(sessionId),
     getResult(sessionId),
     getEventsForSession(sessionId),
-    getAllSessionHistory(),
+    loadSessionHistory(),
     getWeeklySchedule(),
   ])
   if (!plan || !result) return null

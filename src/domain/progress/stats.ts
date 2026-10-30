@@ -50,28 +50,34 @@ export function detectPersonalRecords(records: readonly SetRecord[]): Map<string
   const best = new Map<string, PersonalRecord>()
   const ordered = [...records].sort((a, b) => a.sessionEndedAt.localeCompare(b.sessionEndedAt))
   for (const record of ordered) {
-    if (!record.met) continue
-    const m = metric(record)
-    if (!m) continue
-    const current = best.get(record.exerciseId)
-    if (current) {
-      const better =
-        m.unit === 'kg' && current.unit === 'kg'
-          ? m.value > current.value || (m.value === current.value && (m.reps ?? 0) > (current.reps ?? 0))
-          : m.value > current.value
-      if (!better) continue
-    }
-    best.set(record.exerciseId, {
-      exerciseId: record.exerciseId,
-      exerciseName: record.exerciseName,
-      unit: m.unit,
-      value: m.value,
-      ...(m.reps != null ? { reps: m.reps } : {}),
-      sessionId: record.sessionId,
-      sessionEndedAt: record.sessionEndedAt,
-    })
+    const next = improvedRecord(best.get(record.exerciseId), record)
+    if (next) best.set(record.exerciseId, next)
   }
   return best
+}
+
+// One step of detectPersonalRecords: the record `record` sets for its move
+// when it beats `current` (or there is none yet), else null.
+export function improvedRecord(current: PersonalRecord | undefined, record: SetRecord): PersonalRecord | null {
+  if (!record.met) return null
+  const m = metric(record)
+  if (!m) return null
+  if (current) {
+    const better =
+      m.unit === 'kg' && current.unit === 'kg'
+        ? m.value > current.value || (m.value === current.value && (m.reps ?? 0) > (current.reps ?? 0))
+        : m.value > current.value
+    if (!better) return null
+  }
+  return {
+    exerciseId: record.exerciseId,
+    exerciseName: record.exerciseName,
+    unit: m.unit,
+    value: m.value,
+    ...(m.reps != null ? { reps: m.reps } : {}),
+    sessionId: record.sessionId,
+    sessionEndedAt: record.sessionEndedAt,
+  }
 }
 
 // Calendar-date arithmetic, never millisecond subtraction, so DST shifts

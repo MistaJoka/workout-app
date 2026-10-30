@@ -1,3 +1,4 @@
+import Dexie from 'dexie'
 import { db } from '../schema'
 import type { SessionEvent, SessionPlan, SessionResult } from '../../../domain/session/types'
 
@@ -69,9 +70,14 @@ type SessionHistory = { plans: SessionPlan[]; results: SessionResult[]; events: 
 // that starts after a write always sees it.
 let inFlight: Promise<SessionHistory> | null = null
 let hooked = false
+// Bumped by every write to these tables (this tab's, through the hooks, and
+// any tab's, through Dexie's storagemutated), so a cache of history can
+// tell it went stale (application/historyIndex.ts).
+let version = 0
 
 function endShare(): void {
   inFlight = null
+  version += 1
 }
 
 function hookWrites(): void {
@@ -82,6 +88,20 @@ function hookWrites(): void {
     table.hook('updating', endShare)
     table.hook('deleting', endShare)
   }
+  // Other tabs' writes (and table clears, which skip the hooks). Parts are
+  // keyed "idb://<database>/<table>/<index>".
+  const watched = [db.sessionPlans, db.sessionResults, db.sessionEvents].map((t) => `idb://${db.name}/${t.name}/`)
+  Dexie.on('storagemutated', (parts) => {
+    if (Object.keys(parts).some((key) => watched.some((prefix) => key.startsWith(prefix)))) endShare()
+  })
+}
+
+// The history's write counter. Watching starts on the first read, so it
+// only promises that history read after a given value saw every write
+// before that value changed.
+export function sessionHistoryVersion(): number {
+  hookWrites()
+  return version
 }
 
 // Read-only snapshot for progress projections (src/domain/progress).

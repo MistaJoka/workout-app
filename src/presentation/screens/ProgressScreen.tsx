@@ -4,7 +4,7 @@ import { useGiverName } from '../components/useGiverName'
 import { giverRole } from '../../domain/rewards/pin'
 import { Link } from 'react-router-dom'
 import { RecapLink } from '../components/RecapEntry'
-import { getAllSessionHistory } from '../../infrastructure/db/repositories/sessionRepository'
+import { loadSessionHistory } from '../../application/historyIndex'
 import { getTemplate, getTemplateName } from '../../domain/content/catalog'
 import { projectSetRecords } from '../../domain/progress/history'
 import { calculateWeekStreak, detectPersonalRecords, weekProgress, weeklyTotals } from '../../domain/progress/stats'
@@ -117,7 +117,7 @@ export function ProgressScreen() {
 
   async function load(): Promise<Snapshot> {
     const [{ plans, results, events }, schedule, activities] = await Promise.all([
-      getAllSessionHistory(),
+      loadSessionHistory(),
       getWeeklySchedule(),
       listLiveActivities().catch(() => [] as ActivityEntry[]),
     ])

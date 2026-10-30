@@ -4,7 +4,7 @@ import { listAllTemplates } from '../../domain/content/catalog'
 import { DRAFT_TEMPLATE_IDS } from '../../domain/content/fixtures/raeDraftTemplates'
 import { lastMainTemplateId, pickSurprise, surprisePool } from '../../domain/content/surprise'
 import type { WorkoutTemplate } from '../../domain/content/types'
-import { getAllSessionHistory } from '../../infrastructure/db/repositories/sessionRepository'
+import { loadSessionHistory } from '../../application/historyIndex'
 import { playCelebration } from '../../application/celebrationSounds'
 import { BackButton } from '../components/BackButton'
 import { effectiveMotion, usePrefersReducedMotion } from '../components/MovementMedia'
@@ -20,7 +20,7 @@ const HOLD_MS = 900
 type Loaded = { pick: WorkoutTemplate; reel: string[] }
 
 async function load(): Promise<Loaded | null> {
-  const [{ curated, custom, herMix }, { plans, results }] = await Promise.all([listAllTemplates(), getAllSessionHistory()])
+  const [{ curated, custom, herMix }, { plans, results }] = await Promise.all([listAllTemplates(), loadSessionHistory()])
   const lastTemplateId = lastMainTemplateId(plans, results, DRAFT_TEMPLATE_IDS)
   const pool = surprisePool({ curated, custom, herMix, lastTemplateId, draftIds: DRAFT_TEMPLATE_IDS })
   const pick = pickSurprise(pool)

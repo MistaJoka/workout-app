@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react'
-import { getAllSessionHistory } from '../../infrastructure/db/repositories/sessionRepository'
+import { loadSessionHistory } from '../../application/historyIndex'
 import { projectSetRecords } from '../../domain/progress/history'
 import { sessionHighlights, type SessionHighlights } from '../../domain/progress/sessionHighlights'
 import type { PersonalRecord } from '../../domain/progress/types'
@@ -17,7 +17,7 @@ export function CompleteHighlights({ sessionId }: { sessionId: string }) {
 
   useEffect(() => {
     let cancelled = false
-    getAllSessionHistory()
+    loadSessionHistory()
       .then(({ plans, results, events }) => {
         if (cancelled) return
         setHighlights(sessionHighlights(projectSetRecords(plans, results, events), results, sessionId))

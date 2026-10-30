@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react'
 import { Link } from 'react-router-dom'
-import { getAllSessionHistory } from '../../infrastructure/db/repositories/sessionRepository'
+import { loadSessionHistory } from '../../application/historyIndex'
 import { projectSetRecords } from '../../domain/progress/history'
 import { summarizeExerciseForYou, type ExerciseYouSummary } from '../../domain/progress/exerciseYou'
 import type { PersonalRecord } from '../../domain/progress/types'
@@ -59,7 +59,7 @@ export function ExerciseYou({ exerciseId }: { exerciseId: string }) {
 }
 
 async function load(exerciseId: string): Promise<Loaded | null> {
-  const { plans, results, events } = await getAllSessionHistory()
+  const { plans, results, events } = await loadSessionHistory()
   const summary = summarizeExerciseForYou(projectSetRecords(plans, results, events), exerciseId)
   if (!summary) return null
   const lastTime = await getLastTimeSummary(exerciseId).catch(() => null)
