@@ -13,6 +13,10 @@ describe('routineSummary', () => {
   it('counts moves and sets and estimates minutes', () => {
     expect(routineSummary(t([{ sets: 2, reps: 10 }, { sets: 2, timeSeconds: 20 }]))).toBe('2 moves, 4 sets, about 10 min')
   })
+  it('names a circuit by its rounds', () => {
+    const c = { ...t([{ sets: 9, reps: 10 }, { sets: 1, reps: 10 }]), circuit: { rounds: 3 } }
+    expect(routineSummary(c)).toMatch(/^2 moves, circuit × 3, about \d+ min$/)
+  })
   it('uses singular words for one', () => {
     expect(routineSummary(t([{ sets: 1, reps: 10 }]))).toBe('1 move, 1 set, about 5 min')
   })

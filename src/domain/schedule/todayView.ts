@@ -96,10 +96,14 @@ export function todayMode(input: { inProgress: boolean; doneToday: boolean; rest
 }
 
 export function setsDone(
-  plan: { exercises: readonly { sets: number }[] },
+  plan: { exercises: readonly { sets: number }[]; circuit?: { rounds: number } },
   state: { currentExerciseIndex: number; currentSetNumber: number }
 ): { done: number; total: number } {
   const total = plan.exercises.reduce((sum, e) => sum + e.sets, 0)
-  const before = plan.exercises.slice(0, state.currentExerciseIndex).reduce((sum, e) => sum + e.sets, 0)
-  return { done: Math.min(total, before + Math.max(0, state.currentSetNumber - 1)), total }
+  // A circuit runs one set of each move per round (domain/session/circuit.ts).
+  const before = plan.circuit
+    ? Math.max(0, state.currentSetNumber - 1) * plan.exercises.length + state.currentExerciseIndex
+    : plan.exercises.slice(0, state.currentExerciseIndex).reduce((sum, e) => sum + e.sets, 0) +
+      Math.max(0, state.currentSetNumber - 1)
+  return { done: Math.min(total, before), total }
 }

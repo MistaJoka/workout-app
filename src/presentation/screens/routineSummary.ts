@@ -5,6 +5,10 @@ import { WEEKDAY_LABELS, type Weekday, type WeeklySchedule } from '../../domain/
 // "5 moves, 10 sets, about 15 min" — the same estimate Today and Start use.
 export function routineSummary(template: WorkoutTemplate): string {
   const moves = template.exercises.length
+  if (template.circuit) {
+    const r = template.circuit.rounds
+    return `${moves} ${moves === 1 ? 'move' : 'moves'}, circuit × ${r}, about ${estimateMinutes(template)} min`
+  }
   const sets = template.exercises.reduce((sum, e) => sum + e.prescription.sets, 0)
   return `${moves} ${moves === 1 ? 'move' : 'moves'}, ${sets} ${sets === 1 ? 'set' : 'sets'}, about ${estimateMinutes(template)} min`
 }

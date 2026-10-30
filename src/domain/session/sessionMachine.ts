@@ -1,3 +1,4 @@
+import { nextInCircuit } from './circuit'
 import type { SessionEvent, SessionPlan, SessionState, SessionStatus } from './types'
 
 export function initSessionState(): SessionState {
@@ -19,6 +20,7 @@ function nextPointer(
   exerciseIndex: number,
   setNumber: number
 ): { exerciseIndex: number; setNumber: number } | null {
+  if (plan.circuit) return nextInCircuit(plan, exerciseIndex, setNumber)
   const exercise = plan.exercises[exerciseIndex]
   if (setNumber < exercise.sets) {
     return { exerciseIndex, setNumber: setNumber + 1 }
@@ -60,7 +62,12 @@ export function applyEvent(plan: SessionPlan, state: SessionState, event: Sessio
       if (next === null) {
         return { ...state, status: 'COMPLETED', restStartedAt: null, restEndsAt: null, holdStartedAt: null, appliedEventIds }
       }
-      const restSeconds = plan.exercises[state.currentExerciseIndex].restSeconds
+      // A circuit rests briefly between moves and properly between rounds.
+      const restSeconds = plan.circuit
+        ? next.exerciseIndex === 0
+          ? plan.circuit.roundRestSeconds
+          : plan.circuit.moveRestSeconds
+        : plan.exercises[state.currentExerciseIndex].restSeconds
       const restStartedAt = event.timestamp
       const restEndsAt = new Date(new Date(restStartedAt).getTime() + restSeconds * 1000).toISOString()
       return {
@@ -101,8 +108,16 @@ export function applyEvent(plan: SessionPlan, state: SessionState, event: Sessio
 
     case 'EXERCISE_SKIPPED': {
       // The rest of this move's sets stay undone; the next move starts at
-      // set 1 with no rest. Skipping the last move ends the workout.
+      // set 1 with no rest. Skipping the last move ends the workout. In a
+      // circuit only this round's set of the move is skipped.
       if (state.status !== 'ACTIVE') return ignore
+      if (plan.circuit) {
+        const next = nextInCircuit(plan, state.currentExerciseIndex, state.currentSetNumber)
+        if (next === null) {
+          return { ...state, status: 'COMPLETED', restStartedAt: null, restEndsAt: null, holdStartedAt: null, appliedEventIds }
+        }
+        return { ...state, currentExerciseIndex: next.exerciseIndex, currentSetNumber: next.setNumber, holdStartedAt: null, appliedEventIds }
+      }
       const nextIndex = state.currentExerciseIndex + 1
       if (nextIndex >= plan.exercises.length) {
         return { ...state, status: 'COMPLETED', restStartedAt: null, restEndsAt: null, holdStartedAt: null, appliedEventIds }

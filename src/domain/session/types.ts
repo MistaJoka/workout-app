@@ -62,6 +62,9 @@ export type SessionPlan = {
   // The Start screen's length dial (domain/session/lengthDial.ts), already
   // baked into `exercises`. Absent means usual (and on every older plan).
   length?: WorkoutLength
+  // A circuit (domain/session/circuit.ts): every move has `rounds` sets and
+  // the player visits one set of each move per round. Absent = move by move.
+  circuit?: { rounds: number; moveRestSeconds: number; roundRestSeconds: number }
 }
 
 export type SessionEventType =

@@ -71,6 +71,9 @@ export type WorkoutTemplate = {
   name: string
   packId: string
   exercises: WorkoutTemplateExercise[]
+  // A circuit (custom routines only, domain/session/circuit.ts): one set of
+  // each move in turn, `rounds` times. Each move's own sets are ignored.
+  circuit?: { rounds: number }
 }
 
 export type ContentPack = {

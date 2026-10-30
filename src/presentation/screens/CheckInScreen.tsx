@@ -238,7 +238,10 @@ export function CheckInScreen() {
         <BackButton />
         <h1 className="text-2xl font-bold">{loaded.template.name}</h1>
         <p className="text-ink-muted">
-          {preview.exercises.length} moves, {totalSets} sets, about {minutes} min
+          {preview.circuit
+            ? `${preview.exercises.length} moves, ${preview.circuit.rounds} ${preview.circuit.rounds === 1 ? 'round' : 'rounds'}`
+            : `${preview.exercises.length} moves, ${totalSets} sets`}
+          , about {minutes} min
         </p>
       </div>
 
@@ -289,7 +292,8 @@ export function CheckInScreen() {
                 <span className="min-w-0 flex-1">
                   <span className="block truncate font-semibold">{exercise.name}</span>
                   <span className="block text-sm text-ink-muted">
-                    {exercise.sets} × {exercise.reps ? `${exercise.reps} reps` : `${exercise.timeSeconds}s`}
+                    {preview.circuit ? '' : `${exercise.sets} × `}
+                    {exercise.reps ? `${exercise.reps} reps` : `${exercise.timeSeconds}s`}
                     {exercise.weightKg != null ? ` @ ${formatWeight(exercise.weightKg, unit)}` : ''}
                   </span>
                 </span>

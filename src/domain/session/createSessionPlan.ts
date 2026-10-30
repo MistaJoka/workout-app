@@ -5,6 +5,7 @@ import { computeReproducibilityHash } from './reproducibilityHash'
 import type { SessionPlan, SessionPlanExercise } from './types'
 import { lengthDecisions, scaleTemplate, type WorkoutLength } from './lengthDial'
 import { applySwaps } from './swaps'
+import { asRounds, CIRCUIT_MOVE_REST_SECONDS, CIRCUIT_ROUND_REST_SECONDS } from './circuit'
 
 export type CreateSessionPlanParams = {
   id: string
@@ -62,7 +63,7 @@ export function createSessionPlanFromTemplate(params: CreateSessionPlanParams): 
     const was = exerciseById.get(slot.exerciseId)?.name ?? readableId(slot.exerciseId)
     return [{ exerciseId: next.id, reasonCode: 'SWAPPED_BY_USER' as const, detail: `Swapped in for ${was}.` }]
   })
-  const scaled = scaleTemplate(swapped, length)
+  const scaled = scaleTemplate(asRounds(swapped), length)
   const adaptations = [
     ...adaptTemplate(scaled, checkIn, rules),
     ...lengthDecisions(swapped, length),
@@ -100,6 +101,15 @@ export function createSessionPlanFromTemplate(params: CreateSessionPlanParams): 
     adaptations,
     ...(weeklyGoal != null ? { weeklyGoal } : {}),
     ...(length !== 'usual' ? { length } : {}),
+    ...(template.circuit && exercises.length > 0
+      ? {
+          circuit: {
+            rounds: exercises[0].sets,
+            moveRestSeconds: CIRCUIT_MOVE_REST_SECONDS,
+            roundRestSeconds: CIRCUIT_ROUND_REST_SECONDS,
+          },
+        }
+      : {}),
   }
 
   return { ...base, reproducibilityHash: computeReproducibilityHash(base) }

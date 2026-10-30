@@ -116,6 +116,8 @@ const customTemplate = z
     name: z.string(),
     packId: z.string(),
     exercises: z.array(templateExercise),
+    // A circuit routine (domain/session/circuit.ts); older backups have none.
+    circuit: z.object({ rounds: z.number().int().min(1).max(10) }).optional(),
     createdAt: isoLike,
     updatedAt: isoLike,
   })

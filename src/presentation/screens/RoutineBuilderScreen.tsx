@@ -20,6 +20,7 @@ import { ExerciseThumb } from '../components/ExerciseThumb'
 import { ThumbBar } from '../components/ThumbBar'
 import { ConfirmSheet } from '../components/ConfirmSheet'
 import { Skeleton, SkeletonBlock, SkeletonList } from '../components/Skeleton'
+import { CIRCUIT_DEFAULT_ROUNDS, CIRCUIT_MAX_ROUNDS, CIRCUIT_MIN_ROUNDS } from '../../domain/session/circuit'
 
 type Row = EditRow
 
@@ -28,8 +29,8 @@ const UNDO_MS = 5_000
 // Row control: a 44px square, the minimum comfortable tap target.
 const ROW_BTN = 'inline-flex h-11 w-11 flex-none items-center justify-center rounded-control text-lg text-ink-muted active:bg-field-primary'
 
-function snapshot(name: string, rows: Row[]): string {
-  return JSON.stringify([name.trim(), rows.map(({ exercise: _exercise, ...rest }) => rest)])
+function snapshot(name: string, rows: Row[], rounds: number | null): string {
+  return JSON.stringify([name.trim(), rows.map(({ exercise: _exercise, ...rest }) => rest), rounds])
 }
 
 function defaultRow(exercise: Exercise): Row {
@@ -44,6 +45,9 @@ export function RoutineBuilderScreen() {
 
   const [name, setName] = useState('')
   const [rows, setRows] = useState<Row[]>([])
+  // null = move by move; a number = a circuit of that many rounds
+  // (domain/session/circuit.ts).
+  const [rounds, setRounds] = useState<number | null>(null)
   const [loaded, setLoaded] = useState(!editingId && !params.get('add'))
   const [picking, setPicking] = useState(false)
   const [saving, setSaving] = useState(false)
@@ -60,19 +64,22 @@ export function RoutineBuilderScreen() {
     async function init() {
       let loadedName = ''
       let loadedRows: Row[] = []
+      let loadedRounds: number | null = null
       if (editingId) {
         const template = await getTemplate(editingId)
         if (template && !cancelled) {
           const exercises = await getExercises(template.exercises.map((e) => e.exerciseId))
           loadedName = template.name
           loadedRows = buildEditRows(template, exercises)
+          loadedRounds = template.circuit?.rounds ?? null
           setName(loadedName)
           setRows(loadedRows)
+          setRounds(loadedRounds)
         }
       }
       // The routine as stored is the baseline; an exercise added from the
       // library (?add=) is itself an unsaved change.
-      if (!cancelled) setBaseline(snapshot(loadedName, loadedRows))
+      if (!cancelled) setBaseline(snapshot(loadedName, loadedRows, loadedRounds))
       const add = params.get('add')
       if (add) {
         const exercise = (await getExercises([add])).get(add)
@@ -112,7 +119,7 @@ export function RoutineBuilderScreen() {
     if (undoTimer.current) clearTimeout(undoTimer.current)
   }
 
-  const dirty = baseline !== null && snapshot(name, rows) !== baseline
+  const dirty = baseline !== null && snapshot(name, rows, rounds) !== baseline
 
   // Leaving through the tab bar asks too, not just Back. Saving navigates
   // away on purpose, so the guard stands down while a save is in flight.
@@ -162,6 +169,7 @@ export function RoutineBuilderScreen() {
         order,
         optional: false,
       })),
+      ...(rounds != null ? { circuit: { rounds } } : {}),
     }
     try {
       await saveCustomTemplate(template)
@@ -212,6 +220,42 @@ export function RoutineBuilderScreen() {
         className="input text-lg font-semibold"
       />
 
+      {/* Move by move, or a circuit: one set of each move in turn, for a
+          number of rounds. A circuit's rounds replace each move's sets and
+          rests (short between moves, longer between rounds). */}
+      <div className="space-y-2">
+        <div role="radiogroup" aria-label="Workout style" className="grid grid-cols-2 gap-2">
+          {([
+            ['Move by move', null],
+            ['Circuit', rounds ?? CIRCUIT_DEFAULT_ROUNDS],
+          ] as const).map(([label, value]) => {
+            const active = (value == null) === (rounds == null)
+            return (
+              <button
+                key={label}
+                type="button"
+                role="radio"
+                aria-checked={active}
+                className={`chip justify-center ${active ? 'chip-active' : ''}`}
+                onClick={() => setRounds(value)}
+              >
+                {label}
+              </button>
+            )
+          })}
+        </div>
+        {rounds != null && (
+          <Stepper
+            label="Rounds"
+            value={rounds}
+            min={CIRCUIT_MIN_ROUNDS}
+            max={CIRCUIT_MAX_ROUNDS}
+            step={1}
+            onChange={setRounds}
+          />
+        )}
+      </div>
+
       {rows.length === 0 && <RaeNote expression="wink">Add your first exercise and we'll build this together.</RaeNote>}
 
       <ul className="space-y-3">
@@ -234,7 +278,9 @@ export function RoutineBuilderScreen() {
             </div>
             {/* Two across: at 390px, three steppers with 44px buttons leave no room for the number. */}
             <div className="grid grid-cols-2 gap-2">
-              <Stepper label="Sets" value={row.sets} min={1} max={8} step={1} onChange={(v) => update(index, { sets: v })} />
+              {rounds == null && (
+                <Stepper label="Sets" value={row.sets} min={1} max={8} step={1} onChange={(v) => update(index, { sets: v })} />
+              )}
               {row.reps != null ? (
                 <Stepper label="Reps" value={row.reps} min={1} max={50} step={1} onChange={(v) => update(index, { reps: v })} />
               ) : (
@@ -247,15 +293,17 @@ export function RoutineBuilderScreen() {
                   onChange={(v) => update(index, { timeSeconds: v })}
                 />
               )}
-              <Stepper
-                label="Rest"
-                value={row.restSeconds}
-                min={0}
-                max={300}
-                step={15}
-                unit="s"
-                onChange={(v) => update(index, { restSeconds: v })}
-              />
+              {rounds == null && (
+                <Stepper
+                  label="Rest"
+                  value={row.restSeconds}
+                  min={0}
+                  max={300}
+                  step={15}
+                  unit="s"
+                  onChange={(v) => update(index, { restSeconds: v })}
+                />
+              )}
               {row.weightKg != null && (
                 <Stepper
                   label={`Weight (${unit})`}

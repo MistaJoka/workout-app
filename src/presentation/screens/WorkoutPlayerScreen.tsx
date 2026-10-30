@@ -1,3 +1,4 @@
+import { moveAfter, onLastMove, setsDoneBefore, setWord } from '../../domain/session/circuit'
 import { liveSetCarrots } from '../../domain/rewards/carrots'
 import { useCallback, useEffect, useRef, useState } from 'react'
 import { newId } from '../../shared/id'
@@ -420,7 +421,7 @@ export function WorkoutPlayerScreen() {
             <div>
               <p className="text-xl font-bold leading-tight">{paused.name}</p>
               <p className="text-sm font-semibold text-ink-muted">
-                Set {state.currentSetNumber} of {paused.sets}
+                {setWord(plan)} {state.currentSetNumber} of {paused.sets}
               </p>
             </div>
           </div>
@@ -453,6 +454,7 @@ export function WorkoutPlayerScreen() {
       <RestingView
         upNext={upNext}
         upNextContent={upNext ? exerciseById.get(upNext.exerciseId) : undefined}
+        word={setWord(plan)}
         setNumber={state.currentSetNumber}
         restStartedAt={state.restStartedAt}
         restEndsAt={state.restEndsAt}
@@ -496,14 +498,16 @@ export function WorkoutPlayerScreen() {
   const liveBestPreviewValue = liveBestTarget
     ? liveBestPreview(priorBest, liveBestTarget)
     : { priorBest: null, beatsBestIfDone: false, gap: null }
-  const nextExercise = plan.exercises[state.currentExerciseIndex + 1]
+  const afterIndex = moveAfter(plan, state.currentExerciseIndex, state.currentSetNumber)
+  const nextExercise = afterIndex != null ? plan.exercises[afterIndex] : undefined
+  const lastMove = onLastMove(plan, state.currentExerciseIndex, state.currentSetNumber)
   const repTarget = exercise.reps ?? 0
   const activeMood = raeMood({
     phase: holding ? 'holding' : 'active',
     msSinceCompletedSet,
     isFlowMilestone: isFlowMilestone(flowRun),
     isLastSet: progress.total - progress.done === 1,
-    isLastMove: state.currentExerciseIndex === plan.exercises.length - 1 && plan.exercises.length > 1,
+    isLastMove: lastMove,
     seed: `${state.currentExerciseIndex}:${state.currentSetNumber}`,
   })
 
@@ -520,7 +524,11 @@ export function WorkoutPlayerScreen() {
       onConfirm={handleSkipMove}
       onCancel={() => setConfirmingSkip(false)}
     >
-      {nextExercise ? `Its other sets stay undone. Next up: ${nextExercise.name}.` : 'This is the last move, so the workout ends here.'}
+      {nextExercise
+        ? plan.circuit
+          ? `Skipped for this round. Next up: ${nextExercise.name}.`
+          : `Its other sets stay undone. Next up: ${nextExercise.name}.`
+        : 'This is the last move, so the workout ends here.'}
     </ConfirmSheet>
   ) : null
 
@@ -605,7 +613,7 @@ export function WorkoutPlayerScreen() {
           >
             Last set!
           </p>
-        ) : state.currentExerciseIndex === plan.exercises.length - 1 && plan.exercises.length > 1 ? (
+        ) : lastMove ? (
           <p className="text-right text-sm font-bold text-primary-ink">Last move</p>
         ) : null}
         {showingOverview && sessionId && (
@@ -668,7 +676,7 @@ export function WorkoutPlayerScreen() {
                 <SetDots total={exercise.sets} current={state.currentSetNumber} animate={fullMotion} />
               </div>
               <p className="text-sm font-semibold text-ink-muted">
-                Set {state.currentSetNumber} of {exercise.sets}
+                {setWord(plan)} {state.currentSetNumber} of {exercise.sets}
               </p>
               <LiveBestChip preview={liveBestPreviewValue} />
             </div>
@@ -738,7 +746,7 @@ export function WorkoutPlayerScreen() {
             : holding
               ? `Hold, ${exercise.timeSeconds} seconds`
               : undoNotice
-                ? `Set undone. Set ${state.currentSetNumber} of ${exercise.sets} again.`
+                ? `Set undone. ${setWord(plan)} ${state.currentSetNumber} of ${exercise.sets} again.`
                 : ''}
       </p>
 
@@ -923,8 +931,7 @@ function liveBestTargetFor(exercise: SessionPlanExercise, weightKg: number): Liv
 // the current one, plus the current exercise's sets before this one.
 function workoutProgress(plan: SessionPlan, exerciseIndex: number, setNumber: number): { done: number; total: number } {
   const total = plan.exercises.reduce((sum, e) => sum + e.sets, 0)
-  const before = plan.exercises.slice(0, exerciseIndex).reduce((sum, e) => sum + e.sets, 0)
-  return { done: Math.min(total, before + setNumber - 1), total }
+  return { done: Math.min(total, setsDoneBefore(plan, exerciseIndex, setNumber)), total }
 }
 
 // A running hold: its countdown in a ring, from the persisted start time
@@ -999,6 +1006,7 @@ function LiveCarrots({ count }: { count: number }) {
 function RestingView({
   upNext,
   upNextContent,
+  word,
   setNumber,
   restStartedAt,
   restEndsAt,
@@ -1016,6 +1024,7 @@ function RestingView({
   // During rest the session already points at the coming set.
   upNext: SessionPlanExercise | undefined
   upNextContent: Exercise | undefined
+  word: 'Set' | 'Round'
   setNumber: number
   restStartedAt: string | null
   restEndsAt: string
@@ -1085,6 +1094,7 @@ function RestingView({
           content={upNextContent}
           setNumber={setNumber}
           sets={upNext.sets}
+          word={word}
         />
       )}
       {error && <p className="text-sm text-accent">{error}</p>}
@@ -1111,12 +1121,14 @@ function UpNext({
   content,
   setNumber,
   sets,
+  word,
 }: {
   exerciseId: string
   name: string
   content: Exercise | undefined
   setNumber: number
   sets: number
+  word: 'Set' | 'Round'
 }) {
   const { motion } = useTheme()
   const osPrefersReduced = usePrefersReducedMotion()
@@ -1141,7 +1153,7 @@ function UpNext({
       <div>
         <p className="text-lg font-bold leading-tight">{name}</p>
         <p className="text-sm font-semibold text-ink-muted">
-          Set {setNumber} of {sets}
+          {word} {setNumber} of {sets}
         </p>
       </div>
     </div>

@@ -24,6 +24,22 @@ export function workoutOverview(plan: SessionPlan, events: readonly SessionEvent
   const over = state.status === 'COMPLETED' || state.status === 'COMPLETED_SHORTENED'
   const current = state.currentExerciseIndex
 
+  // A circuit comes back to every move each round: a move is done only
+  // when its rounds are, and "next" is the move after the current one,
+  // wrapping to the first at the end of a round.
+  if (plan.circuit) {
+    const nextIndex = plan.exercises.length > 0 ? (current + 1) % plan.exercises.length : -1
+    return plan.exercises.map((exercise, index) => {
+      const doneSets = done.get(index) ?? 0
+      let status: OverviewStatus
+      if (over || doneSets >= exercise.sets) status = doneSets > 0 ? 'done' : 'later'
+      else if (index === current) status = 'current'
+      else if (index === nextIndex) status = 'next'
+      else status = 'later'
+      return { index, exerciseId: exercise.exerciseId, name: exercise.name, plannedSets: exercise.sets, doneSets, status }
+    })
+  }
+
   return plan.exercises.map((exercise, index) => {
     const doneSets = done.get(index) ?? 0
     let status: OverviewStatus
