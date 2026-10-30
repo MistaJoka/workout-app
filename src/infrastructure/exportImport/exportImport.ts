@@ -2,7 +2,10 @@ import { db } from '../db/schema'
 import { mergeWishBooks, WISHES_KEY } from '../db/repositories/wishesRepository'
 import type { WishBook } from '../../domain/rewards/wishes'
 import type {
+  ActivityRecord,
   BodyWeightRecord,
+  MeasurementRecord,
+  PhotoRecord,
   CheckInRecord,
   CustomTemplateRecord,
   FamiliarityRecord,
@@ -16,6 +19,13 @@ import type {
 import type { SessionEvent, SessionPlan, SessionResult } from '../../domain/session/types'
 import { activeProfile, adoptBackupProfile, type Profile } from '../profiles'
 import { exportBundleSchema } from './bundleSchema'
+import { base64ToBytes, blobToBase64 } from './photoCodec'
+import { mergeActivity } from '../../domain/progress/activities'
+import { mergePhoto, sniffImageMime, type PhotoMeta } from '../../domain/progress/photos'
+
+// A progress photo as it travels in a backup: the stored row with its
+// picture as base64 (tombstones carry no picture).
+export type ExportedPhoto = PhotoMeta & { mime?: string; width?: number; height?: number; dataBase64?: string }
 
 export type ExportBundle = {
   exportedAt: string
@@ -40,6 +50,11 @@ export type ExportBundle = {
   loveNotes?: LoveNoteRecord[]
   // Added with DB v6 (hearts); optional for the same reason.
   favorites?: FavoriteRecord[]
+  // Added with DB v7 (2026-10-29); optional for the same reason. Photos make
+  // a backup much larger than before.
+  activities?: ActivityRecord[]
+  bodyMeasurements?: MeasurementRecord[]
+  progressPhotos?: ExportedPhoto[]
 }
 
 const ALL_TABLES = () => [
@@ -56,13 +71,18 @@ const ALL_TABLES = () => [
   db.redemptions,
   db.loveNotes,
   db.favorites,
+  db.activities,
+  db.bodyMeasurements,
+  db.progressPhotos,
 ]
 
 // One read transaction, so a write landing mid-export can't produce a
-// backup whose tables disagree with each other.
+// backup whose tables disagree with each other. Photo pictures are turned
+// into base64 after it closes (an await on a non-Dexie promise inside would
+// end the transaction early); the Blobs stay readable after the commit.
 export async function exportAll(): Promise<ExportBundle> {
   const { id, name, emblem } = activeProfile()
-  return db.transaction('r', ALL_TABLES(), async () => ({
+  const { photos, ...bundle } = await db.transaction('r', ALL_TABLES(), async () => ({
     exportedAt: new Date().toISOString(),
     version: 1,
     profile: { id, name, ...(emblem ? { emblem } : {}) },
@@ -79,7 +99,37 @@ export async function exportAll(): Promise<ExportBundle> {
     redemptions: await db.redemptions.toArray(),
     loveNotes: await db.loveNotes.toArray(),
     favorites: await db.favorites.toArray(),
+    activities: await db.activities.toArray(),
+    bodyMeasurements: await db.bodyMeasurements.toArray(),
+    photos: await db.progressPhotos.toArray(),
   }))
+  const progressPhotos: ExportedPhoto[] = []
+  for (const photo of photos) progressPhotos.push(await exportPhoto(photo))
+  return { ...bundle, progressPhotos }
+}
+
+async function exportPhoto({ blob, ...meta }: PhotoRecord): Promise<ExportedPhoto> {
+  if (meta.deletedAt != null || !blob) {
+    const { id, day, takenAt, updatedAt, deletedAt } = meta
+    return { id, day, takenAt, updatedAt, deletedAt: deletedAt ?? updatedAt }
+  }
+  return { ...meta, dataBase64: await blobToBase64(blob) }
+}
+
+// A backup's photos as rows to store, decoded before any write. The bundle
+// schema already checked each picture's first bytes; the full decode here
+// sets the stored type from the bytes themselves, never from the file.
+function importedPhotos(rows: ExportedPhoto[]): PhotoRecord[] {
+  return rows.map(({ dataBase64, mime: _mime, ...meta }) => {
+    if (meta.deletedAt != null || !dataBase64) {
+      const { id, day, takenAt, updatedAt, deletedAt } = meta
+      return { id, day, takenAt, updatedAt, deletedAt: deletedAt ?? updatedAt }
+    }
+    const bytes = base64ToBytes(dataBase64)
+    const type = sniffImageMime(bytes)
+    if (!type) throw new Error('Backup photo is not an image')
+    return { ...meta, mime: type, blob: new Blob([bytes], { type }) }
+  })
 }
 
 export type ParseResult = { ok: true; bundle: ExportBundle } | { ok: false; problem: string }
@@ -131,6 +181,8 @@ export async function importAll(bundle: ExportBundle): Promise<ImportSummary> {
     throw new Error(`Unsupported export bundle version: ${bundle.version}`)
   }
   const other = isOtherProfile(bundle)
+  // Decoded up front: inside the transaction only Dexie work may await.
+  const photos = other ? [] : importedPhotos(bundle.progressPhotos ?? [])
   await db.transaction('rw', ALL_TABLES(), async () => {
     await addMissing<CheckInRecord>(db.checkIns, bundle.checkIns, (r) => r.id)
     await addMissing<SessionPlan>(db.sessionPlans, bundle.sessionPlans, (r) => r.id)
@@ -181,6 +233,15 @@ export async function importAll(bundle: ExportBundle): Promise<ImportSummary> {
     // some device), so it's never allowed to roll back even when the
     // *text* side of a merge keeps the local copy.
     await mergeLoveNotes(bundle.loveNotes ?? [])
+    // Other activities, measurements and photos are this person's own body
+    // and life, so another profile's backup never brings them in (above).
+    // Activities: newest copy wins, a deletion on either side sticks.
+    await mergeActivities(bundle.activities ?? [])
+    // Measurements: one row per day, newest-wins like body weight; a
+    // cleared day is itself a newer row, so it stays cleared.
+    await putNewer<MeasurementRecord>(db.bodyMeasurements, bundle.bodyMeasurements ?? [], (r) => r.day, (r) => r.recordedAt)
+    // Photos never change; only a deletion travels, and it always wins.
+    await mergePhotos(photos)
   })
   // The profile's name and emblem live outside the database (profiles.ts);
   // a same-profile restore brings them back where this device has defaults.
@@ -255,6 +316,32 @@ async function mergeLoveNotes(rows: LoveNoteRecord[]): Promise<void> {
     }
   })
   await db.loveNotes.bulkPut(merged)
+}
+
+async function mergeActivities(rows: ActivityRecord[]): Promise<void> {
+  if (rows.length === 0) return
+  const merged = new Map<string, ActivityRecord>()
+  const local = await db.activities.bulkGet(rows.map((r) => r.id))
+  rows.forEach((incoming, i) => {
+    merged.set(incoming.id, mergeActivity(merged.get(incoming.id) ?? local[i], incoming))
+  })
+  await db.activities.bulkPut([...merged.values()])
+}
+
+async function mergePhotos(rows: PhotoRecord[]): Promise<void> {
+  if (rows.length === 0) return
+  const local = await db.progressPhotos.bulkGet(rows.map((r) => r.id))
+  const writes = new Map<string, PhotoRecord>()
+  rows.forEach((incoming, i) => {
+    const here = writes.get(incoming.id) ?? local[i]
+    const action = mergePhoto(here, incoming)
+    if (action === 'add') writes.set(incoming.id, incoming)
+    if (action === 'delete') {
+      const { id, day, takenAt, updatedAt, deletedAt } = incoming
+      writes.set(id, { id, day, takenAt, updatedAt, deletedAt })
+    }
+  })
+  if (writes.size > 0) await db.progressPhotos.bulkPut([...writes.values()])
 }
 
 type StateTable<T> = {
