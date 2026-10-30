@@ -102,13 +102,14 @@ Secondary routes such as Schedule, Routine Builder/Detail, Exercise Detail/Histo
 Primary guided flow: `Today -> Start (preview, one tap) -> Workout Player -> Rest/Pause -> Complete -> Progress`
 
 Placement rules (owner-approved button pass, 2026-09-26):
-- Every screen outside the tab bar has a way out (`components/BackButton.tsx`, falls back to Today on a deep link) — a home-screen PWA has no browser back.
+- Every screen outside the tab bar has a way out (`components/BackButton.tsx`, falls back to Today on a deep link) — a home-screen PWA has no browser back. Not-found states use `components/NotFound.tsx`; unknown routes redirect to Today. Complete's exits navigate with `replace`.
 - Fixed bottom action bars use `components/ThumbBar.tsx`: it ignores taps for 700ms whenever its content changes, so a double tap can't land on the button that replaced the first one. Give it an `armKey` that changes with the bar's content. E2E helpers wait for `[data-armed="true"]`.
 - The player's stage (Rae + the big target) is a tap-anywhere Complete Set (`components/TapStage.tsx`, rules in `presentation/stageTap.ts`): it only stands in for the bar's first action (Complete Set / Start hold), never answers the rep question, and re-arms on the bar's `armKey` via `useArmed`. Don't put buttons inside `.player-stage`.
 - Rare/destructive actions (Pause, End workout, Erase everything) stay out of the thumb bar. Profile switching lives in Settings, not a corner of every screen.
-- A screen with unsaved edits registers `components/unsavedGuard.ts`; AppShell's tabs call `guardNavigation()` (HashRouter can't block routes).
+- A screen with unsaved edits registers `components/unsavedGuard.ts`; AppShell's tabs call `guardNavigation()` (HashRouter can't block routes), and `useBackGuard(dirty, ask)` catches the Android back gesture.
 - Screen transitions come from `layout/RouteFade.tsx` (fade + rise via margin). Page animations never use `transform`: it breaks the fixed bottom bars. Sheet backdrops get the `sheet-backdrop` class (older sheets are matched by `.fixed.inset-0.items-end`). Animation delays must also be zeroed under reduced/off motion, or delayed parts stay invisible.
-- Bottom sheets use `components/useSheetFocus.ts` (focus in, trap, Escape, restore); ConfirmSheet focuses the safe choice. Backdrops use `bg-black/40` (`bg-ink/40` generates nothing: CSS-var colors take no opacity).
+- The back gesture is caught with one shared history sentinel (`components/historySentinel.ts`): a same-URL entry on top while a dirty screen or an open sheet holds it, swallowed before react-router sees the pop, removed on release; the router's push/replace/go are patched to step over it, so no junk entries stay. Never call `history.*` around it, and don't assert BackButton targets after a typed `page.goto` hash (no router `idx`: Back falls to Today).
+- Bottom sheets use `components/useSheetFocus.ts` (focus in, trap, Escape, back gesture, restore); ConfirmSheet focuses the safe choice. Backdrops use `bg-black/40` (`bg-ink/40` generates nothing: CSS-var colors take no opacity).
 - Destructive or data-changing confirmations use `components/ConfirmSheet.tsx` (in-page, never `window.confirm`). Ending a workout early asks first, is also offered from Pause, and lands on Complete so a pending next-level offer still shows.
 
 ## Platform quality rules
