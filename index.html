@@ -30,9 +30,23 @@
     <link rel="apple-touch-startup-image" media="(device-width: 768px) and (device-height: 1024px) and (-webkit-device-pixel-ratio: 2) and (orientation: portrait)" href="%BASE_URL%splash/splash-1536x2048.png" />
     <!-- splash:end -->
     <title>Foundation Strength</title>
+    <style>
+      .boot-splash { position: fixed; inset: 0; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 16px; background: #f8faff; color: #2b2d42; font: 700 20px/1.2 ui-rounded, system-ui, sans-serif; }
+      .boot-splash img { border-radius: 24px; }
+      @media (prefers-reduced-motion: no-preference) { .boot-splash img { animation: boot-pulse 1.6s ease-in-out infinite; } }
+      @keyframes boot-pulse { 50% { opacity: 0.6; } }
+    </style>
   </head>
   <body>
-    <div id="root"></div>
+    <!-- Shown until the app's script runs (React replaces it on mount), so a
+         slow first open on her phone draws the app at once, never a white
+         page. Static only: no script, colors from the Pixel Bloom tokens. -->
+    <div id="root">
+      <div class="boot-splash" role="status" aria-label="Loading Foundation Strength">
+        <img src="%BASE_URL%icons/icon-192.png" width="96" height="96" alt="" />
+        <p>Foundation Strength</p>
+      </div>
+    </div>
     <script type="module" src="/src/main.tsx"></script>
   </body>
 </html>

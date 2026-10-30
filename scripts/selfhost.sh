@@ -23,10 +23,16 @@ if [[ "${1:-}" == "--stop" ]]; then
   exit 0
 fi
 
-VITE_BASE_PATH=/ npm run build
+host="$(tailscale status --self --json | python3 -c 'import json,sys;print(json.load(sys.stdin)["Self"]["DNSName"].rstrip("."))')"
+# Gift/wish/thank-you links point at this host (src/presentation/appContext.ts).
+VITE_BASE_PATH=/ VITE_PUBLIC_APP_URL="https://$host:$PORT/" npm run build
 mkdir -p "$SITE"
 # Copy the new build in place; --delete drops stale hashed assets.
 rsync -a --delete dist/ "$SITE/"
+# Precompress text files once; the server sends the .gz when the browser
+# accepts gzip (selfhost-server.py).
+find "$SITE" -type f \( -name '*.js' -o -name '*.css' -o -name '*.json' -o -name '*.html' -o -name '*.svg' -o -name '*.webmanifest' \) \
+  -exec gzip -9 -k -f {} \;
 
 # User service so the server survives logout/reboot. On a headless Pi also
 # run once: sudo loginctl enable-linger "$USER"
@@ -47,5 +53,4 @@ systemctl --user enable "$UNIT" >/dev/null 2>&1
 systemctl --user restart "$UNIT"
 
 tailscale funnel --bg --https="$PORT" "http://127.0.0.1:$LOCAL_PORT"
-host="$(tailscale status --self --json | python3 -c 'import json,sys;print(json.load(sys.stdin)["Self"]["DNSName"].rstrip("."))')"
 echo "Live at https://$host:$PORT/"

@@ -6,6 +6,7 @@ Usage: selfhost-server.py <site-dir> [port]
 """
 import functools
 import http.server
+import os
 import sys
 
 TYPES = {
@@ -20,6 +21,31 @@ TYPES = {
 
 class Handler(http.server.SimpleHTTPRequestHandler):
     extensions_map = {**http.server.SimpleHTTPRequestHandler.extensions_map, **TYPES}
+
+    # selfhost.sh writes a .gz next to every text file at publish time. When
+    # the browser accepts gzip, send that instead (same type and caching),
+    # which cuts the first install from ~1.6 MB to ~0.5 MB.
+    def send_head(self):
+        path = self.translate_path(self.path)
+        if os.path.isdir(path) and self.path.split("?", 1)[0].endswith("/"):
+            path = os.path.join(path, "index.html")
+        gz = path + ".gz"
+        accepts = "gzip" in self.headers.get("Accept-Encoding", "")
+        if accepts and os.path.isfile(path) and os.path.isfile(gz):
+            try:
+                f = open(gz, "rb")
+            except OSError:
+                return super().send_head()
+            fs = os.fstat(f.fileno())
+            self.send_response(200)
+            self.send_header("Content-Type", self.guess_type(path))
+            self.send_header("Content-Encoding", "gzip")
+            self.send_header("Content-Length", str(fs.st_size))
+            self.send_header("Last-Modified", self.date_time_string(fs.st_mtime))
+            self.send_header("Vary", "Accept-Encoding")
+            self.end_headers()
+            return f
+        return super().send_head()
 
     def end_headers(self):
         path = self.path.split("?", 1)[0]
