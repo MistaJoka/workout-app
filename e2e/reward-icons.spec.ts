@@ -13,6 +13,7 @@ test('a reward picked by its icon shows that icon in the shop, on Today and on i
   test.setTimeout(240_000)
   await page.goto('/#/settings')
   await page.getByRole('link', { name: "Hubby's reward shop" }).click()
+  await page.getByRole('button', { name: 'Set up shop' }).click()
   await page.getByLabel('New PIN', { exact: true }).fill('4821')
   await page.getByLabel('Confirm PIN', { exact: true }).fill('4821')
   await page.getByRole('button', { name: 'Save PIN' }).click()

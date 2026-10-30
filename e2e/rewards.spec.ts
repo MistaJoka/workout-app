@@ -55,9 +55,13 @@ test('earning, redeeming and delivering a Hubby Bunny reward', async ({ page }) 
   await page.goto('/#/')
   await expect(page.getByTestId('carrot-balance-chip')).toContainText('21')
 
-  // Settings -> "Hubby's reward shop" opens straight into first-time setup.
+  // Settings -> "Hubby's reward shop" opens the shop as she sees it; setup
+  // takes the shop's own deliberate "Set up shop" tap (never automatic, so
+  // the giver's PIN isn't offered to her by surprise).
   await page.goto('/#/settings')
   await page.getByRole('link', { name: "Hubby's reward shop" }).click()
+  await expect(page.getByText('Set a PIN')).toHaveCount(0)
+  await page.getByRole('button', { name: 'Set up shop' }).click()
   await expect(page.getByText('Set a PIN')).toBeVisible()
   await enterPin(page, '4821', 'New PIN')
   await enterPin(page, '4821', 'Confirm PIN')

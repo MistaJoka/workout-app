@@ -42,6 +42,7 @@ test('same phone: she wishes, he prices it behind the PIN', async ({ page }) => 
   await stubShareSheet(page)
   await page.goto('/#/settings')
   await page.getByRole('link', { name: "Hubby's reward shop" }).click()
+  await page.getByRole('button', { name: 'Set up shop' }).click()
   await setUpShopPin(page)
   await page.getByRole('button', { name: 'Close', exact: true }).click()
   await page.getByRole('button', { name: 'Lock' }).click()

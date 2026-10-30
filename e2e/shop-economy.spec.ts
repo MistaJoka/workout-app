@@ -7,6 +7,7 @@ import { expect, test } from '@playwright/test'
 test('tiers, prices in workouts, and saving for a big reward', async ({ page }) => {
   await page.goto('/#/settings')
   await page.getByRole('link', { name: "Hubby's reward shop" }).click()
+  await page.getByRole('button', { name: 'Set up shop' }).click()
   await page.getByLabel('New PIN', { exact: true }).fill('4821')
   await page.getByLabel('Confirm PIN', { exact: true }).fill('4821')
   await page.getByRole('button', { name: 'Save PIN' }).click()

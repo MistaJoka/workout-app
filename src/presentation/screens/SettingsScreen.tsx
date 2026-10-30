@@ -264,7 +264,10 @@ export function SettingsScreen() {
 
       <SettingsGroup title="More">
         <div className="card divide-y-2 divide-[var(--color-border)]">
-          <Link to="/rewards" state={{ openManage: true }} className="flex min-h-14 w-full items-center gap-3 px-3 py-2">
+          {/* Opens the shop as she sees it. Setting up or managing it is the
+              shop's own "Set up shop" button, so the giver's PIN is never
+              offered on her phone without a deliberate tap. */}
+          <Link to="/rewards" className="flex min-h-14 w-full items-center gap-3 px-3 py-2">
             <span aria-hidden="true" className="flex-none text-2xl">
               🥕
             </span>

@@ -30,12 +30,10 @@ test('writing, unlocking, reading and rereading a Hubby Bunny love note', async 
   await finishWorkout(page)
   await expect(page.getByTestId('love-note-reward-item')).toHaveCount(0)
 
-  // Reachable from Settings -> "Hubby's reward shop" (cancelling that PIN
-  // sheet, which is the shop's own) and then the shop's "Love notes" link.
+  // Reachable from Settings -> "Hubby's reward shop" and then the shop's
+  // "Love notes" link (no PIN sheet on the way).
   await page.goto('/#/settings')
   await page.getByRole('link', { name: "Hubby's reward shop" }).click()
-  await expect(page.getByText('Set a PIN')).toBeVisible()
-  await page.getByRole('button', { name: 'Cancel' }).click()
   await page.getByRole('link', { name: 'Love notes' }).click()
   await expect(page.getByRole('heading', { name: 'Love notes' })).toBeVisible()
 
