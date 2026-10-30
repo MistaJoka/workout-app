@@ -32,7 +32,8 @@ jobs:
 
       - name: Build
         env:
-          VITE_BASE_PATH: /workout-app/
+          # Served at the root of the custom domain workout.andraewilliams.com.
+          VITE_BASE_PATH: /
         run: npm run build
 
       # GitHub Pages does not provide SPA fallback routing. Copying index.html
