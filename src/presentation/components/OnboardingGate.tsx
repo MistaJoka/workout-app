@@ -59,11 +59,15 @@ export function OnboardingGate() {
     // read the profile name and the weight-unit setting cache once, at
     // their own mount time -- before this ever wrote them. A reload is the
     // same fix ProfilePickGate uses when a profile changes underneath the
-    // app: everything remounts and reads the now-current values.
+    // app: everything remounts and reads the now-current values. The page's
+    // boot splash (index.html) covers the reload, so it isn't a white flash.
     location.reload()
   }
 
+  // Skip never throws away a name she already typed: save it (and the
+  // unit) the way finishing does. With nothing typed, just close.
   async function skip() {
+    if (hasRealName(name.trim())) return finish()
     await setSetting(ONBOARDING_DONE_KEY, true)
     setDecision('hidden')
   }
