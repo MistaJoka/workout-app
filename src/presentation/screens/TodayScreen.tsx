@@ -46,6 +46,7 @@ import { unlockedChapters, type RaeStoryChapter } from '../../domain/content/rae
 import { isChapterSeen } from '../storySeen'
 import { CarrotBalanceChip, loadCarrotBalance } from '../components/CarrotCelebration'
 import { LoveNoteBadge } from '../components/LoveNoteCelebration'
+import { listLiveActivities } from '../../infrastructure/db/repositories/activitiesRepository'
 
 const QUICK_ID = 'fs.quick-10'
 
@@ -88,7 +89,7 @@ async function loadToday(now: Date): Promise<TodayData> {
   // First, so a workout abandoned long ago is finished (at its last action)
   // before history is read: it counts, and never blocks today.
   const resumable = await settleOpenSessions(now)
-  const [results, schedule, custom, plans, events, rewards, savingFor, herMix] = await Promise.all([
+  const [results, schedule, custom, plans, events, rewards, savingFor, herMix, activities] = await Promise.all([
     db.sessionResults.toArray(),
     getWeeklySchedule(),
     listCustomTemplates(),
@@ -99,13 +100,15 @@ async function loadToday(now: Date): Promise<TodayData> {
     // Thumbnails-only failure mode, like the rest of Today: no mix tile
     // beats a blank screen.
     getHerMix().catch(() => null),
+    // Other activities only add to the week; a failed read must not blank Today.
+    listLiveActivities().catch(() => []),
   ])
   const savingGoal = savingGoalReward(rewards, savingFor)
   // Only read when she's saving for something; a failed read keeps the
   // plain "toward" line.
   const balance = savingGoal ? await loadCarrotBalance().catch(() => 0) : 0
 
-  const goals = await loadWeekGoals({ plans, results, schedule })
+  const goals = await loadWeekGoals({ plans, results, schedule, activities })
 
   // A/B rotation: the template after the most recent curated one.
   let suggestion = ROTATION[0]
@@ -199,7 +202,7 @@ async function loadToday(now: Date): Promise<TodayData> {
 
   // Names for the week's pots: what was done each day (via its plan) and
   // what is planned. This week only, so a handful of plan reads.
-  const week = buildWeek(results, schedule, now)
+  const week = buildWeek(results, schedule, now, activities)
   const templateNames: Record<string, string> = {}
   for (const t of [...foundationStrengthStarterTemplates, ...custom]) templateNames[t.id] = t.name
   // Her mix keeps its name for planned pots and Rae's memory even when gone.
@@ -221,7 +224,7 @@ async function loadToday(now: Date): Promise<TodayData> {
     weekNames: { sessions: sessionNames, templates: templateNames },
     weekGoal: goals(now),
     milestone: nextMilestone(results.length),
-    bloomStreak: bloomStreakLabel(calculateWeekStreak(results, goals, now)),
+    bloomStreak: bloomStreakLabel(calculateWeekStreak(results, goals, now, activities)),
     others,
     hasFinished: results.length > 0,
     resumeId: mode === 'resume' ? (resumable?.id ?? null) : null,
@@ -230,7 +233,7 @@ async function loadToday(now: Date): Promise<TodayData> {
       mode,
       hasFinished: results.length > 0,
       daysSinceLast: daysSinceLast(results, now),
-      goalMet: weekProgress(results, goals, now).met,
+      goalMet: weekProgress(results, goals, now, activities).met,
       part: dayPart(now),
       dateKey: localDateKey(now),
       memory,
@@ -391,6 +394,13 @@ export function TodayScreen() {
       {data && data.others.length > 0 && (
         <TileRow label={data.mission.kind === 'ready' ? 'Or pick another' : 'Workouts'}>
           <TodayTile to="/surprise" name="Surprise me: pick a workout for me" short="Surprise me" art={<span className="text-3xl">🎲</span>} />
+          {/* A workout done outside the app (a walk, a class) counts toward the week. */}
+          <TodayTile
+            to="/activity"
+            name="Log other activity: a walk, run, class or anything you did outside the app"
+            short="Other activity"
+            art={<span className="text-3xl">👟</span>}
+          />
           {data.others.map(({ template, custom, herMix }) => {
             const loop = firstRaeLoop(template.exercises.map((e) => e.exerciseId))
             const still = loop ? raeStillFor(loop.exerciseIds[0]) : null

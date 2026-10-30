@@ -1,5 +1,25 @@
 import { describe, expect, it, vi } from 'vitest'
-import { buildHistoryRows } from './progressHistoryRows'
+import { buildHistoryRows, mergeHistory, type HistoryRow } from './progressHistoryRows'
+
+describe('mergeHistory', () => {
+  it('interleaves workouts and live activities newest first', () => {
+    const row = (id: string, endedAt: string) => ({ sessionId: id, endedAt, workoutName: 'W' }) as unknown as HistoryRow
+    const activity = (id: string, day: string, deletedAt: string | null = null) => ({
+      id,
+      kind: 'walk' as const,
+      minutes: 30,
+      day,
+      loggedAt: '2026-10-29T00:00:00Z',
+      updatedAt: '2026-10-29T00:00:00Z',
+      deletedAt,
+    })
+    const items = mergeHistory(
+      [row('s1', new Date(2026, 9, 27, 18).toISOString()), row('s2', new Date(2026, 9, 25, 9).toISOString())],
+      [activity('a1', '2026-10-28'), activity('a2', '2026-10-26'), activity('gone', '2026-10-29', '2026-10-29T01:00:00Z')]
+    )
+    expect(items.map((i) => (i.kind === 'workout' ? i.row.sessionId : i.activity.id))).toEqual(['a1', 's1', 'a2', 's2'])
+  })
+})
 import type { SessionPlan, SessionResult } from '../../domain/session/types'
 
 const plan = (id: string, templateId: string): SessionPlan =>

@@ -13,7 +13,7 @@ const RECENT = 7
 
 // Body weight: latest value, 30-day trend, sparkline, and a one-tap log
 // with a +/- stepper (0.5 kg or 1 lb) pre-filled from the last entry.
-export function BodyWeightCard() {
+export function BodyWeightCard({ bare = false }: { bare?: boolean } = {}) {
   const [unit] = useWeightUnit()
   const [summary, setSummary] = useState<BodyWeightSummary | null | undefined>(undefined)
   const [logging, setLogging] = useState(false)
@@ -60,7 +60,7 @@ export function BodyWeightCard() {
   }
 
   return (
-    <section className="card p-3 space-y-2">
+    <section className={`${bare ? '' : 'card p-3 '}space-y-2`}>
       <div className="flex items-baseline justify-between">
         <p className="text-xs text-ink-muted">Body weight</p>
         {summary && summary.changeKg != null && (
@@ -83,7 +83,7 @@ export function BodyWeightCard() {
       {summary && !logging && (
         <div className="flex items-end justify-between gap-3">
           <p className="text-2xl font-bold">{formatWeight(summary.latest.kg, unit)}</p>
-          {summary.points.length > 1 && <BodyWeightSparkline points={summary.points.map((p) => p.kg)} />}
+          {summary.points.length > 1 && <Sparkline points={summary.points.map((p) => p.kg)} label="Body weight trend" />}
         </div>
       )}
 
@@ -170,7 +170,7 @@ export function BodyWeightCard() {
   )
 }
 
-function BodyWeightSparkline({ points }: { points: number[] }) {
+export function Sparkline({ points, label, className = 'h-9 w-36' }: { points: number[]; label: string; className?: string }) {
   const width = 140
   const height = 36
   const pad = 3
@@ -182,7 +182,7 @@ function BodyWeightSparkline({ points }: { points: number[] }) {
     .map((v, i) => `${i === 0 ? 'M' : 'L'}${(pad + i * stepX).toFixed(1)},${(pad + (1 - (v - min) / span) * (height - pad * 2)).toFixed(1)}`)
     .join(' ')
   return (
-    <svg viewBox={`0 0 ${width} ${height}`} className="h-9 w-36" role="img" aria-label="Body weight trend">
+    <svg viewBox={`0 0 ${width} ${height}`} className={className} role="img" aria-label={label}>
       <path d={path} fill="none" stroke="var(--color-primary)" strokeWidth="2" />
     </svg>
   )
