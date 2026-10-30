@@ -1,6 +1,9 @@
 import Dexie, { type EntityTable } from 'dexie'
 import type { SessionEvent, SessionPlan, SessionResult } from '../../domain/session/types'
 import type { WorkoutTemplate } from '../../domain/content/types'
+import type { ActivityEntry } from '../../domain/progress/activities'
+import type { MeasurementEntry } from '../../domain/progress/measurements'
+import type { PhotoMeta } from '../../domain/progress/photos'
 import { activeDbName } from '../profiles'
 
 export type CustomTemplateRecord = WorkoutTemplate & { createdAt: string; updatedAt: string }
@@ -84,6 +87,21 @@ export type ProgressionRecord = {
   pendingCandidate: { candidatePrescribedReps: number; candidateWeightKg?: number; detail: string } | null
 }
 
+// Other activity (v7): a workout done outside the app. Deleting sets
+// deletedAt and keeps the row, so a backup import can't revive it.
+export type ActivityRecord = ActivityEntry
+// Body measurements (v7): one row per local day (key = YYYY-MM-DD),
+// centimeters internally. A row with no values left is a deletion.
+export type MeasurementRecord = MeasurementEntry
+// Progress photos (v7): the re-encoded JPEG as a Blob. Deleting drops the
+// picture and keeps a tombstone row (deletedAt set, no blob).
+export type PhotoRecord = PhotoMeta & {
+  blob?: Blob
+  mime?: string
+  width?: number
+  height?: number
+}
+
 export class WorkoutDb extends Dexie {
   settings!: EntityTable<SettingsRecord, 'key'>
   checkIns!: EntityTable<CheckInRecord, 'id'>
@@ -98,6 +116,9 @@ export class WorkoutDb extends Dexie {
   redemptions!: EntityTable<RedemptionRecord, 'id'>
   loveNotes!: EntityTable<LoveNoteRecord, 'id'>
   favorites!: EntityTable<FavoriteRecord, 'exerciseId'>
+  activities!: EntityTable<ActivityRecord, 'id'>
+  bodyMeasurements!: EntityTable<MeasurementRecord, 'day'>
+  progressPhotos!: EntityTable<PhotoRecord, 'id'>
 
   // One database per profile (see src/infrastructure/profiles.ts); the
   // name is resolved once, at module load, for the active profile.
@@ -132,6 +153,12 @@ export class WorkoutDb extends Dexie {
     // v6: hearted moves (Her mix). Additive only.
     this.version(6).stores({
       favorites: 'exerciseId, updatedAt',
+    })
+    // v7: other activities, body measurements, progress photos. Additive only.
+    this.version(7).stores({
+      activities: 'id, day, updatedAt',
+      bodyMeasurements: 'day',
+      progressPhotos: 'id, day, takenAt',
     })
   }
 }

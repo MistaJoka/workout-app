@@ -1,7 +1,7 @@
 import { db } from '../schema'
 import type { SessionPlan, SessionResult } from '../../../domain/session/types'
 import { weeklyGoal } from '../../../domain/progress/stats'
-import { buildWeekGoals } from '../../../domain/progress/weekGoals'
+import { buildWeekGoals, type WeekGoalActivity } from '../../../domain/progress/weekGoals'
 import type { WeeklySchedule } from '../../../domain/schedule/weeklySchedule'
 import { getWeeklySchedule } from './scheduleRepository'
 import { getSetting, setSetting } from './settingsRepository'
@@ -17,12 +17,16 @@ export async function loadWeekGoals(loaded?: {
   plans?: readonly SessionPlan[]
   results?: readonly SessionResult[]
   schedule?: WeeklySchedule | null
+  activities?: readonly WeekGoalActivity[]
 }): Promise<(dateInWeek: Date) => number> {
-  const [plans, results, schedule, legacy] = await Promise.all([
+  const [plans, results, schedule, legacy, activities] = await Promise.all([
     loaded?.plans ?? db.sessionPlans.toArray(),
     loaded?.results ?? db.sessionResults.toArray(),
     loaded?.schedule !== undefined ? loaded.schedule : getWeeklySchedule(),
     getSetting<number>(LEGACY_WEEKLY_GOAL_KEY),
+    // Other activities can open a week too. A failed read only loses their
+    // goal snapshots, never the screen.
+    loaded?.activities ?? db.activities.toArray().catch(() => []),
   ])
   const currentGoal = weeklyGoal(schedule)
   let legacyGoal = legacy
@@ -30,5 +34,5 @@ export async function loadWeekGoals(loaded?: {
     legacyGoal = currentGoal
     await setSetting(LEGACY_WEEKLY_GOAL_KEY, legacyGoal).catch(() => {})
   }
-  return buildWeekGoals({ plans, results, legacyGoal, currentGoal })
+  return buildWeekGoals({ plans, results, activities, legacyGoal, currentGoal })
 }
