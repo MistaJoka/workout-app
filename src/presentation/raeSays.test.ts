@@ -84,16 +84,51 @@ describe('raeSays memory', () => {
   it('leads with the standout move from the last session', () => {
     const memory: RaeMemory = {
       ...EMPTY_RAE_MEMORY,
-      lastSession: { templateName: null, standout: { exerciseName: 'Squats', isHold: false, isNewBest: false } },
+      lastSession: { templateName: null, standout: { exerciseName: 'Squats', isHold: false, isNewBest: false }, yesterday: true },
     }
     const dateKey = dateKeyWhereMemoryFires({ ...base, memory })
     expect(raeSays({ ...base, memory, dateKey })).toBe('Squats looked strong yesterday!')
   })
 
+  it('says "last time" when the last session was not yesterday', () => {
+    const memory: RaeMemory = {
+      ...EMPTY_RAE_MEMORY,
+      lastSession: { templateName: null, standout: { exerciseName: 'Squats', isHold: false, isNewBest: false }, yesterday: false },
+    }
+    const dateKey = dateKeyWhereMemoryFires({ ...base, memory })
+    expect(raeSays({ ...base, memory, dateKey })).toBe('Squats looked strong last time!')
+  })
+
+  it('never cuts a name to a fragment: a longer name drops the "when", a too-long one drops the line', () => {
+    const line = (exerciseName: string, yesterday: boolean) => {
+      const memory: RaeMemory = {
+        ...EMPTY_RAE_MEMORY,
+        lastSession: { templateName: null, standout: { exerciseName, isHold: false, isNewBest: false }, yesterday },
+      }
+      return raeSays({ ...base, memory, dateKey: dateKeyWhereMemoryFires({ ...base, memory }) })
+    }
+    expect(line('Bodyweight Walking Lunge', true)).toBe('Bodyweight Walking Lunge looked strong!')
+    expect(line('Bodyweight Squat', false)).toBe('Bodyweight Squat looked strong!')
+    expect(line('Squat (Wall, slow)', true)).toBe('Squat looked strong yesterday!')
+    const tooLong: RaeMemory = {
+      ...EMPTY_RAE_MEMORY,
+      lastSession: {
+        templateName: null,
+        standout: { exerciseName: 'Bodyweight Bulgarian Split Squat', isHold: false, isNewBest: false },
+        yesterday: true,
+      },
+    }
+    for (let i = 0; i < 50; i++) {
+      const said = raeSays({ ...base, memory: tooLong, dateKey: `probe-${i}` })
+      expect(said).not.toMatch(/^Bodyweight/)
+      expect(RAE_LINES.readyMorning).toContain(said)
+    }
+  })
+
   it('calls out a new best hold differently from a plain standout', () => {
     const memory: RaeMemory = {
       ...EMPTY_RAE_MEMORY,
-      lastSession: { templateName: null, standout: { exerciseName: 'Plank', isHold: true, isNewBest: true } },
+      lastSession: { templateName: null, standout: { exerciseName: 'Plank', isHold: true, isNewBest: true }, yesterday: true },
     }
     const dateKey = dateKeyWhereMemoryFires({ ...base, memory })
     expect(raeSays({ ...base, memory, dateKey })).toBe('You beat your Plank time!')
@@ -102,7 +137,7 @@ describe('raeSays memory', () => {
   it('notices two sessions in a row on the same routine', () => {
     const memory: RaeMemory = {
       ...EMPTY_RAE_MEMORY,
-      lastSession: { templateName: 'Full-Body A', standout: null },
+      lastSession: { templateName: 'Full-Body A', standout: null, yesterday: true },
       sameTemplateAsPrevious: true,
     }
     const dateKey = dateKeyWhereMemoryFires({ ...base, memory })
@@ -110,7 +145,7 @@ describe('raeSays memory', () => {
   })
 
   it('never reports a streak without a template name to show', () => {
-    const memory: RaeMemory = { ...EMPTY_RAE_MEMORY, lastSession: { templateName: null, standout: null }, sameTemplateAsPrevious: true }
+    const memory: RaeMemory = { ...EMPTY_RAE_MEMORY, lastSession: { templateName: null, standout: null, yesterday: true }, sameTemplateAsPrevious: true }
     for (let i = 0; i < 50; i++) {
       expect(raeSays({ ...base, memory, dateKey: `probe-${i}` })).toBe(raeSays({ ...base, dateKey: `probe-${i}` }))
     }
@@ -136,7 +171,7 @@ describe('raeSays memory', () => {
 
   it('keeps resume, first-time, welcome-back and goal-met priority over any memory', () => {
     const memory: RaeMemory = {
-      lastSession: { templateName: 'Full-Body A', standout: { exerciseName: 'Squats', isHold: false, isNewBest: true } },
+      lastSession: { templateName: 'Full-Body A', standout: { exerciseName: 'Squats', isHold: false, isNewBest: true }, yesterday: true },
       sameTemplateAsPrevious: true,
       recentRareFlower: { speciesName: 'Moon Lily' },
       justBeatHold: { exerciseName: 'Plank' },
@@ -155,7 +190,7 @@ describe('raeSays memory', () => {
     const longName = 'Unbelievablylongexercisenamewithnospaces'
     const memory: RaeMemory = {
       ...EMPTY_RAE_MEMORY,
-      lastSession: { templateName: null, standout: { exerciseName: longName, isHold: false, isNewBest: false } },
+      lastSession: { templateName: null, standout: { exerciseName: longName, isHold: false, isNewBest: false }, yesterday: true },
     }
     for (let i = 0; i < 50; i++) {
       const dateKey = `probe-${i}`
@@ -176,7 +211,7 @@ describe('raeSays memory', () => {
     for (const exerciseName of names) {
       const memory: RaeMemory = {
         ...EMPTY_RAE_MEMORY,
-        lastSession: { templateName: null, standout: { exerciseName, isHold: false, isNewBest: false } },
+        lastSession: { templateName: null, standout: { exerciseName, isHold: false, isNewBest: false }, yesterday: true },
       }
       for (let i = 0; i < 50; i++) {
         const line = raeSays({ ...base, memory, dateKey: `probe-${i}` })

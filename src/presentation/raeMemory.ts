@@ -2,6 +2,7 @@ import type { SessionEvent, SessionPlan, SessionResult } from '../domain/session
 import { projectSetRecords } from '../domain/progress/history'
 import { sessionHighlights } from '../domain/progress/sessionHighlights'
 import { buildGarden } from '../domain/progress/garden'
+import { localDayKey } from '../domain/progress/activities'
 import type { SetRecord } from '../domain/progress/types'
 import type { RaeMemory } from './raeSays'
 import { EMPTY_RAE_MEMORY } from './raeSays'
@@ -41,12 +42,20 @@ export function buildRaeMemory(args: {
   return {
     lastSession: {
       templateName: lastTemplateId ? templateNames[lastTemplateId] ?? null : null,
-      standout: standoutFor(records, ordered, last.sessionId),
+      // An early end is nothing to call strong: no standout from it.
+      standout: last.status === 'COMPLETED' ? standoutFor(records, ordered, last.sessionId) : null,
+      yesterday: localDayKey(new Date(last.endedAt)) === localDayKey(dayBefore(now)),
     },
     sameTemplateAsPrevious: lastTemplateId != null && lastTemplateId === previousTemplateId,
     recentRareFlower: recentRareFlower(ordered, now),
     justBeatHold: justBeatHold(records, ordered, last.sessionId),
   }
+}
+
+function dayBefore(now: Date): Date {
+  const day = new Date(now)
+  day.setDate(day.getDate() - 1)
+  return day
 }
 
 // The move to single out from a session: its new best (first one found, in
