@@ -1,6 +1,6 @@
 import { createContext, useContext, useEffect, useLayoutEffect, useState, type ReactNode } from 'react'
 import { applyMotionPreference, applyThemeTokens, type MotionPreference } from './tokens'
-import { getSetting, setSetting } from '../../infrastructure/db/repositories/settingsRepository'
+import { MOTION, readSetting, writeSetting } from '../../infrastructure/settingsKeys'
 
 type ThemeContextValue = {
   motion: MotionPreference
@@ -14,9 +14,9 @@ export function ThemeProvider({ children }: { children: ReactNode }) {
 
   useEffect(() => {
     let cancelled = false
-    getSetting<MotionPreference>('motion')
+    readSetting(MOTION)
       .then((stored) => {
-        if (!cancelled && stored) setMotionState(stored)
+        if (!cancelled) setMotionState(stored)
       })
       .catch(() => undefined)
     return () => {
@@ -37,7 +37,7 @@ export function ThemeProvider({ children }: { children: ReactNode }) {
 
   function setMotion(next: MotionPreference) {
     setMotionState(next)
-    setSetting('motion', next).catch(() => undefined)
+    writeSetting(MOTION, next).catch(() => undefined)
   }
 
   return <ThemeContext.Provider value={{ motion, setMotion }}>{children}</ThemeContext.Provider>

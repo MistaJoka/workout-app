@@ -10,30 +10,16 @@ import type { RedemptionRecord, RewardRecord } from '../../infrastructure/db/sch
 import { listRewards } from '../../infrastructure/db/repositories/rewardsRepository'
 import { addReward, updateReward, removeReward } from '../../infrastructure/db/repositories/rewardsRepository'
 import { listRedemptions, markDelivered, NotEnoughCarrotsError, redeemReward } from '../../infrastructure/db/repositories/redemptionsRepository'
-import { getSetting, setSetting } from '../../infrastructure/db/repositories/settingsRepository'
-import {
-  DEFAULT_GIVER_NAME,
-  giverRole,
-  INITIAL_PIN_ATTEMPT_STATE,
-  createPinRecord,
-  isInPinCooldown,
-  isValidPin,
-  pinCooldownMessage,
-  recordCorrectPinAttempt,
-  recordWrongPinAttempt,
-  remainingCooldownMs,
-  verifyPin,
-  type PinAttemptState,
-  type PinRecord,
-} from '../../domain/rewards/pin'
-import { generateSalt, hasSubtleCrypto, sha256Hex } from '../../infrastructure/pinCrypto'
+import { FEATURED_REWARD, GIVER_NAME, HUBBY_PIN, readSetting, SAVING_FOR, writeSetting } from '../../infrastructure/settingsKeys'
+import { DEFAULT_GIVER_NAME, giverRole, isValidPin, type PinRecord } from '../../domain/rewards/pin'
+import { usePinGate } from '../components/usePinGate'
 import { loadCarrotBalance, loadEarnedCarrots } from '../components/CarrotCelebration'
 import { PinEntrySheet, PinSetupSheet, RedeemConfirmSheet, CouponSheet } from '../components/RewardsSheets'
 import { RewardEditorSheet, type RewardDraft } from '../components/RewardEditorSheet'
 import { GiftComposerSheet } from '../components/GiftComposerSheet'
 import { DeliveredComposerSheet } from '../components/DeliveredComposerSheet'
 import { OpenGiftLink } from '../components/OpenGiftLink'
-import { SAVING_FOR_KEY, SavingGoalBar, savingGoalReward } from '../components/SavingGoal'
+import { SavingGoalBar, savingGoalReward } from '../components/SavingGoal'
 import { rewardTier, type RewardTier, workoutsToGoAfter } from '../../domain/rewards/pricing'
 import { newId } from '../../shared/id'
 import { GrantWishSheet, MakeWishSheet, type WishLite } from '../components/WishSheets'
@@ -52,11 +38,6 @@ import { Skeleton, SkeletonTiles } from '../components/Skeleton'
 import { HubbyModePill, isHubbyUnlocked, touchHubbySession, unlockHubbySession, useHubbySession } from '../components/hubbySession'
 import { storageErrorMessage } from '../../infrastructure/storageErrors'
 
-const GIVER_NAME_KEY = 'rewardsGiverName'
-// His one spotlighted reward (RewardEditorSheet's ⭐), shown first.
-const FEATURED_KEY = 'rewardsFeatured'
-const PIN_KEY = 'rewardsHubbyPin'
-const PIN_ATTEMPTS_KEY = 'rewardsHubbyPinAttempts'
 
 type PinPurpose = 'manage' | 'giftCompose' | 'deliverCompose' | { deliver: string } | { grant: WishLite }
 
@@ -79,7 +60,6 @@ type Data = {
   balance: number
   giverName: string
   pin: PinRecord | null
-  pinAttempts: PinAttemptState
   savingFor: string | null
   wishes: WishBook
   featured: string | null
@@ -88,28 +68,26 @@ type Data = {
 }
 
 async function load(): Promise<Data> {
-  const [rewards, redemptions, balance, giverName, pin, pinAttempts, savingFor, wishes, featured, schedule] = await Promise.all([
+  const [rewards, redemptions, balance, giverName, pin, savingFor, wishes, featured, schedule] = await Promise.all([
     listRewards(),
     listRedemptions(),
     loadCarrotBalance(),
-    getSetting<string>(GIVER_NAME_KEY),
-    getSetting<PinRecord>(PIN_KEY),
-    getSetting<PinAttemptState>(PIN_ATTEMPTS_KEY),
-    getSetting<string | null>(SAVING_FOR_KEY),
+    readSetting(GIVER_NAME),
+    readSetting(HUBBY_PIN),
+    readSetting(SAVING_FOR),
     getWishBook(),
-    getSetting<string | null>(FEATURED_KEY),
+    readSetting(FEATURED_REWARD),
     getWeeklySchedule(),
   ])
   return {
     rewards,
     redemptions,
     balance,
-    giverName: giverName ?? DEFAULT_GIVER_NAME,
-    pin: pin ?? null,
-    pinAttempts: pinAttempts ?? INITIAL_PIN_ATTEMPT_STATE,
-    savingFor: savingFor ?? null,
+    giverName,
+    pin,
+    savingFor,
     wishes,
-    featured: featured ?? null,
+    featured,
     weeklyGoal: weeklyGoal(schedule),
   }
 }
@@ -119,8 +97,7 @@ export function RewardsScreen() {
   const [data, setData] = useState<Data | null>(null)
   const [failed, setFailed] = useState(false)
   const [sheet, setSheet] = useState<Sheet>({ kind: 'none' })
-  const [pinBusy, setPinBusy] = useState(false)
-  const [pinError, setPinError] = useState<string | null>(null)
+  const pinGate = usePinGate()
   const [redeemBusy, setRedeemBusy] = useState(false)
   const [redeemError, setRedeemError] = useState<string | null>(null)
   const [editorError, setEditorError] = useState<string | null>(null)
@@ -173,7 +150,7 @@ export function RewardsScreen() {
   // the same pinEntry/pinSetup sheets -- only `purpose` says where to land
   // once the PIN checks out.
   function requestPinFor(purpose: PinPurpose) {
-    setPinError(null)
+    pinGate.clearError()
     if (!data?.pin) {
       setSheet({ kind: 'pinSetup', purpose })
     } else if (isHubbyUnlocked()) {
@@ -197,63 +174,34 @@ export function RewardsScreen() {
     return { kind: 'none' }
   }
 
-  async function handleSetPin(pin: string, giverName: string, purpose: PinPurpose) {
-    setPinBusy(true)
-    setPinError(null)
-    try {
-      const algorithm = hasSubtleCrypto() ? 'sha256' : 'fallback'
-      const record = await createPinRecord(pin, generateSalt(), sha256Hex, algorithm)
-      await setSetting(PIN_KEY, record)
-      await setSetting(GIVER_NAME_KEY, giverName)
-      await setSetting(PIN_ATTEMPTS_KEY, recordCorrectPinAttempt())
-      unlockHubbySession()
+  // Both PIN paths end the same way: unlocked, then wherever `purpose` points.
+  async function landAfterPin(purpose: PinPurpose) {
+    if (typeof purpose === 'object' && 'deliver' in purpose) {
+      await markDelivered(purpose.deliver)
       await refresh()
-      if (typeof purpose === 'object' && 'deliver' in purpose) {
-        await markDelivered(purpose.deliver)
-        await refresh()
-        setSheet({ kind: 'none' })
-      } else {
-        setSheet(landOnPurpose(purpose))
-      }
+      setSheet({ kind: 'none' })
+    } else {
+      setSheet(landOnPurpose(purpose))
+    }
+  }
+
+  async function handleSetPin(pin: string, giverName: string, purpose: PinPurpose) {
+    if (!(await pinGate.setup(pin, giverName))) return
+    try {
+      await refresh()
+      await landAfterPin(purpose)
     } catch (err) {
-      setPinError(storageErrorMessage(err, 'save'))
-    } finally {
-      setPinBusy(false)
+      pinGate.setError(storageErrorMessage(err, 'save'))
     }
   }
 
   async function handlePinSubmit(pin: string, purpose: PinPurpose) {
     if (!data?.pin) return
-    const now = new Date()
-    const attempts = data.pinAttempts
-    if (isInPinCooldown(attempts, now)) {
-      setPinError(pinCooldownMessage(remainingCooldownMs(attempts, now)))
-      return
-    }
-    setPinBusy(true)
-    setPinError(null)
+    if (!(await pinGate.submit(pin))) return
     try {
-      const ok = await verifyPin(pin, data.pin, sha256Hex)
-      if (!ok) {
-        const next = recordWrongPinAttempt(attempts, now)
-        await setSetting(PIN_ATTEMPTS_KEY, next)
-        await refresh()
-        setPinError(isInPinCooldown(next, now) ? pinCooldownMessage(remainingCooldownMs(next, now)) : 'Wrong PIN.')
-        return
-      }
-      await setSetting(PIN_ATTEMPTS_KEY, recordCorrectPinAttempt())
-      unlockHubbySession()
-      if (typeof purpose === 'object' && 'deliver' in purpose) {
-        await markDelivered(purpose.deliver)
-        await refresh()
-        setSheet({ kind: 'none' })
-      } else {
-        setSheet(landOnPurpose(purpose))
-      }
+      await landAfterPin(purpose)
     } catch {
-      setPinError("Couldn't check that on this device. Try again.")
-    } finally {
-      setPinBusy(false)
+      pinGate.setError("Couldn't check that on this device. Try again.")
     }
   }
 
@@ -318,7 +266,7 @@ export function RewardsScreen() {
     setRedeemError(null)
     try {
       const redemption = await redeemReward(reward, undefined, attemptId, { earned: await loadEarnedCarrots() })
-      if (data?.savingFor === reward.id) await setSetting(SAVING_FOR_KEY, null)
+      if (data?.savingFor === reward.id) await writeSetting(SAVING_FOR, null)
       playCelebration('redeem', feedback)
       await refresh()
       setSheet({ kind: 'coupon', redemption, emoji: reward.emoji, icon: reward.icon, fresh: true })
@@ -377,7 +325,7 @@ export function RewardsScreen() {
     setEditorError(null)
     touchHubbySession()
     try {
-      await setSetting(FEATURED_KEY, data?.featured === id ? null : id)
+      await writeSetting(FEATURED_REWARD, data?.featured === id ? null : id)
       await refresh()
     } catch (err) {
       setEditorError(storageErrorMessage(err, 'save'))
@@ -397,7 +345,7 @@ export function RewardsScreen() {
   // Her choice, no PIN: pin one reward to save for, or tap again to unpin.
   async function toggleSavingFor(reward: RewardRecord) {
     try {
-      await setSetting(SAVING_FOR_KEY, data?.savingFor === reward.id ? null : reward.id)
+      await writeSetting(SAVING_FOR, data?.savingFor === reward.id ? null : reward.id)
       await refresh()
     } catch {
       setRedeemError("Couldn't save that on this device. Try again.")
@@ -617,15 +565,15 @@ export function RewardsScreen() {
       {sheet.kind === 'pinSetup' && (
         <PinSetupSheet
           giverNameInitial={data?.giverName ?? DEFAULT_GIVER_NAME}
-          busy={pinBusy}
-          error={pinError}
+          busy={pinGate.busy}
+          error={pinGate.error}
           onSave={(pin, name) => void handleSetPin(pin, name, sheet.purpose)}
           onCancel={() => setSheet({ kind: 'none' })}
         />
       )}
 
       {sheet.kind === 'pinEntry' && (
-        <PinEntrySheet role={giverRole(data?.giverName)} busy={pinBusy} error={pinError} onSubmit={(pin) => void handlePinSubmit(pin, sheet.purpose)} onCancel={() => setSheet({ kind: 'none' })} />
+        <PinEntrySheet role={giverRole(data?.giverName)} busy={pinGate.busy} error={pinGate.error} onSubmit={(pin) => void handlePinSubmit(pin, sheet.purpose)} onCancel={() => setSheet({ kind: 'none' })} />
       )}
 
       {sheet.kind === 'editor' && data && (

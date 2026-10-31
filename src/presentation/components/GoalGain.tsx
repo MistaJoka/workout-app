@@ -1,13 +1,13 @@
 import { useEffect, useState } from 'react'
 import { carrots } from '../units'
 import { listRewards } from '../../infrastructure/db/repositories/rewardsRepository'
-import { getSetting } from '../../infrastructure/db/repositories/settingsRepository'
+import { readSetting, SAVING_FOR } from '../../infrastructure/settingsKeys'
 import { rewardTier } from '../../domain/rewards/pricing'
 import { loadCarrotBalance } from './CarrotCelebration'
 import { RewardGlyph } from './RewardGlyph'
 import { RoadProgress } from './RoadProgress'
 import { goalGainView } from './goalGainView'
-import { SAVING_FOR_KEY, savingGoalReward } from './SavingGoal'
+import { savingGoalReward } from './SavingGoal'
 import type { RewardRecord } from '../../infrastructure/db/schema'
 import { useTheme } from '../theme/ThemeContext'
 import { effectiveMotion, usePrefersReducedMotion } from './MovementMedia'
@@ -25,7 +25,7 @@ export function GoalGain({ gain }: { gain: number }) {
 
   useEffect(() => {
     let cancelled = false
-    Promise.all([listRewards(), getSetting<string | null>(SAVING_FOR_KEY), loadCarrotBalance()])
+    Promise.all([listRewards(), readSetting(SAVING_FOR), loadCarrotBalance()])
       .then(([rewards, savingFor, balance]) => {
         const reward = savingGoalReward(rewards, savingFor)
         if (cancelled || !reward) return

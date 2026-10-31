@@ -1,6 +1,6 @@
 import { listRewards } from '../../infrastructure/db/repositories/rewardsRepository'
-import { getSetting } from '../../infrastructure/db/repositories/settingsRepository'
-import { SAVING_FOR_KEY, savingGoalReward } from '../components/SavingGoal'
+import { readSetting, SAVING_FOR } from '../../infrastructure/settingsKeys'
+import { savingGoalReward } from '../components/SavingGoal'
 import { loadCarrotBalance } from '../components/CarrotCelebration'
 import { weeklyForecast } from '../../domain/rewards/pricing'
 import { useEffect, useState } from 'react'
@@ -72,7 +72,7 @@ export function ScheduleScreen() {
         if (!cancelled && goals) setThisWeekGoal(goals(now))
         const [rewards, savingFor, balance] = await Promise.all([
           listRewards().catch(() => []),
-          getSetting<string | null>(SAVING_FOR_KEY).catch(() => null),
+          readSetting(SAVING_FOR).catch(() => null),
           loadCarrotBalance().catch(() => null),
         ])
         const goalReward = savingGoalReward(rewards, savingFor)

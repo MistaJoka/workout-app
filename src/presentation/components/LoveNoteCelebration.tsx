@@ -8,8 +8,7 @@ import {
   listLoveNotes,
   markLoveNoteRead,
 } from '../../infrastructure/db/repositories/loveNotesRepository'
-import { getSetting } from '../../infrastructure/db/repositories/settingsRepository'
-import { DEFAULT_GIVER_NAME } from '../../domain/rewards/pin'
+import { GIVER_NAME, readSetting } from '../../infrastructure/settingsKeys'
 import { loadSessionHistory } from '../../application/historyIndex'
 import { getWeeklySchedule } from '../../infrastructure/db/repositories/scheduleRepository'
 import { goalBloomForSession, goalBlooms } from '../../domain/progress/goalBloom'
@@ -19,18 +18,12 @@ import { LoveNoteEnvelope } from './LoveNoteEnvelope'
 // Hubby Bunny" RewardItem, and the small loaders both (and the notes box)
 // share. Mirrors CarrotCelebration.tsx's load*/component split.
 
-const GIVER_NAME_KEY = 'rewardsGiverName'
-
-async function loadGiverName(): Promise<string> {
-  return (await getSetting<string>(GIVER_NAME_KEY)) ?? DEFAULT_GIVER_NAME
-}
-
 // This workout's surprise, if any: evaluates (idempotently) whether a
 // locked note unlocks and returns it, alongside the giver's current name.
 export async function loadLoveNoteUnlockForSession(
   sessionId: string
 ): Promise<{ note: LoveNoteRecord; giverName: string } | null> {
-  const [{ results }, schedule, giverName] = await Promise.all([loadSessionHistory(), getWeeklySchedule(), loadGiverName()])
+  const [{ results }, schedule, giverName] = await Promise.all([loadSessionHistory(), getWeeklySchedule(), readSetting(GIVER_NAME)])
   const goalMetThisSession = goalBloomForSession(results, await loadWeekGoals({ results, schedule }), sessionId) !== null
   const thisSessionEndedAt = results.find((r) => r.sessionId === sessionId)?.endedAt ?? new Date().toISOString()
   const note = await evaluateLoveNoteUnlockForSession(sessionId, {

@@ -1,6 +1,6 @@
 import { listRewards } from '../../infrastructure/db/repositories/rewardsRepository'
-import { getSetting } from '../../infrastructure/db/repositories/settingsRepository'
-import { SAVING_FOR_KEY, savingGoalReward } from '../components/SavingGoal'
+import { readSetting, SAVING_FOR } from '../../infrastructure/settingsKeys'
+import { savingGoalReward } from '../components/SavingGoal'
 import { firstRaeLoop } from '../todayPose'
 import type { RaeLoop } from '../components/raeLoops'
 import { DRAFT_TEMPLATE_IDS } from '../../domain/content/fixtures/raeDraftTemplates'
@@ -96,7 +96,7 @@ async function loadToday(now: Date): Promise<TodayData> {
     getWeeklySchedule(),
     listCustomTemplates(),
     listRewards().catch(() => []),
-    getSetting<string | null>(SAVING_FOR_KEY).catch(() => null),
+    readSetting(SAVING_FOR).catch(() => null),
     // Thumbnails-only failure mode, like the rest of Today: no mix tile
     // beats a blank screen.
     getHerMix().catch(() => null),

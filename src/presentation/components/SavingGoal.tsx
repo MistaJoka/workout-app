@@ -4,7 +4,7 @@ import { useEffect, useState } from 'react'
 import { Link } from 'react-router-dom'
 import type { RewardRecord } from '../../infrastructure/db/schema'
 import { listRewards } from '../../infrastructure/db/repositories/rewardsRepository'
-import { getSetting } from '../../infrastructure/db/repositories/settingsRepository'
+import { readSetting, SAVING_FOR } from '../../infrastructure/settingsKeys'
 import { rewardTier, savingProgress } from '../../domain/rewards/pricing'
 import { RoadProgress } from './RoadProgress'
 import { loadCarrotBalance } from './CarrotCelebration'
@@ -13,7 +13,6 @@ import { TodayTile } from './TodayTiles'
 // "Saving for…": she pins one shop reward and watches her carrots fill a bar
 // toward it (goal-gradient). Her whole balance counts, so the progress is
 // real. Stored as the reward id; a removed or inactive reward simply hides.
-export const SAVING_FOR_KEY = 'rewardsSavingFor'
 
 export function savingGoalReward(rewards: readonly RewardRecord[], savingForId: string | null | undefined): RewardRecord | null {
   if (!savingForId) return null
@@ -57,7 +56,7 @@ export function SavingGoalTodayCard({ tile = false }: { tile?: boolean } = {}) {
 
   useEffect(() => {
     let cancelled = false
-    Promise.all([listRewards(), getSetting<string>(SAVING_FOR_KEY), loadCarrotBalance()])
+    Promise.all([listRewards(), readSetting(SAVING_FOR), loadCarrotBalance()])
       .then(([rewards, savingFor, balance]) => {
         const reward = savingGoalReward(rewards, savingFor)
         if (!cancelled) setState(reward ? { reward, balance } : null)
