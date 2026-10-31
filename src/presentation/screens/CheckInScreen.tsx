@@ -1,11 +1,11 @@
 import { useEffect, useMemo, useState } from 'react'
 import { newId } from '../../shared/id'
 import { Link, useNavigate, useParams } from 'react-router-dom'
-import { startSession } from '../../application/sessionService'
+import { discardSession, recordEvent, settleOpenSessions, startSession } from '../../application/sessionService'
 import { primeAudio } from '../../application/restFeedback'
 import { playCelebration } from '../../application/celebrationSounds'
 import { useFeedbackSettings } from '../components/useFeedbackSettings'
-import { getExercises, getTemplate } from '../../domain/content/catalog'
+import { getExercises, getTemplate, getTemplateName } from '../../domain/content/catalog'
 import type { Exercise, WorkoutTemplate } from '../../domain/content/types'
 import { createSessionPlanFromTemplate } from '../../domain/session/createSessionPlan'
 import type { SessionPlan } from '../../domain/session/types'
@@ -26,6 +26,8 @@ import { useWeightUnit } from '../components/useWeightUnit'
 import { formatWeight } from '../units'
 import { SwapPicker } from '../components/SwapPicker'
 import { countLabel } from '../format'
+import { ConfirmSheet } from '../components/ConfirmSheet'
+import { storageErrorMessage } from '../../infrastructure/storageErrors'
 
 type Loaded = {
   template: WorkoutTemplate
@@ -99,6 +101,29 @@ export function CheckInScreen() {
   // Swaps last for this visit only, like the length dial.
   const [swaps, setSwaps] = useState<Swaps>(NO_SWAPS)
   const [swapSlot, setSwapSlot] = useState<number | null>(null)
+  // A workout still open (the one Today offers to resume). Starting another
+  // used to leave it to be ended early behind her back; now the bar offers
+  // it first, and starting new asks what to do with it. undefined: not
+  // checked yet, so Start waits for the check.
+  const [open, setOpen] = useState<{ id: string; templateId: string; name: string } | null | undefined>(undefined)
+  const [askingNew, setAskingNew] = useState(false)
+
+  useEffect(() => {
+    let cancelled = false
+    // Same tidy-up Today runs: idle ones are finished, the newest is offered.
+    settleOpenSessions()
+      .then(async (plan) => {
+        const name = plan ? ((await getTemplateName(plan.templateId)) ?? 'your workout') : ''
+        if (!cancelled) setOpen(plan ? { id: plan.id, templateId: plan.templateId, name } : null)
+      })
+      // A failed check just means the plain Start, as before.
+      .catch(() => {
+        if (!cancelled) setOpen(null)
+      })
+    return () => {
+      cancelled = true
+    }
+  }, [])
 
   useEffect(() => {
     if (!templateId) return
@@ -227,8 +252,29 @@ export function CheckInScreen() {
     }
   }
 
+  // Ends (its sets count) or discards the open workout, then starts this one.
+  async function startNewInstead(old: 'end' | 'discard') {
+    if (!open) return
+    setStarting(true)
+    setError(null)
+    try {
+      if (old === 'end') await recordEvent(open.id, 'SESSION_COMPLETED_SHORTENED', newId())
+      else await discardSession(open.id)
+    } catch (err) {
+      setError(storageErrorMessage(err, 'save'))
+      setStarting(false)
+      return
+    }
+    setOpen(null)
+    setAskingNew(false)
+    await handleStart()
+  }
+
+  const resumeOpen = () => open && navigate(`/session/${open.id}`, { replace: true })
+  const sameOpen = open != null && open.templateId === loaded.template.id
+
   return (
-    <div className="p-4 pb-28 space-y-5">
+    <div className={`p-4 space-y-5 ${open && !sameOpen ? 'pb-44' : 'pb-28'}`}>
       <div>
         <BackButton />
         <h1 className="text-2xl font-bold">{loaded.template.name}</h1>
@@ -311,19 +357,50 @@ export function CheckInScreen() {
 
       {/* Safety at the point of risk, not just once on first run (see
           OnboardingGate): this is the moment someone is about to move. */}
-      <p className="text-xs text-ink-muted">
-        Stop any movement that causes pain.{' '}
-        <Link to="/about" className="underline">
+      <p className="flex items-center gap-1 text-xs text-ink-muted">
+        Stop any movement that causes pain.
+        <Link to="/about" className="inline-flex min-h-11 min-w-11 items-center justify-center underline">
           More
         </Link>
       </p>
 
-      {error && <p className="text-sm text-accent">{error}</p>}
-      <ThumbBar armKey="checkin">
-        <button className="btn-primary btn-lg w-full" disabled={starting} onClick={handleStart}>
-          Start workout
-        </button>
+      {error && !askingNew && <p className="text-sm text-accent">{error}</p>}
+      {/* Re-arms when the open-workout check lands, so a tap meant for
+          Start can't land on Resume. */}
+      <ThumbBar armKey={`checkin:${open === undefined ? 'checking' : open ? open.id : 'none'}`} className="space-y-2">
+        {open && sameOpen ? (
+          <button className="btn-primary btn-lg w-full" onClick={resumeOpen}>
+            Resume workout
+          </button>
+        ) : open ? (
+          <>
+            <button className="btn-primary btn-lg w-full truncate" disabled={starting} onClick={resumeOpen}>
+              Resume {open.name}
+            </button>
+            <button className="btn-secondary w-full" disabled={starting} onClick={() => setAskingNew(true)}>
+              Start new instead
+            </button>
+          </>
+        ) : (
+          <button className="btn-primary btn-lg w-full" disabled={starting || open === undefined} onClick={handleStart}>
+            Start workout
+          </button>
+        )}
       </ThumbBar>
+      {askingNew && open && (
+        <ConfirmSheet
+          title={`${open.name} is still open`}
+          confirmLabel="Discard it"
+          cancelLabel="Never mind"
+          also={{ label: 'Save its sets and end it', onClick: () => void startNewInstead('end') }}
+          busy={starting}
+          error={error}
+          onConfirm={() => void startNewInstead('discard')}
+          onCancel={() => setAskingNew(false)}
+        >
+          Then {loaded.template.name} starts.
+        </ConfirmSheet>
+      )}
     </div>
   )
 }

@@ -20,6 +20,10 @@ test('on the cover screen, Rae doing the move fits above Complete Set', async ({
   // The set count sits beside the reps, not under the picture.
   const setLabel = (await page.getByText(/^Set 1 of \d+$/).boundingBox())!
   expect(setLabel.x + setLabel.width).toBeLessThanOrEqual(media.x)
+  // A short cue, not a wall of upstream steps (they scrolled to ~735px).
+  await expect(page.getByTestId('player-cues')).toBeVisible()
+  await expect(page.getByText(/Begin the movement by flexing/)).toBeHidden()
+  expect(await page.evaluate(() => document.documentElement.scrollHeight)).toBeLessThan(620)
 })
 
 test('on the cover screen, Today shows Start workout without scrolling', async ({ page }) => {

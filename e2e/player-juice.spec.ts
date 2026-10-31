@@ -68,6 +68,7 @@ test('the last set is named as the finish line gets close', async ({ page }) => 
     // moment before tapping, or the loop could finish the workout past it.
     if (await page.getByText('Last set!', { exact: true }).waitFor({ timeout: 600 }).then(() => true, () => false)) break
     if (await armedTap(page, 'Complete Set')) continue
+    if (await armedTap(page, 'Already did it')) continue
     await page.waitForTimeout(150)
   }
   await expect(page.getByText('Last set!', { exact: true })).toBeVisible()
