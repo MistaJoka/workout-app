@@ -192,6 +192,21 @@ Use this mailbox when implementation reaches a product/data/spec/asset/test gap 
 **Constraints already known:** minimal text, one-finger navigation, no fifth tab.
 **Proposed fallback if unresolved:** keep the defaults above.
 
+## REQ-20261031-010 — Owner decisions from the 2026-10-31 phone walkthrough
+
+**Status:** OPEN (defaults below are live until the owner answers)
+**Blocking:** no
+**Implementation context:** live Playwright walkthrough at Flip 7 sizes (412x915, cover 360x380), 2026-10-31; shots were in the session scratchpad
+**Need:** four owner decisions.
+1. **Does a one-set workout count?** A session ended early (or auto-ended after 12 h idle, owner rule 2026-09-29) counts in full toward the week, streak, boss and carrots, even at 1 of 9 sets. *Default:* unchanged (counts). Option: count only from a minimum (e.g. 3 sets or half the plan).
+2. **The shop on her phone.** With an empty shop she sees "Set up shop" and giver-side buttons ("Send a gift", "Mark delivered") next to "Make a wish". *Default:* unchanged. Option: her empty state says the shop is waiting on you and makes "Make a wish" the main button; your tools fold into one "Hubby tools" row.
+3. **Planning fewer days lowers the weekly goal** ("Your new goal of 1 starts Monday") without asking. *Default:* unchanged. Option: ask "Keep 2 a week?" first.
+4. **Weight-unit question in onboarding** for a no-equipment app. *Default:* unchanged. Option: drop it (lb default, still in Settings).
+**Why it matters:** each changes what her numbers and rewards mean, or who a screen talks to.
+**Requested output:** decision
+**Constraints already known:** minimal text, one-finger navigation.
+**Proposed fallback if unresolved:** keep the defaults above.
+
 ## Template
 
 ```md
