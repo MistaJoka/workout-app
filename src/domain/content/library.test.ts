@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest'
-import { EQUIPMENT_FILTER_OPTIONS, NO_EQUIPMENT_ONLY, equipmentLabel, equipmentOf, exerciseMeta, filterExercises, isShownNow, orderForBrowsing, searchHaystack } from './library'
+import { BODY_AREAS, EQUIPMENT_FILTER_OPTIONS, NO_EQUIPMENT_ONLY, equipmentLabel, equipmentOf, exerciseMeta, filterExercises, isShownNow, orderForBrowsing, searchHaystack } from './library'
 import type { Exercise } from './types'
 
 function exercise(overrides: Partial<Exercise> & { id: string; name: string }): Exercise {
@@ -52,6 +52,29 @@ describe('filterExercises', () => {
 
   it('returns everything for empty filters', () => {
     expect(filterExercises(all, {})).toHaveLength(3)
+  })
+})
+
+describe('body areas', () => {
+  const stretch = exercise({ id: 's', name: 'Hamstring Stretch', taxonomy: { category: 'stretching', equipment: [], primaryMuscles: ['hamstrings'], level: 'beginner' } })
+  const glute = exercise({ id: 'g', name: 'Glute Bridge', taxonomy: { category: 'strength', equipment: [], primaryMuscles: ['glutes'], level: 'beginner' } })
+  const crunch = exercise({ id: 'k', name: 'Crunch', taxonomy: { category: 'strength', equipment: [], primaryMuscles: ['abdominals'], level: 'beginner' } })
+  const moves = [...all, stretch, glute, crunch]
+
+  it('are Legs, Glutes, Core, Upper and Stretch, built from the muscle groups', () => {
+    expect(BODY_AREAS.map((a) => a.label)).toEqual(['Legs', 'Glutes', 'Core', 'Upper', 'Stretch'])
+  })
+
+  it('sort strength work by muscle, and every stretch into Stretch only', () => {
+    expect(filterExercises(moves, { area: 'legs' }).map((e) => e.id)).toEqual(['b'])
+    expect(filterExercises(moves, { area: 'glutes' }).map((e) => e.id)).toEqual(['g'])
+    expect(filterExercises(moves, { area: 'core' }).map((e) => e.id)).toEqual(['k'])
+    expect(filterExercises(moves, { area: 'upper' }).map((e) => e.id)).toEqual(['a', 'c'])
+    expect(filterExercises(moves, { area: 'stretch' }).map((e) => e.id)).toEqual(['s'])
+  })
+
+  it('combine with a search like any other filter', () => {
+    expect(filterExercises(moves, { area: 'upper', query: 'push' }).map((e) => e.id)).toEqual(['a'])
   })
 })
 

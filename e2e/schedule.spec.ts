@@ -44,6 +44,7 @@ test.describe('schedule and reminders', () => {
     await page.getByRole('button', { name: '+ Add exercise' }).click()
     await page.getByPlaceholder('Search exercises').fill('mini squat')
     await page.getByRole('button', { name: /Mini Squat/ }).click()
+    await page.getByRole('button', { name: 'Add 1', exact: true }).click()
     await page.getByRole('button', { name: 'Save routine' }).click()
     await expect(page.getByRole('heading', { name: 'Temp Day' })).toBeVisible()
 
