@@ -25,11 +25,13 @@ test('build a circuit, then run it move by move, round by round', async ({ page 
   // Rounds replace per-move sets and rests.
   await expect(page.getByText('Rounds')).toBeVisible()
   await page.getByRole('button', { name: 'Decrease Rounds' }).click()
+  // Both moves in one trip: the picker keeps picks across searches.
+  await page.getByRole('button', { name: '+ Add exercise' }).click()
   for (const move of [/Mini Squat/, /Push/]) {
-    await page.getByRole('button', { name: '+ Add exercise' }).click()
     await page.getByPlaceholder('Search exercises').fill(move.source.replace(/\\/g, ''))
     await page.getByRole('button', { name: move }).first().click()
   }
+  await page.getByRole('button', { name: 'Add 2', exact: true }).click()
   await expect(page.getByText('Sets', { exact: true })).toHaveCount(0)
   await page.getByRole('button', { name: 'Save routine' }).click()
   await expect(page.getByRole('heading', { name: 'Living room' })).toBeVisible()

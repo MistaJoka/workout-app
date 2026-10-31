@@ -1,5 +1,5 @@
 import { expect, test, type Page } from '@playwright/test'
-import { finishWorkout } from './helpers'
+import { finishWorkout, openCompleteRewards } from './helpers'
 
 // The celebration sound palette (src/application/celebrationSounds.ts) is
 // WebAudio-only: there's nothing to see, so these count AudioContext
@@ -64,10 +64,9 @@ const oscStarts = (page: Page) => page.evaluate(() => (window as unknown as { __
 
 async function setSound(page: Page, on: boolean): Promise<void> {
   await page.goto('/#/settings')
-  const toggle = page.getByRole('button', { name: /^Sound (on|off)$/ })
-  const label = await toggle.textContent()
-  if ((label === 'Sound on') !== on) await toggle.click()
-  await expect(toggle).toHaveText(on ? 'Sound on' : 'Sound off')
+  const toggle = page.getByRole('switch', { name: 'Sound' })
+  if (((await toggle.getAttribute('aria-checked')) === 'true') !== on) await toggle.click()
+  await expect(toggle).toHaveAttribute('aria-checked', String(on))
 }
 
 test('Sound on: the start screen plays its whoosh once when Start is tapped', async ({ page }) => {
@@ -113,5 +112,11 @@ test('Sound on: Complete-screen celebrations play and settle without repeating',
   await page.waitForTimeout(2_000)
   // Celebrations are one-shot: waiting out the level-up overlay's own
   // fade must not trigger a second round of sound.
+  expect(await oscStarts(page)).toBe(settled)
+  // Opening the rewards sheet shows them again, silently: each reward
+  // already played its sound when it landed.
+  await openCompleteRewards(page)
+  await expect(page.getByRole('region', { name: 'Achievements unlocked' })).toBeVisible()
+  await page.waitForTimeout(1_000)
   expect(await oscStarts(page)).toBe(settled)
 })

@@ -76,10 +76,9 @@ const oscStarts = (page: Page) => page.evaluate(() => (window as unknown as { __
 
 async function setSound(page: Page, on: boolean): Promise<void> {
   await page.goto('/#/settings')
-  const toggle = page.getByRole('button', { name: /^Sound (on|off)$/ })
-  const label = await toggle.textContent()
-  if ((label === 'Sound on') !== on) await toggle.click()
-  await expect(toggle).toHaveText(on ? 'Sound on' : 'Sound off')
+  const toggle = page.getByRole('switch', { name: 'Sound' })
+  if (((await toggle.getAttribute('aria-checked')) === 'true') !== on) await toggle.click()
+  await expect(toggle).toHaveAttribute('aria-checked', String(on))
 }
 
 test('without forcing it on, automation never sees the hype overlay', async ({ page }) => {

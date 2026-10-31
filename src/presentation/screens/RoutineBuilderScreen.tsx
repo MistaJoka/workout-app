@@ -1,7 +1,7 @@
 import { useEffect, useMemo, useRef, useState } from 'react'
 import { useNavigate, useParams, useSearchParams } from 'react-router-dom'
 import { getExercises, getTemplate, loadLibrary } from '../../domain/content/catalog'
-import { exerciseMeta, filterExercises, isShownNow, MUSCLE_GROUPS, EQUIPMENT_FILTER_OPTIONS } from '../../domain/content/library'
+import { filterExercises, isShownNow, EQUIPMENT_FILTER_OPTIONS } from '../../domain/content/library'
 import type { Exercise, WorkoutTemplate, WorkoutTemplateExercise } from '../../domain/content/types'
 import {
   isCustomTemplateId,
@@ -18,6 +18,7 @@ import { useWeightUnit } from '../components/useWeightUnit'
 import { BackButton } from '../components/BackButton'
 import { RaeNote } from '../components/RaeNote'
 import { ExerciseThumb } from '../components/ExerciseThumb'
+import { AreaChips, MOVE_TILE, MoveGrid, MoveTileBody, initialArea, rememberArea } from '../components/MoveBrowse'
 import { ThumbBar } from '../components/ThumbBar'
 import { ConfirmSheet } from '../components/ConfirmSheet'
 import { Skeleton, SkeletonBlock, SkeletonList } from '../components/Skeleton'
@@ -26,7 +27,7 @@ import { storageErrorMessage } from '../../infrastructure/storageErrors'
 
 type Row = EditRow
 
-const PICKER_PAGE = 40
+const PICKER_PAGE = 24
 const UNDO_MS = 5_000
 // Row control: a 44px square, the minimum comfortable tap target.
 const ROW_BTN = 'inline-flex h-11 w-11 flex-none items-center justify-center rounded-control text-lg text-ink-muted active:bg-field-primary'
@@ -211,9 +212,10 @@ export function RoutineBuilderScreen() {
     return (
       <ExercisePicker
         excludeIds={rows.map((r) => r.exerciseId)}
-        onPick={(exercise) => {
-          setRows((r) => [...r, defaultRow(exercise)])
-          setOpenId(exercise.id)
+        onAdd={(picked) => {
+          setRows((r) => [...r, ...picked.map(defaultRow)])
+          // One new move opens for its settings; several stay folded.
+          setOpenId(picked.length === 1 ? picked[0].id : null)
           setPicking(false)
         }}
         onClose={() => setPicking(false)}
@@ -448,21 +450,24 @@ function Stepper({
   )
 }
 
+// Pick as many moves as you like in one trip: a tap toggles a move, the
+// bar adds them all, in the order they were picked.
 function ExercisePicker({
   excludeIds,
-  onPick,
+  onAdd,
   onClose,
 }: {
   excludeIds: string[]
-  onPick: (exercise: Exercise) => void
+  onAdd: (exercises: Exercise[]) => void
   onClose: () => void
 }) {
   const [library, setLibrary] = useState<Exercise[] | null>(null)
   const [query, setQuery] = useState('')
-  const [muscle, setMuscle] = useState<string | undefined>()
+  const [area, setArea] = useState(initialArea)
   const [equipment, setEquipment] = useState<string | undefined>()
   const [limit, setLimit] = useState(PICKER_PAGE)
   const [loadFailed, setLoadFailed] = useState(false)
+  const [picked, setPicked] = useState<Exercise[]>([])
 
   useEffect(() => {
     loadLibrary()
@@ -470,50 +475,61 @@ function ExercisePicker({
       .catch(() => setLoadFailed(true))
   }, [])
 
+  // A search looks at every area; tapping an area goes back to browsing.
+  const browsingArea = query ? null : area
+
   // A new search starts back at the first page.
-  useEffect(() => setLimit(PICKER_PAGE), [query, muscle, equipment])
+  useEffect(() => setLimit(PICKER_PAGE), [query, area, equipment])
 
   const results = useMemo(
-    () => (library ? filterExercises(library, { query: query || undefined, muscle, equipment }) : []).filter((e) => !excludeIds.includes(e.id)),
-    [library, query, muscle, equipment, excludeIds]
+    () =>
+      (library ? filterExercises(library, { query: query || undefined, area: browsingArea ?? undefined, equipment }) : []).filter(
+        (e) => !excludeIds.includes(e.id)
+      ),
+    [library, query, browsingArea, equipment, excludeIds]
   )
+  const pickedIds = new Set(picked.map((e) => e.id))
+
+  function toggle(exercise: Exercise) {
+    setPicked((list) => (list.some((e) => e.id === exercise.id) ? list.filter((e) => e.id !== exercise.id) : [...list, exercise]))
+  }
 
   return (
     <div className="p-4 pb-24 space-y-3">
       <h1 className="text-lg font-bold">Add exercise</h1>
-      <div className="sticky top-0 z-10 -mx-4 flex items-center gap-2 bg-bg px-4 py-2">
-      <input
-        type="search"
-        autoFocus
-        placeholder="Search exercises"
-        value={query}
-        onChange={(e) => setQuery(e.target.value)}
-        className="input min-w-0 flex-1"
-      />
-      <FilterSheet inline activeCount={[muscle, equipment].filter(Boolean).length}>
-        <div className="space-y-2">
-          <p className="text-sm font-semibold text-ink-muted">Muscle</p>
-          <div className="flex gap-2 overflow-x-auto pb-1">
-            {MUSCLE_GROUPS.map((g) => (
-              <Chip key={g.id} active={muscle === g.id} onClick={() => setMuscle(muscle === g.id ? undefined : g.id)}>
-                {g.label}
-              </Chip>
-            ))}
-          </div>
+      <div className="sticky top-0 z-10 -mx-4 space-y-2 bg-bg px-4 py-2">
+        <div className="flex items-center gap-2">
+          <input
+            type="search"
+            autoFocus
+            placeholder="Search exercises"
+            value={query}
+            onChange={(e) => setQuery(e.target.value)}
+            className="input min-w-0 flex-1"
+          />
+          {EQUIPMENT_FILTER_OPTIONS.length > 0 && (
+            <FilterSheet inline activeCount={equipment ? 1 : 0}>
+              <div className="space-y-2">
+                <p className="text-sm font-semibold text-ink-muted">Equipment</p>
+                <div className="flex gap-2 overflow-x-auto pb-1">
+                  {EQUIPMENT_FILTER_OPTIONS.map((o) => (
+                    <Chip key={o.id} active={equipment === o.id} onClick={() => setEquipment(equipment === o.id ? undefined : o.id)}>
+                      {o.label}
+                    </Chip>
+                  ))}
+                </div>
+              </div>
+            </FilterSheet>
+          )}
         </div>
-        {EQUIPMENT_FILTER_OPTIONS.length > 0 && (
-          <div className="space-y-2">
-            <p className="text-sm font-semibold text-ink-muted">Equipment</p>
-            <div className="flex gap-2 overflow-x-auto pb-1">
-              {EQUIPMENT_FILTER_OPTIONS.map((o) => (
-                <Chip key={o.id} active={equipment === o.id} onClick={() => setEquipment(equipment === o.id ? undefined : o.id)}>
-                  {o.label}
-                </Chip>
-              ))}
-            </div>
-          </div>
-        )}
-      </FilterSheet>
+        <AreaChips
+          area={browsingArea}
+          onArea={(next) => {
+            setArea(next)
+            rememberArea(next)
+            setQuery('')
+          }}
+        />
       </div>
       {library === null && !loadFailed && (
         <Skeleton label="Loading library">
@@ -521,38 +537,51 @@ function ExercisePicker({
         </Skeleton>
       )}
       {loadFailed && <p className="text-ink-muted">Couldn't load the library. Check back when you're online.</p>}
-      <ul className="space-y-2">
-        {results.slice(0, limit).map((exercise) => (
-          <li key={exercise.id}>
-            <button
-              type="button"
-              className="flex w-full items-center gap-3 card p-2 text-left"
-              onClick={() => onPick(exercise)}
-            >
-              <ExerciseThumb exercise={exercise} className="h-12 w-16 rounded-panel" />
-              <span className="min-w-0 flex-1">
-                <span className="block truncate font-semibold">{exercise.name}</span>
-                <span className="block truncate text-xs text-ink-muted">
-                  {exerciseMeta(exercise).join(', ')}
-                </span>
-              </span>
-              <span className="flex-none text-primary-ink">+</span>
-            </button>
-          </li>
-        ))}
-      </ul>
+      <MoveGrid>
+        {results.slice(0, limit).map((exercise) => {
+          const on = pickedIds.has(exercise.id)
+          return (
+            <li key={exercise.id}>
+              <button
+                type="button"
+                aria-pressed={on}
+                className={`${MOVE_TILE} ${on ? 'border-[var(--color-primary)] bg-field-primary' : ''}`}
+                onClick={() => toggle(exercise)}
+              >
+                <MoveTileBody
+                  exercise={exercise}
+                  trailing={
+                    <span
+                      aria-hidden="true"
+                      className={`flex h-6 w-6 flex-none items-center justify-center rounded-full text-sm font-bold ${
+                        on ? 'bg-[var(--color-primary)] text-[var(--color-on-primary)]' : 'text-primary-ink'
+                      }`}
+                    >
+                      {on ? '✓' : '+'}
+                    </span>
+                  }
+                />
+              </button>
+            </li>
+          )
+        })}
+      </MoveGrid>
       {results.length > limit && (
         <button type="button" className="btn-secondary w-full" onClick={() => setLimit((n) => n + PICKER_PAGE)}>
           Show more ({results.length - limit} left)
         </button>
       )}
 
-      {/* Fixed bottom Cancel replaces the old top-right text link, which
-          required a top-corner reach. */}
+      {/* Fixed bottom bar: Cancel, and Add for everything picked. */}
       <ThumbBar armKey="picker" aboveTabBar>
-        <button className="btn-secondary w-full" onClick={onClose}>
-          Cancel
-        </button>
+        <div className="flex gap-2">
+          <button className="btn-secondary flex-1" onClick={onClose}>
+            Cancel
+          </button>
+          <button className="btn-primary flex-[2]" disabled={picked.length === 0} onClick={() => onAdd(picked)}>
+            {picked.length === 0 ? 'Add' : `Add ${picked.length}`}
+          </button>
+        </div>
       </ThumbBar>
     </div>
   )

@@ -1,5 +1,5 @@
 import { expect, test, type Page } from '@playwright/test'
-import { finishWorkout } from './helpers'
+import { finishWorkout, openCompleteRewards } from './helpers'
 
 // The bottom bar ignores taps for a moment after it changes (ThumbBar).
 async function tapArmed(page: Page, name: string): Promise<void> {
@@ -46,6 +46,7 @@ test('a clean run earns a Perfect workout stamp and a next-up teaser on Complete
   await finishWorkout(page)
 
   await expect(page.getByText('Workout complete')).toBeVisible()
+  await openCompleteRewards(page)
   await expect(page.getByText('Perfect workout!')).toBeVisible()
   await expect(page.getByText(/^Next up:/)).toBeVisible()
 })

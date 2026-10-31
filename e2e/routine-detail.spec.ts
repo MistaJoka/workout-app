@@ -25,11 +25,37 @@ test.describe('routine detail', () => {
     await expect(page.getByRole('link', { name: 'On your plan: Mon' })).toBeVisible()
   })
 
+  test('the picker browses by body area and adds several moves in one trip', async ({ page }) => {
+    await page.goto('/#/routines/new')
+    await page.getByPlaceholder('Routine name').fill('Two at once')
+    await page.getByRole('button', { name: '+ Add exercise' }).click()
+    const area = page.getByRole('group', { name: 'Body area' })
+    await expect(area.getByRole('button', { name: 'Legs' })).toHaveAttribute('aria-pressed', 'true')
+    const add = page.getByRole('button', { name: /^Add/ })
+    await expect(add).toBeDisabled()
+
+    const squat = page.getByRole('button', { name: /Mini Squat/ }).first()
+    await squat.click()
+    await expect(squat).toHaveAttribute('aria-pressed', 'true')
+    await area.getByRole('button', { name: 'Core' }).click()
+    await expect(area.getByRole('button', { name: 'Core' })).toHaveAttribute('aria-pressed', 'true')
+    await expect(page.getByRole('button', { name: /Mini Squat/ })).toHaveCount(0)
+    await page.locator('ul.grid button[aria-pressed="false"]').first().click()
+    // A tap on a picked move takes it back.
+    const second = page.locator('ul.grid button[aria-pressed="true"]')
+    await expect(second).toHaveCount(1)
+    await page.getByRole('button', { name: 'Add 2', exact: true }).click()
+
+    await expect(page.getByRole('heading', { name: 'New routine' })).toBeVisible()
+    await expect(page.getByRole('button', { name: 'Remove' })).toHaveCount(2)
+  })
+
   test('a custom routine can be edited, and deleting asks first', async ({ page }) => {
     await page.goto('/#/routines/new')
     await page.getByPlaceholder('Routine name').fill('Evening')
     await page.getByRole('button', { name: '+ Add exercise' }).click()
     await page.getByRole('button', { name: /Mini Squat/ }).first().click()
+    await page.getByRole('button', { name: 'Add 1', exact: true }).click()
     await page.getByRole('button', { name: 'Save routine' }).click()
     await expect(page.getByRole('heading', { name: 'Evening' })).toBeVisible()
     await expect(page.getByText(/^1 move, 3 sets, about \d+ min$/)).toBeVisible()

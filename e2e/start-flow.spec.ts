@@ -20,8 +20,10 @@ test('a main workout ends with an optional cool-down; the cool-down does not', a
   await page.goto('/#/checkin/fs.quick-10')
   await page.getByRole('button', { name: 'Start workout' }).click()
   await finishWorkout(page)
+  // The cool-down is the one secondary action; Share waits in the sheet.
   const coolDown = page.getByRole('link', { name: /Cool down/ })
   await expect(coolDown).toBeVisible()
+  await expect(page.getByRole('button', { name: 'Share', exact: true })).toBeHidden()
   await coolDown.click()
   await expect(page.getByRole('heading', { name: 'Cool-down' })).toBeVisible()
 
@@ -29,4 +31,6 @@ test('a main workout ends with an optional cool-down; the cool-down does not', a
   await finishWorkout(page)
   await expect(page.getByText('Workout complete')).toBeVisible()
   await expect(page.getByRole('link', { name: /Cool down/ })).toHaveCount(0)
+  // No cool-down to offer: Share takes its place.
+  await expect(page.getByRole('button', { name: 'Share', exact: true })).toBeVisible()
 })

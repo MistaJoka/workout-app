@@ -7,19 +7,20 @@ import { Link } from 'react-router-dom'
 import { getExercises, getHerMix, loadLibrary } from '../../domain/content/catalog'
 import { HeartBadge } from '../components/HeartBadge'
 import { listHearts } from '../../infrastructure/db/repositories/favoritesRepository'
-import { EQUIPMENT_FILTER_OPTIONS, MUSCLE_GROUPS, exerciseMeta, filterExercises, isShownNow, orderForBrowsing, type LibraryFilters } from '../../domain/content/library'
+import { EQUIPMENT_FILTER_OPTIONS, filterExercises, isShownNow, orderForBrowsing, type LibraryFilters } from '../../domain/content/library'
 import type { Exercise } from '../../domain/content/types'
 import { foundationStrengthStarterTemplates } from '../../domain/content/fixtures/foundationStrengthStarter'
 import { listCustomTemplates } from '../../infrastructure/db/repositories/customTemplateRepository'
 import type { WorkoutTemplate } from '../../domain/content/types'
 import { FilterSheet } from '../components/FilterSheet'
 import { ExerciseThumb } from '../components/ExerciseThumb'
+import { AreaChips, MOVE_TILE, MoveGrid, MoveTileBody, initialArea, rememberArea } from '../components/MoveBrowse'
 import { RaeNote } from '../components/RaeNote'
 import { RAE_LOOPS, raeLoopForExercise, raeStillFor } from '../components/raeLoops'
 import { DRAFT_TEMPLATE_IDS } from '../../domain/content/fixtures/raeDraftTemplates'
 import { Skeleton, SkeletonList } from '../components/Skeleton'
 
-const PAGE = 40
+const PAGE = 24
 const LEVELS = ['beginner', 'intermediate', 'expert'] as const
 
 // Library is two panels, one at a time (owner rule: tabs/panels, not one
@@ -43,6 +44,8 @@ export function LibraryScreen() {
   const [library, setLibrary] = useState<Exercise[] | null>(null)
   const [custom, setCustom] = useState<WorkoutTemplate[]>([])
   const [filters, setFilters] = useState<LibraryFilters>({})
+  // Browsing goes by body area; a search (or the hearts) looks at them all.
+  const [area, setAreaState] = useState(initialArea)
   const [limit, setLimit] = useState(PAGE)
   const [loadFailed, setLoadFailed] = useState(false)
   const [herMix, setHerMix] = useState<WorkoutTemplate | null>(null)
@@ -85,8 +88,10 @@ export function LibraryScreen() {
 
   // Filtering the library is deferred so the keystroke paints first and the
   // list catches up; the input itself stays bound to the live filters.
-  const deferredFilters = useDeferredValue(filters)
   const [raeOnly, setRaeOnly] = useState(false)
+  const browsingArea = filters.query || heartOnly ? null : area
+  const shownFilters = useMemo(() => ({ ...filters, area: browsingArea ?? undefined }), [filters, browsingArea])
+  const deferredFilters = useDeferredValue(shownFilters)
   // Moves Rae demonstrates lead the list (orderForBrowsing); "Rae demos"
   // narrows to just those.
   const source = heartOnly ? heartedMoves : library
@@ -96,7 +101,7 @@ export function LibraryScreen() {
   )
   const raeCount = useMemo(() => matched.filter((e) => hasRaeLoop(e.id)).length, [matched])
   const results = useMemo(() => (raeOnly ? matched.filter((e) => hasRaeLoop(e.id)) : matched), [matched, raeOnly])
-  const filtering = Boolean(filters.query || filters.muscle || filters.equipment || filters.level || raeOnly || heartOnly)
+  const filtering = Boolean(filters.query || filters.equipment || filters.level || raeOnly || heartOnly)
   // The moves Rae demonstrates herself (the curated starter set, which
   // lives outside the discovery library), leading the page when you're
   // browsing rather than searching.
@@ -112,6 +117,14 @@ export function LibraryScreen() {
       setRaeMoves(uniqueByLoop([...found.values()].filter(isShownNow), (id) => raeLoopForExercise(id)?.id))
     )
   }, [])
+
+  function chooseArea(next: string) {
+    setLimit(PAGE)
+    setAreaState(next)
+    rememberArea(next)
+    setHeartOnly(false)
+    setFilters((f) => ({ ...f, query: undefined }))
+  }
 
   function toggle<K extends keyof LibraryFilters>(key: K, value: LibraryFilters[K]) {
     setLimit(PAGE)
@@ -222,9 +235,9 @@ export function LibraryScreen() {
               <Link
                 key={exercise.id}
                 to={`/exercise/${exercise.id}`}
-                className="card flex w-28 flex-none flex-col items-center gap-1 p-2 text-center"
+                className="card flex w-24 flex-none flex-col items-center gap-1 p-2 text-center"
               >
-                <ExerciseThumb exercise={exercise} className="h-24 w-24 rounded-panel" />
+                <ExerciseThumb exercise={exercise} className="h-20 w-20 rounded-panel" />
                 <span className="line-clamp-2 text-xs font-semibold leading-tight">{exercise.name}</span>
               </Link>
             ))}
@@ -233,55 +246,47 @@ export function LibraryScreen() {
       )}
 
       <section className="space-y-2">
-        <p className="text-sm font-semibold text-ink-muted">Exercises</p>
-        {/* Search and filters share one row that sticks while the list
+        {/* Search, filters and the body-area chips stick while the grid
             scrolls, so narrowing never needs a trip back to the top. */}
-        <div className="sticky top-0 z-10 -mx-4 flex items-center gap-2 bg-bg px-4 py-2">
-          <input
-            type="search"
-            inputMode="search"
-            placeholder="Search exercises"
-            value={filters.query ?? ''}
-            onChange={(e) => {
-              setLimit(PAGE)
-              setFilters((f) => ({ ...f, query: e.target.value || undefined }))
-            }}
-            className="input min-w-0 flex-1"
-          />
-          <FilterSheet inline activeCount={[filters.muscle, filters.equipment, filters.level].filter(Boolean).length}>
-            <div className="space-y-2">
-              <p className="text-sm font-semibold text-ink-muted">Muscle</p>
-              <ChipRow>
-                {MUSCLE_GROUPS.map((g) => (
-                  <Chip key={g.id} active={filters.muscle === g.id} onClick={() => toggle('muscle', g.id)}>
-                    {g.label}
-                  </Chip>
-                ))}
-              </ChipRow>
-            </div>
-            {EQUIPMENT_FILTER_OPTIONS.length > 0 && (
+        <div className="sticky top-0 z-10 -mx-4 space-y-2 bg-bg px-4 py-2">
+          <div className="flex items-center gap-2">
+            <input
+              type="search"
+              inputMode="search"
+              placeholder="Search exercises"
+              value={filters.query ?? ''}
+              onChange={(e) => {
+                setLimit(PAGE)
+                setFilters((f) => ({ ...f, query: e.target.value || undefined }))
+              }}
+              className="input min-w-0 flex-1"
+            />
+            <FilterSheet inline activeCount={[filters.equipment, filters.level].filter(Boolean).length}>
+              {EQUIPMENT_FILTER_OPTIONS.length > 0 && (
+                <div className="space-y-2">
+                  <p className="text-sm font-semibold text-ink-muted">Equipment</p>
+                  <ChipRow>
+                    {EQUIPMENT_FILTER_OPTIONS.map((o) => (
+                      <Chip key={o.id} active={filters.equipment === o.id} onClick={() => toggle('equipment', o.id)}>
+                        {o.label}
+                      </Chip>
+                    ))}
+                  </ChipRow>
+                </div>
+              )}
               <div className="space-y-2">
-                <p className="text-sm font-semibold text-ink-muted">Equipment</p>
+                <p className="text-sm font-semibold text-ink-muted">Level</p>
                 <ChipRow>
-                  {EQUIPMENT_FILTER_OPTIONS.map((o) => (
-                    <Chip key={o.id} active={filters.equipment === o.id} onClick={() => toggle('equipment', o.id)}>
-                      {o.label}
+                  {levels.map((l) => (
+                    <Chip key={l} active={filters.level === l} onClick={() => toggle('level', l)}>
+                      {l[0].toUpperCase() + l.slice(1)}
                     </Chip>
                   ))}
                 </ChipRow>
               </div>
-            )}
-            <div className="space-y-2">
-              <p className="text-sm font-semibold text-ink-muted">Level</p>
-              <ChipRow>
-                {levels.map((l) => (
-                  <Chip key={l} active={filters.level === l} onClick={() => toggle('level', l)}>
-                    {l[0].toUpperCase() + l.slice(1)}
-                  </Chip>
-                ))}
-              </ChipRow>
-            </div>
-          </FilterSheet>
+            </FilterSheet>
+          </div>
+          <AreaChips area={browsingArea} onArea={chooseArea} />
         </div>
 
         {library === null && !loadFailed && (
@@ -329,38 +334,33 @@ export function LibraryScreen() {
         {library && results.length === 0 && (
           <RaeNote expression="surprised">Nothing matches that. Try a shorter search or fewer filters.</RaeNote>
         )}
-        <ul className="space-y-2">
+        <MoveGrid>
           {results.slice(0, limit).map((exercise) => (
-            <li key={exercise.id} className="[content-visibility:auto] [contain-intrinsic-size:auto_76px]">
-              <Link
-                to={`/exercise/${exercise.id}`}
-                className="flex items-center gap-3 card p-2"
-              >
-                <ExerciseThumb exercise={exercise} className="h-14 w-20 rounded-panel" />
-                <div className="min-w-0">
-                  <p className="truncate font-semibold">
-                    {exercise.name}
-                    {hearted.has(exercise.id) && (
-                      <span className="sr-only">, hearted</span>
-                    )}
-                    {hearted.has(exercise.id) && (
-                      <span aria-hidden="true" className="ml-1 text-primary">
-                        ♥
-                      </span>
-                    )}
-                  </p>
-                  <p className="truncate text-xs text-ink-muted">{exerciseMeta(exercise).join(', ')}</p>
-                </div>
+            <li key={exercise.id}>
+              <Link to={`/exercise/${exercise.id}`} className={MOVE_TILE}>
+                <MoveTileBody
+                  exercise={exercise}
+                  trailing={
+                    hearted.has(exercise.id) && (
+                      <>
+                        <span className="sr-only">, hearted</span>
+                        <span aria-hidden="true" className="flex-none pr-1 text-primary-ink">
+                          ♥
+                        </span>
+                      </>
+                    )
+                  }
+                />
               </Link>
             </li>
           ))}
-        </ul>
+        </MoveGrid>
         {results.length > limit && (
           <button
             className="btn-secondary w-full"
             onClick={() => setLimit((n) => n + PAGE)}
           >
-            Show more
+            Show more ({results.length - limit})
           </button>
         )}
       </section>

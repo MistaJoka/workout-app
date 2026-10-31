@@ -1,6 +1,6 @@
 import { GoalGain } from '../components/GoalGain'
 import { syncReminders } from '../../infrastructure/reminders'
-import { useEffect, useState, type ReactNode } from 'react'
+import { useEffect, useRef, useState, type ReactNode, type RefObject } from 'react'
 import { Link, useParams } from 'react-router-dom'
 import { ShareWorkoutButton } from '../components/ShareWorkoutButton'
 import { getPlan, getResult, listResults } from '../../infrastructure/db/repositories/sessionRepository'
@@ -38,6 +38,7 @@ import { bookendsFor } from '../../domain/content/workoutEstimate'
 import { templateById } from '../../domain/content/fixtures/foundationStrengthStarter'
 import type { WorkoutTemplate } from '../../domain/content/types'
 import { storageErrorMessage } from '../../infrastructure/storageErrors'
+import { useSheetFocus } from '../components/useSheetFocus'
 
 export function SessionCompleteScreen() {
   const { sessionId } = useParams()
@@ -65,6 +66,14 @@ export function SessionCompleteScreen() {
   // True once the plan is known not to exist (a stale or made-up link):
   // there was no workout, so there's nothing to celebrate.
   const [missing, setMissing] = useState(false)
+  // The rewards sheet: every reward moment that landed (badges, boss hit,
+  // love note, bests...) behind one "+N rewards" button, so the finish
+  // fits one screen. Its slots mount with the screen, hidden, so each
+  // plays its sound once on arrival and pops in when the sheet opens.
+  const [rewardsOpen, setRewardsOpen] = useState(false)
+  const rewardsRef = useRef<HTMLDivElement>(null)
+  const rewardCount = useFilledSlots(rewardsRef)
+  useSheetFocus(rewardsRef, () => setRewardsOpen(false), { enabled: rewardsOpen })
 
   useEffect(() => {
     if (!sessionId) return
@@ -125,31 +134,30 @@ export function SessionCompleteScreen() {
 
   if (missing) return <NotFound message="That workout isn't in your history." />
 
+  // One secondary action under the hero: the cool-down when it's offered
+  // (it's the next thing to do), else Share. The other lives in the sheet.
+  const shareInSheet = Boolean(coolDown)
+
   return (
-    <div className="field-success min-h-screen rounded-none p-6 pt-16 pb-28 text-center space-y-4">
+    <div className="field-success min-h-screen rounded-none px-6 pt-10 pb-28 text-center space-y-3">
       {/* Hero: Rae cheers beside this week's new flower (grows in as the
           screen opens, static under reduced/off motion), the headline, and
-          this workout's species chip. The chip's own "new to your garden"
-          note and the week-bloom caption are one grouped line here, not
-          scattered text lower on the screen. */}
+          this workout's species chip. */}
       <div className="mx-auto flex max-w-xs items-end justify-center gap-3" data-testid="complete-celebration">
-        <RaeFace expression="cheer" size={112} motion="pop" />
+        <RaeFace expression="cheer" size={96} motion="pop" />
         <div className="flex flex-col items-center">
           <PixelBloom
             bloomed={result !== null && bloom !== undefined}
-            size={100}
+            size={88}
             species={bloom?.species}
             label={bloom ? `This week's new flower, in bloom: ${bloom.species.name}` : "This week's new flower, in bloom"}
           />
         </div>
       </div>
-      <div aria-hidden="true" className="mx-auto -mt-4 h-2 max-w-[15rem] rounded-full bg-[#e9c6a9]" />
+      <div aria-hidden="true" className="mx-auto -mt-3 h-2 max-w-[13rem] rounded-full bg-[#e9c6a9]" />
       <p className="text-3xl font-extrabold">Workout complete</p>
       {result && bloom && <BloomReveal species={bloom.species} isNew={bloom.isNew} />}
       {result && (
-        // Ties the finish to Today's week: every finished workout grows a
-        // flower there (WeekBlooms), ended-early ones included. Sits right
-        // under the chip above instead of as a separate block lower down.
         <p className="mx-auto max-w-xs text-center text-sm font-semibold text-ink-muted">
           {shortened ? 'You showed up, and that counts.' : 'A new flower just bloomed in your week!'}
         </p>
@@ -163,56 +171,24 @@ export function SessionCompleteScreen() {
         </div>
       )}
 
-      {/* One rewards card: perfect stamp, XP + level (+ goal met), session
-          highlights, and badge unlocks, each a staggered slot under full
-          motion so the eye lands on one thing at a time instead of a dozen
-          competing call-outs. The level-up overlay is a full-screen moment
-          of its own and stays outside the card. */}
-      {result && sessionId && (
-        <section className="rewards-card card mx-auto max-w-sm space-y-3 p-4 text-left" aria-label="Rewards">
-          <style>{REWARDS_STYLE}</style>
-          <RewardItem delay={0}>
-            <PerfectStamp sessionId={sessionId} />
-          </RewardItem>
-          {xp && (
-            <RewardItem delay={90}>
-              <XpGainChip gain={xp} alongside={carrots ? <CarrotGainChip gain={carrots} inline /> : undefined} />
-              {xp.goalMet && <GoalMetBanner />}
-              {xp.goalMet && goalBloomSpecies && <GoalBloomReveal species={goalBloomSpecies} />}
-            </RewardItem>
+      {/* The one reward row: XP, carrots and the level bar. */}
+      {result && (xp || carrots) && (
+        <section className="card mx-auto max-w-sm p-3 text-left" aria-label="Earned">
+          {xp ? (
+            <XpGainChip gain={xp} alongside={carrots ? <CarrotGainChip gain={carrots} inline /> : undefined} />
+          ) : (
+            carrots && <CarrotGainChip gain={carrots} />
           )}
-          {carrots && (
-            <RewardItem delay={135}>
-              <GoalGain gain={carrots.total} />
-            </RewardItem>
-          )}
-          <RewardItem delay={180}>
-            <CompleteHighlights sessionId={sessionId} />
-          </RewardItem>
-          <RewardItem delay={270}>
-            <AchievementUnlocks sessionId={sessionId} />
-          </RewardItem>
-          {carrots && !xp && (
-            <RewardItem delay={360}>
-              <CarrotGainChip gain={carrots} />
-            </RewardItem>
-          )}
-          <RewardItem delay={360}>
-            <BossHitReward sessionId={sessionId} />
-          </RewardItem>
-          <RewardItem delay={450}>
-            <LoveNoteRewardItem sessionId={sessionId} />
-          </RewardItem>
         </section>
       )}
       {result && xp?.leveledUp && <LevelUpMoment to={xp.to} />}
 
-      {/* The next-level offer is a decision, not a reward: it stays its own
-          prominent block right after the rewards card. */}
+      {/* The next-level offer is a decision, not a reward: it stays on the
+          screen, prominent, never folded into the sheet. */}
       {candidates.length > 0 && (
-        <div className="space-y-3 text-left">
+        <div className="mx-auto max-w-sm space-y-3 text-left">
           {candidates.map((candidate) => (
-            <div key={candidate.exerciseId} className="card p-4 space-y-2">
+            <div key={candidate.exerciseId} className="card space-y-2 border-[var(--color-primary)] p-4">
               <p className="font-semibold">Try Next Level? {candidate.exerciseName}</p>
               <p className="text-sm">
                 Next: {candidate.candidatePrescribedReps} reps
@@ -240,38 +216,38 @@ export function SessionCompleteScreen() {
         </div>
       )}
 
-      {result && <NextUpTeaser />}
-
-      {/* Actions: Share and See your progress side by side, Cool down (when
-          offered) as a compact card under them, backup last when it's due. */}
+      {/* The rewards button and the one secondary action, side by side. */}
       {result && (
-        <div className="mx-auto flex max-w-sm items-stretch justify-center gap-2">
-          {sessionId && (
-            <div className="flex flex-1 items-center justify-center">
-              <ShareWorkoutButton sessionId={sessionId} />
-            </div>
+        <div className="mx-auto flex max-w-sm items-stretch gap-2">
+          <button
+            type="button"
+            className={`btn-secondary ${rewardCount > 0 ? 'bg-field-notice' : ''} min-h-11 flex-1 gap-2`}
+            onClick={() => setRewardsOpen(true)}
+            aria-haspopup="dialog"
+            data-testid="complete-more"
+          >
+            {rewardCount > 0 && <GiftBoxIcon />}
+            {rewardCount > 0 ? `+${rewardCount} ${rewardCount === 1 ? 'reward' : 'rewards'}` : 'More'}
+          </button>
+          {coolDown ? (
+            <Link
+              to={`/checkin/${coolDown.id}`}
+              className="card flex min-h-11 flex-1 items-center justify-between gap-2 px-3 py-2 text-left"
+              aria-label={`Cool down, ${coolDown.exercises.length} moves`}
+            >
+              <span className="font-semibold">Cool down</span>
+              <span aria-hidden="true" className="text-ink-muted">
+                ›
+              </span>
+            </Link>
+          ) : (
+            sessionId && (
+              <div className="flex flex-1 items-center justify-center">
+                <ShareWorkoutButton sessionId={sessionId} />
+              </div>
+            )
           )}
-          {/* replace: Back from Progress never lands on this finished
-              screen again (Complete leaves history). */}
-          <Link to="/progress" replace className="btn-ghost min-h-11 flex-1">
-            See your progress
-          </Link>
         </div>
-      )}
-
-      {coolDown && (
-        <Link
-          to={`/checkin/${coolDown.id}`}
-          className="card mx-auto flex min-h-11 max-w-sm items-center justify-between gap-3 px-4 py-3 text-left"
-        >
-          <span className="min-w-0">
-            <span className="block font-semibold">Cool down</span>
-            <span className="block text-sm text-ink-muted">{coolDown.exercises.length} moves</span>
-          </span>
-          <span aria-hidden="true" className="text-ink-muted">
-            ›
-          </span>
-        </Link>
       )}
 
       {/* Shows only when a backup is due (14 days, or never with history),
@@ -280,6 +256,72 @@ export function SessionCompleteScreen() {
       <div className="w-full">
         <BackupNudge minFinished={3} />
       </div>
+
+      {/* Always mounted (hidden while closed): see rewardsOpen above. */}
+      {result && sessionId && (
+        <div
+          className="sheet-backdrop fixed inset-0 z-40 flex items-end bg-black/40"
+          style={rewardsOpen ? undefined : { display: 'none' }}
+          onClick={() => setRewardsOpen(false)}
+        >
+          <div
+            ref={rewardsRef}
+            className="app-column mx-auto max-h-[85vh] w-full space-y-3 overflow-y-auto rounded-t-[var(--radius-panel)] bg-surface p-4 text-left"
+            style={{ paddingBottom: 'calc(env(safe-area-inset-bottom) + 1.5rem)' }}
+            onClick={(e) => e.stopPropagation()}
+            role="dialog"
+            aria-modal="true"
+            aria-label="Your rewards"
+          >
+            <p className="text-center text-lg font-bold">Rewards</p>
+            <section className="rewards-card space-y-3" aria-label="Rewards">
+              <style>{REWARDS_STYLE}</style>
+              <RewardItem delay={0} className="text-center">
+                <PerfectStamp sessionId={sessionId} />
+              </RewardItem>
+              <RewardItem delay={60}>
+                {xp?.goalMet && <GoalMetBanner />}
+                {xp?.goalMet && goalBloomSpecies && <GoalBloomReveal species={goalBloomSpecies} />}
+              </RewardItem>
+              <RewardItem delay={120}>
+                <CompleteHighlights sessionId={sessionId} />
+              </RewardItem>
+              <RewardItem delay={180}>
+                <AchievementUnlocks sessionId={sessionId} />
+              </RewardItem>
+              <RewardItem delay={240}>
+                <BossHitReward sessionId={sessionId} />
+              </RewardItem>
+              <RewardItem delay={300}>
+                <LoveNoteRewardItem sessionId={sessionId} />
+              </RewardItem>
+              {carrots && (
+                <RewardItem delay={360}>
+                  <GoalGain gain={carrots.total} />
+                </RewardItem>
+              )}
+            </section>
+            <div className="text-center">
+              <NextUpTeaser />
+            </div>
+            <div className="flex items-stretch gap-2 pt-1">
+              {shareInSheet && (
+                <div className="flex flex-1 items-center justify-center">
+                  <ShareWorkoutButton sessionId={sessionId} />
+                </div>
+              )}
+              {/* replace: Back from Progress never lands on this finished
+                  screen again (Complete leaves history). */}
+              <Link to="/progress" replace className="btn-ghost min-h-11 flex-1">
+                See your progress
+              </Link>
+            </div>
+            <button type="button" className="btn-secondary w-full" onClick={() => setRewardsOpen(false)}>
+              Close
+            </button>
+          </div>
+        </div>
+      )}
 
       {/* ThumbBar ignores taps briefly: this button sits where the player's
           last "Yes"/"Complete Set" was, so a double tap on the final set
@@ -291,6 +333,23 @@ export function SessionCompleteScreen() {
       </ThumbBar>
     </div>
   )
+}
+
+// How many reward slots inside `ref` actually show something. The slots
+// load themselves and render nothing when that reward didn't happen, so
+// this watches the DOM rather than duplicating every slot's loading.
+function useFilledSlots(ref: RefObject<HTMLElement | null>): number {
+  const [count, setCount] = useState(0)
+  useEffect(() => {
+    const root = ref.current
+    if (!root) return
+    const recount = () => setCount(root.querySelectorAll('.rewards-item:not(:empty)').length)
+    recount()
+    const observer = new MutationObserver(recount)
+    observer.observe(root, { childList: true, subtree: true })
+    return () => observer.disconnect()
+  })
+  return count
 }
 
 // Same tile as Progress's totals, on the mint finish field.
@@ -375,17 +434,14 @@ const REWARDS_STYLE = `
 .rewards-item:not(:empty) ~ .rewards-item:not(:empty) { margin-top: 0.75rem; padding-top: 0.75rem; border-top: 1px solid var(--color-border); }
 [data-motion='full'] .rewards-item:not(:empty) { animation: rewards-pop 280ms cubic-bezier(.2,.9,.3,1.1) both; }
 @keyframes rewards-pop { from { opacity: 0; transform: translateY(6px); } to { opacity: 1; transform: none; } }
-/* No reward actually landed (all slots empty): the card itself disappears
-   rather than showing as a blank padded box. */
-.rewards-card:not(:has(.rewards-item:not(:empty))) { display: none; }
 `
 
 // One slot in the rewards card. A slot whose children render nothing (a
 // reward that didn't happen) collapses to nothing via :empty rather than
 // leaving a gap or an empty separator line.
-function RewardItem({ delay, children }: { delay: number; children: ReactNode }) {
+function RewardItem({ delay, className = '', children }: { delay: number; className?: string; children: ReactNode }) {
   return (
-    <div className="rewards-item" style={{ animationDelay: `${delay}ms` }}>
+    <div className={`rewards-item ${className}`} style={{ animationDelay: `${delay}ms` }}>
       {children}
     </div>
   )

@@ -1,5 +1,5 @@
 import { expect, test } from '@playwright/test'
-import { finishWorkout } from './helpers'
+import { finishWorkout, openCompleteRewards } from './helpers'
 
 // Bloom XP: Complete shows what the workout earned, a level-up moment that
 // never blocks a tap, and a "Goal met!" banner on the workout that reaches
@@ -26,6 +26,7 @@ test('XP counts up on Complete, levels up without blocking, and Progress shows t
     .toBe(true)
   await expect(page.getByLabel('Plus 175 XP')).toBeVisible()
   await expect(page.getByTestId('xp-gain').getByText('Level up!')).toBeVisible()
+  await expect(page.getByText('Level up!')).toHaveCount(1)
   await expect(page.getByRole('status').filter({ hasText: 'Level 2, Sprout' })).toHaveCount(1)
   await expect(page.getByTestId('goal-met')).toHaveCount(0)
   // The level-up overlay ignores the pointer: Back to Today works right away.
@@ -37,6 +38,7 @@ test('XP counts up on Complete, levels up without blocking, and Progress shows t
   await page.goto('/#/checkin/fs.quick-10')
   await page.getByRole('button', { name: 'Start workout' }).click()
   await finishWorkout(page)
+  await openCompleteRewards(page)
   await expect(page.getByTestId('goal-met')).toBeVisible()
   await expect(page.getByText('Goal met!')).toBeVisible()
 

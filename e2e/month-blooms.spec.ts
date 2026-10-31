@@ -13,6 +13,10 @@ test('the month calendar blooms on workout days and opens them', async ({ page }
   await finishWorkout(page)
 
   await page.goto('/#/progress')
+  // The calendar sits behind Progress's Week | Month switch; Week leads.
+  await expect(page.getByRole('tab', { name: 'Week' })).toHaveAttribute('aria-selected', 'true')
+  await expect(page.getByRole('region', { name: 'This month' })).toHaveCount(0)
+  await page.getByRole('tab', { name: 'Month' }).click()
   const month = page.getByRole('region', { name: 'This month' })
   await expect(month).toBeVisible()
   await expect(month.getByText('1 day in bloom')).toBeVisible()
@@ -29,6 +33,7 @@ test('the month calendar blooms on workout days and opens them', async ({ page }
   await page.getByRole('button', { name: 'Start workout' }).click()
   await finishWorkout(page)
   await page.goto('/#/progress')
+  await page.getByRole('tab', { name: 'Month' }).click()
   await page.getByRole('button', { name: 'September 30, today, 2 workouts done' }).click()
   const sheet = page.getByRole('dialog', { name: 'September 30 workouts' })
   await expect(sheet.getByRole('link')).toHaveCount(2)

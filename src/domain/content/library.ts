@@ -4,6 +4,7 @@ import needsProp from './needsProp.json'
 export type LibraryFilters = {
   query?: string
   muscle?: string
+  area?: string
   equipment?: string
   level?: Exercise['taxonomy']['level']
 }
@@ -17,6 +18,26 @@ export const MUSCLE_GROUPS: { id: string; label: string; muscles: string[] }[] =
   { id: 'legs', label: 'Legs', muscles: ['quadriceps', 'hamstrings', 'calves', 'adductors', 'abductors'] },
   { id: 'glutes', label: 'Glutes', muscles: ['glutes'] },
 ]
+
+// Body areas for browsing (one chip row in Library and the builder's
+// picker): the muscle groups folded into five, with every stretch in
+// Stretch only, so each area is a short list.
+export const BODY_AREAS: { id: string; label: string; groups: string[] }[] = [
+  { id: 'legs', label: 'Legs', groups: ['legs'] },
+  { id: 'glutes', label: 'Glutes', groups: ['glutes'] },
+  { id: 'core', label: 'Core', groups: ['core'] },
+  { id: 'upper', label: 'Upper', groups: ['chest', 'back', 'shoulders', 'arms'] },
+  { id: 'stretch', label: 'Stretch', groups: [] },
+]
+
+function inArea(e: Exercise, areaId: string): boolean {
+  const stretch = e.taxonomy.category === 'stretching'
+  if (areaId === 'stretch') return stretch
+  const area = BODY_AREAS.find((a) => a.id === areaId)
+  if (!area || stretch) return false
+  const muscles = MUSCLE_GROUPS.filter((g) => area.groups.includes(g.id)).flatMap((g) => g.muscles)
+  return (e.taxonomy.primaryMuscles ?? []).some((m) => muscles.includes(m))
+}
 
 export const EQUIPMENT_OPTIONS: { id: string; label: string }[] = [
   // Home-friendly equipment only: the library no longer ships barbell,
@@ -85,6 +106,7 @@ export function filterExercises(exercises: readonly Exercise[], filters: Library
       if (!terms.every((t) => haystack.includes(t))) return false
     }
     if (group && !(e.taxonomy.primaryMuscles ?? []).some((m) => group.muscles.includes(m))) return false
+    if (filters.area && !inArea(e, filters.area)) return false
     if (filters.equipment && !equipmentOf(e).includes(filters.equipment)) return false
     if (filters.level && e.taxonomy.level !== filters.level) return false
     return true

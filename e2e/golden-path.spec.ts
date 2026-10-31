@@ -144,6 +144,7 @@ test.describe('library and routines', () => {
     await page.getByRole('button', { name: '+ Add exercise' }).click()
     await page.getByPlaceholder('Search exercises').fill('dumbbell bench press')
     await page.getByRole('button', { name: /^Dumbbell Bench Press(?! with)/ }).click()
+    await page.getByRole('button', { name: 'Add 1', exact: true }).click()
 
     // Weighted moves start unloaded; the lifter dials in their own load.
     await expect(page.getByText('Weight (lb)')).toBeVisible()

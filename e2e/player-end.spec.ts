@@ -1,5 +1,5 @@
 import { expect, test, type Page } from '@playwright/test'
-import { dismissWelcome, openProgressMore } from './helpers'
+import { dismissWelcome, openCompleteRewards, openProgressMore } from './helpers'
 
 async function startFullBodyA(page: Page): Promise<void> {
   await page.goto('/')
@@ -34,6 +34,7 @@ test('ending early asks first, then finishes on the Complete screen', async ({ p
   // end in its label instead of a separate sentence (Complete rewrite).
   await expect(page.getByText('1/10')).toBeVisible()
   await expect(page.getByText(/ended early/)).toBeVisible()
+  await openCompleteRewards(page)
   await page.getByRole('link', { name: 'See your progress' }).click()
   await openProgressMore(page)
   await expect(page.getByText('Full-Body A')).toBeVisible()
