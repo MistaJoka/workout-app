@@ -25,6 +25,7 @@ import { templateById } from '../../domain/content/fixtures/foundationStrengthSt
 import { useWeightUnit } from '../components/useWeightUnit'
 import { formatWeight } from '../units'
 import { SwapPicker } from '../components/SwapPicker'
+import { countLabel } from '../format'
 
 type Loaded = {
   template: WorkoutTemplate
@@ -233,8 +234,8 @@ export function CheckInScreen() {
         <h1 className="text-2xl font-bold">{loaded.template.name}</h1>
         <p className="text-ink-muted">
           {preview.circuit
-            ? `${preview.exercises.length} moves, ${preview.circuit.rounds} ${preview.circuit.rounds === 1 ? 'round' : 'rounds'}`
-            : `${preview.exercises.length} moves, ${totalSets} sets`}
+            ? `${countLabel(preview.exercises.length, 'move')}, ${countLabel(preview.circuit.rounds, 'round')}`
+            : `${countLabel(preview.exercises.length, 'move')}, ${countLabel(totalSets, 'set')}`}
           , about {minutes} min
         </p>
       </div>
@@ -249,7 +250,7 @@ export function CheckInScreen() {
           <span className="min-w-0">
             <span className="block font-semibold">Warm up first</span>
             <span className="block text-sm text-ink-muted">
-              {warmUp.exercises.length} moves, about {estimateMinutes(warmUp)} min
+              {countLabel(warmUp.exercises.length, 'move')}, about {estimateMinutes(warmUp)} min
             </span>
           </span>
           <span aria-hidden="true" className="text-ink-muted">

@@ -156,11 +156,11 @@ async function loadToday(now: Date): Promise<TodayData> {
     const latest = today[0]
     const plan = planById.get(latest.planId)
     const minutes = Math.max(1, Math.round((Date.parse(latest.endedAt) - Date.parse(latest.startedAt)) / 60000))
-    const count = today.length > 1 ? `, ${today.length} workouts today` : ''
+    const count = today.length > 1 ? `, ${countLabel(today.length, 'workout')} today` : ''
     mission = {
       kind: 'done',
       name: (plan && (await getTemplateName(plan.templateId))) ?? 'Workout',
-      detail: `${latest.totalSetsCompleted} sets in ${minutes} min${count}`,
+      detail: `${countLabel(latest.totalSetsCompleted, 'set')} in ${minutes} min${count}`,
       extra,
     }
   } else if (mode === 'rest') {
