@@ -19,7 +19,7 @@ import { getWeeklySchedule, saveWeeklySchedule } from '../../infrastructure/db/r
 import { loadWeekGoals } from '../../infrastructure/db/repositories/weekGoalsRepository'
 import { weeklyGoal } from '../../domain/progress/stats'
 import { mondayKey } from '../../domain/progress/weekGoals'
-import { db } from '../../infrastructure/db/schema'
+import { listResults } from '../../infrastructure/db/repositories/sessionRepository'
 import { BackButton } from '../components/BackButton'
 import { RaeNote } from '../components/RaeNote'
 import { REMINDER_TIMES, ReminderCard } from '../components/ReminderCard'
@@ -65,7 +65,7 @@ export function ScheduleScreen() {
         setSchedule(pruned)
         // Only once this week has a workout is its goal fixed; before that a
         // change applies right away and there's nothing to say.
-        const results = await db.sessionResults.toArray().catch(() => [])
+        const results = await listResults().catch(() => [])
         const now = new Date()
         const startedThisWeek = results.some((r) => mondayKey(new Date(r.endedAt)) === mondayKey(now))
         const goals = startedThisWeek ? await loadWeekGoals({ results, schedule: pruned }).catch(() => null) : null

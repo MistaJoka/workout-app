@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react'
-import { db } from '../../infrastructure/db/schema'
+import { countResults } from '../../infrastructure/db/repositories/sessionRepository'
 import { getSetting } from '../../infrastructure/db/repositories/settingsRepository'
 import { storageErrorMessage } from '../../infrastructure/storageErrors'
 import { BACKUP_NUDGE_DAYS, LAST_EXPORT_KEY, exportAndRecord, needsBackupNudge } from '../backup'
@@ -26,7 +26,7 @@ export function BackupNudge({
 
   useEffect(() => {
     let cancelled = false
-    Promise.all([getSetting<string>(LAST_EXPORT_KEY), db.sessionResults.count()])
+    Promise.all([getSetting<string>(LAST_EXPORT_KEY), countResults()])
       .then(([last, finished]) => {
         if (!cancelled) setLoaded({ last: last ?? null, finished })
       })

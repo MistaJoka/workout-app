@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react'
 import { getSetting, setSetting } from '../../infrastructure/db/repositories/settingsRepository'
-import { db } from '../../infrastructure/db/schema'
+import { countResults } from '../../infrastructure/db/repositories/sessionRepository'
 import { activeProfile, renameProfile } from '../../infrastructure/profiles'
 import { hasRealName } from '../greeting'
 import { defaultWeightUnitForLocale, type WeightUnit } from '../units'
@@ -28,7 +28,7 @@ export function OnboardingGate() {
 
   useEffect(() => {
     let cancelled = false
-    Promise.all([getSetting<boolean>(ONBOARDING_DONE_KEY), getSetting<boolean>(WELCOME_DISMISSED_KEY), db.sessionResults.count()])
+    Promise.all([getSetting<boolean>(ONBOARDING_DONE_KEY), getSetting<boolean>(WELCOME_DISMISSED_KEY), countResults()])
       .then(([onboardingDone, welcomeDismissed, finishedCount]) => {
         if (cancelled) return
         const show = shouldShowOnboarding({
