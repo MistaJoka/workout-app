@@ -26,6 +26,8 @@ export async function finishWorkout(page: Page): Promise<void> {
     if (await tap('Skip rest')) continue
     if (await tap('Yes')) continue
     if (await tap('Complete Set')) continue
+    // A timed hold's own way to log a set timed by hand.
+    if (await tap('Already did it')) continue
     await page.waitForTimeout(150)
   }
   await expect(page.getByText('Workout complete')).toBeVisible()

@@ -20,6 +20,8 @@ import { ThumbBar } from '../components/ThumbBar'
 import { TapStage } from '../components/TapStage'
 import { RepPicks } from '../components/RepPicks'
 import { ConfirmSheet } from '../components/ConfirmSheet'
+import { useBackGuard } from '../components/unsavedGuard'
+import { shortCues, stepsAddToCues } from '../../domain/content/cues'
 import { ExerciseThumb } from '../components/ExerciseThumb'
 import { RestRing } from '../components/RestRing'
 import { SetDots } from '../components/SetDots'
@@ -97,10 +99,10 @@ export function WorkoutPlayerScreen() {
   const [confirmingSkip, setConfirmingSkip] = useState(false)
   const [showingOverview, setShowingOverview] = useState(false)
   const [loadFailed, setLoadFailed] = useState(false)
-  // Familiar moves start with their steps folded away; opening one keeps it
-  // open for the rest of this session (not persisted).
+  // Familiar moves show no cues, just Rae and the reps (MoveCues).
   const [familiarIds, setFamiliarIds] = useState<ReadonlySet<string>>(new Set())
-  const [openedIds, setOpenedIds] = useState<ReadonlySet<string>>(new Set())
+  // The back gesture mid-workout asks first (useBackGuard below).
+  const [confirmingLeave, setConfirmingLeave] = useState(false)
   // The stored events, kept only for the flow chip's run (domain/session/flow.ts):
   // how many met sets landed in a row just now. Refetched whenever a set is
   // completed or taken back — the only actions that can move it.
@@ -186,6 +188,12 @@ export function WorkoutPlayerScreen() {
       navigate(`/session/${sessionId}/complete`, { replace: true })
     }
   }, [state, sessionId, navigate])
+
+  // The Android back gesture used to drop her out of a running workout
+  // without a word. While it's open, Back asks: keep going, or leave it
+  // open on Today to pick up later. Nothing is ended or lost either way.
+  const inProgress = state != null && state.status !== 'COMPLETED' && state.status !== 'COMPLETED_SHORTENED'
+  useBackGuard(inProgress, () => setConfirmingLeave(true))
 
   const currentExerciseId = plan && state ? plan.exercises[state.currentExerciseIndex]?.exerciseId : undefined
   useEffect(() => {
@@ -334,6 +342,32 @@ export function WorkoutPlayerScreen() {
     setConfirmingEnd(true)
   }
 
+  // Leaving with a clock running would let it run out unwatched (a hold
+  // would even count itself), so the clock is paused first. Today then
+  // offers Resume, Finish and Discard as for any open workout.
+  async function handleLeave() {
+    if (!sessionId || !state) return
+    const clockRunning = state.status !== 'PAUSED' && Boolean(state.restEndsAt || state.holdStartedAt)
+    if (clockRunning && !(await handleAction('PAUSED'))) return
+    setConfirmingLeave(false)
+    navigate('/', { replace: true })
+  }
+
+  const leaveSheet = confirmingLeave ? (
+    <ConfirmSheet
+      title="Leave this workout?"
+      confirmLabel="Leave for now"
+      cancelLabel="Keep going"
+      safeConfirm
+      busy={busy}
+      error={error}
+      onConfirm={() => void handleLeave()}
+      onCancel={() => setConfirmingLeave(false)}
+    >
+      It waits for you on Today.
+    </ConfirmSheet>
+  ) : null
+
   const endSheet = confirmingEnd ? (
     <ConfirmSheet
       title="End workout?"
@@ -431,6 +465,7 @@ export function WorkoutPlayerScreen() {
           End workout
         </button>
         {endSheet}
+        {leaveSheet}
         <ThumbBar armKey="paused">
           <button className="btn-primary btn-lg w-full" disabled={busy} onClick={() => handleAction('RESUMED')}>
             Resume
@@ -451,6 +486,8 @@ export function WorkoutPlayerScreen() {
       seed: `${state.currentExerciseIndex}:${state.currentSetNumber}:resting`,
     })
     return (
+      <>
+      {leaveSheet}
       <RestingView
         upNext={upNext}
         upNextContent={upNext ? exerciseById.get(upNext.exerciseId) : undefined}
@@ -474,6 +511,7 @@ export function WorkoutPlayerScreen() {
         onUndo={state.lastSet ? () => handleAction('SET_UNDONE') : undefined}
         liveCarrots={liveSetCarrots(plan, events)}
       />
+      </>
     )
   }
 
@@ -696,12 +734,12 @@ export function WorkoutPlayerScreen() {
       </div>
       </TapStage>
 
-      {exerciseContent && (exerciseContent.setup || exerciseContent.executionPhases.length > 0) && (
-        <StepsList
+      {exerciseContent && (
+        <MoveCues
           key={exercise.exerciseId}
+          cues={shortCues(exerciseContent)}
           steps={[exerciseContent.setup, ...exerciseContent.executionPhases].filter(Boolean)}
-          folded={familiarIds.has(exercise.exerciseId) && !openedIds.has(exercise.exerciseId)}
-          onUnfold={() => setOpenedIds((ids) => new Set(ids).add(exercise.exerciseId))}
+          familiar={familiarIds.has(exercise.exerciseId)}
         />
       )}
 
@@ -715,6 +753,7 @@ export function WorkoutPlayerScreen() {
       {error && !confirmingSkip && <p className="text-sm text-accent">{error}</p>}
       {endSheet}
       {skipSheet}
+      {leaveSheet}
       {awaitingRepCheck && weighted && shortReps === null && (
         <div className="flex items-center justify-center gap-6 rounded-panel bg-bg p-2">
           <button
@@ -836,18 +875,19 @@ export function WorkoutPlayerScreen() {
             </div>
           </>
         ) : timed && !holding ? (
-          // A timed set counts itself down; Complete Set stays for anyone
-          // timing it on their own.
-          <div className="flex gap-2">
+          // A timed set counts itself down: one clear Start. Anyone who
+          // timed it on their own logs it with the small link under it.
+          <div className="space-y-1">
+            <button className="btn-primary btn-lg w-full" disabled={busy} onClick={handleStartHold}>
+              Start {exercise.timeSeconds}s
+            </button>
             <button
-              className="btn-secondary"
+              type="button"
+              className="flex min-h-11 w-full items-center justify-center text-sm font-semibold text-ink-muted"
               disabled={busy}
               onClick={() => handleCompleteSetClick(exercise.exerciseId, false)}
             >
-              Complete Set
-            </button>
-            <button className="btn-primary btn-lg flex-1" disabled={busy} onClick={handleStartHold}>
-              Start {exercise.timeSeconds}s
+              Already did it
             </button>
           </div>
         ) : (
@@ -864,53 +904,37 @@ export function WorkoutPlayerScreen() {
   )
 }
 
-const STEPS_SHOWN = 3
-const STEPS_CHAR_BUDGET = 480
-
-// Library instructions can run to 6+ long steps; the first few (bounded by
-// count and by length, since one upstream step can be a paragraph) plus the
-// photos carry the movement, and the Complete Set button must stay on a
-// phone screen. The rest is one tap away; the list is keyed by exercise id
-// so it remounts (collapsed) when the exercise changes.
-function initialStepCount(steps: string[]): number {
-  let chars = 0
-  let count = 0
-  for (const step of steps) {
-    if (count >= STEPS_SHOWN) break
-    if (count > 0 && chars + step.length > STEPS_CHAR_BUDGET) break
-    chars += step.length
-    count += 1
-  }
-  return Math.max(1, count)
-}
-
-// A familiar move (FAMILIAR_AFTER_SESSIONS) folds its steps behind one tap,
-// so the screen is Rae and the reps; the steps are never removed.
-function StepsList({ steps, folded, onUnfold }: { steps: string[]; folded: boolean; onUnfold: () => void }) {
-  const [expanded, setExpanded] = useState(false)
-  if (folded) {
-    return (
-      <button type="button" className="btn-ghost min-h-11 w-full" onClick={onUnfold}>
-        Show steps
-      </button>
-    )
-  }
-  const visible = expanded ? steps : steps.slice(0, initialStepCount(steps))
-  const hidden = steps.length - visible.length
+// What to do, in a few words: the move's short cues (domain/content/cues.ts)
+// under Rae, with the full steps folded behind "Show steps". It starts
+// closed on every move and remembers nothing; the steps are never removed.
+// A familiar move (FAMILIAR_AFTER_SESSIONS) drops the cues as well, so the
+// screen is Rae and the reps.
+function MoveCues({ cues, steps, familiar }: { cues: string[]; steps: string[]; familiar: boolean }) {
+  const [open, setOpen] = useState(false)
+  const shownCues = familiar ? [] : cues
+  const more = shownCues.length === 0 ? steps.length > 0 : stepsAddToCues(steps, shownCues)
+  if (shownCues.length === 0 && !more) return null
   return (
-    <div className="space-y-1.5">
-      <ol className="space-y-1.5 text-sm leading-snug">
-        {visible.map((step, i) => (
-          <li key={i} className="flex gap-2">
-            <span className="font-semibold text-ink-muted">{i + 1}.</span>
-            <span>{step}</span>
-          </li>
-        ))}
-      </ol>
-      {hidden > 0 && (
-        <button type="button" className="min-h-11 text-sm text-primary-ink" onClick={() => setExpanded(true)}>
-          Show {hidden} more {hidden === 1 ? 'step' : 'steps'}
+    <div className="space-y-1">
+      {shownCues.length > 0 && (
+        <p className="player-cues text-base font-semibold leading-snug" data-testid="player-cues">
+          {shownCues.join(' · ')}
+        </p>
+      )}
+      {more && (
+        <button type="button" className="btn-ghost min-h-11 w-full" aria-expanded={open} onClick={() => setOpen((o) => !o)}>
+          {open ? 'Hide steps' : 'Show steps'}
         </button>
+      )}
+      {more && open && (
+        <ol className="space-y-1.5 text-sm leading-snug">
+          {steps.map((step, i) => (
+            <li key={i} className="flex gap-2">
+              <span className="font-semibold text-ink-muted">{i + 1}.</span>
+              <span>{step}</span>
+            </li>
+          ))}
+        </ol>
       )}
     </div>
   )

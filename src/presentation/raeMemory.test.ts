@@ -74,7 +74,37 @@ describe('buildRaeMemory', () => {
     expect(memory.lastSession).toEqual({
       templateName: 'Full-Body A',
       standout: { exerciseName: 'Bodyweight Squat', isHold: false, isNewBest: false },
+      yesterday: true,
     })
+  })
+
+  it('knows "yesterday" by the local day, not by 24 hours', () => {
+    const p = plan('p1', 'tpl.full-body-a', [{ exerciseId: 'squat', name: 'Squat', sets: 1, reps: 10 }])
+    const memoryAt = (endedAt: Date, now: Date) =>
+      buildRaeMemory({
+        plans: [p],
+        results: [result('s1', 'p1', endedAt.toISOString(), 1)],
+        events: sets('s1', 1),
+        templateNames: names,
+        now,
+      })
+    // Late last night, early this morning: yesterday, though under 24 hours.
+    expect(memoryAt(new Date(2026, 9, 1, 23, 30), new Date(2026, 9, 2, 6, 0)).lastSession?.yesterday).toBe(true)
+    // Two days back, even if under 48 hours: last time.
+    expect(memoryAt(new Date(2026, 9, 1, 23, 30), new Date(2026, 9, 3, 6, 0)).lastSession?.yesterday).toBe(false)
+  })
+
+  it('takes no standout from a session that ended early', () => {
+    const p = plan('p1', 'tpl.full-body-a', [{ exerciseId: 'squat', name: 'Squat', sets: 3, reps: 10 }])
+    const r: SessionResult = { ...result('s1', 'p1', '2026-10-01T10:00:00.000Z', 1), status: 'COMPLETED_SHORTENED', totalSetsPlanned: 3 }
+    const memory = buildRaeMemory({
+      plans: [p],
+      results: [r],
+      events: sets('s1', 1),
+      templateNames: names,
+      now: new Date('2026-10-02T12:00:00.000Z'),
+    })
+    expect(memory.lastSession?.standout).toBeNull()
   })
 
   it('prefers a new best over the move with the most sets', () => {

@@ -62,6 +62,7 @@ test('the header face cheers on the last set of the workout', async ({ page }) =
     if (await armedTap(page, 'Yes')) continue
     if (await page.getByText('Last set!', { exact: true }).waitFor({ timeout: 600 }).then(() => true, () => false)) break
     if (await armedTap(page, 'Complete Set')) continue
+    if (await armedTap(page, 'Already did it')) continue
     await page.waitForTimeout(150)
   }
   await expect(page.getByText('Last set!', { exact: true })).toBeVisible()

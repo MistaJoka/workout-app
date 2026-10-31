@@ -33,6 +33,8 @@ export type RaeMemory = {
     // The move to single out: its new best when it has one, else the move
     // with the most completed sets. Null when there's nothing to call out.
     standout: { exerciseName: string; isHold: boolean; isNewBest: boolean } | null
+    // It ended on the local day before today ("yesterday", else "last time").
+    yesterday: boolean
   } | null
   // The session before `lastSession` ran the same template.
   sameTemplateAsPrevious: boolean
@@ -106,8 +108,8 @@ function memoryCandidates(category: keyof typeof RAE_LINES, memory: RaeMemory): 
   const lines: string[] = []
   const standout = memory.lastSession?.standout
   if (standout) {
-    const kind = standout.isHold && standout.isNewBest ? 'hold' : 'standout'
-    const line = lineFor(kind, standout.exerciseName)
+    const kind = standout.isHold && standout.isNewBest ? 'hold' : memory.lastSession?.yesterday ? 'standout' : 'standoutLastTime'
+    const line = lineFor(kind, standout.exerciseName) ?? (kind === 'hold' ? null : lineFor('standoutShort', standout.exerciseName))
     if (line) lines.push(line)
   }
   if (memory.sameTemplateAsPrevious && memory.lastSession?.templateName) {
@@ -123,37 +125,31 @@ function memoryCandidates(category: keyof typeof RAE_LINES, memory: RaeMemory): 
 
 const MEMORY_TEMPLATES = {
   standout: { prefix: '', suffix: ' looked strong yesterday!' },
+  standoutLastTime: { prefix: '', suffix: ' looked strong last time!' },
+  // A longer name that only fits without the "when".
+  standoutShort: { prefix: '', suffix: ' looked strong!' },
   hold: { prefix: 'You beat your ', suffix: ' time!' },
   streak: { prefix: 'Two days of ', suffix: ', nice rhythm.' },
   flower: { prefix: 'That ', suffix: ' is still glowing.' },
 } as const satisfies Record<string, { prefix: string; suffix: string }>
 
-// Builds one memory line, shortening the name to fit the 40-char bubble.
-// Falls back to no line (the caller drops it, generic lines take over)
-// rather than ever overflowing the bubble.
+// Builds one memory line around the whole name, fitted to the 40-char
+// bubble. Falls back to no line (the caller drops it, generic lines take
+// over) rather than ever overflowing the bubble.
 function lineFor(kind: keyof typeof MEMORY_TEMPLATES, name: string): string | null {
   const { prefix, suffix } = MEMORY_TEMPLATES[kind]
-  const short = shorten(name, 40 - prefix.length - suffix.length)
+  const short = fitName(name, 40 - prefix.length - suffix.length)
   return short ? `${prefix}${short}${suffix}` : null
 }
 
-// Sensible shortening: fits as-is, else drops a parenthetical aside, else
-// takes as many whole leading words as fit. Gives up (null) rather than
-// cut a single word or leave something too short to read as a name.
-function shorten(name: string, maxLen: number): string | null {
+// The name as-is, or without a parenthetical aside; never cut mid-name
+// ("Bodyweight" alone reads as another move), so null when it won't fit.
+function fitName(name: string, maxLen: number): string | null {
   const trimmed = name.trim()
   if (maxLen <= 0) return null
   if (trimmed.length <= maxLen) return trimmed
   const noAside = trimmed.replace(/\s*\([^)]*\)\s*/g, ' ').trim()
-  if (noAside.length > 0 && noAside.length <= maxLen) return noAside
-  const words = (noAside || trimmed).split(/\s+/)
-  let out = ''
-  for (const word of words) {
-    const next = out ? `${out} ${word}` : word
-    if (next.length > maxLen) break
-    out = next
-  }
-  return out.length >= 3 ? out : null
+  return noAside.length > 0 && noAside.length <= maxLen ? noAside : null
 }
 
 function pick(lines: readonly string[], dateKey: string): string {

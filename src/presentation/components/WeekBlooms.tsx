@@ -197,7 +197,9 @@ export function WeekBlooms({
       <p className={`sr-only ${line.className}`} style={line.style}>
         {goalGradientLine(done, goal)}
       </p>
-      <ol className="mt-1 grid grid-cols-7">
+      {/* Into the card's padding, so each day stays a 44px target on the
+          Flip's 360px cover screen. */}
+      <ol className="-mx-2 mt-1 grid grid-cols-7">
         {week.map((day) => {
           const target = weekDayTarget(day)
           const href = hrefFor(target)

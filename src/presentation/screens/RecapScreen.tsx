@@ -2,6 +2,7 @@ import { useCallback, useEffect, useMemo, useRef, useState, type ReactNode } fro
 import { goBackOrToday } from '../components/BackButton'
 import { loadWeekGoals } from '../../infrastructure/db/repositories/weekGoalsRepository'
 import { Link, useNavigate, useSearchParams } from 'react-router-dom'
+import { countLabel } from '../format'
 import {
   buildMonthRecap,
   buildWeekRecap,
@@ -128,7 +129,7 @@ function buildSlides(recap: WeekRecap, unit: WeightUnit): Slide[] {
   if (!recap.quiet) {
     slides.push({
       id: 'numbers',
-      label: `${recap.sets} sets and ${recap.minutes} minutes of movement.`,
+      label: `${countLabel(recap.sets, 'set')} and ${countLabel(recap.minutes, 'minute')} of movement.`,
       body: (
         <div className="space-y-10">
           <BigNumber value={recap.sets} label={recap.sets === 1 ? 'set done' : 'sets done'} />
@@ -297,7 +298,7 @@ function buildMonthSlides(recap: MonthRecap, unit: WeightUnit): Slide[] {
   if (!recap.quiet) {
     slides.push({
       id: 'numbers',
-      label: `${recap.sets} sets and ${recap.minutes} minutes of movement.`,
+      label: `${countLabel(recap.sets, 'set')} and ${countLabel(recap.minutes, 'minute')} of movement.`,
       body: (
         <div className="space-y-10">
           <BigNumber value={recap.sets} label={recap.sets === 1 ? 'set done' : 'sets done'} />
@@ -310,7 +311,7 @@ function buildMonthSlides(recap: MonthRecap, unit: WeightUnit): Slide[] {
   if (recap.flowers.length > 0) {
     slides.push({
       id: 'calendar',
-      label: `${recap.flowers.length} days in bloom this month${
+      label: `${countLabel(recap.flowers.length, 'day')} in bloom this month${
         recap.newSpecies.length ? `, new: ${recap.newSpecies.map((s) => s.name).join(', ')}` : ''
       }.`,
       body: (

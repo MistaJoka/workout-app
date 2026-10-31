@@ -31,8 +31,12 @@ test('skipped moves stay out of the way, and a hold counts itself down and compl
   // The hold finished itself: set 1 is logged and rest begins.
   await expect(page.getByText('Rest', { exact: true })).toBeVisible()
   await tapArmed(page, 'Skip rest')
-  // Timing it yourself still works.
-  await tapArmed(page, 'Complete Set')
+  // One clear Start; timing it yourself is the small link under it.
+  await expect(page.getByRole('button', { name: 'Complete Set', exact: true })).toBeHidden()
+  const already = page.getByRole('button', { name: 'Already did it', exact: true })
+  const box = (await already.boundingBox())!
+  expect(box.height).toBeGreaterThanOrEqual(44)
+  await tapArmed(page, 'Already did it')
   await expect(page.getByText('Workout complete')).toBeVisible()
 
   // History puts the plank's sets on the plank, not on the skipped squat.

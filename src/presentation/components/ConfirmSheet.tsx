@@ -5,7 +5,9 @@ import { useSheetFocus } from './useSheetFocus'
 // workout, leaving unsaved edits). A bottom sheet like FilterSheet and
 // ProfileSwitcher, never window.confirm: a home-screen PWA's native dialog
 // is jarring and blocks the page. The safe choice sits at the bottom,
-// under the thumb; the destructive one has to be reached for.
+// under the thumb; the destructive one has to be reached for. A choice
+// that loses nothing ("Leave for now") isn't painted as danger, and a
+// second way through (`also`) sits above the confirm.
 export function ConfirmSheet({
   title,
   children,
@@ -13,6 +15,8 @@ export function ConfirmSheet({
   cancelLabel,
   busy = false,
   error,
+  safeConfirm = false,
+  also,
   onConfirm,
   onCancel,
 }: {
@@ -22,6 +26,8 @@ export function ConfirmSheet({
   cancelLabel: string
   busy?: boolean
   error?: string | null
+  safeConfirm?: boolean
+  also?: { label: string; onClick: () => void }
   onConfirm: () => void
   onCancel: () => void
 }) {
@@ -47,7 +53,12 @@ export function ConfirmSheet({
         <p className="text-lg font-bold">{title}</p>
         {children && <div className="text-ink-muted">{children}</div>}
         {error && <p className="text-sm text-accent">{error}</p>}
-        <button type="button" className="btn-danger w-full" disabled={busy} onClick={onConfirm}>
+        {also && (
+          <button type="button" className="btn-secondary w-full" disabled={busy} onClick={also.onClick}>
+            {also.label}
+          </button>
+        )}
+        <button type="button" className={`${safeConfirm ? 'btn-secondary' : 'btn-danger'} w-full`} disabled={busy} onClick={onConfirm}>
           {confirmLabel}
         </button>
         <button ref={cancelRef} type="button" className="btn-primary btn-lg w-full" disabled={busy} onClick={onCancel}>
