@@ -1,10 +1,5 @@
 import { useEffect, useState } from 'react'
-import { loadWeekGoals } from '../../infrastructure/db/repositories/weekGoalsRepository'
-import { loadSessionHistory } from '../../application/historyIndex'
-import { getWeeklySchedule } from '../../infrastructure/db/repositories/scheduleRepository'
-import { computeXp } from '../../domain/progress/xp'
-import { nextGoal } from '../../domain/progress/nextGoal'
-import { evaluateAchievements, visibleAchievements } from '../../domain/progress/achievements'
+import { loadNextUpLabel } from '../../application/progressSnapshot'
 
 // One line after the reward moments: whichever steady goal (workout
 // milestone, level, or the next tier of a badge ladder; domain/progress/nextGoal.ts) this finished session
@@ -16,14 +11,9 @@ export function NextUpTeaser() {
 
   useEffect(() => {
     let cancelled = false
-    Promise.all([loadSessionHistory(), getWeeklySchedule()])
-      .then(async ([history, schedule]) => {
-        const goals = await loadWeekGoals({ ...history, schedule })
-        if (cancelled) return
-        const totalXp = computeXp(history, goals).total
-        // Only each ladder's next tier, so it never points past the next step.
-        const badges = visibleAchievements(evaluateAchievements(history, goals)).filter((a) => !a.unlockedAt)
-        setLabel(nextGoal(history.results.length, totalXp, badges)?.label ?? null)
+    loadNextUpLabel()
+      .then((next) => {
+        if (!cancelled) setLabel(next)
       })
       .catch(() => {
         if (!cancelled) setLabel(null)

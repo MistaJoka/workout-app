@@ -2,7 +2,7 @@ import type { AchievementIcon } from '../domain/progress/achievements'
 import { GARDEN_SPECIES } from '../domain/progress/garden'
 import type { Garden, GardenSpecies, Rarity } from '../domain/progress/garden'
 import type { LevelInfo } from '../domain/progress/xp'
-import type { CompleteStats } from './screens/completeStats'
+import type { CompleteStats } from '../domain/session/completeStats'
 
 // Shareable cards: 1080x1350 (4:5, what Instagram and Messages show
 // uncropped) PNGs. Each kind carries only what the user is choosing to

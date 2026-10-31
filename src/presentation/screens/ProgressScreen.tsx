@@ -37,8 +37,8 @@ import { evaluateAchievements, type AchievementIcon } from '../../domain/progres
 import { AchievementBadge } from '../components/AchievementUnlocks'
 import { RAE_STORY, unlockedChapters } from '../../domain/content/raeStory'
 import { RaeFace, type RaeExpression } from '../components/Rae'
-import { loadCarrotBalance } from '../components/CarrotCelebration'
-import { loadLoveNotesSummary } from '../components/LoveNoteCelebration'
+import { loadCarrotBalance } from '../../application/rewardsService'
+import { loadLoveNotesSummary } from '../../application/rewardsService'
 
 // How many rows "By exercise" and "History" show before "Show all" — short
 // enough that Progress doesn't turn into a mile of scrolling once there's

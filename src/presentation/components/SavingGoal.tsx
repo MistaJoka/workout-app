@@ -7,7 +7,7 @@ import { listRewards } from '../../infrastructure/db/repositories/rewardsReposit
 import { readSetting, SAVING_FOR } from '../../infrastructure/settingsKeys'
 import { rewardTier, savingProgress } from '../../domain/rewards/pricing'
 import { RoadProgress } from './RoadProgress'
-import { loadCarrotBalance } from './CarrotCelebration'
+import { loadCarrotBalance } from '../../application/rewardsService'
 import { TodayTile } from './TodayTiles'
 
 // "Saving for…": she pins one shop reward and watches her carrots fill a bar

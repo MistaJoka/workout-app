@@ -1,14 +1,9 @@
 import { useEffect, useState } from 'react'
 import { carrots } from '../units'
-import { loadWeekGoals } from '../../infrastructure/db/repositories/weekGoalsRepository'
 import { useGiverName } from './useGiverName'
 import { Link } from 'react-router-dom'
-import { earnedCarrots, carrotsForSession, type SessionCarrots } from '../../domain/rewards/carrots'
-import { BOSS_ROSTER, bossDefeats } from '../../domain/game/bosses'
-import { bossCarrotSources, withBossCarrots } from '../../domain/rewards/bossCarrots'
-import { loadSessionHistory } from '../../application/historyIndex'
-import { getWeeklySchedule } from '../../infrastructure/db/repositories/scheduleRepository'
-import { totalSpent } from '../../infrastructure/db/repositories/redemptionsRepository'
+import type { SessionCarrots } from '../../domain/rewards/carrots'
+import { loadCarrotBalance } from '../../application/rewardsService'
 import { useCountUp } from './CountUp'
 import { useTheme } from '../theme/ThemeContext'
 import { effectiveMotion, usePrefersReducedMotion } from './MovementMedia'
@@ -17,32 +12,6 @@ import { effectiveMotion, usePrefersReducedMotion } from './MovementMedia'
 // Complete. Mirrors XpCelebration.tsx's loadSessionXp/loadLevel pattern --
 // carrots are derived from history every time (domain/rewards/carrots.ts),
 // never stored, so nothing here can drift from what actually happened.
-
-// Every carrot earned so far (workouts, bonuses, defeated bosses). Only
-// ever grows, which is what lets redeemReward check it against spending
-// inside its own transaction.
-export async function loadEarnedCarrots(): Promise<number> {
-  const [{ plans, results, events }, schedule] = await Promise.all([loadSessionHistory(), getWeeklySchedule()])
-  const goal = await loadWeekGoals({ plans, results, schedule })
-  return earnedCarrots({ plans, results, events }, goal, bossSources({ plans, results, events }, goal)).total
-}
-
-export async function loadCarrotBalance(): Promise<number> {
-  const [earned, spent] = await Promise.all([loadEarnedCarrots(), totalSpent()])
-  return earned - spent
-}
-
-export async function loadSessionCarrots(sessionId: string): Promise<SessionCarrots | null> {
-  const [{ plans, results, events }, schedule] = await Promise.all([loadSessionHistory(), getWeeklySchedule()])
-  const goal = await loadWeekGoals({ plans, results, schedule })
-  return withBossCarrots(carrotsForSession({ plans, results, events }, goal, sessionId), bossSources({ plans, results, events }, goal))
-}
-
-// Defeated weekly bosses pay a carrot bonus (domain/rewards/bossCarrots.ts).
-function bossSources(history: Parameters<typeof bossDefeats>[0], goal: Parameters<typeof bossDefeats>[1]) {
-  const names = new Map(BOSS_ROSTER.map((b) => [b.id, b.name]))
-  return bossCarrotSources(bossDefeats(history, goal), (id) => names.get(id) ?? 'The boss')
-}
 
 // Today's chip, near the greeting: the current balance, linking to the shop.
 // Renders nothing while loading or if the balance couldn't be read, same

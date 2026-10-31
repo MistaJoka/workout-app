@@ -1,5 +1,5 @@
-import { effectiveSets } from '../../domain/session/appliedEvents'
-import type { SessionEvent, SessionPlan, SessionResult } from '../../domain/session/types'
+import { effectiveSets } from './appliedEvents'
+import type { SessionEvent, SessionPlan, SessionResult } from './types'
 
 export type CompleteStats = { minutes: number; sets: number; moves: number }
 

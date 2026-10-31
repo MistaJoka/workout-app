@@ -1,7 +1,7 @@
 import { listRewards } from '../../infrastructure/db/repositories/rewardsRepository'
 import { readSetting, SAVING_FOR } from '../../infrastructure/settingsKeys'
 import { savingGoalReward } from '../components/SavingGoal'
-import { loadCarrotBalance } from '../components/CarrotCelebration'
+import { loadCarrotBalance } from '../../application/rewardsService'
 import { weeklyForecast } from '../../domain/rewards/pricing'
 import { useEffect, useState } from 'react'
 import { listAllTemplates } from '../../domain/content/catalog'

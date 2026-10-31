@@ -3,7 +3,7 @@ import { BackButton } from '../components/BackButton'
 import { Skeleton, SkeletonBlock, SkeletonHeading } from '../components/Skeleton'
 import { BossSprite } from '../components/BossArt'
 import { AchievementBadge } from '../components/AchievementUnlocks'
-import { loadBossState, loadPastBossWeeks } from '../components/bossData'
+import { loadBossState, loadPastBossWeeks } from '../../application/progressSnapshot'
 import type { BossState, BossWeekSummary } from '../../domain/game/bosses'
 
 type BossScreenData = {

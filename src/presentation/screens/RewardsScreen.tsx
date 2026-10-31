@@ -13,7 +13,7 @@ import { listRedemptions, markDelivered, NotEnoughCarrotsError, redeemReward } f
 import { FEATURED_REWARD, GIVER_NAME, HUBBY_PIN, readSetting, SAVING_FOR, writeSetting } from '../../infrastructure/settingsKeys'
 import { DEFAULT_GIVER_NAME, giverRole, isValidPin, type PinRecord } from '../../domain/rewards/pin'
 import { usePinGate } from '../components/usePinGate'
-import { loadCarrotBalance, loadEarnedCarrots } from '../components/CarrotCelebration'
+import { loadCarrotBalance, loadEarnedCarrots } from '../../application/rewardsService'
 import { PinEntrySheet, PinSetupSheet, RedeemConfirmSheet, CouponSheet } from '../components/RewardsSheets'
 import { RewardEditorSheet, type RewardDraft } from '../components/RewardEditorSheet'
 import { GiftComposerSheet } from '../components/GiftComposerSheet'
