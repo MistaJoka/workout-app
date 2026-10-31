@@ -4,6 +4,7 @@
 // targets; RaeHero.tsx wires them to state and localStorage.
 
 import type { GardenFlower } from '../../domain/progress/garden'
+import { profileScopedKey } from '../../infrastructure/profiles'
 
 // The newest few flowers, oldest of the bunch first (so the newest, the one
 // that may bounce in, is always last/rightmost, closest to Rae).
@@ -14,7 +15,7 @@ export function newestFlowers(flowers: readonly GardenFlower[], max: number): re
 const SEEN_KEY = 'workout-app:rae-garden-seen'
 
 export function gardenSeenKey(): string {
-  return SEEN_KEY
+  return profileScopedKey(SEEN_KEY)
 }
 
 // True the first time Today opens after a session grew a flower nobody has

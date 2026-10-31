@@ -41,6 +41,7 @@ import { Skeleton, SkeletonBlock, SkeletonHeading } from '../components/Skeleton
 import { getPriorBest } from '../../application/liveBest'
 import { didSetBeatPriorBest, liveBestPreview, performedTarget, type LiveBestTarget } from '../../domain/progress/liveBest'
 import type { PersonalRecord } from '../../domain/progress/types'
+import { storageErrorMessage } from '../../infrastructure/storageErrors'
 
 type ActionType =
   | 'SET_COMPLETED'
@@ -56,7 +57,6 @@ type ActionType =
 const REST_EXTENSION_MS = 15_000
 
 // IndexedDB failures are local: never blame the network (CLAUDE.md).
-const SAVE_ERROR = "Couldn't save on this device. Try again."
 
 export function WorkoutPlayerScreen() {
   const { sessionId } = useParams()
@@ -241,8 +241,8 @@ export function WorkoutPlayerScreen() {
       setRepsOther(false)
       setUndoNotice(type === 'SET_UNDONE')
       return true
-    } catch {
-      setError(SAVE_ERROR)
+    } catch (err) {
+      setError(storageErrorMessage(err, 'save'))
       return false
     } finally {
       setBusy(false)
@@ -318,8 +318,8 @@ export function WorkoutPlayerScreen() {
     try {
       await recordEvent(sessionId, 'SESSION_COMPLETED_SHORTENED', newId())
       navigate(`/session/${sessionId}/complete`, { replace: true })
-    } catch {
-      setEndError(SAVE_ERROR)
+    } catch (err) {
+      setEndError(storageErrorMessage(err, 'save'))
       setBusy(false)
     }
   }

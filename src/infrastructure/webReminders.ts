@@ -94,6 +94,22 @@ export async function saveWebReminderPlan(
   }
 }
 
+// A removed person's plan goes with them, or the worker keeps showing it.
+export async function deleteWebReminderPlan(profile: string, factory: IDBFactory = indexedDB): Promise<void> {
+  const db = await openDb(factory)
+  try {
+    await new Promise<void>((resolve, reject) => {
+      const tx = db.transaction(STORE, 'readwrite')
+      tx.objectStore(STORE).delete(profile)
+      tx.oncomplete = () => resolve()
+      tx.onerror = () => reject(tx.error)
+      tx.onabort = () => reject(tx.error)
+    })
+  } finally {
+    db.close()
+  }
+}
+
 export async function readWebReminderPlan(profile: string, factory: IDBFactory = indexedDB): Promise<StoredReminder[]> {
   const db = await openDb(factory)
   try {

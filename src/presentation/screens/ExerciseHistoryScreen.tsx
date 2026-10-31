@@ -1,4 +1,3 @@
-import { useEffect, useState } from 'react'
 import { useNavigate, useParams } from 'react-router-dom'
 import { loadSessionHistory } from '../../application/historyIndex'
 import { projectSetRecords } from '../../domain/progress/history'
@@ -8,6 +7,8 @@ import { formatWeight } from '../units'
 import { useWeightUnit } from '../components/useWeightUnit'
 import { BackButton } from '../components/BackButton'
 import { RaeNote } from '../components/RaeNote'
+import { LoadFailed } from '../components/LoadFailed'
+import { useLoad } from '../components/useLoad'
 import { layoutHistoryBars } from './historyBars'
 import { Skeleton, SkeletonBlock, SkeletonHeading, SkeletonList, SkeletonTiles } from '../components/Skeleton'
 
@@ -20,13 +21,8 @@ type View = {
 export function ExerciseHistoryScreen() {
   const { exerciseId } = useParams()
   const navigate = useNavigate()
-  const [view, setView] = useState<View | null | undefined>(undefined)
   const [unit] = useWeightUnit()
-
-  useEffect(() => {
-    if (!exerciseId) return
-    load(exerciseId).then(setView)
-  }, [exerciseId])
+  const { data: view, failed, retry } = useLoad(() => (exerciseId ? load(exerciseId) : Promise.resolve(null)), [exerciseId])
 
   async function load(id: string): Promise<View | null> {
     const { plans, results, events } = await loadSessionHistory()
@@ -37,6 +33,7 @@ export function ExerciseHistoryScreen() {
     return { name, record: detectPersonalRecords(records).get(id), points }
   }
 
+  if (failed) return <LoadFailed what="this history" onRetry={retry} />
   if (view === undefined) {
     return (
       <Skeleton className="p-4 space-y-4">

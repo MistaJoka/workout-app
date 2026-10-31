@@ -12,6 +12,7 @@ import { workoutsFor } from '../../domain/rewards/pricing'
 import { shareLink, type ShareLinkOutcome } from './shareLink'
 import { activeProfile } from '../../infrastructure/profiles'
 import { hasRealName } from '../greeting'
+import { storageErrorMessage } from '../../infrastructure/storageErrors'
 
 // Her wishlist (domain/rewards/wishes.ts): she proposes, he prices.
 
@@ -77,8 +78,8 @@ export function MakeWishSheet({ giverName, onDone, onClose }: { giverName: strin
       const wish = await addWish({ title, emoji, ...(icon ? { icon } : {}) })
       setMade({ id: wish.id, title: wish.title, emoji: wish.emoji, icon: wish.icon })
       onDone()
-    } catch {
-      setError("Couldn't save on this device. Try again.")
+    } catch (err) {
+      setError(storageErrorMessage(err, 'save'))
     } finally {
       setBusy(false)
     }
@@ -216,8 +217,8 @@ export function GrantWishSheet({
       await upsertRewardFromGift({ ...wish, cost })
       setGranted(true)
       onGranted()
-    } catch {
-      setError("Couldn't save on this device. Try again.")
+    } catch (err) {
+      setError(storageErrorMessage(err, 'save'))
     } finally {
       setBusy(false)
     }

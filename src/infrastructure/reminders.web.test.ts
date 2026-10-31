@@ -21,7 +21,7 @@ vi.stubGlobal('navigator', { serviceWorker: { ready: Promise.resolve({ periodicS
 import { db } from './db/schema'
 import { saveWeeklySchedule } from './db/repositories/scheduleRepository'
 import { remindersSupported, saveReminderSettings, syncReminders } from './reminders'
-import { readWebReminderPlan, saveWebReminderPlan, toStored } from './webReminders'
+import { deleteWebReminderPlan, readWebReminderPlan, saveWebReminderPlan, toStored } from './webReminders'
 import { activeDbName } from './profiles'
 import { EMPTY_SCHEDULE } from '../domain/schedule/weeklySchedule'
 
@@ -129,6 +129,14 @@ describe('service worker side (public/sw-reminders.js)', () => {
     await sw.showDueReminders(new Date(2026, 9, 6, 8, 0))
     expect(showNotification).not.toHaveBeenCalled()
     expect((await readWebReminderPlan('p2')).map((r) => r.title)).toEqual(['Next week'])
+  })
+
+  it("shows nothing for a removed person's plan", async () => {
+    const sw = loadWorker()
+    await saveWebReminderPlan('p3', plan)
+    await deleteWebReminderPlan('p3')
+    await sw.showDueReminders(new Date(2026, 9, 5, 19, 30))
+    expect(showNotification).not.toHaveBeenCalled()
   })
 
   it('agrees with the app on what a local day is', () => {

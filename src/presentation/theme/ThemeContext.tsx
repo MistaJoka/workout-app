@@ -14,9 +14,11 @@ export function ThemeProvider({ children }: { children: ReactNode }) {
 
   useEffect(() => {
     let cancelled = false
-    void getSetting<MotionPreference>('motion').then((stored) => {
-      if (!cancelled && stored) setMotionState(stored)
-    })
+    getSetting<MotionPreference>('motion')
+      .then((stored) => {
+        if (!cancelled && stored) setMotionState(stored)
+      })
+      .catch(() => undefined)
     return () => {
       cancelled = true
     }
@@ -35,7 +37,7 @@ export function ThemeProvider({ children }: { children: ReactNode }) {
 
   function setMotion(next: MotionPreference) {
     setMotionState(next)
-    void setSetting('motion', next)
+    setSetting('motion', next).catch(() => undefined)
   }
 
   return <ThemeContext.Provider value={{ motion, setMotion }}>{children}</ThemeContext.Provider>

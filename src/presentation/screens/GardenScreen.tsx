@@ -19,6 +19,7 @@ import {
   type TierProgress,
 } from '../../domain/progress/garden'
 import { db } from '../../infrastructure/db/schema'
+import { profileScopedKey } from '../../infrastructure/profiles'
 
 // The collection: every species a workout can grow. Found ones show their
 // flower, name and how many have grown; the rest wait as a "?" tile, a
@@ -32,7 +33,7 @@ const SETS_SEEN_KEY = 'workout-app:garden-sets-seen'
 
 function loadSeenSets(): Set<Rarity> {
   try {
-    const raw = localStorage.getItem(SETS_SEEN_KEY)
+    const raw = localStorage.getItem(profileScopedKey(SETS_SEEN_KEY))
     const parsed = raw ? (JSON.parse(raw) as string[]) : []
     return new Set(parsed.filter((r): r is Rarity => TIER_ORDER.includes(r as Rarity)))
   } catch {
@@ -42,7 +43,7 @@ function loadSeenSets(): Set<Rarity> {
 
 function saveSeenSets(seen: ReadonlySet<Rarity>): void {
   try {
-    localStorage.setItem(SETS_SEEN_KEY, JSON.stringify([...seen]))
+    localStorage.setItem(profileScopedKey(SETS_SEEN_KEY), JSON.stringify([...seen]))
   } catch {
     // Storage unavailable: the celebration just shows again next visit.
   }

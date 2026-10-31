@@ -55,6 +55,18 @@ export function dbNameFor(profileId: string): string {
   return profileId === DEFAULT_PROFILE_ID ? BASE_DB_NAME : `${BASE_DB_NAME}:${profileId}`
 }
 
+// A localStorage key for something only this person has seen. The first
+// profile keeps the bare key (what it used before there were profiles,
+// like dbNameFor), so nothing she has already seen shows again.
+export function profileScopedKey(base: string, store: KeyValueStore | null = browserStore()): string {
+  try {
+    const id = loadProfiles(store).activeId
+    return id === DEFAULT_PROFILE_ID ? base : `${base}:${id}`
+  } catch {
+    return base
+  }
+}
+
 export function activeDbName(store: KeyValueStore | null = browserStore()): string {
   return dbNameFor(loadProfiles(store).activeId)
 }
@@ -120,7 +132,13 @@ export async function deleteProfile(
     store = browserStore(),
     deleteDb,
     blockedAfterMs = 5_000,
-  }: { store?: KeyValueStore | null; deleteDb: (dbName: string) => Promise<void>; blockedAfterMs?: number }
+    deleteReminders,
+  }: {
+    store?: KeyValueStore | null
+    deleteDb: (dbName: string) => Promise<void>
+    blockedAfterMs?: number
+    deleteReminders?: (dbName: string) => Promise<void>
+  }
 ): Promise<'deleted' | 'refused' | 'blocked'> {
   const state = loadProfiles(store)
   if (state.profiles.length <= 1 || id === state.activeId || !state.profiles.some((p) => p.id === id)) {
@@ -137,6 +155,9 @@ export async function deleteProfile(
     clearTimeout(timer)
   }
   removeProfile(id, store)
+  // Their data is already gone; a stale reminder plan only wakes for days
+  // that pass, so a failure here never blocks the removal.
+  await deleteReminders?.(dbNameFor(id)).catch(() => {})
   return 'deleted'
 }
 

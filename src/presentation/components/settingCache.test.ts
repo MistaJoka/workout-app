@@ -26,6 +26,18 @@ describe('createSettingCache', () => {
     expect(load).toHaveBeenCalledTimes(1)
   })
 
+  it('a failed read answers with the default and reads again next time', async () => {
+    let calls = 0
+    const cache = createSettingCache<string>(async () => {
+      calls++
+      if (calls === 1) throw new Error('closed')
+      return 'kg'
+    }, 'lb')
+    await expect(cache.resolve()).resolves.toBe('lb')
+    await expect(cache.resolve()).resolves.toBe('kg')
+    expect(calls).toBe(2)
+  })
+
   it('set() updates the cache immediately so later readers skip storage', async () => {
     const load = vi.fn(async () => 'kg')
     const cache = createSettingCache(load, 'lb')

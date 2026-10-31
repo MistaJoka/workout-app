@@ -5,6 +5,7 @@ import {
   addProfile,
   BASE_DB_NAME,
   deleteProfile,
+  profileScopedKey,
   lastProfilePickDate,
   loadProfiles,
   markProfilePicked,
@@ -56,6 +57,16 @@ describe('profiles', () => {
   })
 })
 
+describe('profileScopedKey', () => {
+  it('keeps the bare key for the first person and scopes everyone else', () => {
+    const store = memoryStore()
+    expect(profileScopedKey('seen', store)).toBe('seen')
+    const kay = addProfile('Kay', store)
+    setActiveProfile(kay.id, store)
+    expect(profileScopedKey('seen', store)).toBe(`seen:${kay.id}`)
+  })
+})
+
 describe('deleteProfile', () => {
   function twoPeople() {
     const store = memoryStore()
@@ -70,6 +81,23 @@ describe('deleteProfile', () => {
     expect(result).toBe('deleted')
     expect(deleted).toEqual([`${BASE_DB_NAME}:${kay.id}`])
     expect(loadProfiles(store).profiles.map((p) => p.name)).toEqual(['Me'])
+  })
+
+  it("drops the removed person's reminder plan, and a failed drop still removes them", async () => {
+    const { store, kay } = twoPeople()
+    const dropped: string[] = []
+    await deleteProfile(kay.id, { store, deleteDb: async () => {}, deleteReminders: async (name) => void dropped.push(name) })
+    expect(dropped).toEqual([`${BASE_DB_NAME}:${kay.id}`])
+
+    const again = twoPeople()
+    const result = await deleteProfile(again.kay.id, {
+      store: again.store,
+      deleteDb: async () => {},
+      deleteReminders: async () => {
+        throw new Error('closed')
+      },
+    })
+    expect(result).toBe('deleted')
   })
 
   it('refuses the active profile and the last profile without touching any database', async () => {

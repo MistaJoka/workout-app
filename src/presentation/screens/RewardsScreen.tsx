@@ -50,6 +50,7 @@ import { playCelebration } from '../../application/celebrationSounds'
 import { useFeedbackSettings } from '../components/useFeedbackSettings'
 import { Skeleton, SkeletonTiles } from '../components/Skeleton'
 import { HubbyModePill, isHubbyUnlocked, touchHubbySession, unlockHubbySession, useHubbySession } from '../components/hubbySession'
+import { storageErrorMessage } from '../../infrastructure/storageErrors'
 
 const GIVER_NAME_KEY = 'rewardsGiverName'
 // His one spotlighted reward (RewardEditorSheet's ⭐), shown first.
@@ -214,8 +215,8 @@ export function RewardsScreen() {
       } else {
         setSheet(landOnPurpose(purpose))
       }
-    } catch {
-      setPinError("Couldn't save on this device. Try again.")
+    } catch (err) {
+      setPinError(storageErrorMessage(err, 'save'))
     } finally {
       setPinBusy(false)
     }
@@ -278,8 +279,8 @@ export function RewardsScreen() {
     try {
       await addReward(draft)
       await refresh()
-    } catch {
-      setEditorError("Couldn't save on this device. Try again.")
+    } catch (err) {
+      setEditorError(storageErrorMessage(err, 'save'))
     }
   }
 
@@ -289,8 +290,8 @@ export function RewardsScreen() {
     try {
       await updateReward(id, patch)
       await refresh()
-    } catch {
-      setEditorError("Couldn't save on this device. Try again.")
+    } catch (err) {
+      setEditorError(storageErrorMessage(err, 'save'))
     }
   }
 
@@ -378,8 +379,8 @@ export function RewardsScreen() {
     try {
       await setSetting(FEATURED_KEY, data?.featured === id ? null : id)
       await refresh()
-    } catch {
-      setEditorError("Couldn't save on this device. Try again.")
+    } catch (err) {
+      setEditorError(storageErrorMessage(err, 'save'))
     }
   }
 

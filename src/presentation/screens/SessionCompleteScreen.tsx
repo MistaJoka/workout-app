@@ -37,6 +37,7 @@ import { db } from '../../infrastructure/db/schema'
 import { bookendsFor } from '../../domain/content/workoutEstimate'
 import { templateById } from '../../domain/content/fixtures/foundationStrengthStarter'
 import type { WorkoutTemplate } from '../../domain/content/types'
+import { storageErrorMessage } from '../../infrastructure/storageErrors'
 
 type Candidate = {
   exerciseId: string
@@ -141,8 +142,8 @@ export function SessionCompleteScreen() {
     try {
       await write(exerciseId)
       setCandidates((current) => current.filter((c) => c.exerciseId !== exerciseId))
-    } catch {
-      setCandidateError("Couldn't save on this device. Try again.")
+    } catch (err) {
+      setCandidateError(storageErrorMessage(err, 'save'))
     } finally {
       setBusyExerciseId(null)
     }

@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react'
+import { useState } from 'react'
 import { useNavigate, useParams } from 'react-router-dom'
 import { getExercise } from '../../domain/content/catalog'
 import { exerciseMeta } from '../../domain/content/library'
@@ -12,24 +12,26 @@ import { raeCardFor } from '../components/raeLoops'
 import { ExerciseYou } from '../components/ExerciseYou'
 import { BackButton } from '../components/BackButton'
 import { NotFound } from '../components/NotFound'
+import { LoadFailed } from '../components/LoadFailed'
+import { useLoad } from '../components/useLoad'
 import { HeartButton } from '../components/HeartButton'
 import { Skeleton, SkeletonBlock, SkeletonHeading, SkeletonList } from '../components/Skeleton'
 import { defaultPrescription } from './routineBuilderRows'
+import { storageErrorMessage } from '../../infrastructure/storageErrors'
 
 export function ExerciseDetailScreen() {
   const { exerciseId } = useParams()
   const navigate = useNavigate()
-  const [exercise, setExercise] = useState<Exercise | null | undefined>(undefined)
+  const { data: exercise, failed, retry } = useLoad(
+    async () => (exerciseId ? ((await getExercise(exerciseId)) ?? null) : null),
+    [exerciseId],
+  )
   // null: sheet closed. Only custom routines: the curated ones are fixed content.
   const [routines, setRoutines] = useState<WorkoutTemplate[] | null>(null)
   const [busy, setBusy] = useState(false)
   const [error, setError] = useState<string | null>(null)
 
-  useEffect(() => {
-    if (!exerciseId) return
-    getExercise(exerciseId).then((e) => setExercise(e ?? null))
-  }, [exerciseId])
-
+  if (failed) return <LoadFailed what="this move" onRetry={retry} />
   if (exercise === undefined)
     return (
       <Skeleton className="p-4 space-y-4">
@@ -65,8 +67,8 @@ export function ExerciseDetailScreen() {
         return
       }
       navigate(`/routines/${routine.id}`, { state: { added: current.name } })
-    } catch {
-      setError("Couldn't save on this device. Try again.")
+    } catch (err) {
+      setError(storageErrorMessage(err, 'save'))
       setBusy(false)
     }
   }

@@ -1,3 +1,4 @@
+import { profileScopedKey } from '../infrastructure/profiles'
 // Rae's room on Today grows with the user's Bloom level (xp.ts): a handful
 // of small decorations unlock, in order, and simply stay forever (earned by
 // effort, never lost - the ethics rule every unlock in this app follows).
@@ -51,7 +52,7 @@ export function labelFor(item: RoomUnlockItem): string {
 const SEEN_KEY = 'workout-app:rae-room-unlocks-seen'
 
 export function roomUnlocksSeenKey(): string {
-  return SEEN_KEY
+  return profileScopedKey(SEEN_KEY)
 }
 
 // The most recently-unlocked item at `level` (the one closest below it),

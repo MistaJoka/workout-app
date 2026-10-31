@@ -22,6 +22,7 @@ import { ThumbBar } from '../components/ThumbBar'
 import { ConfirmSheet } from '../components/ConfirmSheet'
 import { Skeleton, SkeletonBlock, SkeletonList } from '../components/Skeleton'
 import { CIRCUIT_DEFAULT_ROUNDS, CIRCUIT_MAX_ROUNDS, CIRCUIT_MIN_ROUNDS } from '../../domain/session/circuit'
+import { storageErrorMessage } from '../../infrastructure/storageErrors'
 
 type Row = EditRow
 
@@ -189,8 +190,8 @@ export function RoutineBuilderScreen() {
     try {
       await saveCustomTemplate(template)
       navigate(`/routines/${id}`, { replace: true })
-    } catch {
-      setError("Couldn't save on this device. Try again.")
+    } catch (err) {
+      setError(storageErrorMessage(err, 'save'))
       setSaving(false)
     }
   }

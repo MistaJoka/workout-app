@@ -10,6 +10,7 @@ import {
 } from '../../infrastructure/profiles'
 import { GARDEN_SPECIES } from '../../domain/progress/garden'
 import { PixelBloom } from './PixelBloom'
+import { deleteWebReminderPlan } from '../../infrastructure/webReminders'
 
 // A profile's emblem (Settings -> You -> Emblem), or null for the plain
 // initial circle it replaces.
@@ -58,7 +59,10 @@ export function ProfileSwitcher() {
     setRemoving(true)
     setRemoveError(null)
     try {
-      const result = await deleteProfile(profile.id, { deleteDb: (name) => Dexie.delete(name) })
+      const result = await deleteProfile(profile.id, {
+        deleteDb: (name) => Dexie.delete(name),
+        deleteReminders: (name) => deleteWebReminderPlan(name),
+      })
       if (result === 'blocked') {
         setRemoveError(`${profile.name}'s data is open in another window. Close it, then try again.`)
       } else if (result === 'refused') {

@@ -29,7 +29,7 @@ export function useFeedbackSettings(): [FeedbackSettings, (patch: Partial<Feedba
     const next = { ...cache.peek(), ...patch }
     cache.set(next)
     setSettings(next)
-    for (const [key, value] of Object.entries(patch)) void setSetting(key, value)
+    for (const [key, value] of Object.entries(patch)) setSetting(key, value).catch(() => undefined)
   }
 
   return [settings, update]

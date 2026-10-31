@@ -3,8 +3,8 @@ import { useNavigate } from 'react-router-dom'
 import { discardSession, recordEvent } from '../../application/sessionService'
 import { newId } from '../../shared/id'
 import { ConfirmSheet } from './ConfirmSheet'
+import { storageErrorMessage } from '../../infrastructure/storageErrors'
 
-const SAVE_ERROR = "Couldn't save on this device. Try again."
 
 // Under Today's Resume button: a workout left open can be finished as it
 // stands (ended early, onto Complete, so its sets count) or thrown away.
@@ -22,8 +22,8 @@ export function ResumeActions({ sessionId, onDiscarded }: { sessionId: string; o
     try {
       await recordEvent(sessionId, 'SESSION_COMPLETED_SHORTENED', newId())
       navigate(`/session/${sessionId}/complete`, { replace: true })
-    } catch {
-      setError(SAVE_ERROR)
+    } catch (err) {
+      setError(storageErrorMessage(err, 'save'))
       setBusy(false)
     }
   }
@@ -36,8 +36,8 @@ export function ResumeActions({ sessionId, onDiscarded }: { sessionId: string; o
       setConfirm(null)
       setBusy(false)
       onDiscarded()
-    } catch {
-      setError(SAVE_ERROR)
+    } catch (err) {
+      setError(storageErrorMessage(err, 'save'))
       setBusy(false)
     }
   }

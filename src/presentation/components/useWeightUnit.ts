@@ -26,7 +26,9 @@ export function useWeightUnit(): [WeightUnit, (unit: WeightUnit) => void] {
   function setUnit(next: WeightUnit) {
     cache.set(next)
     setUnitState(next)
-    void setSetting(KEY, next)
+    // A failed write keeps the choice for this visit; there is nothing
+    // more useful to do for a display preference.
+    setSetting(KEY, next).catch(() => undefined)
   }
 
   return [unit, setUnit]

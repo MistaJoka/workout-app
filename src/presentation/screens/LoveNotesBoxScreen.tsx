@@ -30,6 +30,7 @@ import { LoveNotesEditorSheet, type LoveNoteDraft } from '../components/LoveNote
 import { LoveNoteEnvelope } from '../components/LoveNoteEnvelope'
 import { Skeleton, SkeletonList } from '../components/Skeleton'
 import { HubbyModePill, isHubbyUnlocked, touchHubbySession, unlockHubbySession, useHubbySession } from '../components/hubbySession'
+import { storageErrorMessage } from '../../infrastructure/storageErrors'
 
 // The notes box: opened love notes (reread any), and -- behind the same PIN
 // as the reward shop -- Hubby Bunny's queue editor. Locked notes are never
@@ -116,8 +117,8 @@ export function LoveNotesBoxScreen() {
       unlockHubbySession()
       await refresh()
       setSheet({ kind: 'editor' })
-    } catch {
-      setPinError("Couldn't save on this device. Try again.")
+    } catch (err) {
+      setPinError(storageErrorMessage(err, 'save'))
     } finally {
       setPinBusy(false)
     }
@@ -158,8 +159,8 @@ export function LoveNotesBoxScreen() {
     try {
       await addLoveNote(draft)
       await refresh()
-    } catch {
-      setEditorError("Couldn't save on this device. Try again.")
+    } catch (err) {
+      setEditorError(storageErrorMessage(err, 'save'))
     }
   }
 
@@ -169,8 +170,8 @@ export function LoveNotesBoxScreen() {
     try {
       await updateLoveNote(id, patch)
       await refresh()
-    } catch {
-      setEditorError("Couldn't save on this device. Try again.")
+    } catch (err) {
+      setEditorError(storageErrorMessage(err, 'save'))
     }
   }
 

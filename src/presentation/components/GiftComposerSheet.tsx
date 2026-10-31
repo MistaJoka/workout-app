@@ -11,6 +11,7 @@ import { shareLink, type ShareLinkOutcome } from './shareLink'
 import { Skeleton, SkeletonList } from './Skeleton'
 import { EMOJI_CHOICES, RewardPicturePicker } from './RewardPicturePicker'
 import type { IconDraft } from '../rewardDraft'
+import { storageErrorMessage } from '../../infrastructure/storageErrors'
 
 // Hubby Bunny's "Send to her" composer: PIN-gated by the caller
 // (RewardsScreen only renders this once the shop's PIN has been verified
@@ -91,8 +92,8 @@ export function GiftComposerSheet({ giverName, onClose }: { giverName: string; o
       setSelectedRewardIds((prev) => new Set(prev).add(reward.id))
       setNewReward(NEW_REWARD)
       setAddingReward(false)
-    } catch {
-      setError("Couldn't save on this device. Try again.")
+    } catch (err) {
+      setError(storageErrorMessage(err, 'save'))
     }
   }
 
@@ -105,8 +106,8 @@ export function GiftComposerSheet({ giverName, onClose }: { giverName: string; o
       setSelectedNoteIds((prev) => new Set(prev).add(note.id))
       setNewNoteText('')
       setAddingNote(false)
-    } catch {
-      setError("Couldn't save on this device. Try again.")
+    } catch (err) {
+      setError(storageErrorMessage(err, 'save'))
     }
   }
 

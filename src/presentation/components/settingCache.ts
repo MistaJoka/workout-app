@@ -19,11 +19,17 @@ export function createSettingCache<T>(load: () => Promise<T | undefined>, defaul
     resolve: () => {
       if (value !== null) return Promise.resolve(value)
       if (!inflight) {
+        // A failed read answers with the default for now and isn't cached,
+        // so the next ask reads again, instead of rejecting into every
+        // screen that asked.
         inflight = load()
-          .then((stored) => {
-            if (value === null) value = stored ?? defaultValue
-            return value
-          })
+          .then(
+            (stored) => {
+              if (value === null) value = stored ?? defaultValue
+              return value
+            },
+            () => value ?? defaultValue,
+          )
           .finally(() => {
             inflight = null
           })

@@ -26,6 +26,7 @@ import { REMINDER_TIMES, ReminderCard } from '../components/ReminderCard'
 import { remindersSupported, syncReminders } from '../../infrastructure/reminders'
 import { shareOrDownload } from '../components/shareOrDownload'
 import { Skeleton, SkeletonBlock, SkeletonList } from '../components/Skeleton'
+import { storageErrorMessage } from '../../infrastructure/storageErrors'
 
 // Monday-first rows; the schedule itself is keyed by JS weekday (0 = Sunday).
 const ROW_ORDER: (0 | 1 | 2 | 3 | 4 | 5 | 6)[] = [1, 2, 3, 4, 5, 6, 0]
@@ -98,9 +99,9 @@ export function ScheduleScreen() {
     try {
       await saveWeeklySchedule(next)
       void syncReminders().catch(() => undefined)
-    } catch {
+    } catch (err) {
       setSchedule(previous)
-      setSaveError("Couldn't save on this device. Try again.")
+      setSaveError(storageErrorMessage(err, 'save'))
     }
   }
 
