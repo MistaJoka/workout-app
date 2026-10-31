@@ -9,6 +9,16 @@ import { isNativeApp } from '../appContext'
 let waiting: ServiceWorker | null = null
 let reloadWhenControlled = false
 
+// The browser looks for a new sw.js only on a navigation. An installed app
+// on Android is mostly resumed from memory, not reopened, so it could sit
+// on an old build for days. Coming back to the screen checks too, at most
+// once per UPDATE_CHECK_MS.
+export const UPDATE_CHECK_MS = 30 * 60 * 1000
+
+export function shouldCheckForUpdate(now: number, lastCheck: number): boolean {
+  return now - lastCheck >= UPDATE_CHECK_MS
+}
+
 // In the Android app the update already happened: installing a new APK
 // replaced the bundled files, and only the worker's old cache still holds
 // the previous build. So it hands over at once, with no toast (any workout
@@ -46,6 +56,16 @@ export function registerServiceWorker(): void {
       // A worker already waiting means a newer build was fetched on a
       // previous visit.
       if (navigator.serviceWorker.controller) offer(registration.waiting)
+
+      let lastCheck = Date.now()
+      document.addEventListener('visibilitychange', () => {
+        if (document.visibilityState !== 'visible') return
+        if (!shouldCheckForUpdate(Date.now(), lastCheck)) return
+        lastCheck = Date.now()
+        registration.update().catch(() => {
+          // Offline or the host is down: the next resume tries again.
+        })
+      })
 
       registration.addEventListener('updatefound', () => {
         const installing = registration.installing
