@@ -1,5 +1,5 @@
 import { expect, test } from '@playwright/test'
-import { finishWorkout } from './helpers'
+import { finishWorkout, openCompleteRewards } from './helpers'
 
 async function runQuick10(page: import('@playwright/test').Page) {
   await page.goto('about:blank')
@@ -14,6 +14,9 @@ test('first workout is a milestone; beating an earlier session shows a new best'
   test.setTimeout(150_000)
 
   await runQuick10(page)
+  // Highlights wait in the rewards sheet, counted on its button.
+  await expect(page.getByTestId('complete-more')).toHaveText(/^\+\d+ rewards?$/)
+  await openCompleteRewards(page)
   const highlights = page.getByRole('list', { name: 'Highlights' })
   await expect(highlights.getByText('Your first workout!')).toBeVisible()
   await expect(highlights.getByText(/^New best:/)).toHaveCount(0)
@@ -21,6 +24,7 @@ test('first workout is a milestone; beating an earlier session shows a new best'
   // A clean Quick 10 steps squat reps up within range (10 → 12), so the
   // second run beats the first.
   await runQuick10(page)
+  await openCompleteRewards(page)
   await expect(page.getByRole('list', { name: 'Highlights' }).getByText(/^New best: .+ reps/)).toBeVisible()
   await expect(page.getByText('Your first workout!')).toHaveCount(0)
 })

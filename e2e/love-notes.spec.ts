@@ -1,5 +1,5 @@
 import { expect, test } from '@playwright/test'
-import { finishWorkout } from './helpers'
+import { finishWorkout, openCompleteRewards } from './helpers'
 
 // Hubby Bunny's surprise love notes end to end: nothing to unlock before
 // he's written anything, writing a note behind the shop's PIN (reachable
@@ -63,6 +63,7 @@ test('writing, unlocking, reading and rereading a Hubby Bunny love note', async 
   await page.goto('/#/checkin/fs.quick-10')
   await page.getByRole('button', { name: 'Start workout' }).click()
   await finishWorkout(page)
+  await openCompleteRewards(page)
   await expect(page.getByTestId('love-note-reward-item')).toContainText('A note from Hubby Bunny!')
 
   // Today's badge shows the unlocked-but-unread note.

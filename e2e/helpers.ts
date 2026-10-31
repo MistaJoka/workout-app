@@ -31,6 +31,16 @@ export async function finishWorkout(page: Page): Promise<void> {
   await expect(page.getByText('Workout complete')).toBeVisible()
 }
 
+// Complete keeps its reward moments (badges, boss hit, love note, bests,
+// goal met) in one sheet behind the "+N rewards" button; open it before
+// reaching for them.
+export async function openCompleteRewards(page: Page): Promise<void> {
+  const sheet = page.getByRole('dialog', { name: 'Your rewards' })
+  if (await sheet.isVisible().catch(() => false)) return
+  await page.getByTestId('complete-more').click()
+  await expect(sheet).toBeVisible()
+}
+
 export async function dismissWelcome(page: Page): Promise<void> {
   const gotIt = page.getByRole('button', { name: 'Got it' })
   if (await gotIt.isVisible().catch(() => false)) await gotIt.click()

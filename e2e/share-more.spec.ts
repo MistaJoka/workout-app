@@ -1,5 +1,5 @@
 import { expect, test } from '@playwright/test'
-import { finishWorkout } from './helpers'
+import { finishWorkout, openCompleteRewards } from './helpers'
 
 // The generalized share buttons added for badges and the garden (on top of
 // the existing workout-complete card): stub the share sheet, decode the PNG
@@ -51,6 +51,7 @@ test('sharing an unlocked badge, a badge from the collection, and the garden eac
   await finishWorkout(page)
 
   // 1) The newly-unlocked "First bloom" badge on Complete can be shared.
+  await openCompleteRewards(page)
   const unlockShare = page.getByRole('button', { name: 'Share First bloom badge' })
   await expect(unlockShare).toBeVisible()
   await unlockShare.click()

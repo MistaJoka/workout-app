@@ -1,5 +1,5 @@
 import { expect, test, type Page } from '@playwright/test'
-import { finishWorkout } from './helpers'
+import { finishWorkout, openCompleteRewards } from './helpers'
 
 test.use({ viewport: { width: 384, height: 824 } })
 
@@ -112,6 +112,7 @@ test('a workout visibly feeds the goal: carrots tick up, then flow in on Complet
   await expect(chip).toHaveAccessibleName('1 carrot earned so far')
 
   await finishWorkout(page)
+  await openCompleteRewards(page)
   await expect(page.getByTestId('goal-gain')).toContainText(/Road trip\s*0 → \d+ \/ 1,000/)
 })
 

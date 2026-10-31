@@ -123,7 +123,7 @@ export function LevelUpMoment({ to }: { to: LevelInfo }) {
   return (
     <>
       <p className="sr-only" role="status">
-        Level up! Level {to.level}, {to.name}.
+        New level: Level {to.level}, {to.name}.
       </p>
       {visible && (
         <div

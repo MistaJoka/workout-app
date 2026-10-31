@@ -1,6 +1,6 @@
 import { expect, test } from '@playwright/test'
 import { HP_PER_GOAL_DAY, bossForWeek } from '../src/domain/game/bosses'
-import { finishWorkout } from './helpers'
+import { finishWorkout, openCompleteRewards } from './helpers'
 
 // Weekly boss battles: Today's compact card, the full /boss screen, and the
 // Complete screen's hit reward, all reading the same deterministic weekly
@@ -39,6 +39,7 @@ test('this week\'s boss takes a hit from a finished workout, and shows on Today 
   await page.goto('/#/checkin/fs.full-body-a')
   await page.getByRole('button', { name: 'Start workout' }).click()
   await finishWorkout(page)
+  await openCompleteRewards(page)
   const hitText = page.getByText(new RegExp(`(You hit ${boss.name} for \\d+!|${boss.name} defeated!)`))
   await expect(hitText).toBeVisible()
 

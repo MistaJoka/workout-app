@@ -1,6 +1,6 @@
 import { expect, test } from '@playwright/test'
 import { goalSpeciesFor, weekStartKey } from '../src/domain/progress/goalBloom'
-import { finishWorkout } from './helpers'
+import { finishWorkout, openCompleteRewards } from './helpers'
 
 // Goal bloom: the week the default weekly goal (2) is met, the second
 // workout also earns a bonus flower from its own rarer pool
@@ -34,6 +34,7 @@ test('the workout that meets the week goal reveals a bonus goal bloom on Complet
   // Second workout reaches the default goal of 2: the bonus bloom reveals
   // right alongside the goal-met banner, never before it.
   await finishQuick10(page)
+  await openCompleteRewards(page)
   const goalMet = page.getByTestId('goal-met')
   const bloomReveal = page.getByTestId('goal-bloom-reveal')
   await expect(goalMet).toBeVisible()
@@ -78,5 +79,6 @@ test('with motion off, the goal bloom reveal is still there at once', async ({ p
   await page.getByRole('link', { name: 'Back to Today' }).click()
 
   await finishQuick10(page)
+  await openCompleteRewards(page)
   await expect(page.getByTestId('goal-bloom-reveal')).toBeVisible({ timeout: 1_000 })
 })
