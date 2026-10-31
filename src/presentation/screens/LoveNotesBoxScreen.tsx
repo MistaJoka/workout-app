@@ -1,4 +1,5 @@
 import { useEffect, useState } from 'react'
+import { shortDate } from '../format'
 import { BackButton } from '../components/BackButton'
 import { RaeNote } from '../components/RaeNote'
 import type { LoveNoteRecord } from '../../infrastructure/db/schema'
@@ -9,22 +10,9 @@ import {
   removeLoveNote,
   updateLoveNote,
 } from '../../infrastructure/db/repositories/loveNotesRepository'
-import { getSetting, setSetting } from '../../infrastructure/db/repositories/settingsRepository'
-import {
-  DEFAULT_GIVER_NAME,
-  giverRole,
-  INITIAL_PIN_ATTEMPT_STATE,
-  createPinRecord,
-  isInPinCooldown,
-  pinCooldownMessage,
-  recordCorrectPinAttempt,
-  recordWrongPinAttempt,
-  remainingCooldownMs,
-  verifyPin,
-  type PinAttemptState,
-  type PinRecord,
-} from '../../domain/rewards/pin'
-import { generateSalt, hasSubtleCrypto, sha256Hex } from '../../infrastructure/pinCrypto'
+import { GIVER_NAME, HUBBY_PIN, readSetting } from '../../infrastructure/settingsKeys'
+import { DEFAULT_GIVER_NAME, giverRole, type PinRecord } from '../../domain/rewards/pin'
+import { usePinGate } from '../components/usePinGate'
 import { PinEntrySheet, PinSetupSheet } from '../components/RewardsSheets'
 import { LoveNotesEditorSheet, type LoveNoteDraft } from '../components/LoveNotesEditorSheet'
 import { LoveNoteEnvelope } from '../components/LoveNoteEnvelope'
@@ -36,37 +24,23 @@ import { storageErrorMessage } from '../../infrastructure/storageErrors'
 // as the reward shop -- Hubby Bunny's queue editor. Locked notes are never
 // listed individually here; only a sealed count, mystery preserved.
 
-const GIVER_NAME_KEY = 'rewardsGiverName'
-const PIN_KEY = 'rewardsHubbyPin'
-// Same shared key RewardsScreen.tsx uses -- one PIN, one guess-cooldown
-// counter and one Hubby-mode session for both screens.
-const PIN_ATTEMPTS_KEY = 'rewardsHubbyPinAttempts'
+// One PIN, one guess-cooldown counter and one Hubby-mode session are shared
+// with RewardsScreen.tsx (application/hubbyPin.ts, usePinGate).
 
 type Sheet = { kind: 'none' } | { kind: 'pinSetup' } | { kind: 'pinEntry' } | { kind: 'editor' }
 
-type Data = { notes: LoveNoteRecord[]; giverName: string; pin: PinRecord | null; pinAttempts: PinAttemptState }
+type Data = { notes: LoveNoteRecord[]; giverName: string; pin: PinRecord | null }
 
 async function load(): Promise<Data> {
-  const [notes, giverName, pin, pinAttempts] = await Promise.all([
-    listLoveNotes(),
-    getSetting<string>(GIVER_NAME_KEY),
-    getSetting<PinRecord>(PIN_KEY),
-    getSetting<PinAttemptState>(PIN_ATTEMPTS_KEY),
-  ])
-  return {
-    notes,
-    giverName: giverName ?? DEFAULT_GIVER_NAME,
-    pin: pin ?? null,
-    pinAttempts: pinAttempts ?? INITIAL_PIN_ATTEMPT_STATE,
-  }
+  const [notes, giverName, pin] = await Promise.all([listLoveNotes(), readSetting(GIVER_NAME), readSetting(HUBBY_PIN)])
+  return { notes, giverName, pin }
 }
 
 export function LoveNotesBoxScreen() {
   const [data, setData] = useState<Data | null>(null)
   const [failed, setFailed] = useState(false)
   const [sheet, setSheet] = useState<Sheet>({ kind: 'none' })
-  const [pinBusy, setPinBusy] = useState(false)
-  const [pinError, setPinError] = useState<string | null>(null)
+  const pinGate = usePinGate()
   const [editorError, setEditorError] = useState<string | null>(null)
   const [editorBusyId, setEditorBusyId] = useState<string | null>(null)
   const [reading, setReading] = useState<LoveNoteRecord | null>(null)
@@ -95,7 +69,7 @@ export function LoveNotesBoxScreen() {
   }
 
   function openManage() {
-    setPinError(null)
+    pinGate.clearError()
     if (!data?.pin) {
       setSheet({ kind: 'pinSetup' })
     } else if (isHubbyUnlocked()) {
@@ -106,51 +80,18 @@ export function LoveNotesBoxScreen() {
   }
 
   async function handleSetPin(pin: string, giverName: string) {
-    setPinBusy(true)
-    setPinError(null)
+    if (!(await pinGate.setup(pin, giverName))) return
     try {
-      const algorithm = hasSubtleCrypto() ? 'sha256' : 'fallback'
-      const record = await createPinRecord(pin, generateSalt(), sha256Hex, algorithm)
-      await setSetting(PIN_KEY, record)
-      await setSetting(GIVER_NAME_KEY, giverName)
-      await setSetting(PIN_ATTEMPTS_KEY, recordCorrectPinAttempt())
-      unlockHubbySession()
       await refresh()
       setSheet({ kind: 'editor' })
     } catch (err) {
-      setPinError(storageErrorMessage(err, 'save'))
-    } finally {
-      setPinBusy(false)
+      pinGate.setError(storageErrorMessage(err, 'save'))
     }
   }
 
   async function handlePinSubmit(pin: string) {
     if (!data?.pin) return
-    const now = new Date()
-    const attempts = data.pinAttempts
-    if (isInPinCooldown(attempts, now)) {
-      setPinError(pinCooldownMessage(remainingCooldownMs(attempts, now)))
-      return
-    }
-    setPinBusy(true)
-    setPinError(null)
-    try {
-      const ok = await verifyPin(pin, data.pin, sha256Hex)
-      if (!ok) {
-        const next = recordWrongPinAttempt(attempts, now)
-        await setSetting(PIN_ATTEMPTS_KEY, next)
-        await refresh()
-        setPinError(isInPinCooldown(next, now) ? pinCooldownMessage(remainingCooldownMs(next, now)) : 'Wrong PIN.')
-        return
-      }
-      await setSetting(PIN_ATTEMPTS_KEY, recordCorrectPinAttempt())
-      unlockHubbySession()
-      setSheet({ kind: 'editor' })
-    } catch {
-      setPinError("Couldn't check that on this device. Try again.")
-    } finally {
-      setPinBusy(false)
-    }
+    if (await pinGate.submit(pin)) setSheet({ kind: 'editor' })
   }
 
   async function handleAdd(draft: LoveNoteDraft) {
@@ -273,7 +214,7 @@ export function LoveNotesBoxScreen() {
                       {note.emoji}
                     </span>
                     <span className="min-w-0 flex-1">
-                      <span className="block truncate font-semibold">{note.unlockedAt ? formatDate(note.unlockedAt) : ''}</span>
+                      <span className="block truncate font-semibold">{note.unlockedAt ? shortDate(note.unlockedAt) : ''}</span>
                       {!note.readAt && <span className="text-xs font-bold text-primary-ink">New</span>}
                     </span>
                   </button>
@@ -287,15 +228,15 @@ export function LoveNotesBoxScreen() {
       {sheet.kind === 'pinSetup' && (
         <PinSetupSheet
           giverNameInitial={data?.giverName ?? DEFAULT_GIVER_NAME}
-          busy={pinBusy}
-          error={pinError}
+          busy={pinGate.busy}
+          error={pinGate.error}
           onSave={(pin, name) => void handleSetPin(pin, name)}
           onCancel={() => setSheet({ kind: 'none' })}
         />
       )}
 
       {sheet.kind === 'pinEntry' && (
-        <PinEntrySheet role={giverRole(data?.giverName)} busy={pinBusy} error={pinError} onSubmit={(pin) => void handlePinSubmit(pin)} onCancel={() => setSheet({ kind: 'none' })} />
+        <PinEntrySheet role={giverRole(data?.giverName)} busy={pinGate.busy} error={pinGate.error} onSubmit={(pin) => void handlePinSubmit(pin)} onCancel={() => setSheet({ kind: 'none' })} />
       )}
 
       {sheet.kind === 'editor' && data && (
@@ -316,6 +257,3 @@ export function LoveNotesBoxScreen() {
   )
 }
 
-function formatDate(iso: string): string {
-  return new Date(iso).toLocaleDateString(undefined, { month: 'short', day: 'numeric' })
-}

@@ -61,6 +61,15 @@ export async function getResult(sessionId: string): Promise<SessionResult | unde
   return db.sessionResults.get(sessionId)
 }
 
+// Every finished-workout row, for screens that only need the results.
+export async function listResults(): Promise<SessionResult[]> {
+  return db.sessionResults.toArray()
+}
+
+export async function countResults(): Promise<number> {
+  return db.sessionResults.count()
+}
+
 type SessionHistory = { plans: SessionPlan[]; results: SessionResult[]; events: SessionEvent[] }
 
 // Callers that ask while a read is already in flight (a screen's reward

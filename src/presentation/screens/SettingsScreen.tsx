@@ -6,7 +6,8 @@ import { giverRole } from '../../domain/rewards/pin'
 import { useEffect, useRef, useState, type ReactNode } from 'react'
 import { importAll, isOtherProfile, parseExportBundle, type ExportBundle } from '../../infrastructure/exportImport/exportImport'
 import { getSetting } from '../../infrastructure/db/repositories/settingsRepository'
-import { db } from '../../infrastructure/db/schema'
+import { listResults } from '../../infrastructure/db/repositories/sessionRepository'
+import { eraseActiveProfileData } from '../../infrastructure/eraseData'
 import { activeProfile, loadProfiles, setProfileEmblem } from '../../infrastructure/profiles'
 import { storageErrorMessage } from '../../infrastructure/storageErrors'
 import { ProfileSwitcher } from '../components/ProfileSwitcher'
@@ -51,8 +52,7 @@ export function SettingsScreen() {
     getSetting<string>(LAST_EXPORT_KEY)
       .then((value) => setLastExportAt(value ?? null))
       .catch(() => {})
-    db.sessionResults
-      .toArray()
+    listResults()
       .then(async (results) => {
         setFinished(results.length)
         // Goal blooms included, so a goal-bloom-only species can be an emblem.
@@ -126,9 +126,7 @@ export function SettingsScreen() {
     setResetting(true)
     setResetError(null)
     try {
-      await db.transaction('rw', db.tables, async () => {
-        for (const table of db.tables) await table.clear()
-      })
+      await eraseActiveProfileData()
       location.reload()
     } catch {
       setResetting(false)

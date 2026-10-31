@@ -1,4 +1,5 @@
 import { useNavigate, useParams } from 'react-router-dom'
+import { shortDate } from '../format'
 import { loadSessionHistory } from '../../application/historyIndex'
 import { projectSetRecords } from '../../domain/progress/history'
 import { detectPersonalRecords, estimateOneRepMax, perExerciseHistory } from '../../domain/progress/stats'
@@ -97,7 +98,7 @@ export function ExerciseHistoryScreen() {
       <ul className="space-y-2">
         {[...view.points].reverse().map((point) => (
           <li key={point.sessionId} className="flex items-center justify-between card px-4 py-3">
-            <span className="text-sm">{formatDate(point.sessionEndedAt)}</span>
+            <span className="text-sm">{shortDate(point.sessionEndedAt)}</span>
             <span className="text-sm text-ink-muted">
               {metricUnit === 'kg'
                 ? `${point.reps ?? '?'} × ${formatWeight(point.prescribed, unit)}`
@@ -203,6 +204,3 @@ function HistoryChart({ points, format }: { points: ExerciseHistoryPoint[]; form
   )
 }
 
-function formatDate(iso: string): string {
-  return new Date(iso).toLocaleDateString(undefined, { month: 'short', day: 'numeric' })
-}

@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest'
 import { completeStats } from './completeStats'
-import type { SessionEvent, SessionPlan, SessionResult } from '../../domain/session/types'
+import type { SessionEvent, SessionPlan, SessionResult } from './types'
 
 const plan: SessionPlan = {
   id: 's',

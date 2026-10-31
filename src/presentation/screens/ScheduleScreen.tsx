@@ -1,7 +1,7 @@
 import { listRewards } from '../../infrastructure/db/repositories/rewardsRepository'
-import { getSetting } from '../../infrastructure/db/repositories/settingsRepository'
-import { SAVING_FOR_KEY, savingGoalReward } from '../components/SavingGoal'
-import { loadCarrotBalance } from '../components/CarrotCelebration'
+import { readSetting, SAVING_FOR } from '../../infrastructure/settingsKeys'
+import { savingGoalReward } from '../components/SavingGoal'
+import { loadCarrotBalance } from '../../application/rewardsService'
 import { weeklyForecast } from '../../domain/rewards/pricing'
 import { useEffect, useState } from 'react'
 import { listAllTemplates } from '../../domain/content/catalog'
@@ -19,7 +19,7 @@ import { getWeeklySchedule, saveWeeklySchedule } from '../../infrastructure/db/r
 import { loadWeekGoals } from '../../infrastructure/db/repositories/weekGoalsRepository'
 import { weeklyGoal } from '../../domain/progress/stats'
 import { mondayKey } from '../../domain/progress/weekGoals'
-import { db } from '../../infrastructure/db/schema'
+import { listResults } from '../../infrastructure/db/repositories/sessionRepository'
 import { BackButton } from '../components/BackButton'
 import { RaeNote } from '../components/RaeNote'
 import { REMINDER_TIMES, ReminderCard } from '../components/ReminderCard'
@@ -65,14 +65,14 @@ export function ScheduleScreen() {
         setSchedule(pruned)
         // Only once this week has a workout is its goal fixed; before that a
         // change applies right away and there's nothing to say.
-        const results = await db.sessionResults.toArray().catch(() => [])
+        const results = await listResults().catch(() => [])
         const now = new Date()
         const startedThisWeek = results.some((r) => mondayKey(new Date(r.endedAt)) === mondayKey(now))
         const goals = startedThisWeek ? await loadWeekGoals({ results, schedule: pruned }).catch(() => null) : null
         if (!cancelled && goals) setThisWeekGoal(goals(now))
         const [rewards, savingFor, balance] = await Promise.all([
           listRewards().catch(() => []),
-          getSetting<string | null>(SAVING_FOR_KEY).catch(() => null),
+          readSetting(SAVING_FOR).catch(() => null),
           loadCarrotBalance().catch(() => null),
         ])
         const goalReward = savingGoalReward(rewards, savingFor)

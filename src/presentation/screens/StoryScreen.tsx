@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react'
 import { Link } from 'react-router-dom'
 import { RAE_STORY, nextChapter, unlockedChapters } from '../../domain/content/raeStory'
-import { db } from '../../infrastructure/db/schema'
+import { listResults } from '../../infrastructure/db/repositories/sessionRepository'
 import { BackButton } from '../components/BackButton'
 import { RaeFace, type RaeExpression } from '../components/Rae'
 import { Skeleton, SkeletonBlock, SkeletonHeading, SkeletonList } from '../components/Skeleton'
@@ -14,7 +14,7 @@ type Snapshot = {
 }
 
 async function load(): Promise<Snapshot> {
-  const results = await db.sessionResults.toArray()
+  const results = await listResults()
   const unlockedIds = new Set(unlockedChapters(results.length).map((c) => c.n))
   const unreadIds = new Set([...unlockedIds].filter((n) => !isChapterSeen(n)))
   return { finishedCount: results.length, unlockedIds, unreadIds }

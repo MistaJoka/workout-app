@@ -1,6 +1,6 @@
 import { listRewards } from '../../infrastructure/db/repositories/rewardsRepository'
-import { getSetting } from '../../infrastructure/db/repositories/settingsRepository'
-import { SAVING_FOR_KEY, savingGoalReward } from '../components/SavingGoal'
+import { readSetting, SAVING_FOR } from '../../infrastructure/settingsKeys'
+import { savingGoalReward } from '../components/SavingGoal'
 import { firstRaeLoop } from '../todayPose'
 import type { RaeLoop } from '../components/raeLoops'
 import { DRAFT_TEMPLATE_IDS } from '../../domain/content/fixtures/raeDraftTemplates'
@@ -44,7 +44,8 @@ import { PixelBloom } from '../components/PixelBloom'
 import { RaeFace, type RaeExpression } from '../components/Rae'
 import { unlockedChapters, type RaeStoryChapter } from '../../domain/content/raeStory'
 import { isChapterSeen } from '../storySeen'
-import { CarrotBalanceChip, loadCarrotBalance } from '../components/CarrotCelebration'
+import { CarrotBalanceChip } from '../components/CarrotCelebration'
+import { loadCarrotBalance } from '../../application/rewardsService'
 import { LoveNoteBadge } from '../components/LoveNoteCelebration'
 import { listLiveActivities } from '../../infrastructure/db/repositories/activitiesRepository'
 
@@ -96,7 +97,7 @@ async function loadToday(now: Date): Promise<TodayData> {
     getWeeklySchedule(),
     listCustomTemplates(),
     listRewards().catch(() => []),
-    getSetting<string | null>(SAVING_FOR_KEY).catch(() => null),
+    readSetting(SAVING_FOR).catch(() => null),
     // Thumbnails-only failure mode, like the rest of Today: no mix tile
     // beats a blank screen.
     getHerMix().catch(() => null),

@@ -1,11 +1,10 @@
 import { GoalGain } from '../components/GoalGain'
 import { syncReminders } from '../../infrastructure/reminders'
 import { useEffect, useState, type ReactNode } from 'react'
-import { loadWeekGoals } from '../../infrastructure/db/repositories/weekGoalsRepository'
 import { Link, useParams } from 'react-router-dom'
 import { ShareWorkoutButton } from '../components/ShareWorkoutButton'
-import { getEventsForSession, getPlan, getResult } from '../../infrastructure/db/repositories/sessionRepository'
-import { completeStats, type CompleteStats } from './completeStats'
+import { getPlan, getResult, listResults } from '../../infrastructure/db/repositories/sessionRepository'
+import type { CompleteStats } from '../../domain/session/completeStats'
 import {
   advanceProgression,
   dismissProgressionCandidate,
@@ -24,33 +23,27 @@ import { AchievementUnlocks } from '../components/AchievementUnlocks'
 import { BossHitReward } from '../components/BossHitReward'
 import { PerfectStamp } from '../components/PerfectStamp'
 import { NextUpTeaser } from '../components/NextUpTeaser'
-import { GoalMetBanner, LevelUpMoment, XpGainChip, loadSessionXp } from '../components/XpCelebration'
+import { GoalMetBanner, LevelUpMoment, XpGainChip } from '../components/XpCelebration'
+import { loadCompleteStats, loadGoalBloom, loadSessionXp } from '../../application/progressSnapshot'
+import { loadProgressionOffers, type ProgressionOffer } from '../../application/progressionOffers'
 import type { SessionXpGain } from '../../domain/progress/xp'
-import { CarrotGainChip, loadSessionCarrots } from '../components/CarrotCelebration'
+import { CarrotGainChip } from '../components/CarrotCelebration'
+import { loadSessionCarrots } from '../../application/rewardsService'
 import type { SessionCarrots } from '../../domain/rewards/carrots'
 import { LoveNoteRewardItem } from '../components/LoveNoteCelebration'
 import { BloomReveal } from '../components/BloomReveal'
 import { useCountUp } from '../components/CountUp'
 import { sessionBloom, type GardenSpecies } from '../../domain/progress/garden'
-import { goalBloomForSession } from '../../domain/progress/goalBloom'
-import { db } from '../../infrastructure/db/schema'
 import { bookendsFor } from '../../domain/content/workoutEstimate'
 import { templateById } from '../../domain/content/fixtures/foundationStrengthStarter'
 import type { WorkoutTemplate } from '../../domain/content/types'
 import { storageErrorMessage } from '../../infrastructure/storageErrors'
 
-type Candidate = {
-  exerciseId: string
-  exerciseName: string
-  candidatePrescribedReps: number
-  candidateWeightKg?: number
-}
-
 export function SessionCompleteScreen() {
   const { sessionId } = useParams()
   const [result, setResult] = useState<SessionResult | null>(null)
   const [stats, setStats] = useState<CompleteStats | null>(null)
-  const [candidates, setCandidates] = useState<Candidate[]>([])
+  const [candidates, setCandidates] = useState<ProgressionOffer[]>([])
   const [busyExerciseId, setBusyExerciseId] = useState<string | null>(null)
   const [candidateError, setCandidateError] = useState<string | null>(null)
   const [unit] = useWeightUnit()
@@ -81,20 +74,19 @@ export function SessionCompleteScreen() {
     getResult(sessionId)
       .then((loaded) => setResult(loaded ?? null))
       .catch(() => setResult(null))
-    db.sessionResults
-      .toArray()
+    listResults()
       .then((all) => setBloom(sessionBloom(all, sessionId)))
       .catch(() => setBloom(null))
     loadGoalBloom(sessionId)
       .then(setGoalBloomSpecies)
       .catch(() => setGoalBloomSpecies(null))
-    loadStats(sessionId)
+    loadCompleteStats(sessionId)
       .then(setStats)
       .catch(() => setStats(null))
     loadSessionXp(sessionId)
       .then((gain) => setXp(gain.gained > 0 ? gain : null))
       .catch(() => setXp(null))
-    loadCandidates(sessionId)
+    loadProgressionOffers(sessionId)
       .then(setCandidates)
       .catch(() => setCandidates([]))
     loadSessionCarrots(sessionId)
@@ -109,30 +101,6 @@ export function SessionCompleteScreen() {
       })
       .catch(() => setCoolDown(undefined))
   }, [sessionId])
-
-  async function loadStats(id: string): Promise<CompleteStats | null> {
-    const [plan, loaded, events] = await Promise.all([getPlan(id), getResult(id), getEventsForSession(id)])
-    return plan && loaded ? completeStats(plan, loaded, events) : null
-  }
-
-  async function loadGoalBloom(id: string): Promise<GardenSpecies | null> {
-    const results = await db.sessionResults.toArray()
-    return goalBloomForSession(results, await loadWeekGoals({ results }), id)?.species ?? null
-  }
-
-  async function loadCandidates(id: string): Promise<Candidate[]> {
-    const plan = await getPlan(id)
-    if (!plan) return []
-    const progressionRecords = await Promise.all(plan.exercises.map((e) => getProgression(e.exerciseId)))
-    return progressionRecords
-      .filter((r) => r.pendingCandidate)
-      .map((r) => ({
-        exerciseId: r.exerciseId,
-        exerciseName: plan.exercises.find((e) => e.exerciseId === r.exerciseId)?.name ?? r.exerciseId,
-        candidatePrescribedReps: r.pendingCandidate!.candidatePrescribedReps,
-        ...(r.pendingCandidate!.candidateWeightKg != null ? { candidateWeightKg: r.pendingCandidate!.candidateWeightKg } : {}),
-      }))
-  }
 
   // A failed write keeps the offer on screen (it's still pending in the
   // database) with a retry-able message, instead of a stuck button.

@@ -6,7 +6,7 @@
 import { useEffect, useState } from 'react'
 import { Link } from 'react-router-dom'
 import { BossSprite } from './BossArt'
-import { loadBossState } from './bossData'
+import { loadBossState } from '../../application/progressSnapshot'
 import type { BossState } from '../../domain/game/bosses'
 import { TodayTile } from './TodayTiles'
 

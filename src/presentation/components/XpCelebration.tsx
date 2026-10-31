@@ -1,8 +1,5 @@
 import { useEffect, useRef, useState, type ReactNode } from 'react'
-import { loadWeekGoals } from '../../infrastructure/db/repositories/weekGoalsRepository'
-import { loadSessionHistory } from '../../application/historyIndex'
-import { getWeeklySchedule } from '../../infrastructure/db/repositories/scheduleRepository'
-import { computeXp, levelFor, sessionXpGain, type LevelInfo, type SessionXpGain } from '../../domain/progress/xp'
+import type { LevelInfo, SessionXpGain } from '../../domain/progress/xp'
 import { useTheme } from '../theme/ThemeContext'
 import { effectiveMotion, usePrefersReducedMotion } from './MovementMedia'
 import { useCountUp } from './CountUp'
@@ -14,16 +11,6 @@ import { useFeedbackSettings } from './useFeedbackSettings'
 // moment, the "Goal met!" banner, and the level tile on Progress. Everything
 // here is decoration over numbers that are always shown as text; nothing
 // blocks a tap (the level-up overlay ignores the pointer and fades itself).
-
-export async function loadSessionXp(sessionId: string): Promise<SessionXpGain> {
-  const [history, schedule] = await Promise.all([loadSessionHistory(), getWeeklySchedule()])
-  return sessionXpGain(history, await loadWeekGoals({ ...history, schedule }), sessionId)
-}
-
-export async function loadLevel(): Promise<LevelInfo> {
-  const [history, schedule] = await Promise.all([loadSessionHistory(), getWeeklySchedule()])
-  return levelFor(computeXp(history, await loadWeekGoals({ ...history, schedule })).total)
-}
 
 function useFullMotion(): { full: boolean; off: boolean } {
   const { motion } = useTheme()

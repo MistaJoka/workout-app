@@ -2,7 +2,7 @@ import { useEffect, useState } from 'react'
 import { Link } from 'react-router-dom'
 import { speciesFor, type GardenSpecies } from '../../domain/progress/garden'
 import { monthKey, monthRecapOffer, monthStartOf, recapOffer, weekKey, weekStartOf } from '../../domain/progress/recap'
-import { db } from '../../infrastructure/db/schema'
+import { listResults } from '../../infrastructure/db/repositories/sessionRepository'
 import { readRecapSeen, readRecapSeenMonth } from '../recapSeen'
 import { PixelBloom } from './PixelBloom'
 import { TodayTile } from './TodayTiles'
@@ -28,8 +28,7 @@ export function RecapEntry({ tile = false }: { tile?: boolean } = {}) {
 
   useEffect(() => {
     let cancelled = false
-    db.sessionResults
-      .toArray()
+    listResults()
       .then((results) => {
         const now = new Date()
 

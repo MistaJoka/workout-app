@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react'
 import { Link, useParams } from 'react-router-dom'
 import { RAE_STORY } from '../../domain/content/raeStory'
-import { db } from '../../infrastructure/db/schema'
+import { listResults } from '../../infrastructure/db/repositories/sessionRepository'
 import { BackButton } from '../components/BackButton'
 import { NotFound } from '../components/NotFound'
 import { RaeFace, type RaeExpression } from '../components/Rae'
@@ -22,8 +22,7 @@ export function StoryChapterScreen() {
   useEffect(() => {
     let cancelled = false
     setFailed(false)
-    db.sessionResults
-      .toArray()
+    listResults()
       .then((results) => {
         if (!cancelled) setFinishedCount(results.length)
       })

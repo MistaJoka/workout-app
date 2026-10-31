@@ -1,4 +1,5 @@
 import { useCallback, useEffect, useMemo, useRef, useState, type ReactNode } from 'react'
+import { goBackOrToday } from '../components/BackButton'
 import { loadWeekGoals } from '../../infrastructure/db/repositories/weekGoalsRepository'
 import { Link, useNavigate, useSearchParams } from 'react-router-dom'
 import {
@@ -408,11 +409,7 @@ export function RecapScreen() {
     }
   }, [month, week])
 
-  const close = useCallback(() => {
-    const idx = (window.history.state as { idx?: number } | null)?.idx ?? 0
-    if (idx > 0) navigate(-1)
-    else navigate('/')
-  }, [navigate])
+  const close = useCallback(() => goBackOrToday(navigate), [navigate])
 
   if (failed) {
     return (

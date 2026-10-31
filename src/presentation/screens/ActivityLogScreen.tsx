@@ -1,6 +1,6 @@
 import { useMemo, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
-import { BackButton } from '../components/BackButton'
+import { BackButton, goBackOrToday } from '../components/BackButton'
 import { ThumbBar } from '../components/ThumbBar'
 import {
   ACTIVITY_KINDS,
@@ -31,9 +31,7 @@ export function ActivityLogScreen() {
   const [error, setError] = useState<string | null>(null)
 
   function leave() {
-    const idx = (window.history.state as { idx?: number } | null)?.idx ?? 0
-    if (idx > 0) navigate(-1)
-    else navigate('/progress')
+    goBackOrToday(navigate, '/progress')
   }
 
   async function save() {

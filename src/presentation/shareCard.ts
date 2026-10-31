@@ -2,7 +2,8 @@ import type { AchievementIcon } from '../domain/progress/achievements'
 import { GARDEN_SPECIES } from '../domain/progress/garden'
 import type { Garden, GardenSpecies, Rarity } from '../domain/progress/garden'
 import type { LevelInfo } from '../domain/progress/xp'
-import type { CompleteStats } from './screens/completeStats'
+import type { CompleteStats } from '../domain/session/completeStats'
+import { COLORS, FONT, fitText, roundRect } from './cardCanvas'
 
 // Shareable cards: 1080x1350 (4:5, what Instagram and Messages show
 // uncropped) PNGs. Each kind carries only what the user is choosing to
@@ -16,23 +17,6 @@ export type CardKind = 'workout' | 'badge' | 'garden' | 'level'
 export const CARD_WIDTH = 1080
 export const CARD_HEIGHT = 1350
 
-const COLORS = {
-  background: '#f8faff',
-  mint: '#c8f7e1',
-  lavender: '#d9c8ff',
-  notice: '#ffe1b8',
-  text: '#2b2d42',
-  muted: '#4f5268',
-  ink: '#a3195b',
-  leaf: '#5bbf8a',
-  leafDark: '#3f9d6e',
-  potTop: '#d4866a',
-  potRim: '#8a5a44',
-  pot: '#e0906a',
-  potBase: '#c9785d',
-  sparkle: '#ffc58a',
-  gold: '#ffd23f',
-} as const
 
 export type CardInput = {
   workoutName: string
@@ -108,25 +92,6 @@ export function flowerPixels(species: GardenSpecies): PixelRect[] {
     rects.push(r(1, 2, 1, 1, glow), r(14, 4, 1, 1, glow), r(2, 8, 1, 1, glow), r(13, 0, 1, 1, glow))
   }
   return rects
-}
-
-const FONT = "'Nunito Variable', ui-rounded, system-ui, sans-serif"
-
-function roundRect(ctx: CanvasRenderingContext2D, x: number, y: number, w: number, h: number, radius: number, fill: string) {
-  ctx.beginPath()
-  ctx.roundRect(x, y, w, h, radius)
-  ctx.fillStyle = fill
-  ctx.fill()
-}
-
-// Shrinks the font until the text fits the width, for long workout names.
-function fitText(ctx: CanvasRenderingContext2D, text: string, weight: number, size: number, maxWidth: number): void {
-  let px = size
-  ctx.font = `${weight} ${px}px ${FONT}`
-  while (px > 28 && ctx.measureText(text).width > maxWidth) {
-    px -= 4
-    ctx.font = `${weight} ${px}px ${FONT}`
-  }
 }
 
 export function drawCard(ctx: CanvasRenderingContext2D, model: CardModel, species: GardenSpecies, rae: CanvasImageSource | null): void {

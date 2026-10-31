@@ -1,71 +1,13 @@
 import { useEffect, useState } from 'react'
-import { loadWeekGoals } from '../../infrastructure/db/repositories/weekGoalsRepository'
 import { Link } from 'react-router-dom'
 import type { LoveNoteRecord } from '../../infrastructure/db/schema'
-import {
-  catchUpLoveNoteUnlocks,
-  evaluateLoveNoteUnlockForSession,
-  listLoveNotes,
-  markLoveNoteRead,
-} from '../../infrastructure/db/repositories/loveNotesRepository'
-import { getSetting } from '../../infrastructure/db/repositories/settingsRepository'
-import { DEFAULT_GIVER_NAME } from '../../domain/rewards/pin'
-import { loadSessionHistory } from '../../application/historyIndex'
-import { getWeeklySchedule } from '../../infrastructure/db/repositories/scheduleRepository'
-import { goalBloomForSession, goalBlooms } from '../../domain/progress/goalBloom'
+import { markLoveNoteRead } from '../../infrastructure/db/repositories/loveNotesRepository'
+import { catchUpThenLoadUnread, loadLoveNoteUnlockForSession } from '../../application/rewardsService'
 import { LoveNoteEnvelope } from './LoveNoteEnvelope'
 
 // Love notes on screen: Today's unread badge, Complete's "a note from
 // Hubby Bunny" RewardItem, and the small loaders both (and the notes box)
 // share. Mirrors CarrotCelebration.tsx's load*/component split.
-
-const GIVER_NAME_KEY = 'rewardsGiverName'
-
-async function loadGiverName(): Promise<string> {
-  return (await getSetting<string>(GIVER_NAME_KEY)) ?? DEFAULT_GIVER_NAME
-}
-
-// This workout's surprise, if any: evaluates (idempotently) whether a
-// locked note unlocks and returns it, alongside the giver's current name.
-export async function loadLoveNoteUnlockForSession(
-  sessionId: string
-): Promise<{ note: LoveNoteRecord; giverName: string } | null> {
-  const [{ results }, schedule, giverName] = await Promise.all([loadSessionHistory(), getWeeklySchedule(), loadGiverName()])
-  const goalMetThisSession = goalBloomForSession(results, await loadWeekGoals({ results, schedule }), sessionId) !== null
-  const thisSessionEndedAt = results.find((r) => r.sessionId === sessionId)?.endedAt ?? new Date().toISOString()
-  const note = await evaluateLoveNoteUnlockForSession(sessionId, {
-    allSessionEndedAt: results.map((r) => r.endedAt),
-    goalMetThisSession,
-    thisSessionEndedAt,
-  })
-  return note ? { note, giverName } : null
-}
-
-// Workouts that never reached Complete (auto-finished, or the app closed
-// first) get their chance at a note here, then any unread note shows.
-async function catchUpThenLoadUnread(): Promise<LoveNoteRecord | null> {
-  try {
-    // Nothing locked (the usual case): skip reading history at all.
-    if (!(await listLoveNotes()).some((n) => n.unlockedAt === null)) return loadUnreadLoveNote()
-    const [{ results }, schedule] = await Promise.all([loadSessionHistory(), getWeeklySchedule()])
-    const goalSessions = new Set(goalBlooms(results, await loadWeekGoals({ results, schedule })).map((b) => b.sessionId))
-    await catchUpLoveNoteUnlocks(results.map((r) => ({ sessionId: r.sessionId, endedAt: r.endedAt, goalMet: goalSessions.has(r.sessionId) })))
-  } catch {
-    // A failed catch-up never hides an unread note that's already there.
-  }
-  return loadUnreadLoveNote()
-}
-
-export async function loadUnreadLoveNote(): Promise<LoveNoteRecord | null> {
-  const notes = await listLoveNotes()
-  return notes.find((n) => n.unlockedAt && !n.readAt) ?? null
-}
-
-export async function loadLoveNotesSummary(): Promise<{ opened: number; total: number; sealed: number }> {
-  const notes = await listLoveNotes()
-  const opened = notes.filter((n) => n.unlockedAt).length
-  return { opened, total: notes.length, sealed: notes.length - opened }
-}
 
 // Today's small badge, near the carrot chip: only renders once an unread
 // note exists, same "renders nothing while loading/absent" convention as

@@ -18,7 +18,7 @@ import {
   type Rarity,
   type TierProgress,
 } from '../../domain/progress/garden'
-import { db } from '../../infrastructure/db/schema'
+import { listResults } from '../../infrastructure/db/repositories/sessionRepository'
 import { profileScopedKey } from '../../infrastructure/profiles'
 
 // The collection: every species a workout can grow. Found ones show their
@@ -153,8 +153,7 @@ export function GardenScreen() {
   const [loreTarget, setLoreTarget] = useState<LoreSheetTarget | null>(null)
 
   useEffect(() => {
-    db.sessionResults
-      .toArray()
+    listResults()
       .then(async (results) => setGarden(buildGarden(results, await loadWeekGoals({ results }))))
       .catch(() => setFailed(true))
   }, [])
