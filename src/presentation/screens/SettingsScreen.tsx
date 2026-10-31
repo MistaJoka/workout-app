@@ -196,22 +196,12 @@ export function SettingsScreen() {
               ›
             </span>
           </Link>
-          <SettingsRow label="Rest timer">
-            <ChoiceChip
-              label={`Sound ${feedback.sound ? 'on' : 'off'}`}
-              active={feedback.sound}
-              onClick={() => updateFeedback({ sound: !feedback.sound })}
-            />
-            {/* iPhone Safari has no navigator.vibrate, so the toggle would do
-                nothing there. */}
-            {canVibrate() && (
-              <ChoiceChip
-                label={`Vibration ${feedback.vibration ? 'on' : 'off'}`}
-                active={feedback.vibration}
-                onClick={() => updateFeedback({ vibration: !feedback.vibration })}
-              />
-            )}
-          </SettingsRow>
+          <SwitchRow label="Sound" on={feedback.sound} onChange={(sound) => updateFeedback({ sound })} />
+          {/* iPhone Safari has no navigator.vibrate, so the switch would do
+              nothing there. */}
+          {canVibrate() && (
+            <SwitchRow label="Vibration" on={feedback.vibration} onChange={(vibration) => updateFeedback({ vibration })} />
+          )}
         </div>
       </SettingsGroup>
 
@@ -296,25 +286,7 @@ export function SettingsScreen() {
             </span>
           </Link>
           <Link to="/about" className="flex min-h-14 w-full items-center gap-3 px-3 py-2">
-            <span className="flex-1 font-semibold">About, animations, credits</span>
-            <span className="text-xl text-ink-muted" aria-hidden>
-              ›
-            </span>
-          </Link>
-          <Link to="/privacy" className="flex min-h-14 w-full items-center gap-3 px-3 py-2">
-            <span className="flex-1 font-semibold">Privacy</span>
-            <span className="text-xl text-ink-muted" aria-hidden>
-              ›
-            </span>
-          </Link>
-          <Link to="/terms" className="flex min-h-14 w-full items-center gap-3 px-3 py-2">
-            <span className="flex-1 font-semibold">Terms</span>
-            <span className="text-xl text-ink-muted" aria-hidden>
-              ›
-            </span>
-          </Link>
-          <Link to="/licenses" className="flex min-h-14 w-full items-center gap-3 px-3 py-2">
-            <span className="flex-1 font-semibold">Open-source licenses</span>
+            <span className="flex-1 font-semibold">About, privacy, credits</span>
             <span className="text-xl text-ink-muted" aria-hidden>
               ›
             </span>
@@ -324,14 +296,14 @@ export function SettingsScreen() {
 
       {/* Collapsed and last: nobody should meet this on the way to
           something else. */}
-      <details className="group card p-3 [&_summary]:cursor-pointer">
-        <summary className="flex min-h-11 list-none items-center justify-between font-semibold [&::-webkit-details-marker]:hidden">
+      <details className="group [&_summary]:cursor-pointer">
+        <summary className="btn-danger-outline w-full list-none justify-between [&::-webkit-details-marker]:hidden">
           Danger zone
-          <span className="text-ink-muted transition-transform group-open:rotate-90" aria-hidden>
+          <span className="transition-transform group-open:rotate-90" aria-hidden>
             ›
           </span>
         </summary>
-        <div className="space-y-2 pt-3">
+        <div className="card mt-3 space-y-2 p-3">
           <p className="font-semibold">Reset all data</p>
           <p className="text-sm text-ink-muted">
             Erases every workout, routine and setting for {profile.name}.
@@ -384,6 +356,32 @@ function ChoiceChip({ label, active, onClick }: { label: string; active: boolean
   return (
     <button className={`chip ${active ? 'chip-active' : ''}`} onClick={onClick}>
       {label}
+    </button>
+  )
+}
+
+// A real on/off switch: the label names the setting, the knob shows the
+// state (role="switch" + aria-checked), and the whole row is the target.
+function SwitchRow({ label, on, onChange }: { label: string; on: boolean; onChange: (on: boolean) => void }) {
+  return (
+    <button
+      type="button"
+      role="switch"
+      aria-checked={on}
+      onClick={() => onChange(!on)}
+      className="flex min-h-14 w-full items-center justify-between gap-3 px-3 py-2 text-left"
+    >
+      <span className="font-semibold">{label}</span>
+      <span
+        aria-hidden="true"
+        className={`relative inline-flex h-8 w-14 flex-none items-center rounded-full border-2 transition-colors ${
+          on ? 'border-[var(--color-primary)] bg-[var(--color-primary)]' : 'border-[var(--color-border)] bg-[var(--color-border)]'
+        }`}
+      >
+        <span
+          className={`absolute h-6 w-6 rounded-full bg-surface shadow transition-[left] ${on ? 'left-[1.625rem]' : 'left-0.5'}`}
+        />
+      </span>
     </button>
   )
 }

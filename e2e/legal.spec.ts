@@ -1,25 +1,16 @@
 import { expect, test } from '@playwright/test'
 
 // In-app legal/trust pages (store-listing requirement): Privacy, Terms and
-// Open-source licenses, reachable from Settings "More" and from About, each
+// Open-source licenses, reachable from About (Settings links there), each
 // with a working BackButton and a "Last updated" date.
 
-test('Settings → More links to Privacy, Terms and Open-source licenses', async ({ page }) => {
+test('Settings reaches the legal pages through About, not a second set of links', async ({ page }) => {
   await page.goto('/#/settings')
-  await page.getByRole('link', { name: 'Privacy' }).click()
+  await expect(page.getByRole('link', { name: 'Open-source licenses' })).toHaveCount(0)
+  await page.getByRole('link', { name: /^About/ }).click()
+  await expect(page.getByRole('heading', { name: 'About' })).toBeVisible()
+  await page.getByRole('link', { name: 'Privacy policy' }).click()
   await expect(page.getByRole('heading', { name: 'Privacy policy' })).toBeVisible()
-  await expect(page.getByText(/Last updated/)).toBeVisible()
-  await page.getByRole('button', { name: /Back/ }).click()
-
-  await expect(page.getByRole('heading', { name: 'Settings' })).toBeVisible()
-  await page.getByRole('link', { name: 'Terms' }).click()
-  await expect(page.getByRole('heading', { name: 'Terms of use' })).toBeVisible()
-  await expect(page.getByText(/Last updated/)).toBeVisible()
-  await page.getByRole('button', { name: /Back/ }).click()
-
-  await expect(page.getByRole('heading', { name: 'Settings' })).toBeVisible()
-  await page.getByRole('link', { name: 'Open-source licenses' }).click()
-  await expect(page.getByRole('heading', { name: 'Open-source licenses' })).toBeVisible()
   await expect(page.getByText(/Last updated/)).toBeVisible()
 })
 
@@ -32,11 +23,13 @@ test('About links to Privacy, Terms and Open-source licenses', async ({ page }) 
   await expect(page.getByRole('heading', { name: 'About' })).toBeVisible()
   await page.getByRole('link', { name: 'Terms of use' }).click()
   await expect(page.getByRole('heading', { name: 'Terms of use' })).toBeVisible()
+  await expect(page.getByText(/Last updated/)).toBeVisible()
   await page.getByRole('button', { name: /Back/ }).click()
 
   await expect(page.getByRole('heading', { name: 'About' })).toBeVisible()
   await page.getByRole('link', { name: 'Open-source licenses' }).click()
   await expect(page.getByRole('heading', { name: 'Open-source licenses' })).toBeVisible()
+  await expect(page.getByText(/Last updated/)).toBeVisible()
 })
 
 test('Privacy policy mentions on-device storage and the GitHub photo fetch', async ({ page }) => {

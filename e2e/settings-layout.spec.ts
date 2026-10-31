@@ -14,10 +14,25 @@ test('settings is grouped, with a single backup action', async ({ page }) => {
   await expect(page.getByRole('region', { name: 'Backup reminder' })).toHaveCount(0)
 
   // Every control in the Workout card is a real touch target.
-  for (const name of ['lb', 'kg', /^Sound (on|off)$/]) {
-    const box = await page.getByRole('button', { name }).boundingBox()
+  for (const control of [
+    page.getByRole('button', { name: 'lb' }),
+    page.getByRole('button', { name: 'kg' }),
+    page.getByRole('switch', { name: 'Sound' }),
+  ]) {
+    const box = await control.boundingBox()
     expect(box?.height ?? 0).toBeGreaterThanOrEqual(44)
   }
+  // Sound is a real switch: its label names the setting, aria-checked the state.
+  const sound = page.getByRole('switch', { name: 'Sound' })
+  const was = await sound.getAttribute('aria-checked')
+  await sound.click()
+  await expect(sound).toHaveAttribute('aria-checked', was === 'true' ? 'false' : 'true')
+  await sound.click()
+  await expect(sound).toHaveAttribute('aria-checked', String(was))
+
+  // Legal pages live in About; Settings links there once.
+  await expect(page.getByRole('link', { name: 'Privacy', exact: true })).toHaveCount(0)
+  await expect(page.getByRole('link', { name: /^About/ })).toBeVisible()
 
   await page.getByText('Danger zone').click()
   await expect(page.getByRole('button', { name: 'Erase everything' })).toBeDisabled()
