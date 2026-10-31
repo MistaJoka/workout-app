@@ -1,4 +1,5 @@
 import { useEffect, useState } from 'react'
+import { shortDate } from '../format'
 import { BackButton } from '../components/BackButton'
 import { RaeNote } from '../components/RaeNote'
 import type { LoveNoteRecord } from '../../infrastructure/db/schema'
@@ -213,7 +214,7 @@ export function LoveNotesBoxScreen() {
                       {note.emoji}
                     </span>
                     <span className="min-w-0 flex-1">
-                      <span className="block truncate font-semibold">{note.unlockedAt ? formatDate(note.unlockedAt) : ''}</span>
+                      <span className="block truncate font-semibold">{note.unlockedAt ? shortDate(note.unlockedAt) : ''}</span>
                       {!note.readAt && <span className="text-xs font-bold text-primary-ink">New</span>}
                     </span>
                   </button>
@@ -256,6 +257,3 @@ export function LoveNotesBoxScreen() {
   )
 }
 
-function formatDate(iso: string): string {
-  return new Date(iso).toLocaleDateString(undefined, { month: 'short', day: 'numeric' })
-}

@@ -1,11 +1,11 @@
 import { useNavigate, type NavigateFunction } from 'react-router-dom'
 
 // Back one entry when there is one (react-router keeps `idx` in
-// history.state), else Today. Shared with the back-gesture guard.
-export function goBackOrToday(navigate: NavigateFunction): void {
+// history.state), else `fallback` (Today). Shared with the back-gesture guard.
+export function goBackOrToday(navigate: NavigateFunction, fallback = '/'): void {
   const idx = (window.history.state as { idx?: number } | null)?.idx ?? 0
   if (idx > 0) navigate(-1)
-  else navigate('/')
+  else navigate(fallback)
 }
 
 // A home-screen app has no browser back button, so every screen outside

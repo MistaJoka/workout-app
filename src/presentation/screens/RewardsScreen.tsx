@@ -1,4 +1,5 @@
 import { getWeeklySchedule } from '../../infrastructure/db/repositories/scheduleRepository'
+import { shortDate } from '../format'
 import { carrots } from '../units'
 import { weeklyGoal } from '../../domain/progress/stats'
 import { RewardGlyph } from '../components/RewardGlyph'
@@ -741,7 +742,7 @@ function RedemptionRow({
       <button type="button" className="min-w-0 flex-1 text-left" onClick={onOpen}>
         <span className="block truncate font-semibold">{redemption.title}</span>
         <span className="block text-sm text-ink-muted">
-          {carrots(redemption.cost)} 🥕, {formatDate(redemption.redeemedAt)}
+          {carrots(redemption.cost)} 🥕, {shortDate(redemption.redeemedAt)}
         </span>
       </button>
       {redemption.deliveredAt ? (
@@ -764,6 +765,3 @@ function RedemptionRow({
   )
 }
 
-function formatDate(iso: string): string {
-  return new Date(iso).toLocaleDateString(undefined, { month: 'short', day: 'numeric' })
-}

@@ -1,4 +1,5 @@
 import { useEffect, useState } from 'react'
+import { shortDate } from '../format'
 import { loadWeekGoals } from '../../infrastructure/db/repositories/weekGoalsRepository'
 import { useGiverName } from '../components/useGiverName'
 import { giverRole } from '../../domain/rewards/pin'
@@ -319,7 +320,7 @@ export function ProgressScreen() {
                       <Link to={`/history/${encodeURIComponent(item.row.sessionId)}`} className="block card p-3">
                         <div className="flex items-baseline justify-between gap-2">
                           <p className="font-semibold">{item.row.workoutName}</p>
-                          <p className="text-xs text-ink-muted">{formatDate(item.row.endedAt)}</p>
+                          <p className="text-xs text-ink-muted">{shortDate(item.row.endedAt)}</p>
                         </div>
                         <p className="text-sm text-ink-muted">
                           {item.row.totalSetsCompleted}/{item.row.totalSetsPlanned} sets
@@ -606,6 +607,3 @@ function weekLabel(weekStart: string): string {
   return `${Number(m)}/${Number(d)}`
 }
 
-function formatDate(iso: string): string {
-  return new Date(iso).toLocaleDateString(undefined, { month: 'short', day: 'numeric' })
-}

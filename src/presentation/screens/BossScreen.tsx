@@ -1,4 +1,5 @@
 import { useEffect, useState } from 'react'
+import { shortDate } from '../format'
 import { BackButton } from '../components/BackButton'
 import { Skeleton, SkeletonBlock, SkeletonHeading } from '../components/Skeleton'
 import { BossSprite } from '../components/BossArt'
@@ -155,9 +156,6 @@ export function BossScreen() {
   )
 }
 
-function shortDate(iso: string): string {
-  return new Date(iso).toLocaleDateString(undefined, { month: 'short', day: 'numeric' })
-}
 
 // `dayKey`/`weekStart` are local-calendar date-only strings (YYYY-MM-DD,
 // bosses.ts's localDayKey): parsed as local y/m/d, never `new Date(iso)`,

@@ -1,4 +1,5 @@
 import { useEffect, useState } from 'react'
+import { shortDate } from '../format'
 import { visibleAchievements } from '../../domain/progress/achievements'
 import type { EvaluatedAchievement } from '../../domain/progress/achievements'
 import { AchievementBadge, loadAchievements } from '../components/AchievementUnlocks'
@@ -120,6 +121,3 @@ function ratio(a: EvaluatedAchievement): number {
   return a.progress ? a.progress.current / a.progress.target : 0
 }
 
-function shortDate(iso: string): string {
-  return new Date(iso).toLocaleDateString(undefined, { month: 'short', day: 'numeric' })
-}
