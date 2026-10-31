@@ -24,5 +24,9 @@ test('a first full workout earns its badges; the rest say how to earn them', asy
   await expect(page.getByRole('listitem', { name: /^First bloom, earned/ })).toBeVisible()
   await expect(page.getByRole('listitem', { name: /^Full set, earned/ })).toBeVisible()
   await expect(page.getByRole('listitem', { name: /^Full-Body explorer, earned/ })).toBeVisible()
-  await expect(page.getByRole('listitem', { name: 'Early bird, not yet: Finish a workout before 8 in the morning.' })).toBeVisible()
+  // The rest wait behind one row, each saying how to earn it.
+  const early = page.getByRole('listitem', { name: 'Early bird, not yet: Finish a workout before 8 in the morning.' })
+  await expect(early).toHaveCount(0)
+  await page.getByText(/^\d+ still to find$/).click()
+  await expect(early).toBeVisible()
 })

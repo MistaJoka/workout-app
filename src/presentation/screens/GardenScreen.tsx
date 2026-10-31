@@ -15,6 +15,7 @@ import {
   buildGardenSets,
   type Garden,
   type GardenFlower,
+  type GardenSpecies,
   type Rarity,
   type TierProgress,
 } from '../../domain/progress/garden'
@@ -22,8 +23,9 @@ import { listResults } from '../../infrastructure/db/repositories/sessionReposit
 import { profileScopedKey } from '../../infrastructure/profiles'
 
 // The collection: every species a workout can grow. Found ones show their
-// flower, name and how many have grown; the rest wait as a "?" tile, a
-// little curiosity about what the next workout might bring. Nothing here
+// flower, name and how many have grown; the rest wait as "?" tiles behind
+// one "N still to find" row, a little curiosity about what the next
+// workout might bring. Nothing here
 // can be lost: the garden only grows. Species are grouped by rarity tier,
 // and each tier is its own little set to complete (Sets, above the grid):
 // find every species of a tier and its pots turn gold, everywhere they
@@ -108,21 +110,21 @@ function SetsSection({ tiers }: { tiers: TierProgress[] }) {
   return (
     <section aria-label="Sets" className="space-y-2">
       <h2 className="text-lg font-bold">Sets</h2>
-      <ul className="space-y-2">
+      <ul className="grid grid-cols-2 gap-2">
         {tiers.map((tier) => {
           const pct = tier.total === 0 ? 0 : Math.round((tier.discovered / tier.total) * 100)
           const label = `${tier.label}: ${tier.discovered} of ${tier.total}${tier.complete ? ', complete' : ''}`
           return (
-            <li key={tier.rarity} className="card flex items-center gap-3 p-3">
+            <li key={tier.rarity} className={`card flex items-center gap-2 p-2.5 ${tier.complete ? 'bg-field-notice' : ''}`}>
               <div className="min-w-0 flex-1">
-                <div className="flex items-baseline justify-between gap-2">
-                  <p className="font-bold">{tier.label}</p>
-                  <p aria-hidden="true" className="hud-num text-sm text-ink-muted">
-                    {tier.discovered} of {tier.total}
+                <div className="flex items-baseline justify-between gap-1">
+                  <p className="truncate text-sm font-bold">{tier.label}</p>
+                  <p aria-hidden="true" className="hud-num text-xs text-ink-muted">
+                    {tier.discovered}/{tier.total}
                   </p>
                 </div>
                 <div
-                  className="mt-1.5 h-2 overflow-hidden rounded-full bg-[var(--color-border)]"
+                  className="mt-1 h-2 overflow-hidden rounded-full bg-[var(--color-border)]"
                   role="progressbar"
                   aria-valuemin={0}
                   aria-valuemax={tier.total}
@@ -131,12 +133,14 @@ function SetsSection({ tiers }: { tiers: TierProgress[] }) {
                 >
                   <div className="h-full rounded-full bg-primary" style={{ width: `${pct}%` }} />
                 </div>
+                {tier.complete && tier.completedAt && (
+                  <p className="mt-0.5 text-[10px] font-semibold text-ink-muted">{formatCompletedAt(tier.completedAt)}</p>
+                )}
               </div>
-              {tier.complete && tier.completedAt && (
-                <div className="flex shrink-0 flex-col items-center gap-0.5" aria-hidden="true">
-                  <PixelBloom size={32} animate={false} golden bloomed={false} />
-                  <span className="text-[10px] font-semibold text-ink-muted">{formatCompletedAt(tier.completedAt)}</span>
-                </div>
+              {tier.complete && (
+                <span className="flex-none" aria-hidden="true">
+                  <PixelBloom size={28} animate={false} golden bloomed={false} />
+                </span>
               )}
             </li>
           )
@@ -151,6 +155,7 @@ export function GardenScreen() {
   const [failed, setFailed] = useState(false)
   const [celebrating, setCelebrating] = useState<TierProgress[]>([])
   const [loreTarget, setLoreTarget] = useState<LoreSheetTarget | null>(null)
+  const [showLocked, setShowLocked] = useState(false)
 
   useEffect(() => {
     listResults()
@@ -214,66 +219,105 @@ export function GardenScreen() {
               : 'Every workout grows a new flower. Some are rare!'}
           </RaeNote>
           <SetsSection tiers={sets.tiers} />
-          {TIER_ORDER.map((rarity) => {
-            const species = GARDEN_SPECIES.filter((s) => s.rarity === rarity)
-            const tier = sets.tiers.find((t) => t.rarity === rarity)!
+          {(() => {
+            const tile = (sp: GardenSpecies) => {
+              const count = garden.counts.get(sp.id) ?? 0
+              const found = count > 0
+              const rarityLabel = RARITY_LABEL[sp.rarity].replace('!', '')
+              const golden = found && completeRarities.has(sp.rarity)
+              const tileLabel = found
+                ? `${sp.name}, ${rarityLabel}, grown ${count} ${count === 1 ? 'time' : 'times'}${golden ? ', set complete' : ''}`
+                : `Not found yet, ${rarityLabel}`
+              return (
+                <li key={sp.id} aria-label={tileLabel}>
+                  <button
+                    type="button"
+                    aria-label={tileLabel}
+                    className="card flex min-h-11 w-full flex-col items-center p-2 text-center"
+                    onClick={() =>
+                      setLoreTarget(
+                        found
+                          ? {
+                              kind: 'discovered',
+                              species: sp,
+                              count,
+                              firstGrownAt: firstGrownAt.get(sp.id)!,
+                              golden,
+                              goalGrown: goalGrownSpecies.has(sp.id),
+                            }
+                          : { kind: 'undiscovered', rarity: sp.rarity }
+                      )
+                    }
+                  >
+                    {found ? (
+                      <PixelBloom size={52} animate={false} species={sp} golden={golden} />
+                    ) : (
+                      <div
+                        aria-hidden="true"
+                        className="flex h-[52px] w-[44px] items-center justify-center rounded-control bg-field-info text-xl font-bold text-ink-muted"
+                      >
+                        ?
+                      </div>
+                    )}
+                    <p aria-hidden="true" className="mt-1 text-xs font-bold leading-tight">
+                      {found ? sp.name : '???'}
+                    </p>
+                    <p aria-hidden="true" className="text-[11px] text-ink-muted">
+                      {found ? `x${count}` : rarityLabel}
+                    </p>
+                  </button>
+                </li>
+              )
+            }
+            // What she's grown leads; the "?" tiles wait behind one tile.
+            const ordered = TIER_ORDER.flatMap((rarity) => GARDEN_SPECIES.filter((sp) => sp.rarity === rarity))
+            const found = ordered.filter((sp) => (garden.counts.get(sp.id) ?? 0) > 0)
+            const locked = ordered.filter((sp) => (garden.counts.get(sp.id) ?? 0) === 0)
             return (
-              <div key={rarity} className="space-y-2">
-                <h3 className="text-sm font-bold text-ink-muted">{tier.label}</h3>
-                <ul className="grid grid-cols-3 gap-2">
-                  {species.map((sp) => {
-                    const count = garden.counts.get(sp.id) ?? 0
-                    const found = count > 0
-                    const rarityLabel = RARITY_LABEL[sp.rarity].replace('!', '')
-                    const golden = found && completeRarities.has(sp.rarity)
-                    const tileLabel = found
-                      ? `${sp.name}, ${rarityLabel}, grown ${count} ${count === 1 ? 'time' : 'times'}${golden ? ', set complete' : ''}`
-                      : `Not found yet, ${rarityLabel}`
-                    return (
-                      <li key={sp.id} aria-label={tileLabel}>
+              <>
+                {/* The last tile opens the "?" tiles below, grouped by tier. */}
+                <section aria-label="Found" className="space-y-2">
+                  <ul className="grid grid-cols-3 gap-2">
+                    {found.map(tile)}
+                    {locked.length > 0 && (
+                      <li>
                         <button
                           type="button"
-                          aria-label={tileLabel}
-                          className="card flex min-h-11 w-full flex-col items-center p-2 text-center"
-                          onClick={() =>
-                            setLoreTarget(
-                              found
-                                ? {
-                                    kind: 'discovered',
-                                    species: sp,
-                                    count,
-                                    firstGrownAt: firstGrownAt.get(sp.id)!,
-                                    golden,
-                                    goalGrown: goalGrownSpecies.has(sp.id),
-                                  }
-                                : { kind: 'undiscovered', rarity: sp.rarity }
-                            )
-                          }
+                          aria-expanded={showLocked}
+                          aria-controls="garden-locked"
+                          onClick={() => setShowLocked((open) => !open)}
+                          className={`card flex h-full min-h-11 w-full flex-col items-center justify-center gap-1 p-2 text-center ${showLocked ? 'bg-field-info' : ''}`}
                         >
-                          {found ? (
-                            <PixelBloom size={52} animate={false} species={sp} golden={golden} />
-                          ) : (
-                            <div
-                              aria-hidden="true"
-                              className="flex h-[71px] w-[52px] items-center justify-center rounded-control bg-field-info text-2xl font-bold text-ink-muted"
-                            >
-                              ?
-                            </div>
-                          )}
-                          <p aria-hidden="true" className="mt-1 text-xs font-bold leading-tight">
-                            {found ? sp.name : '???'}
-                          </p>
-                          <p aria-hidden="true" className="text-[11px] text-ink-muted">
-                            {found ? `x${count}` : rarityLabel}
-                          </p>
+                          <span
+                            aria-hidden="true"
+                            className="flex h-[52px] w-[44px] items-center justify-center rounded-control bg-field-info text-xl font-bold text-ink-muted"
+                          >
+                            ?
+                          </span>
+                          <span className="text-xs font-bold leading-tight">{locked.length} still to find</span>
                         </button>
                       </li>
-                    )
-                  })}
-                </ul>
-              </div>
+                    )}
+                  </ul>
+                </section>
+                {locked.length > 0 && showLocked && (
+                  <div id="garden-locked" className="space-y-3" data-testid="garden-locked">
+                    {TIER_ORDER.map((rarity) => {
+                      const tierLocked = locked.filter((sp) => sp.rarity === rarity)
+                      if (tierLocked.length === 0) return null
+                      const tier = sets.tiers.find((t) => t.rarity === rarity)!
+                      return (
+                        <div key={rarity} className="space-y-2">
+                          <h3 className="text-sm font-bold text-ink-muted">{tier.label}</h3>
+                          <ul className="grid grid-cols-4 gap-2">{tierLocked.map(tile)}</ul>
+                        </div>
+                      )
+                    })}
+                  </div>
+                )}
+              </>
             )
-          })}
+          })()}
         </>
       )}
 

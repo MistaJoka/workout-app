@@ -91,12 +91,16 @@ test('a partial garden shows each tier under Sets and groups the species grid by
   // None complete yet: no gold badge, no celebration.
   await expect(page.getByTestId('garden-set-celebration')).toHaveCount(0)
 
-  // The species grid is grouped by tier, with a heading per tier.
+  // Found species lead; the rest wait behind one row, grouped by tier.
+  await expect(page.getByRole('region', { name: 'Found' }).locator('li[aria-label]')).toHaveCount(5)
+  await expect(page.getByRole('listitem', { name: /^Not found yet/ })).toHaveCount(0)
+  await page.getByText('10 still to find').click()
   for (const heading of ['Commons', 'Uncommons', 'Rares', 'Legendary']) {
     await expect(page.getByRole('heading', { name: heading, exact: true })).toBeVisible()
   }
-  // All 15 species still show up as list items, split not lost across groups.
-  const allSpeciesItems = page.locator('ul.grid > li')
+  await expect(page.getByRole('listitem', { name: /^Not found yet/ })).toHaveCount(10)
+  // All 15 species still show up as tiles, split not lost across groups.
+  const allSpeciesItems = page.locator('ul.grid > li[aria-label]')
   await expect(allSpeciesItems).toHaveCount(15)
 })
 

@@ -303,6 +303,7 @@ test.describe('routine builder and detail', () => {
     await checkA11y(page, 'Routine builder: exercise picker')
 
     await page.getByRole('button', { name: /Mini Squat/ }).first().click()
+    await page.getByRole('button', { name: 'Add 1', exact: true }).click()
     await page.getByPlaceholder('Routine name').fill('A11y Test Routine')
     await checkA11y(page, 'Routine builder (with an exercise)')
 
@@ -337,6 +338,7 @@ test.describe('garden', () => {
     await expect(page.getByTestId('lore-sheet')).toHaveCount(0)
 
     const legendary = GARDEN_SPECIES.find((s) => s.rarity === 'legendary')!
+    await page.getByText(/still to find$/).click()
     await page.getByRole('listitem', { name: 'Not found yet, Legendary' }).getByRole('button').click()
     await expect(page.getByTestId('lore-sheet')).toBeVisible()
     await checkA11y(page, 'Garden: lore sheet (undiscovered)')

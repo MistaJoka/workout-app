@@ -22,8 +22,11 @@ test('a finished workout grows a named flower into the garden', async ({ page })
   await reveal.click()
   await expect(page.getByRole('heading', { name: 'Your garden' })).toBeVisible()
   await expect(page.getByText('1 flower grown, 1 of 15 kinds found')).toBeVisible()
-  await expect(page.getByRole('listitem', { name: /^Not found yet/ })).toHaveCount(14)
+  // What she's found shows; the rest wait behind one "still to find" row.
   await expect(page.getByRole('listitem', { name: /grown 1 time$/ })).toHaveCount(1)
+  await expect(page.getByRole('listitem', { name: /^Not found yet/ })).toHaveCount(0)
+  await page.getByText('14 still to find').click()
+  await expect(page.getByRole('listitem', { name: /^Not found yet/ })).toHaveCount(14)
 
   await page.goto('/#/progress')
   const card = page.getByRole('link', { name: /^Your garden: 1 flower, 1 of 15 kinds found/ })

@@ -123,6 +123,7 @@ test('tapping an undiscovered species opens a gentle card with only a rarity hin
   await openGarden(page)
   const legendary = GARDEN_SPECIES.find((s) => s.rarity === 'legendary')!
 
+  await page.getByText(/still to find$/).click()
   const tile = page.getByRole('listitem', { name: 'Not found yet, Legendary' })
   await expect(tile).toBeVisible()
   await tile.getByRole('button').click()
@@ -175,6 +176,7 @@ test('with motion off, the lore card is still there at once', async ({ page }) =
   await openGarden(page)
   const legendary = GARDEN_SPECIES.find((s) => s.rarity === 'legendary')!
 
+  await page.getByText(/still to find$/).click()
   const tile = page.getByRole('listitem', { name: 'Not found yet, Legendary' })
   await tile.getByRole('button').click()
   await expect(page.getByTestId('lore-sheet')).toBeVisible({ timeout: 1_000 })
