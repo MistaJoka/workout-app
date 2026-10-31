@@ -1,5 +1,6 @@
 import { CARD_HEIGHT, CARD_WIDTH } from './shareCard'
 import { glyphSource } from './components/RewardGlyph'
+import { COLORS, FONT, fitText, roundRect } from './cardCanvas'
 
 // A cute pixel coupon card for a redeemed reward from Hubby Bunny's shop:
 // "Send to {giverName}" (ShareCardButton's pattern, components/RedeemSheets.tsx)
@@ -51,32 +52,7 @@ export function couponCardFilename(redeemedAt: string): string {
   return `coupon-${redeemedAt.slice(0, 10)}.png`
 }
 
-const COLORS = {
-  background: '#f8faff',
-  notice: '#ffe1b8',
-  lavender: '#d9c8ff',
-  text: '#2b2d42',
-  muted: '#4f5268',
-} as const
-
-const FONT = "'Nunito Variable', ui-rounded, system-ui, sans-serif"
 const EMOJI_FONT = "'Apple Color Emoji', 'Segoe UI Emoji', 'Noto Color Emoji', sans-serif"
-
-function roundRect(ctx: CanvasRenderingContext2D, x: number, y: number, w: number, h: number, radius: number, fill: string) {
-  ctx.beginPath()
-  ctx.roundRect(x, y, w, h, radius)
-  ctx.fillStyle = fill
-  ctx.fill()
-}
-
-function fitText(ctx: CanvasRenderingContext2D, text: string, weight: number, size: number, maxWidth: number): void {
-  let px = size
-  ctx.font = `${weight} ${px}px ${FONT}`
-  while (px > 28 && ctx.measureText(text).width > maxWidth) {
-    px -= 4
-    ctx.font = `${weight} ${px}px ${FONT}`
-  }
-}
 
 // Loads the coupon's tile picture before drawing (drawing is synchronous).
 // Null when there's no picture or it can't load: the card then draws the
