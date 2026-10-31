@@ -75,6 +75,16 @@ type Snapshot = {
   startHref: string
 }
 
+type View = 'week' | 'month'
+const VIEW_KEY = 'workout-app:progress-view'
+function initialView(): View {
+  try {
+    return sessionStorage.getItem(VIEW_KEY) === 'month' ? 'month' : 'week'
+  } catch {
+    return 'week'
+  }
+}
+
 export function ProgressScreen() {
   const [snapshot, setSnapshot] = useState<Snapshot | null>(null)
   const [failed, setFailed] = useState(false)
@@ -85,6 +95,17 @@ export function ProgressScreen() {
   const [deleting, setDeleting] = useState<ActivityEntry | null>(null)
   const [deleteBusy, setDeleteBusy] = useState(false)
   const [deleteError, setDeleteError] = useState<string | null>(null)
+  // Week numbers or the month calendar, one at a time, so the top of
+  // Progress fits one screen. Week leads; the choice holds for this visit.
+  const [view, setViewState] = useState<View>(initialView)
+  const setView = (next: View) => {
+    setViewState(next)
+    try {
+      sessionStorage.setItem(VIEW_KEY, next)
+    } catch {
+      // Private mode: the choice just isn't remembered.
+    }
+  }
 
   async function confirmDeleteActivity() {
     if (!deleting) return
@@ -246,23 +267,43 @@ export function ProgressScreen() {
               <ShareCardButton data={{ kind: 'level', level: snapshot.level }} compact aria-label="Share your level" />
             </div>
           </section>
-          <div className="flex gap-3">
-            <Stat value={totalWorkouts} label={totalWorkouts === 1 ? 'workout' : 'workouts'} />
-            <Stat value={totalSets} label="sets done" />
-            <WeekGoalStat {...snapshot.week} />
+          <div role="tablist" aria-label="Week or month" className="grid grid-cols-2 gap-2">
+            {(
+              [
+                ['week', 'Week'],
+                ['month', 'Month'],
+              ] as const
+            ).map(([id, label]) => (
+              <button
+                key={id}
+                type="button"
+                role="tab"
+                id={`progress-tab-${id}`}
+                aria-selected={view === id}
+                aria-controls={`progress-panel-${id}`}
+                className={`chip min-h-11 justify-center ${view === id ? 'chip-active' : ''}`}
+                onClick={() => setView(id)}
+              >
+                {label}
+              </button>
+            ))}
           </div>
-
-          <WeekCompareCard compare={snapshot.compare} bare />
+          {view === 'week' ? (
+            <section className="space-y-3" role="tabpanel" id="progress-panel-week" aria-labelledby="progress-tab-week">
+              <div className="flex gap-3">
+                <Stat value={totalWorkouts} label={totalWorkouts === 1 ? 'workout' : 'workouts'} />
+                <Stat value={totalSets} label="sets done" />
+                <WeekGoalStat {...snapshot.week} />
+              </div>
+              <WeekCompareCard compare={snapshot.compare} bare />
+            </section>
+          ) : (
+            <section role="tabpanel" id="progress-panel-month" aria-labelledby="progress-tab-month">
+              <MonthBlooms workouts={rows} />
+            </section>
+          )}
 
           {collection}
-
-          {/* Activity: the month calendar leads, the 8-week bar chart is a
-              compact footnote underneath. */}
-          <section className="space-y-2">
-            <p className="text-sm font-semibold text-ink-muted">Activity</p>
-            <MonthBlooms workouts={rows} />
-          </section>
-
         </>
       )}
 
