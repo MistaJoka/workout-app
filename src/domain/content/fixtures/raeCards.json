@@ -416,7 +416,7 @@
     {
       "slug": "seated-forward-reach",
       "loopId": "seated-forward-reach-floor",
-      "name": "Seated Forward Reach",
+      "name": "Seated Forward Reach (floor)",
       "exerciseIds": [
         "rae.seated-forward-reach-floor"
       ],

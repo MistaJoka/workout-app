@@ -68,6 +68,10 @@ export function MomentumStrip({
           >
             <div className="h-full rounded-full bg-primary" style={{ width: `${(milestone.done / milestone.target) * 100}%` }} />
           </div>
+          {/* Seen, not only heard: the count says what the bar is filling to. */}
+          <span aria-hidden className="hud-num flex-none text-xs font-bold">
+            {milestone.done}/{milestone.target}
+          </span>
         </div>
       )}
       {streak && (

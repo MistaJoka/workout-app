@@ -107,7 +107,9 @@ export function LibraryScreen() {
     // below instead of all crowding this row.
     const featured = RAE_LOOPS.filter((loop) => 'featured' in loop && loop.featured)
     getExercises(featured.flatMap((loop) => loop.exerciseIds)).then((found) =>
-      setRaeMoves(uniqueByLoop([...found.values()], (id) => raeLoopForExercise(id)?.id))
+      // Same no-equipment rule as the list below: a featured loop can be
+      // a dumbbell move she has nothing to do with.
+      setRaeMoves(uniqueByLoop([...found.values()].filter(isShownNow), (id) => raeLoopForExercise(id)?.id))
     )
   }, [])
 

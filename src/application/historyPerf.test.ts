@@ -121,10 +121,12 @@ const CASES: Record<string, (h: Fresh) => unknown> = {
   raeMemory: (h) => buildRaeMemory({ plans: h.plans, results: h.results, events: h.events, templateNames: {}, now }),
 }
 
-// Recorded from the implementation before the history index (2026-10-29).
+// Recorded from the implementation before the history index (2026-10-29);
+// evaluateAchievements re-recorded 2026-10-31 for the after-midnight night
+// owl rule.
 const GOLDEN: Record<string, string> = {
   'varied.projectSetRecords': 'f56e549133a23d1a',
-  'varied.evaluateAchievements': '79182c00e7e5feab',
+  'varied.evaluateAchievements': '2ec9d134995ac793',
   'varied.computeXp': '5ce025d96becc480',
   'varied.sessionXpGain': '415bf7d2f94951e7',
   'varied.earnedCarrots': '8cec41a71aa7d8dc',

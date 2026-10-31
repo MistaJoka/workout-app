@@ -178,8 +178,10 @@ export function evaluateAchievements(history: AchievementHistory, weeklyGoal: We
     }
 
     const hour = ended.getHours()
-    if (hour < 8) earn('early-bird', result)
-    if (hour >= 21) earn('night-owl', result)
+    // Past midnight is still the night before (a 12:50 a.m. finish is a
+    // night owl's, not an early bird's); mornings start at 4.
+    if (hour >= 4 && hour < 8) earn('early-bird', result)
+    if (hour >= 21 || hour < 4) earn('night-owl', result)
 
     for (const r of sessionRecords) movesSeen.add(r.exerciseId)
     if ([...fullBodyAMoves].every((id) => movesSeen.has(id))) earn('full-body-a-complete', result)

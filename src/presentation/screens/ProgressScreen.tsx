@@ -7,7 +7,7 @@ import { RecapLink } from '../components/RecapEntry'
 import { loadSessionHistory } from '../../application/historyIndex'
 import { getTemplate, getTemplateName } from '../../domain/content/catalog'
 import { projectSetRecords } from '../../domain/progress/history'
-import { calculateWeekStreak, detectPersonalRecords, weekProgress, weeklyTotals } from '../../domain/progress/stats'
+import { bestPerMove, calculateWeekStreak, detectPersonalRecords, weekProgress, weeklyTotals } from '../../domain/progress/stats'
 import { getWeeklySchedule } from '../../infrastructure/db/repositories/scheduleRepository'
 import { ROTATION } from '../../domain/content/fixtures/foundationStrengthStarter'
 import { resolveToday } from '../../domain/schedule/weeklySchedule'
@@ -145,7 +145,7 @@ export function ProgressScreen() {
       week: weekProgress(results, goal, now, activities),
       streak: calculateWeekStreak(results, goal, now, activities),
       weeks: weeklyTotals(results, now, 8),
-      records: [...detectPersonalRecords(setRecords).values()].sort((a, b) => a.exerciseName.localeCompare(b.exerciseName)),
+      records: bestPerMove(detectPersonalRecords(setRecords).values()).sort((a, b) => a.exerciseName.localeCompare(b.exerciseName)),
       garden: buildGarden(results, goal),
       level: levelFor(computeXp({ plans, results, events }, goal).total),
       compare: compareWeeks({ plans, results, events }, goal, now),

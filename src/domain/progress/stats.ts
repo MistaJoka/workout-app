@@ -56,6 +56,25 @@ export function detectPersonalRecords(records: readonly SetRecord[]): Map<string
   return best
 }
 
+// The bests list shows a move once. The starter Plank and the library's
+// Plank are different ids with the same name; she sees one move, so the
+// better record stands for both. Different measures (a timed hold vs reps)
+// stay apart.
+export function bestPerMove(records: Iterable<PersonalRecord>): PersonalRecord[] {
+  const byMove = new Map<string, PersonalRecord>()
+  for (const r of records) {
+    const key = `${r.exerciseName.trim().toLowerCase()}|${r.unit}`
+    const held = byMove.get(key)
+    const better =
+      !held ||
+      r.value > held.value ||
+      (r.value === held.value && (r.reps ?? 0) > (held.reps ?? 0)) ||
+      (r.value === held.value && (r.reps ?? 0) === (held.reps ?? 0) && r.sessionEndedAt < held.sessionEndedAt)
+    if (better) byMove.set(key, r)
+  }
+  return [...byMove.values()]
+}
+
 // One step of detectPersonalRecords: the record `record` sets for its move
 // when it beats `current` (or there is none yet), else null.
 export function improvedRecord(current: PersonalRecord | undefined, record: SetRecord): PersonalRecord | null {

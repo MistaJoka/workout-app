@@ -128,6 +128,12 @@ describe('evaluateAchievements', () => {
     expect(unlocked(session('m', local(2026, 9, 3, 12), [{ id: 'sq' }])).has('early-bird')).toBe(false)
   })
 
+  it('a finish just past midnight is a night owl, not an early bird', () => {
+    const u = unlocked(session('late', local(2026, 9, 4, 0), [{ id: 'sq' }]))
+    expect(u.get('night-owl')?.sessionId).toBe('late')
+    expect(u.has('early-bird')).toBe(false)
+  })
+
   it('full set needs every planned set done', () => {
     expect(unlocked(session('p', local(2026, 9, 1), [{ id: 'sq', sets: 2 }], { doneSets: 1 })).has('full-set')).toBe(false)
     expect(unlocked(session('f', local(2026, 9, 1), [{ id: 'sq', sets: 2 }])).get('full-set')?.sessionId).toBe('f')

@@ -101,6 +101,20 @@ h2 {
     color: var(--color-on-accent);
     background-color: var(--color-accent);
   }
+  /* The way into a destructive action (Delete, which then asks): same
+     shape as secondary, in the destructive color, so it never reads as
+     another Edit. The confirm itself stays btn-danger. */
+  .btn-danger-outline {
+    @apply btn;
+    color: var(--color-accent);
+    background-color: var(--color-surface);
+    border: 2px solid var(--color-accent);
+    box-shadow: 0 3px 0 var(--color-accent);
+  }
+  .btn-danger-outline:active {
+    transform: translateY(2px);
+    box-shadow: 0 1px 0 var(--color-accent);
+  }
   .btn-ghost {
     @apply btn;
     color: var(--color-text-muted);

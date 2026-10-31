@@ -168,7 +168,7 @@ export function RoutineDetailScreen() {
           <Link to={`/routines/${template.id}/edit`} className="btn-secondary min-h-11">
             Edit
           </Link>
-          <button type="button" className="btn-secondary min-h-11" onClick={() => setConfirmingDelete(true)}>
+          <button type="button" className="btn-danger-outline min-h-11" onClick={() => setConfirmingDelete(true)}>
             Delete
           </button>
         </div>

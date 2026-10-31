@@ -1,5 +1,6 @@
 import { describe, expect, it } from 'vitest'
 import {
+  bestPerMove,
   calculateStreak,
   calculateVolume,
   calculateWeekStreak,
@@ -13,7 +14,7 @@ import {
   bloomStreakLabel,
 } from './stats'
 import { EMPTY_SCHEDULE } from '../schedule/weeklySchedule'
-import type { SetRecord } from './types'
+import type { PersonalRecord, SetRecord } from './types'
 import type { SessionResult } from '../session/types'
 
 function rec(overrides: Partial<SetRecord>): SetRecord {
@@ -50,6 +51,25 @@ describe('calculateVolume', () => {
 
   it('does not count missed sets', () => {
     expect(calculateVolume([rec({ met: false })])).toEqual({ reps: 0, seconds: 0, loadKg: 0 })
+  })
+})
+
+describe('bestPerMove', () => {
+  const pr = (exerciseId: string, value: number, unit: PersonalRecord['unit'] = 'seconds'): PersonalRecord => ({
+    exerciseId,
+    exerciseName: 'Plank',
+    unit,
+    value,
+    sessionId: exerciseId,
+    sessionEndedAt: '2026-10-01T10:00:00.000Z',
+  })
+
+  it('shows a move once, with the better of its twins', () => {
+    expect(bestPerMove([pr('ex.plank', 20), pr('lib.Plank', 30)]).map((r) => r.value)).toEqual([30])
+  })
+
+  it('keeps different measures apart', () => {
+    expect(bestPerMove([pr('ex.plank', 20), pr('lib.Plank', 12, 'reps')])).toHaveLength(2)
   })
 })
 
