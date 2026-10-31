@@ -124,5 +124,7 @@ test('with motion off every flower is still there, just not swaying', async ({ p
 test('the species collection grid below the meadow is unchanged', async ({ page }) => {
   await openGarden(page)
   await expect(page.getByText(/kinds found/)).toBeVisible()
+  // The ones not found yet wait behind one "still to find" tile.
+  await page.getByText(/still to find$/).click()
   await expect(page.getByRole('listitem', { name: /^Not found yet/ })).toHaveCount(15)
 })

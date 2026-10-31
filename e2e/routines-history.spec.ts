@@ -1,5 +1,5 @@
 import { expect, test } from '@playwright/test'
-import { finishWorkout, openProgressMore } from './helpers'
+import { finishWorkout, openProgressMore, openCompleteRewards } from './helpers'
 
 test.describe('routines and history', () => {
   test('add a move to an existing routine, run it, and read the workout back from Progress', async ({ page }) => {
@@ -37,7 +37,8 @@ test.describe('routines and history', () => {
     await page.getByRole('button', { name: 'Start workout' }).click()
     await finishWorkout(page)
 
-    await page.getByRole('link', { name: 'Progress' }).click()
+    await openCompleteRewards(page)
+    await page.getByRole('link', { name: /progress/i }).click()
     await openProgressMore(page)
     await page.getByRole('link', { name: /Leg Day/ }).click()
     await expect(page.getByRole('heading', { name: 'Leg Day' })).toBeVisible()

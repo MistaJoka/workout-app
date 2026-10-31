@@ -34,5 +34,6 @@ test("week and month show the species each day's workout grew", async ({ page })
   await expect(pot.locator('svg.week-blooms__new')).toHaveCount(0)
 
   await page.goto('/#/progress')
+  await page.getByRole('tab', { name: 'Month' }).click()
   await expect(page.getByRole('link', { name: new RegExp(`, today, 1 workout done, ${species}$`) })).toBeVisible()
 })
