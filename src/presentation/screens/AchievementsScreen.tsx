@@ -68,7 +68,9 @@ export function AchievementsScreen() {
       <div>
         <h1 className="text-2xl font-bold">Badges</h1>
         <p className="text-sm text-ink-muted">
-          {earned.length} of {all.length} earned
+          {/* Not "of 35": later ladder steps stay hidden, so a total would
+              never add up with the "still to find" row below. */}
+          {earned.length} earned
         </p>
       </div>
       {earned.length > 0 && (

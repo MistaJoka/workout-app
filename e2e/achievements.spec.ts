@@ -12,7 +12,7 @@ test('a first full workout earns its badges; the rest say how to earn them', asy
   await page.clock.install({ time: noon })
 
   await page.goto('/#/achievements')
-  await expect(page.getByText(/^0 of \d+ earned$/)).toBeVisible()
+  await expect(page.getByText(/^0 earned$/)).toBeVisible()
 
   await page.goto('/#/checkin/fs.full-body-a')
   await page.getByRole('button', { name: 'Start workout' }).click()
@@ -20,7 +20,7 @@ test('a first full workout earns its badges; the rest say how to earn them', asy
 
   await page.goto('/#/achievements')
   await expect(page.getByRole('heading', { name: 'Badges' })).toBeVisible()
-  await expect(page.getByText(/^3 of \d+ earned$/)).toBeVisible()
+  await expect(page.getByText(/^3 earned$/)).toBeVisible()
   await expect(page.getByRole('listitem', { name: /^First bloom, earned/ })).toBeVisible()
   await expect(page.getByRole('listitem', { name: /^Full set, earned/ })).toBeVisible()
   await expect(page.getByRole('listitem', { name: /^Full-Body explorer, earned/ })).toBeVisible()
