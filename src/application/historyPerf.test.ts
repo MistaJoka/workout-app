@@ -121,7 +121,8 @@ const CASES: Record<string, (h: Fresh) => unknown> = {
   raeMemory: (h) => buildRaeMemory({ plans: h.plans, results: h.results, events: h.events, templateNames: {}, now }),
 }
 
-// Recorded from the implementation before the history index (2026-10-29).
+// Recorded from the implementation before the history index (2026-10-29);
+// raeMemory re-recorded when it gained `yesterday` (2026-10-31).
 const GOLDEN: Record<string, string> = {
   'varied.projectSetRecords': 'f56e549133a23d1a',
   'varied.evaluateAchievements': '79182c00e7e5feab',
@@ -139,7 +140,7 @@ const GOLDEN: Record<string, string> = {
   'varied.compareWeeks': 'e86ada3620305a07',
   'varied.flowStatus': '0e7090169fc87455',
   'varied.weekGoals': '7a6a8ef58ce0c2db',
-  'varied.raeMemory': 'c3d8bb9ae547ead5',
+  'varied.raeMemory': '6ebc2180b8de1778',
   'plateau.projectSetRecords': '2e897fb8ee6e2c3f',
   'plateau.evaluateAchievements': 'bb9999dd5787e176',
   'plateau.computeXp': 'a569f34b72a91213',
@@ -156,7 +157,7 @@ const GOLDEN: Record<string, string> = {
   'plateau.compareWeeks': 'b7e353a7a2b991a7',
   'plateau.flowStatus': '1e4414f516c21818',
   'plateau.weekGoals': 'b2a2e1c0fca04575',
-  'plateau.raeMemory': 'e37f27a619cf541d',
+  'plateau.raeMemory': 'a9671aa9c44afd87',
 }
 
 // Generous: the indexed code takes 2-35 ms per case on a desktop (fresh
